@@ -13,9 +13,9 @@
 ## **Project Description**
 
 The Channel Plugin is a part of the Zuri Chat Project which is a clone of the Slack Repository.
-This adds the feature of having organizes conversations into dedicated spaces called channels.
+This adds the feature of having organized conversations in dedicated spaces called channels.
 
-**_Channels help to provide :_**
+**_Benefits of Channels :_**
 
 - Channels bring order and clarity to work — you can create them for any project, topic, or team
 - They provide an organised, focused and centeral space for members to have conversations, share files and information.
@@ -29,7 +29,7 @@ This adds the feature of having organizes conversations into dedicated spaces ca
 
 ---
 
-## **Contribution Guide - Steps to Collaborate on the Repository for team members**
+## **Contribution Guide - Steps to Collaborate on the Repository for Team Members**
 
 ### **_Fork and Clone Repository_**
 
@@ -43,19 +43,19 @@ This adds the feature of having organizes conversations into dedicated spaces ca
    - In your Terminal, type:
      `git clone@https://github.com/your-github-username/zc_plugin_channels.git`
 
-### **_Add Remote to and pull from Upstream_**
+### **_Add "Remote To" and "Pull From" Upstream_**
 
 4. Add a Remote to Upstream to your Repo:
    - In your terminal, type:
      `git remote add upstream https://github.com/Valenteeena/zc_plugin_channels`
 5. Pull from upstream to download all changes in the project using `git pull upstream develop`
 
-### **_Finish whatever assigned task / Issue_**
+### **_Finish whatever assigned Task / Issue_**
 
 6. Open the Project up in your code Editor
 7. Complete your assigned task / Feature on your local machine.
 
-### **_Create and commit changes to a new branch_**
+### **_Create and Commit Changes to a New Branch_**
 
 8. When you are ready to add and push your feature / task to the Repo,
    - Create a new branch with your feature / task name you are adding e.g "ft-Add new channel". To do this, type:
@@ -67,7 +67,7 @@ This adds the feature of having organizes conversations into dedicated spaces ca
 
 - _\* Note: if the Feature is a bug fix, use `bug:message` for your branch and commit message_
 
-### **_Push new branch to Origin Repository_**
+### **_Push New Branch to "Origin" Repository_**
 
 9. To make sure there are no conflict, Pull from upstream using `git pull upstream develop`
 10. Push your branch changes to the Repo using
