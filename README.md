@@ -10,9 +10,19 @@
 
 ---
 
+## **Reference**
+- Slack
+- Discord
+
+---
+
 ## **Project Description**
 
-The Channel Plugin is a part of the Zuri Chat Project which is a clone of the Slack Repository.
+The Channel Plugin is a feature that helps users create spaces for conversation
+and communication on zuri.chat.
+Users can also create sub tags in the channels option where other things can be
+done, ranging from game nights, football banter, random, announcement and
+so much more.
 This adds the feature of having organized conversations in dedicated spaces called channels.
 
 **_Benefits of Channels :_**
