@@ -1,24 +1,15 @@
 [flake8]
 max-line-length = 120
-exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules,venv
+exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules
+ignore = F405,F403,W503,W504
+
 
 [pycodestyle]
 max-line-length = 120
-exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules,venv
-
-[isort]
-line_length = 88
-known_first_party = channel_plugin,config
-multi_line_output = 3
-default_section = THIRDPARTY
-skip = venv/
-skip_glob = **/migrations/*.py
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
+exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules
 
 [mypy]
-python_version = 3.9
+python_version = 3.8
 check_untyped_defs = True
 ignore_missing_imports = True
 warn_unused_ignores = True
@@ -34,7 +25,7 @@ django_settings_module = config.settings.test
 ignore_errors = True
 
 [coverage:run]
-include = channel_plugin/*
+include = hio/*
 omit = *migrations*, *tests*
 plugins =
     django_coverage_plugin
