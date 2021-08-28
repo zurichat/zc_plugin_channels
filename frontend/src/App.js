@@ -1,14 +1,18 @@
-import logo from './logo.svg'
 import './App.css'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import routes from './routes/routes'
+import store from './redux/store'
 
 function App() {
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <h2>Team Coelho</h2>
-        <p>Zuru Plugin Channels</p>
-      </header>
-    </div>
+    <Provider store={store}>
+      <Router>
+        <Switch>
+          <Route component={routes} />
+        </Switch>
+      </Router>
+    </Provider>
   )
 }
 
