@@ -11,7 +11,7 @@ const Home = () => {
         transform='translate(-50%, -50%)'
         textAlign='center'
       >
-        <Text fontSize='4xl' color='white'>
+        <Text fontSize='6xl' color='white'>
           Team Coelho
         </Text>
 
