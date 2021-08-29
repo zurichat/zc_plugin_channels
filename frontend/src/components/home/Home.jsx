@@ -15,7 +15,7 @@ const Home = () => {
           Team Coelho
         </Text>
 
-        <Text color='white'>Zuri Plugin Channels</Text>
+        <Text color='white' fontSize='2xl'>Zuri Chat Channels Plugin</Text>
       </Box>
     </Box>
   )
