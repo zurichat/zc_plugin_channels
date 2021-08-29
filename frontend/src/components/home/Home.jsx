@@ -3,7 +3,7 @@ import { Box, Center, Text } from '@chakra-ui/layout'
 
 const Home = () => {
   return (
-    <Box width='100%' height='100vh' bg='gray.900'>
+    <Box width='100%' height='100vh' bg='gray.500'>
       <Box
         position='absolute'
         top='50%'
