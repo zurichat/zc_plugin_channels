@@ -57,8 +57,10 @@ This adds the feature of having organized conversations in dedicated spaces call
 
 4. Add a Remote to Upstream to your Repo:
    - In your terminal, type:
-     `git remote add upstream https://github.com/Valenteeena/zc_plugin_channels`
-5. Pull from upstream to download all changes in the project using `git pull upstream develop`
+     `git remote add upstream https://github.com/zurichat/zc_plugin_channels`
+5. Pull from upstream to download all changes in the project using `git pull upstream dev`
+
+6. To check out upstream changes, run: `git checkout --track upstream/dev`. This will create a `dev` branch on your local machine to track the `upstream` `dev` branch.
 
 ### **_Finish whatever assigned Task / Issue_**
 
@@ -79,7 +81,7 @@ This adds the feature of having organized conversations in dedicated spaces call
 
 ### **_Push New Branch to "Origin" Repository_**
 
-9. To make sure there are no conflict, Pull from upstream using `git pull upstream develop`
+9. To make sure there are no conflict, Pull from upstream using `git pull upstream dev`
 10. Push your branch changes to the Repo using
     `git push origin "ft-yourTask"`
 
