@@ -22,12 +22,9 @@ api.interceptors.request.use(
   err => Promise.reject(err),
 )
 class APIServices {
-  async login(data) {
-    return api.post('/auth/login', data)
-  }
-
-  async signup(data) {
-    return api.post('/auth/signup', data)
+  // @desc End Point Example
+  async getUsers(data) {
+    return api.post('/some-endpoint', data)
   }
 }
 
