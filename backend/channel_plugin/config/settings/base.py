@@ -9,11 +9,12 @@ ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # channel_plugin/
 APPS_DIR = ROOT_DIR / "channel_plugin"
 env = environ.Env()
-
+env.read_env(str(ROOT_DIR.parent / ".envs/.local/.django"))
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR / ".env"))
+
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -40,8 +41,9 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL")}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+# DATABASES = {"default": env.db("DATABASE_URL")}
+# DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -67,11 +69,12 @@ THIRD_PARTY_APPS = [
     "crispy_forms",
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
-    "django_celery_beat",
+    # "allauth.socialaccount",
+    # "django_celery_beat",
     "rest_framework",
-    "rest_framework.authtoken",
+    # "rest_framework.authtoken",
     "corsheaders",
+    "drf_yasg",
 ]
 
 LOCAL_APPS = [
@@ -227,7 +230,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Team Coelho""", "team-coelho@example.com")]
+ADMINS = [("""Team Coelho""", "team-coelho@zuri.chat")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -261,9 +264,9 @@ if USE_TZ:
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-timezone
     CELERY_TIMEZONE = TIME_ZONE
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
-CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+# CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+# CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content
 CELERY_ACCEPT_CONTENT = ["json"]
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_serializer
@@ -300,10 +303,12 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
+TEAM_NAME = "Team Coelho"
+PROJECT_NAME = "Zuri Chat Channel Plugin"
