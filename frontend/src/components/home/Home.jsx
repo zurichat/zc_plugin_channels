@@ -33,12 +33,10 @@ const Home = () => {
         textAlign='center'
       >
         <Text fontSize='6xl' color='white'>
-          Team Coelho
+          Update on Team Coelho
         </Text>
 
-        <Text color='white' fontSize='2xl'>
-          Zuri Chat Channels Plugin
-        </Text>
+        <Text color='white' fontSize='2xl'>Zuri Chat Channels Plugin update</Text>
       </Box>
     </Box>
   )
