@@ -19,7 +19,7 @@ const theme = extendTheme({
       'a, button': {
         _focus: {
           outline: 'none',
-        },
+        }
       }
     },
   },
