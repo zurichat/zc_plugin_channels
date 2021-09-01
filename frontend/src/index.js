@@ -5,11 +5,13 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { ChakraProvider } from '@chakra-ui/react'
 import { theme } from './utils/theme'
+import CreateChannel from './components/CreateChannel/CreateChannel'
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <App />
+      <CreateChannel />
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root'),
