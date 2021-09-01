@@ -17,8 +17,6 @@ const Home = () => {
         </Text>
 
         <Text color='white' fontSize='2xl'>Zuri Chat Channels Plugin update</Text>
-        
-        <MessageInput />
       </Box>
     </Box>
   )
