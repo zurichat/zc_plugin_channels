@@ -3,8 +3,7 @@ import { Box } from '@chakra-ui/layout'
 
 const MessageBoardIndex = () => {
     return(
-        <Box>
-
+        <Box>    
         </Box>
     )
 }
