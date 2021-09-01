@@ -4,6 +4,11 @@ import { Flex, HStack, Spacer, Stack, Textarea } from '@chakra-ui/react'
 import { BoldIcon, CopyLinkIcon, HSeparatorIcon, ItalicsIcon, ListIcon, MentionIcon, SendIcon, StrikeIcon } from '../icon'
 import { useRef } from 'react'
 
+/**
+ * Message Input position itself at the bottom is its 'relative'ly position parent element.
+ * @todo Markdown not yet functional
+ * @returns React FC
+ */
 const MessageInput = () => {
   return (
     <Box
