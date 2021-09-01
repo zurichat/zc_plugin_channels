@@ -28,54 +28,54 @@
 
 - Ensure you have yarn installed if not use npm to install, to check run
 
-> `yarn --version`
+        `yarn --version`
 
 - To install yarn with npm run
 
-> `npm install --global yarn`
+        `npm install --global yarn`
 
 - Goto frontend directory and run command
 
-> `yarn`
+        `yarn`
 
 ### After installing packages
 
 ## Linux
 
-- [x] yarn relocate
+        `yarn relocate`
 
 ## Windows
 
-- [x] yarn build
-- [] move the build folder generated to *backend / channel_plugin / channel_plugin directory*
+        `yarn build`
+        move the build folder generated to *backend / channel_plugin / channel_plugin directory*
 
 ## Install Requirements
 
 - Goto *backend / channel_plugin* directory (where you can see manage.py file) ensure virtual environment is activated and run command
 
-> `pip install -r requirements/local.txt`
+        `pip install -r requirements/local.txt`
 
 ## Run server
 
 - Run server (where you can see manage.py file) run command
 
-> `python manage.py runserver`
+        `python manage.py runserver`
 
 ## To create new django app
 
 - Linux
         - [x] Make sure you're in the folder that has manage.py file
-        - [] cd into apps folder
-        - [] run `python ../manage.py startapp <name-of-app>`
-        - [] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
+        - [ ] cd into apps folder
+        - [ ] run `python ../manage.py startapp <name-of-app>`
+        - [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
                 to *INSTALLED_APPS*
 
 - Windows
         - [x] Goto apps folder
-        - [] create a folder with `<name-of-app>`
-        - [] go back to folder where you have manage.py file
-        - [] run `python manage.py startapp apps/<name-of-app>`
-        - [] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
+        - [ ] create a folder with `<name-of-app>`
+        - [ ] go back to folder where you have manage.py file
+        - [ ] run `python manage.py startapp apps/<name-of-app>`
+        - [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
                 to *INSTALLED_APPS*
 
 ### Committing changes
