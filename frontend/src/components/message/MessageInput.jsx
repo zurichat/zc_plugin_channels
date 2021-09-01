@@ -15,7 +15,6 @@ const MessageInput = () => {
         bg='white'
         borderRadius='3px'
     > 
-        {/* <Input height='54px' border='none' fontSize='15px' placeholder='Send a message to John' _placeholder={{ color: 'neutral.500' }} paddingBlock='18px' paddingInline='20px' _focus={{ border: 'none' }} /> */}
         <ResizableInput height='58px' border='none' fontSize='15px' color='neutral.500' placeholder='Send a message to John' _placeholder={{ color: 'neutral.500' }} paddingBlock='18px' paddingInline='20px' _focus={{ border: 'none' }} />
         <Flex paddingTop='5px' paddingBottom='10px' paddingInline='20px'>
             <HStack spacing='5px'>
