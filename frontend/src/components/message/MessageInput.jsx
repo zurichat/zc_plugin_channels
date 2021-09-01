@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box } from '@chakra-ui/layout'
-import { Flex, HStack, Input, Spacer, Stack, Textarea } from '@chakra-ui/react'
+import { Flex, HStack, Spacer, Stack, Textarea } from '@chakra-ui/react'
 import { BoldIcon, CopyLinkIcon, HSeparatorIcon, ItalicsIcon, ListIcon, MentionIcon, SendIcon, StrikeIcon } from '../icon'
 import { useRef } from 'react'
 
