@@ -4,7 +4,13 @@ const theme = extendTheme({
   styles: {
     colors: {
       neutral: {
-        500: '#BEBEBE',
+        900: '',
+        800: '',
+        700: '',
+        600: '#242424',
+        500: '#3A3A3A',
+        400: '#8B8B8B',
+        300: '#BEBEBE',
         200: '#EBEBEB',
         100: '#F9F9F9'
       }
