@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box } from '@chakra-ui/layout'
-import { Flex, HStack, Spacer, Stack, Textarea } from '@chakra-ui/react'
-import { BoldIcon, CopyLinkIcon, HSeparatorIcon, ItalicsIcon, ListIcon, MentionIcon, SendIcon, StrikeIcon } from '../icon'
+import { Flex, HStack, Spacer, Square, Stack, Textarea } from '@chakra-ui/react'
+import { FiAtSign, FiBold, FiItalic, FiLink, FiList, FiPaperclip, FiSend, FiZap } from 'react-icons/fi'
 import { useRef } from 'react'
 
 /**
@@ -24,17 +24,18 @@ const MessageInput = () => {
             <ResizableInput textareaRef={textRef} height='58px' border='none' fontSize='15px' color='neutral.500' placeholder='Send a message to John' _placeholder={{ color: 'neutral.500' }} paddingBlock='18px' paddingInline='20px' _focus={{ border: 'none' }} />
             <Flex paddingTop='5px' paddingBottom='10px' paddingInline='20px'>
                 <HStack spacing='5px'>
-                    <Box><StrikeIcon /></Box>
+                    <Square size='24px'><FiZap /></Square>
                     <HSeparatorIcon />
-                    <Box><BoldIcon /></Box>
-                    <Box><ItalicsIcon /></Box>
-                    <Box><ListIcon /></Box>
+                    <Square size='24px'><FiBold /></Square>
+                    <Square size='24px'><FiItalic /></Square>
+                    <Square size='24px'><FiLink /></Square>
+                    <Square size='24px'><FiList /></Square>
                 </HStack>
                 <Spacer />
                 <Stack direction='row-reverse' spacing='5px'>
-                    <Box><SendIcon /></Box>
-                    <Box><CopyLinkIcon /></Box>
-                    <Box><MentionIcon /></Box>    
+                    <Square size='24px'><FiSend /></Square>
+                    <Square size='24px'><FiPaperclip /></Square>
+                    <Square size='24px'><FiAtSign /></Square>    
                 </Stack>
             </Flex>
         </Box>
@@ -43,6 +44,12 @@ const MessageInput = () => {
 
 const MAX_HEIGHT = 200
 const MIN_HEIGHT = 58
+
+const HSeparatorIcon = () => (
+    <svg width="2" height="18" viewBox="0 0 2 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1V17" stroke="#EBEBEB" strokeLinecap="round"/>
+    </svg>
+)
 
 const ResizableInput = ({ textareaRef, onKeyUp=null, onBlur=null, onFocus=null, ...rest }) => {
     const fitToContent = (maxHeight) => {

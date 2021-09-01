@@ -20,6 +20,9 @@ const theme = extendTheme({
         _focus: {
           outline: 'none',
         }
+      },
+      'svg': {
+        color: '#8B8B8B'
       }
     },
   },
