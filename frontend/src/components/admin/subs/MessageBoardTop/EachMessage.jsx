@@ -1,12 +1,12 @@
 import React from "react";
 import { Flex, Box, Text } from "@chakra-ui/layout";
-import { Image, Button } from "@chakra-ui/react";
+import { Avatar, Button } from "@chakra-ui/react";
 
 function EachMessage(props) {
   return (
     <Flex width="100%" bg="#fff" mb="20px">
       <Box mr="11px">
-        <Image borderRadius="full" boxSize="36px" src={props.src} alt="" />
+        <Avatar src={props.src} alt="" boxSize="36px" />
       </Box>
       <Box>
         <Flex>
