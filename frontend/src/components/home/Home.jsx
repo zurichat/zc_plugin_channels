@@ -3,7 +3,6 @@ import { Box, Text } from '@chakra-ui/layout'
 import appActions from '../../redux/actions/app'
 import { bindActionCreators } from 'redux'
 import { useDispatch, useSelector } from 'react-redux'
-import ChannelDetails from '../admin/subs/channelDetails'
 
 const Home = () => {
   // STEP FIVE (Extract redux function)
