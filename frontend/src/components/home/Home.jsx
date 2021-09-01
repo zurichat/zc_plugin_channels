@@ -3,6 +3,7 @@ import { Box, Text } from '@chakra-ui/layout'
 import appActions from '../../redux/actions/app'
 import { bindActionCreators } from 'redux'
 import { useDispatch, useSelector } from 'react-redux'
+import ChannelDetails from '../admin/subs/channelDetails'
 
 const Home = () => {
   // STEP FIVE (Extract redux function)
@@ -24,7 +25,7 @@ const Home = () => {
   }, [])
 
   return (
-    <Box width='100%' height='100vh' bg='gray.500'>
+    <Box width='100%' height='100vh'>
       <Box
         position='absolute'
         top='50%'
@@ -36,7 +37,9 @@ const Home = () => {
           Update on Team Coelho
         </Text>
 
-        <Text color='white' fontSize='2xl'>Zuri Chat Channels Plugin update</Text>
+        <Text color='white' fontSize='2xl'>
+          Zuri Chat Channels Plugin update
+        </Text>
       </Box>
     </Box>
   )
