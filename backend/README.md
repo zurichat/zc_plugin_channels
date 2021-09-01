@@ -17,12 +17,12 @@
 3. Add docker to sudo group to use docker without sudo
 4. Install pre-commit in your global environment
 
-        pip install pre-commit
+        `pip install pre-commit`
 
 5. Install the git hook scripts
 
         cd <project_directory>
-        pre-commit install
+        `pre-commit install`
 
 ### Run project locally
 
@@ -47,7 +47,8 @@
 ## Windows
 
         `yarn build`
-        move the build folder generated to *backend / channel_plugin / channel_plugin directory*
+
+- move the build folder generated to *backend / channel_plugin / channel_plugin directory*
 
 ## Install Requirements
 
@@ -64,19 +65,19 @@
 ## To create new django app
 
 - Linux
-        - [x] Make sure you're in the folder that has manage.py file
-        - [ ] cd into apps folder
-        - [ ] run `python ../manage.py startapp <name-of-app>`
-        - [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
-                to *INSTALLED_APPS*
+- [x] Make sure you're in the folder that has manage.py file
+- [ ] cd into apps folder
+- [ ] run `python ../manage.py startapp <name-of-app>`
+- [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
+to *INSTALLED_APPS*
 
 - Windows
-        - [x] Goto apps folder
-        - [ ] create a folder with `<name-of-app>`
-        - [ ] go back to folder where you have manage.py file
-        - [ ] run `python manage.py startapp apps/<name-of-app>`
-        - [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
-                to *INSTALLED_APPS*
+- [x] Goto apps folder
+- [ ] create a folder with `<name-of-app>`
+- [ ] go back to folder where you have manage.py file
+- [ ] run `python manage.py startapp apps/<name-of-app>`
+- [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
+to *INSTALLED_APPS*
 
 ### Committing changes
 
