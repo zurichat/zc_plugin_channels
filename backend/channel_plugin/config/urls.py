@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.shortcuts import render
 from django.urls import include, path, re_path
 from django.views import defaults as default_views
 from drf_yasg import openapi
@@ -22,6 +23,11 @@ schema_view = get_schema_view(
     validators=["ssv"],
 )
 
+
+def render_react(request):
+    return render(request, "index.html")
+
+
 urlpatterns = [
     re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
@@ -29,11 +35,15 @@ urlpatterns = [
         name="schema-json",
     ),
     re_path(
-        r"^$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"
+        r"^swagger/$",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
     ),
     re_path(
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
+    re_path(r"^$", render_react),
+    re_path(r"^(?:.*)/?$", render_react),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
