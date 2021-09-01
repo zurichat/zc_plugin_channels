@@ -1,6 +1,6 @@
 import React from 'react'
-import ThreadMessage from './threadMessage/ThreadMessage'
-import ThreadHeader from './threadHeader/ThreadHeader'
+import ThreadMessage from './threadMessage/ThreadMessage.js'
+import ThreadHeader from './threadHeader/ThreadHeader.js'
 import ThreadReplies from './threadReply/ThreadReplies'
 import ThreadInputForm from './threadInputForm/ThreadInputForm'
 
@@ -10,7 +10,7 @@ function Threads() {
             <ThreadHeader />
             <ThreadMessage />
             <ThreadReplies />
-            <ThreadInputForm />
+            <ThreadInputForm /> 
         </div>
     )
 }
