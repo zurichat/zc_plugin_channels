@@ -1,6 +1,5 @@
 import React from 'react'
 import { Box, Center, Text } from '@chakra-ui/layout'
-import MessageInput from '../message/MessageInput'
 
 const Home = () => {
   return (
