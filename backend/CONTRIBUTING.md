@@ -17,8 +17,8 @@ often are completely different from the maintainer's point of view.
 We love to get pull requests from you. We operate the "Fork & Pull" model
 explained at [link](https://help.github.com/articles/using-pull-requests)
 
-You should fork the project into your own repo, create a *topic/issue* branch from *dev* branch (already created)
-there and then make one or more pull requests back to the upstream repository into the dev branch, always make sure your created branch is up to date with *dev* branch.
+You should fork the project into your own repo then checkout to *dev* branch `git checkout dev`, create a *topic/issue* branch from *dev* branch (already created)
+there and then make one or more pull requests back to the upstream repository into the *dev* branch, always make sure your created branch is up to date with *dev* branch.
 
 Your pull requests will then be reviewed and discussed. Please be aware
 that you are responsible for your pull requests. You should be prepared
@@ -36,7 +36,10 @@ that duplicate work can be avoided.
 
 ### Testing
 
-Before submitting a pull request if you're up to the task create test cases and make sure that the tests pass using :)[pytest](https://github.com/pytest-dev/pytest).
+Before submitting a pull request if you're up to the task create test cases and make sure that the tests pass using [pytest](https://github.com/pytest-dev/pytest).
 
 ### Setting up project locally
+
 Kindly check [here](README.md)
+
+Goodluck :)

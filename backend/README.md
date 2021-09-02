@@ -20,9 +20,7 @@
 ### Local Development
 
 1. Clone project repo
-2. Install docker and docker-compose
-3. Add docker to sudo group to use docker without sudo
-4. Install pre-commit in your global environment
+2. Install pre-commit in your global environment
 
         pip install pre-commit
 
