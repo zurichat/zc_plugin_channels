@@ -23,13 +23,13 @@ import {
 //Step 3: Lastly, in the component you need it, attach an onclick={onOpen} to the required button
 
 //Voilllaaaaaaaaaaaaaaaaaaaaaaaa
-function NotificationModal(props) {
+function NotificationModal({ isOpen, onClose }) {
   return (
     <>
       <Modal
         closeOnOverlayClick={false}
-        isOpen={props.isOpen}
-        onClose={props.onClose}
+        isOpen={isOpen}
+        onClose={onClose}
         size="lg"
       >
         <ModalOverlay />
