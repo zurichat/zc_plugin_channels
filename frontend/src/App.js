@@ -3,14 +3,13 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from './routes/routes'
 import store from './redux/store'
+import Home from './components/home/Home'
 
 function App() {
   return (
     <Provider store={store}>
       <Router>
-        <Switch>
-          <Route component={routes} />
-        </Switch>
+        <Route component={routes} />
       </Router>
     </Provider>
   )
