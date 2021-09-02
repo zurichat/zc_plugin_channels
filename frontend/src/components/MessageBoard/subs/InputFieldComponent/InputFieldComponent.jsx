@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import { ChakraProvider,extendTheme,Box,Text,Divider, Textarea,input, Input, Button } from "@chakra-ui/react"
+import { Box,Divider,Input, Button } from "@chakra-ui/react"
 import { AtSignIcon } from '@chakra-ui/icons'
 import {IoFlashOutline, IoSendSharp} from 'react-icons/io5';
 import {BsTypeBold,BsLink45Deg} from 'react-icons/bs';
