@@ -19,14 +19,11 @@
 
 ### Local Development
 
-1. Clone project repo
-2. Install docker and docker-compose
-3. Add docker to sudo group to use docker without sudo
-4. Install pre-commit in your global environment
+1. Install pre-commit in your global environment
 
         pip install pre-commit
 
-5. Install the git hook scripts
+2. Install the git hook scripts
 
 - [x] cd into *backend* folder
 - [ ] `pre-commit install`
