@@ -7,7 +7,7 @@ import {FiItalic} from 'react-icons/fi';
 import {AiOutlineBars} from 'react-icons/ai';
 import {GrAttachment} from 'react-icons/gr'
 
-function App() {
+function InputFieldComponent() {
   const [input,setInput]=useState(false)
   return (
     <ChakraProvider>
@@ -39,4 +39,4 @@ function App() {
   );
 }
 
-export default App;
+export default InputFieldComponent;
