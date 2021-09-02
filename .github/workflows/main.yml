@@ -4,7 +4,7 @@ name: Channels Deployment Pipeline
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [main]
+    branches: [dev]
 
 
   # Allows you to run this workflow manually from the Actions tab
@@ -24,8 +24,10 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd /var/www/zc_plugin_channels/
-            git pull
-            cd /var/www/zc_plugin_channels/frontend
-            yarn install
-            yarn build
-            pm2 restart channels_plugin
+            git checkout dev
+            git pull origin dev
+            cd frontend
+            yarn relocate
+            cd /var/www/zc_plugin_channels/backend/channel_plugin/
+            python3 manage.py collectstatic --noinput
+            fuser -k -HUP 3001/tcp
