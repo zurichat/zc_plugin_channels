@@ -10,7 +10,6 @@ import {GrAttachment} from 'react-icons/gr'
 function InputFieldComponent() {
   const [input,setInput]=useState(false)
   return (
-    <ChakraProvider>
       <Box p={3}>
       <Box display="flex" flexDirection="column" borderWidth="1px" p={3}>
         <Input variant="unstyled" placeholder="Send a Message" size="lg" fontSize="md" onInput={()=>setInput(true)} onMouseOut={()=>setInput(false)}/>
@@ -35,7 +34,6 @@ function InputFieldComponent() {
           </Box>
       </Box>
       </Box>
-    </ChakraProvider>
   );
 }
 
