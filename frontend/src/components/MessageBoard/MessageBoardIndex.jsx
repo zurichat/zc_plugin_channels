@@ -2,11 +2,7 @@ import React from 'react'
 import { Box } from '@chakra-ui/layout'
 
 const MessageBoardIndex = () => {
-    return(
-        <Box>
-
-        </Box>
-    )
+  return <Box>Message board page</Box>
 }
 
-export default MessageBoardIndex;
+export default MessageBoardIndex

@@ -1,8 +1,8 @@
-import React from "react";
-import { Box } from "@chakra-ui/layout";
+import React from 'react'
+import { Box } from '@chakra-ui/layout'
 
 const TempSidebar = () => {
-  return <Box></Box>;
-};
+  return <Box></Box>
+}
 
-export default TempSidebar;
+export default TempSidebar
