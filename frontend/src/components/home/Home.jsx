@@ -28,7 +28,7 @@ const Home = () => {
   }, [])
 
   return (
-    <Box width='100%' height='100vh' bg='#E5E5E5' pt={4}>
+<Box width='100%' height='100vh' bg='#E5E5E5' pt={4}>
       <Box bg="white" w="95%" p={4} color="black" ml="8" borderRadius="2px">
         <Flex cursor="pointer" alignItems="center">
         <Heading as="h5" size="sm" fontWeight="semibold"> # New Channel </Heading>
