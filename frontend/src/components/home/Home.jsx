@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Heading } from '@chakra-ui/react'
 import { BiChevronDown } from 'react-icons/bi'
-import { Flex, Spacer } from "@chakra-ui/react"
+import { Flex, Spacer } from '@chakra-ui/react'
 import CreateChannelModal from '../createChannel/createChannelModal'
 
 const Home = () => {
@@ -28,15 +28,17 @@ const Home = () => {
   }, [])
 
   return (
-<Box width='100%' height='100vh' bg='#E5E5E5' pt={4}>
-      <Box bg="white" w="95%" p={4} color="black" ml="8" borderRadius="2px">
-        <Flex cursor="pointer" alignItems="center">
-        <Heading as="h5" size="sm" fontWeight="semibold"> # New Channel </Heading>
-        <BiChevronDown />
-        <Spacer />
-        <CreateChannelModal />
+    <Box width='100%' height='100vh' bg='#E5E5E5' pt={4}>
+      <Box bg='white' w='95%' p={4} color='black' ml='8' borderRadius='2px'>
+        <Flex cursor='pointer' alignItems='center'>
+          <Heading as='h5' size='sm' fontWeight='semibold'>
+            # New Channel
+          </Heading>
+          <BiChevronDown />
+          <Spacer />
+          <CreateChannelModal />
         </Flex>
-      </Box>      
+      </Box>
     </Box>
   )
 }
