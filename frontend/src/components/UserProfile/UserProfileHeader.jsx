@@ -19,4 +19,4 @@ const profileHeader = () => {
   )
 };
 
-export default TempSidebar;
+export default profileHeader;
