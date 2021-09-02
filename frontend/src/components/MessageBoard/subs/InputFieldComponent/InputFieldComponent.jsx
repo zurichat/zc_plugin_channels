@@ -1,16 +1,15 @@
 import React,{useState} from 'react'
 import { Box,Divider,Input, Button } from "@chakra-ui/react"
-import { AtSignIcon } from '@chakra-ui/icons'
 import {IoFlashOutline, IoSendSharp} from 'react-icons/io5';
 import {BsTypeBold,BsLink45Deg} from 'react-icons/bs';
-import {FiItalic} from 'react-icons/fi';
+import {FiItalic, FiAtSign} from 'react-icons/fi';
 import {AiOutlineBars} from 'react-icons/ai';
 import {GrAttachment} from 'react-icons/gr'
 
 function InputFieldComponent() {
   const [input,setInput]=useState(false)
   return (
-      <Box p={3}>
+      <Box p={3} backgroundColor="white">
         <Box display="flex" flexDirection="column" borderWidth="1px" p={3}>
             <Input variant="unstyled" placeholder="Send a Message" size="lg" fontSize="md" onInput={()=>setInput(true)} onMouseOut={()=>setInput(false)}/>
             <Box maxW="100%" display="flex" justifyContent="space-between" mt={5} flexDirection="row" alignItems="center">
@@ -25,7 +24,7 @@ function InputFieldComponent() {
                 </Box>
                 <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" width={{base:"60px",sm:"80px",md:'120px'}}
                 _hover={{ cursor: "pointer" }}>
-                <AtSignIcon/>
+                <FiAtSign/>
                 <GrAttachment/>
                 {
                     input ? <Button bg="#00B87C" size="xs"><IoSendSharp color="white"/></Button> : <IoSendSharp/>

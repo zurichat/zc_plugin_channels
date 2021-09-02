@@ -4,6 +4,8 @@ import { Flex, Spacer, Avatar, AvatarGroup } from "@chakra-ui/react"
 import { FiUserPlus } from "react-icons/fi"
 import { Icon } from '@chakra-ui/icon'
 import { BsChevronDown, BsHash } from "react-icons/bs";
+import { FaCaretDown } from "react-icons/fa";
+
 
 //avatar details
 const avatars = [
@@ -19,7 +21,7 @@ const ChannelDetailsContainer = () => {
                 <Flex as='button' borderRadius="md" p="4" align='center' color="white" px={4} h={8} mr='2'>
                     <Icon as={BsHash} color='#000000' mr='2' w={5} h={5} />
                     <Box as='span' fontSize="md" color='#000000' fontWeight='bold' mr='2'> Announcements</Box> 
-                    <Icon as={BsChevronDown} color="black" w={3} h={6} />
+                    <FaCaretDown />
                 </Flex>
                 <Spacer />
                 <Flex p="4">
