@@ -10,7 +10,7 @@ mypy==0.910  # https://github.com/python/mypy
 django-stubs==1.8.0  # https://github.com/typeddjango/django-stubs
 pytest==6.2.4  # https://github.com/pytest-dev/pytest
 pytest-sugar==0.9.4  # https://github.com/Frozenball/pytest-sugar
-pytest-cov--2.12.1
+pytest-cov==2.12.1
 pytest-django-queries==1.2.0
 pytest-icdiff==0.5
 pytest-mock==3.6.1
