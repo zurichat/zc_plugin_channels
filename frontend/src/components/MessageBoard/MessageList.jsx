@@ -5,8 +5,8 @@ const Message = (props) => {
   const { username, time } = props
 
   return (
-    <Box d='flex' p={4}>
-      <Box pr={3}>
+    <Box d='flex' p={2}>
+      <Box pr={4} pt={1}>
         <Image
           borderRadius='full'
           boxSize='36px'
@@ -14,7 +14,7 @@ const Message = (props) => {
           alt='user profile picture'
         />
       </Box>
-      <Box>
+      <Box pl={1}>
         <Flex>
           <Box fontWeight='bold' mr={2} color='rgba(36, 36, 36, 1)'>
             {username}
@@ -23,7 +23,7 @@ const Message = (props) => {
             {time}
           </Box>
         </Flex>
-        <Text color='rgba(58, 58, 58, 1)'>
+        <Text color='rgba(58, 58, 58, 1)' w='260px'>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis. Volutpat tempus egestas donec pretium.
         </Text>
       </Box>
@@ -33,11 +33,11 @@ const Message = (props) => {
 
 const Messages = () => {
   return (
-    <>
+    <Box w='360px' border='1px solid rgba(180, 180, 180, .5)' borderRadius='3px'>
       <Message username="Samuel Hunter" time='5 mins ago' />
       <Message username="Detty Brymz" time='2 mins ago' />
       <Message username="Ekun Omo" time='1 min ago' />
-    </>
+    </Box>
   )
 }
 
