@@ -27,12 +27,10 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd /var/www/zc_plugin_channels/
-            git config --global user.email "mrdavidtola@gmail.com"
-            git config --global user.name "ibitolamayowa"
-            git stash
             git checkout dev
             git pull origin dev
             cd frontend
+            yarn install
             yarn relocate
             cd /var/www/zc_plugin_channels/backend/channel_plugin/
             source .venv/bin/activate
