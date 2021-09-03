@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Spacer, Stack, Text } from '@chakra-ui/react'
+import { Avatar, AvatarGroup, Box, Flex, Image, Spacer, Stack, Text } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { BiChevronDown } from 'react-icons/bi';
 import { FiHash } from 'react-icons/fi';
@@ -40,53 +40,19 @@ const  ChannelNameBanner = ({ channelName='Announcement' }) => {
                 <Text as='h5' size='sm' fontWeight='semibold' ml='7px' mr='8px'>{ channelName }</Text>
                 <BiChevronDown />
                 <Spacer />
-                <MultiUserProfilePreview userProfiles={userProfiles} />
+                <Stack direction='row' spacing='7px' alignItems='center' paddingInline='10px' paddingBlock='3px'>
+                    <AvatarGroup size='sm' max={3}>
+                        {
+                            userProfiles.map((profile, i) => (
+                                <Avatar key={`user-profile-${profile.id}`} name={profile.userName} src={profile.avatar} iconLabel={profile.userName} />
+                            ))
+                        }
+                    </AvatarGroup>
+                    {/* <Text as='h5' size='sm' fontWeight='normal' color='#2B2B2B' cursor='pointer'>{ userProfiles.length !== 0 ? userProfiles.length: '' }</Text> */}
+                    <RiUserAddLine size='20px' color='#2B2B2B' cursor='pointer' />
+                </Stack>
             </Flex>
       </Box>
-    )
-}
-
-/**
- * A component to show preview of user avatar with a maximum of three stacks
- * @param {Array} userProfile 
- * @returns React.FC
- */
-const MultiUserProfilePreview = ({ userProfiles=[] }) => {
-    // Parameters to calculate the size of the component
-    const singleProfileSize = 32
-    const profileOffset = 14
-    // Allow maximum profile avatar preview of 3
-    const selectedProfilePreviewCount = Math.min(userProfiles.length, 3)
-    const estimatedWidth = userProfiles.length > 1 ? (selectedProfilePreviewCount - 1) * profileOffset + singleProfileSize : 0
-    const selectedProfilePreview = userProfiles.filter((_, i) => i < selectedProfilePreviewCount)
-
-    return (
-        <Stack direction='row' spacing='7px' alignItems='center' paddingInline='10px' paddingBlock='3px'>
-            <Box direction='row' spacing='0' position='relative' width={`${estimatedWidth}px`} height={`${singleProfileSize}px`}>
-                {
-                    selectedProfilePreview.map((profile, i) => {
-                        return (
-                            <Image 
-                                key={`multi-user-profile-${profile.id}`} 
-                                src={profile.avatar}
-                                alt={profile.userName}
-                                title={profile.userName}
-                                objectFit='cover'
-                                boxSize='32px'
-                                borderRadius='full'
-                                border='2px solid white'
-                                position='absolute'
-                                left={`${i * profileOffset}px`}
-                                top='0'
-                                cursor='pointer'
-                            />
-                        )
-                    })
-                }
-            </Box>
-            <Text as='h5' size='sm' fontWeight='normal' color='#2B2B2B' cursor='pointer'>{ userProfiles.length !== 0 ? userProfiles.length: '' }</Text>
-            <RiUserAddLine size='20px' color='#2B2B2B' cursor='pointer' />
-        </Stack>
     )
 }
 
