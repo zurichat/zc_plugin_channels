@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Text, Image, Flex } from '@chakra-ui/react'
-const reply = {
+const mainMessage = {
   name: "Sammy Hunter",
   time: "10:30 am",
   message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
   avatar: "https://bit.ly/dan-abramov",
-  votes: 20
+  replies: 20
 }
-const Reply = () => {
-  const { name, time, message, avatar, votes } = reply
+const MainMessage = () => {
+  const { name, time, message, avatar, replies } = mainMessage
 
   return (
     <Box p={3} w='360px' border='1px solid rgba(180, 180, 180, .5)' borderRadius='3px'>
@@ -35,11 +35,11 @@ const Reply = () => {
           </Text>
         </Box>
       </Box>
-      <Box fontWeight='light' color='rgba(193, 193, 193, 1)'>
-              {votes} votes
+      <Box fontWeight='light' color='rgba(154, 154, 158, 1)' pt='2px'>
+              {replies} replies
       </Box>
     </Box>
   )
 }
 
-export default Reply
+export default MainMessage
