@@ -7,7 +7,6 @@ import { Button, Heading } from '@chakra-ui/react'
 import { BiChevronDown } from 'react-icons/bi'
 import { Flex, Spacer } from '@chakra-ui/react'
 import CreateChannelModal from '../createChannel/createChannelModal'
-import ChannelNameBanner from '../admin/subs/ChannelNameBanner/ChannelNameBanner'
 
 const Home = () => {
   // STEP FIVE (Extract redux function)
@@ -40,8 +39,6 @@ const Home = () => {
           <CreateChannelModal />
         </Flex>
       </Box>
-      <br />
-      <ChannelNameBanner />
     </Box>
   )
 }
