@@ -5,7 +5,7 @@ import { Container } from "@chakra-ui/react"
 
 function Index() {
     return(
-      <Container maxW="350px"> 
+      <Container maxW="370px"> 
         <ThreadHeader />
         <MessageForm />
       </Container>
