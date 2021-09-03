@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import routes from './routes/routes'
 import store from './redux/store'
 import Home from './components/home/Home'
+import Replies from './components/thread/subs/ThreadReplies'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Router>
         <Route component={routes} />
       </Router>
+      <Replies />
     </Provider>
   )
 }
