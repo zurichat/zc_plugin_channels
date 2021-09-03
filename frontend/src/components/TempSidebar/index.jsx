@@ -1,10 +1,10 @@
 import React from "react";
 import { Box } from "@chakra-ui/layout";
-import NavLink from "./navLink";
+import ZuriChat from "./navLink";
 
 const TempSidebar = () => {
   return <Box>
-    <NavLink />
+    <ZuriChat />
   </Box>;
 };
 
