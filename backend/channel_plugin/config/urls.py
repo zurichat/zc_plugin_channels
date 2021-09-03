@@ -42,8 +42,6 @@ urlpatterns = [
     re_path(
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
-    re_path(r"^$", render_react),
-    re_path(r"^(?:.*)/?$", render_react),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
@@ -59,6 +57,7 @@ urlpatterns += [
     # API base url
     # path("api/", include("config.api_router")),
     path("api/", include("channel_plugin.info.urls")),
+    path("api/", include("apps.channels.urls")),
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
