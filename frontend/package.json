@@ -28,30 +28,8 @@
         "uuid": "^8.3.2",
         "web-vitals": "^1.0.1"
     },
-    "eslint": {
-        "eslint.alwaysShowStatus": true,
-        "eslint.debug": true,
-        "eslint.quiet": true,
-        "eslint.lintTask.enable": true,
-        "eslint.format.enable": true,
-        "eslint.onIgnoredFiles": "warn",
-        "eslint.probe": [
-            "javascript",
-            "javascriptreact",
-            "typescript",
-            "typescriptreact",
-            "html",
-            "vue",
-            "markdown",
-            "css"
-        ]
-    },
-    "prettier": {
-        "prettier.semi": false,
-        "prettier.trailingComma": "all",
-        "prettier.singleQuote": true,
-        "prettier.arrowParens": "avoid"
-    },
+
+
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
