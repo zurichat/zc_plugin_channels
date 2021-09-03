@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
@@ -56,7 +57,7 @@ class GetChannelInfo(APIView):
                     "chats": [],
                     "pinned_chats": []
                 }
-        
+
         return Response(payload, status=status.HTTP_200_OK)
 
 class SearchMessagesAPIView(APIView):
@@ -64,7 +65,7 @@ class SearchMessagesAPIView(APIView):
 		serializer = SearchMessageQuerySerializer(data=request.data)
 		if serializer.is_valid():
 			value = serializer.validated_data['value']
-			if value != "-":	
+			if value != "-":
 				data = find_item_in_data(messages_data, value, "value")
 				response = {
 					"status" :True,
@@ -83,3 +84,10 @@ class SearchMessagesAPIView(APIView):
 		return Response(serializer.errors)
 	def get(self, request):
 		return Response({"status":True, "message":"Endpoint to search messages, passing '-' will return all messages_data."})
+
+@api_view(['DELETE'])
+def channel_delete(request, channel_id):
+	data = {
+		"message": "Channel deleted successfully."
+	}
+	return Response(data, status=status.HTTP_200_OK)
