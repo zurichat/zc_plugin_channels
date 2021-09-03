@@ -16,9 +16,9 @@ const FileList = () => {
     let fileElements = files.map(file => {
         return (
             <Box>
-            <Flex flexDirection="row" mb='2'>
-                    {/* <Image borderRadius="full" boxSize="36px" src="https://bit.ly/sage-adebayo" alt="Segun Adebayo"/> */}
-                    <Image borderRadius="full" boxSize="36px" src="{file.src}" alt="Segun Adebayo"/>
+            <Flex flexDirection="row" mb='3' mt='2'>
+                    <Image borderRadius="full" boxSize="36px" src="https://bit.ly/sage-adebayo" alt="Segun Adebayo"/>
+                    {/* <Image borderRadius="full" boxSize="36px" src="{file.src}" alt="Segun Adebayo"/> */}
 
                     
                     <Flex flexDirection='column' ml='6' >
@@ -29,7 +29,7 @@ const FileList = () => {
                         </Flex>
                     </Flex>
                 </Flex>
-            <Divider orientation="horizontal" />
+            <Divider orientation="horizontal" width='100%' />
             </Box>
         )
     })
