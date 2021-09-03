@@ -1,7 +1,5 @@
-/** @format */
-
 import React, { useState, useRef } from "react";
-import { Flex, Heading, Box, Text } from "@chakra-ui/layout";
+import { Heading, Box, Text, Stack, StackDivider } from "@chakra-ui/layout";
 import { Input, Textarea } from "@chakra-ui/react";
 import Editable from "./editable";
 
@@ -15,26 +13,21 @@ function About() {
 	const topicHandler = (event) => setTopic(event.target.value);
 	const descriptionHandler = (event) => setDescription(event.target.value);
 	return (
-		<Flex
+		<Stack
 			direction='column'
 			alignSelf='center'
 			justify='center'
 			m='1.2rem 3.1rem'
 			bg='white.700'
-			borderRadius='3px'
 			border='1px'
 			borderColor='gray.200'
+			borderRadius='3px'
 			boxSizing='border-box'
 			fontSize={12}
 			lineHeight='130%'
+			divider={<StackDivider borderColor='gray.200' />}
 		>
-			<Box
-				p='0.4rem 1rem 0.6rem'
-				direction='column'
-				borderBottom='1px'
-				borderBottomColor='gray.200'
-				className='feature-info'
-			>
+			<Box p='0.4rem 1rem 0.6rem' direction='column' className='feature-info'>
 				<Heading
 					mb='.32rem'
 					fontWeight='bold'
@@ -68,8 +61,6 @@ function About() {
 				className='feature-info'
 				p='0.4rem 1rem 0.6rem'
 				direction='column'
-				borderBottom='1px'
-				borderBottomColor='gray.200'
 				color='black.800'
 			>
 				<Heading
@@ -94,6 +85,7 @@ function About() {
 						className='editable'
 						resize='none'
 						size='xs'
+						height='auto'
 						focusBorderColor='green.200'
 						value={description}
 						onChange={descriptionHandler}
@@ -101,13 +93,7 @@ function About() {
 				</Editable>
 			</Box>
 
-			<Box
-				p='0.4rem 1rem 0.6rem'
-				direction='column'
-				borderBottom='1px'
-				borderBottomColor='gray.200'
-				className='feature-info'
-			>
+			<Box p='0.4rem 1rem 0.6rem' direction='column' className='feature-info'>
 				<Heading
 					mb='.32rem'
 					fontWeight='bold'
@@ -123,10 +109,10 @@ function About() {
 			</Box>
 			<Box className='feature-info' p='0.4rem 1rem 0.6rem'>
 				<Text as='a' href='#' color='#f44336' fontWeight='600' pt='0.6rem'>
-					Leave Channel
+					Leave Channel Now
 				</Text>
 			</Box>
-		</Flex>
+		</Stack>
 	);
 }
 

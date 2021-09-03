@@ -1,6 +1,5 @@
-/** @format */
-
 import React, { useState, useEffect } from "react";
+import { Flex, Text, Stack } from "@chakra-ui/layout";
 // Inline Editable Component
 
 const Editable = ({
@@ -19,7 +18,7 @@ const Editable = ({
 		}
 	}, [isEditing, childRef]);
 
-	const handleKeyDown = (event, type) => {
+	const keyDownHandler = (event, type) => {
 		const { key } = event;
 		const keys = ["Escape", "Tab"];
 		const enterKey = "Enter";
@@ -31,21 +30,21 @@ const Editable = ({
 			setEditing(false);
 		}
 	};
+
+	const clickHandler = () => setEditing(true);
 	return (
-		<section {...props}>
+		<Stack {...props}>
 			{isEditing ? (
-				<div
+				<Flex
 					onBlur={() => setEditing(false)}
-					onKeyDown={(e) => handleKeyDown(e, type)}
+					onKeyDown={(event) => keyDownHandler(event, type)}
 				>
 					{children}
-				</div>
+				</Flex>
 			) : (
-				<div onClick={() => setEditing(true)}>
-					<span>{text || placeholder || "Edit content"}</span>
-				</div>
+				<Text onClick={clickHandler}>{text || placeholder || "Add text"}</Text>
 			)}
-		</section>
+		</Stack>
 	);
 };
 
