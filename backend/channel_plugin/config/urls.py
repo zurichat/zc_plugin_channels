@@ -56,8 +56,10 @@ if settings.DEBUG:
 urlpatterns += [
     # API base url
     # path("api/", include("config.api_router")),
-    path("api/", include("channel_plugin.info.urls")),
+    # path("api/channels/", include("apps.channels.api_urls")),
     path("api/channels/", include("apps.channels.urls")),
+    path("api/", include("channel_plugin.info.urls")),
+    
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
