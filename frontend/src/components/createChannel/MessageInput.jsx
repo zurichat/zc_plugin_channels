@@ -6,7 +6,7 @@ import { Input } from "@chakra-ui/react"
 const MessageInput = () => {
         return (
             // <Box width='100vw' height='100vh' bg='gray.500'>
-              <Box alignItems="flex-end" width = '100%' height='106px' mt={6}bg="white" p={4} color="grey">
+              <Box width = '100%' bg="white" p={4} color="grey" mt="20">
                 <Input placeholder="Send a message to John" />
                   <br></br>
                   <br></br>
