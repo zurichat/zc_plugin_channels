@@ -44,9 +44,6 @@ const Home = () => {
           <CreateChannelModal />
         </Flex>
       </Box>
-<Box>
-</Box>
-
     </Box>
   )
 }
