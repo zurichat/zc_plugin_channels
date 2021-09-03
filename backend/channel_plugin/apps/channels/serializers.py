@@ -6,3 +6,7 @@ class ChannelSerializer(serializers.Serializer):
 	name = serializers.CharField(max_length=30)
 	desc = serializers.CharField(max_length=100)
 	private = serializers.BooleanField()
+
+class SearchMessageQuerySerializer(serializers.Serializer):
+	value = serializers.CharField(max_length = 100)
+
