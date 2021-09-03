@@ -4,6 +4,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from rest_framework.decorators import api_view
+from datetime import datetime
+import random
 
 class GetInfoViewset(ViewSet):
     @action(
@@ -22,11 +25,21 @@ class GetInfoViewset(ViewSet):
         data = {
             "name": settings.TEAM_NAME,
             "project": settings.PROJECT_NAME,
-<<<<<<< HEAD
-            "description": "Lorem ipsum dolor sit amet,\
-=======
             "description": "Lorem ipsum dolor sit amet, \
->>>>>>> f0c5ecc5d883a864dd15b18d3be151891af5793d
                 consectetur adipiscing elit.",
         }
         return Response(data, status=status.HTTP_200_OK)
+
+now = datetime.now()
+
+@api_view(['GET'])
+def vistingDetail(request):
+    if request.method == 'GET':
+
+        date = now.strftime("%m/%d/%Y, %H:%M:%S")
+        no_of_times = random.randint(11, 25) + random.randint(10, 20)
+        return Response(data = {
+            "message": "Welcome, to the Channels Plugin",
+             "last_visted": date, 
+             "no_of_times_visted": no_of_times 
+        }, status=status.HTTP_200_OK)
