@@ -1,10 +1,13 @@
-
 name: Channels Deployment Pipeline
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [dev]
+    branches: [ dev ]
+
+  pull_request:
+    branches: [ dev ]
+    types: [ closed ]
 
 
   # Allows you to run this workflow manually from the Actions tab
@@ -16,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Deployment
+      - name: Exec remote commands via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOSTNAME }}
@@ -27,7 +30,9 @@ jobs:
             git checkout dev
             git pull origin dev
             cd frontend
+            yarn install
             yarn relocate
             cd /var/www/zc_plugin_channels/backend/channel_plugin/
+            source .venv/bin/activate
             python3 manage.py collectstatic --noinput
             fuser -k -HUP 3001/tcp
