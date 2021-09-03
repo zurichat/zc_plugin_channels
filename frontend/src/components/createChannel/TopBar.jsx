@@ -20,7 +20,6 @@ const TopBar = () => {
             <Text mr="11px" color="black" fontWeight="bolder"> 1 </Text>
             <BiUserPlus color="black" size="1.5rem"/>
           </Flex>
-          
         </Flex>
     </Box>
     )
