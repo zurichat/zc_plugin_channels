@@ -1,18 +1,16 @@
 import './App.css'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import routes from './routes/routes'
-import store from './redux/store'
+//import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+//import { Provider } from 'react-redux'
+//import routes from './routes/routes'
+//import store from './redux/store'
+import UserProfile from './components/UserProfile'
+import SideBar from './components/SideBar'
 
 function App() {
   return (
-    <Provider store={store}>
-      <Router>
-        <Switch>
-          <Route component={routes} />
-        </Switch>
-      </Router>
-    </Provider>
+   <div className="App">
+
+   </div>
   )
 }
 
