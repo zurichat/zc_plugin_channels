@@ -4,7 +4,7 @@ import './App.css'
 //import routes from './routes/routes'
 //import store from './redux/store'
 import UserProfile from './components/UserProfile'
-import SideBar from './components/SideBar'
+
 
 function App() {
   return (

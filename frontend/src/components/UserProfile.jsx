@@ -7,11 +7,19 @@ import {FaTwitch} from "react-icons/fa";
 
 import userimage from '../assets/Ellipse 12.png'
 
-function SideBar() {
+function UserProfile() {
     return (
         <Box>
-            <Box display="flex" justifyContent="space-between" >
-                <Box fontSize="18px" fontWeight="700" pl="14px" pr="10px">Profile</Box>
+            <Box 
+                display="flex" 
+                justifyContent="space-between" 
+                >
+                <Box 
+                fontSize="18px" 
+                fontWeight="700" 
+                pl="14px" 
+                pr="10px">Profile
+                </Box>
                 <IconButton icon={<FaTimes/>} />
             </Box>
 
@@ -57,4 +65,4 @@ function SideBar() {
     )
 }
 
-export default SideBar
+export default UserProfile
