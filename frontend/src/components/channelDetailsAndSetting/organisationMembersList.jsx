@@ -6,7 +6,7 @@ import googleImage from "../channelDetailsAndSetting/images/images.png"
 
 
 
-const organisationMembersList = () =>{
+const organisationMembersList = () => {
  return (
   <Box bg='gray' width='100%' height='100vh'>
     <Box position='absolute'
