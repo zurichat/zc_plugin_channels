@@ -51,7 +51,6 @@ that duplicate work can be avoided.
 
 ### Contribution Guidelines
 
-<<<<<<< HEAD
 Guidelines for contributing to this project. Must be strictly followed by all team members.
 This will guide you from cloning this repository to pushing your contributions.
 
