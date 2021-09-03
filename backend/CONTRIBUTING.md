@@ -51,6 +51,7 @@ that duplicate work can be avoided.
 
 ### Contribution Guidelines
 
+<<<<<<< HEAD
 Guidelines for contributing to this project. Must be strictly followed by all team members.
 This will guide you from cloning this repository to pushing your contributions.
 
@@ -130,6 +131,8 @@ Goto your github account and make a **Pull Request** to merge your changes to up
 
 ## Testing
 
+=======
+>>>>>>> f0c5ecc5d883a864dd15b18d3be151891af5793d
 Before submitting a pull request if you're up to the task create test cases and make sure that the tests pass using [pytest](https://github.com/pytest-dev/pytest).
 
 ### Setting up project locally

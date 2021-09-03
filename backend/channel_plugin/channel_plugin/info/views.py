@@ -22,7 +22,11 @@ class GetInfoViewset(ViewSet):
         data = {
             "name": settings.TEAM_NAME,
             "project": settings.PROJECT_NAME,
+<<<<<<< HEAD
             "description": "Lorem ipsum dolor sit amet,\
+=======
+            "description": "Lorem ipsum dolor sit amet, \
+>>>>>>> f0c5ecc5d883a864dd15b18d3be151891af5793d
                 consectetur adipiscing elit.",
         }
         return Response(data, status=status.HTTP_200_OK)
