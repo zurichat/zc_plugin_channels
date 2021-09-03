@@ -4,18 +4,18 @@ import { IconButton } from '@chakra-ui/button'
 import { IoMdClose } from 'react-icons/io'
 import { Image } from '@chakra-ui/image'
 import ChannelImage from '../../../images/channelImg.png'
-import {
-  FiChevronDown,
-  FiChevronRight,
-  FiPhone,
-  FiSearch,
-  FiUserPlus,
-} from 'react-icons/fi'
+import { FiChevronRight, FiPhone, FiSearch, FiUserPlus } from 'react-icons/fi'
 import { AiOutlineUser } from 'react-icons/ai'
-import { BsThreeDots } from 'react-icons/bs'
 import { v4 } from 'uuid'
 import Icon from '@chakra-ui/icon'
 import MoreOption from './MoreOption'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionIcon,
+  AccordionPanel,
+} from '@chakra-ui/accordion'
 
 const ChannelDetails = () => {
   const options = useMemo(
@@ -79,8 +79,8 @@ const ChannelDetails = () => {
   )
 
   return (
-    <Box borderRadius='md' shadow='md' width='25%'>
-      <HStack justifyContent='space-between' px='21px' py='10px'>
+    <Box borderRadius='md' shadow='md'>
+      <HStack justifyContent='space-between' px='21px' py='8px'>
         <Box>
           <Text fontWeight='bold'>Details</Text>
           <Text color='#999999'># Announcements</Text>
@@ -92,7 +92,7 @@ const ChannelDetails = () => {
           variant='ghost'
         />
       </HStack>
-      <Box mb='1.5rem'>
+      <Box mb='0.8rem'>
         <Image src={ChannelImage} />
       </Box>
       <HStack
@@ -100,7 +100,8 @@ const ChannelDetails = () => {
         borderColor='gray.100'
         justifyContent='space-between'
         px='2.8rem'
-        pb='1rem'
+        pb='0.5rem'
+        spacing={4}
       >
         {options.map(option => (
           <Box key={option.id} textAlign='center'>
@@ -125,36 +126,48 @@ const ChannelDetails = () => {
         </Box>
       </HStack>
 
-      <Box px='29px' pt='2rem'>
-        <HStack mb='0.5rem' justifyContent='space-between'>
-          <Text fontWeight='bold' fontSize='xs'>
-            About
-          </Text>
-          <Icon aria-label='dropdown' as={FiChevronDown} />
-        </HStack>
-        <Box borderBottomWidth='1px' borderColor='gray.100' py='1rem'>
-          <Text color='gray.700' fontSize='1.2rem'>
-            Topic
-          </Text>
-          <Text fontSize='xs' color='gray.500'>
-            Announcments
-          </Text>
-        </Box>
-        <Box py='0.5rem'>
-          <Text color='gray.700' fontSize='1.2rem'>
-            Description
-          </Text>
-          <Text fontSize='xs' color='gray.500'>
-            Any notifications and alerts shall be sent via this platform
-          </Text>
-        </Box>
+      <Box px='29px' py='0.5rem'>
+        <Accordion allowMultiple>
+          <AccordionItem border='none'>
+            <AccordionButton
+              _hover={{ bg: 'none' }}
+              _focus={{ outline: 'none' }}
+            >
+              <Box flex='1' textAlign='left'>
+                <Text fontWeight='bold' fontSize='xs'>
+                  About
+                </Text>
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+
+            <AccordionPanel pb={2}>
+              <Box py='1rem'>
+                <Text color='gray.700' fontSize='1rem'>
+                  Topic
+                </Text>
+                <Text fontSize='xs' color='gray.500'>
+                  Announcments
+                </Text>
+              </Box>
+              <Box py='0.5rem'>
+                <Text color='gray.700' fontSize='1rem'>
+                  Description
+                </Text>
+                <Text fontSize='xs' color='gray.500'>
+                  Any notifications and alerts shall be sent via this platform
+                </Text>
+              </Box>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
       </Box>
+      <Divider orientation='horizontal' />
       <Box>
-        <Divider orientation='horizontal' />
         {moreDetails.map(detail => (
           <>
             <HStack
-              py='1rem'
+              py='0.8rem'
               px='29px'
               key={detail.id}
               justifyContent='space-between'

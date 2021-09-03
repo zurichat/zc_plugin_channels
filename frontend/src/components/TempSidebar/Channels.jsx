@@ -7,30 +7,78 @@ import {
   IoAddCircleOutline,
   IoLockClosed,
 } from "react-icons/io5";
-
-import { FaHashtag } from "react-icons/fa";
+import { FaHashtag, FaHourglassEnd } from "react-icons/fa";
 import avatar from "./assets/Avatar.jpg";
+import { v4 } from "uuid";
 
 const Channels = () => {
+  // states
   const [channelsDropDown, setChannelsDropDown] = useState(false);
-  const [dmDropDown, setDMDropDown] = useState(false);  
+  const [dmDropDown, setDMDropDown] = useState(false);
+  const [channels, setChannels] = useState([
+    {
+      id: v4(),
+      link: "/announcements",
+      icon: FaHashtag,
+      text: "announcements",
+      color: "#00B87C",
+    },
+    {
+      id: v4(),
+      link: "/designers",
+      icon: IoLockClosed,
+      text: "designers",
+      color: "#8B8B8B",
+    },
+    {
+      id: v4(),
+      link: "/games",
+      icon: FaHashtag,
+      text: "games",
+      color: "#8B8B8B",
+    },
+    {
+      id: v4(),
+      link: "/developers",
+      icon: IoLockClosed,
+      text: "developers",
+      color: "#8B8B8B",
+    },
+    {
+      id: v4(),
+      link: "/random",
+      icon: FaHashtag,
+      text: "random",
+      color: "#8B8B8B",
+    },
+  ]);
+  const [dms, setDms] = useState([
+    { id: v4(), link: "/message-board", img: avatar, text: "John Doe" },
+    { id: v4(), link: "/message-board", img: avatar, text: "Nazaa__" },
+    {
+      id: v4(),
+      link: "/message-board",
+      img: avatar,
+      text: "Augustus Waters",
+    },
+    { id: v4(), link: "/message-board", img: avatar, text: "Hazel Grace" },
+  ]);
+  // --end of states
 
+  // click handlers
   const handleChannelsDropDown = (e) => {
     e.preventDefault();
     setChannelsDropDown(!channelsDropDown);
+    setDMDropDown(false);
   };
   const handleDMDropDown = (e) => {
     e.preventDefault();
     setDMDropDown(!dmDropDown);
+    setChannelsDropDown(false);
   };
 
   return (
-    <Box
-      w="20%"
-      paddingY="1em"
-      fontSize="15px"
-      lineHeight="18px"
-    >
+    <Box w="20%" paddingY="1em" fontSize="15px" lineHeight="18px" allowToggle>
       {/* Channels section */}
       <Box width="75%" margin="0 auto">
         <Flex cursor="pointer" color="#8B8B8B" marginBottom="0.5rem">
@@ -39,69 +87,27 @@ const Channels = () => {
             <Text>Channels</Text>
           </Flex>
           <Spacer />
-          <Link to='/add-channel'>
+          <Link to="/add-channel">
             <Icon as={IoAddCircleOutline} fontSize="1.4rem" />
           </Link>
-          
         </Flex>
 
         {channelsDropDown && (
           <Box marginLeft="5%">
-            <Flex cursor="pointer">
-              <Link to="/announcements">
-                <Text color="#00B87C">
-                  <Center>
-                    <Icon as={FaHashtag} margin="10px" fontSize="1rem" />
-                    Announcements
-                  </Center>
-                </Text>
-              </Link>
-            </Flex>
+            {channels.map((channel) => (
+              <Flex cursor="pointer" key={channel.id} color={channel.color}>
+                <Link to={channel.link}>
+                  <Text>
+                    <Center>
+                      <Icon as={channel.icon} margin="10px" fontSize="1rem" />
+                      {channel.text}
+                    </Center>
+                  </Text>
+                </Link>
+              </Flex>
+            ))}
 
-            <Flex cursor="pointer">
-              <Link to="/designers">
-                <Text color="#8B8B8B">
-                  <Center>
-                    <Icon as={IoLockClosed} margin="10px" fontSize="1rem" />
-                    Designers
-                  </Center>
-                </Text>
-              </Link>
-            </Flex>
-
-            <Flex cursor="pointer">
-              <Link to="/games">
-                <Text color="#8B8B8B">
-                  <Center>
-                    <Icon as={FaHashtag} margin="10px" fontSize="1rem" />
-                    Games
-                  </Center>
-                </Text>
-              </Link>
-            </Flex>
-
-            <Flex cursor="pointer">
-              <Link to="/developers">
-                <Text color="#8B8B8B">
-                  <Center>
-                    <Icon as={IoLockClosed} margin="10px" fontSize="1rem" />
-                    Developers
-                  </Center>
-                </Text>
-              </Link>
-            </Flex>
-
-            <Flex cursor="pointer">
-              <Link to="/random">
-                <Text color="#8B8B8B">
-                  <Center>
-                    <Icon as={FaHashtag} margin="10px" fontSize="1rem" />
-                    Random
-                  </Center>
-                </Text>
-              </Link>
-            </Flex>
-
+            {/* add channel btn */}
             <Flex cursor="pointer">
               <Link to="/add-channel">
                 <Text color="#8B8B8B">
@@ -128,74 +134,28 @@ const Channels = () => {
             <Text>Direct messages</Text>
           </Flex>
           <Spacer />
-          <Icon as={IoAddCircleOutline} fontSize="1.3rem" />
+          <Icon as={IoAddCircleOutline} fontSize="1.4rem" h="6" />
         </Flex>
 
         {dmDropDown && (
           <Box marginLeft="5%">
-            <Flex cursor="pointer" marginBottom="1em">
-              <Link to="/message-board">
-                <Text color="#8B8B8B">
-                  <Flex>
-                    <Image
-                      src={avatar}
-                      borderRadius="full"
-                      w="10"
-                      marginRight="10px"
-                    />
-                    <Center>John Doe</Center>
-                  </Flex>
-                </Text>
-              </Link>
-            </Flex>
-
-            <Flex cursor="pointer" marginBottom="1em">
-              <Link to="/message-board">
-                <Text color="#8B8B8B">
-                  <Flex>
-                    <Image
-                      src={avatar}
-                      borderRadius="full"
-                      w="10"
-                      marginRight="10px"
-                    />
-                    <Center>John Doe</Center>
-                  </Flex>
-                </Text>
-              </Link>
-            </Flex>
-
-            <Flex cursor="pointer" marginBottom="1em">
-              <Link to="/message-board">
-                <Text color="#8B8B8B">
-                  <Flex>
-                    <Image
-                      src={avatar}
-                      borderRadius="full"
-                      w="10"
-                      marginRight="10px"
-                    />
-                    <Center>John Doe</Center>
-                  </Flex>
-                </Text>
-              </Link>
-            </Flex>
-
-            <Flex cursor="pointer" marginBottom="1em">
-              <Link to="/message-board">
-                <Text color="#8B8B8B">
-                  <Flex>
-                    <Image
-                      src={avatar}
-                      borderRadius="full"
-                      w="10"
-                      marginRight="10px"
-                    />
-                    <Center>John Doe</Center>
-                  </Flex>
-                </Text>
-              </Link>
-            </Flex>
+            {dms.map((dm) => (
+              <Flex cursor="pointer" marginBottom="1em" key={dm.id}>
+                <Link to={dm.link}>
+                  <Text color="#8B8B8B">
+                    <Flex>
+                      <Image
+                        src={dm.img}
+                        borderRadius="full"
+                        w="10"
+                        marginRight="10px"
+                      />
+                      <Center>{dm.text}</Center>
+                    </Flex>
+                  </Text>
+                </Link>
+              </Flex>
+            ))}
           </Box>
         )}
       </Box>
