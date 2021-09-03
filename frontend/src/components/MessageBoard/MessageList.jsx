@@ -16,8 +16,12 @@ const Message = (props) => {
       </Box>
       <Box pl={1}>
         <Flex>
-          <Box fontWeight='bold' mr={2} color='rgba(36, 36, 36, 1)'>{username}</Box>
-          <Box fontWeight='light' color='rgba(193, 193, 193, 1)'>{time}</Box>
+          <Box fontWeight='bold' mr={2} color='rgba(36, 36, 36, 1)'>
+            {username}
+          </Box>
+          <Box fontWeight='light' color='rgba(193, 193, 193, 1)'>
+            {time}
+          </Box>
         </Flex>
         <Text color='rgba(58, 58, 58, 1)' w='260px'>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis. Volutpat tempus egestas donec pretium.
