@@ -37,15 +37,30 @@ class Test(APIView):
     def get(self, request):
         return Response({"msg": "working"}, status=status.HTTP_200_OK)
 
+class GetChannelInfo(APIView):
+
+    """
+    Endpoint to get details about a channel
+    """
+
+    def get(self, request, pk):
+        payload = {
+                    "id": pk,
+                    "title": "The Big Bang",
+                    "description": "This is only a theory",
+                    "private": False,
+                    "closed": False,
+                    "members": [],
+                    "roles": [],
+                    "threads": [],
+                    "chats": [],
+                    "pinned_chats": []
+                }
+        
+        return Response(payload, status=status.HTTP_200_OK)
 
 class SearchMessagesAPIView(APIView):
-	# messages = json.loads(json_data)
-		# print("DEFE FEFE "+ messages)
-	# except:
-	# 	pass
 	def post(self, request):
-		print("HELOASD")
-		print(messages_data)
 		serializer = SearchMessageQuerySerializer(data=request.data)
 		if serializer.is_valid():
 			value = serializer.validated_data['value']
