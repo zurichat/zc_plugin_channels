@@ -3,7 +3,7 @@ import { Box, Text, Image, Flex } from '@chakra-ui/react'
 const mainMessage = {
   name: "Sammy Hunter",
   time: "10:30 am",
-  message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
+  message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis. Volutpat tempus egestas donec pretium.",
   avatar: "https://bit.ly/dan-abramov",
   replies: 20
 }
@@ -11,7 +11,7 @@ const MainMessage = () => {
   const { name, time, message, avatar, replies } = mainMessage
 
   return (
-    <Box p={3} w='360px' border='1px solid rgba(180, 180, 180, .5)' borderRadius='3px'>
+    <Box p={4} w='360px' border='1px solid rgba(180, 180, 180, .5)' borderRadius='3px'>
       <Box d='flex'>
         <Box pr={4} pt={1}>
           <Image
@@ -30,12 +30,12 @@ const MainMessage = () => {
               {time}
             </Box>
           </Flex>
-          <Text color='rgba(58, 58, 58, 1)' w='265px'>
+          <Text color='rgba(58, 58, 58, 1)' w='275px'>
             {message}
           </Text>
         </Box>
       </Box>
-      <Box fontWeight='light' color='rgba(154, 154, 158, 1)' pt='2px'>
+      <Box fontWeight='light' color='rgba(154, 154, 158, 1)' pt={3}>
               {replies} replies
       </Box>
     </Box>

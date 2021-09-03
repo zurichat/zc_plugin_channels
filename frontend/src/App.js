@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import routes from './routes/routes'
 import store from './redux/store'
 import Home from './components/home/Home'
-import MainMessage from './components/thread/subs/MainMessage'
 
 function App() {
   return (
@@ -12,7 +11,6 @@ function App() {
       <Router>
         <Route component={routes} />
       </Router>
-      <MainMessage />
     </Provider>
   )
 }
