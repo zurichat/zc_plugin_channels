@@ -9,6 +9,7 @@ import { Flex, Spacer } from '@chakra-ui/react'
 import CreateChannelModal from '../createChannel/createChannelModal'
 import TopSearch from '../createChannel/TopSearch'
 
+
 const Home = () => {
   // STEP FIVE (Extract redux function)
   const dispatch = useDispatch()
@@ -48,3 +49,4 @@ const Home = () => {
 }
 
 export default Home
+
