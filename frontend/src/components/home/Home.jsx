@@ -45,8 +45,16 @@ const Home = () => {
           <organisationMembersList />
         </Flex>
       </Box>{" "}
-      <Box bg="white" mt="20px" w="95%" p={4} color="black" ml="8" borderRadius="2px">
-        <Stack direction="row" spacing={4} align="center">
+      <Box
+        bg="white"
+        mt="20px"
+        w="95%"
+        p={4}
+        color="black"
+        ml="8"
+        borderRadius="2px"
+      >
+        <Stack direction={["column", "row"]} spacing={4} align="center">
           <Button colorScheme="teal" bg="#00b87c" variant="solid">
             <Link to="/create-channel">Create Channel</Link>
           </Button>
