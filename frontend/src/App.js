@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from './routes/routes'
 import store from './redux/store'
+import OnclickuserProfile from './components/OnclickuserProfile'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         </Switch>
       </Router>
     </Provider>
+
   )
 }
 

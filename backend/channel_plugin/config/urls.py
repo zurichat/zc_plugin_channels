@@ -42,8 +42,6 @@ urlpatterns = [
     re_path(
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
-    re_path(r"^$", render_react),
-    re_path(r"^(?:.*)/?$", render_react),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
@@ -51,7 +49,8 @@ urlpatterns = [
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
-    # Static file serving when using Gunicorn + Uvicorn for local web socket development
+    # Static file serving when using Gunicorn +
+    #  Uvicorn for local web socket development
     urlpatterns += staticfiles_urlpatterns()
 
 # API URLS
@@ -59,6 +58,8 @@ urlpatterns += [
     # API base url
     # path("api/", include("config.api_router")),
     path("api/", include("channel_plugin.info.urls")),
+    path("api/", include("channel_plugin.users.urls")),
+    path("api/channels/", include("apps.channels.urls")),
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]

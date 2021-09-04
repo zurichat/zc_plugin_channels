@@ -1,28 +1,24 @@
-import React from "react";
-import { Flex, Box, Text } from "@chakra-ui/layout";
-import { Avatar, Button } from "@chakra-ui/react";
+import React from 'react'
+import { VStack, Box, Text, HStack } from '@chakra-ui/layout'
+import { Avatar } from '@chakra-ui/avatar'
 
-function EachMessage(props) {
+function EachMessage({ userName, src, messageTime, messageContent }) {
   return (
-    <Flex width="100%" bg="#fff" mb="20px">
-      <Box mr="11px">
-        <Avatar src={props.src} alt="" boxSize="36px" />
-      </Box>
-      <Box>
-        <Flex>
-          <Text mr="9px" fontSize="15px" as="b" c="#242424">
-            {props.userName}
+    <HStack alignItems='flex-start' mb='0.7rem' spacing={4}>
+      <Avatar src={src} name={userName} size='sm' />
+      <VStack alignItems='flex-start'>
+        <HStack>
+          <Text fontWeight='bold'>{userName}</Text>
+          <Text color='gray.500' fontSize='sm'>
+            {messageTime}
           </Text>
-          <Text fontSize="15px" c="#8B8B8B">
-            {props.messageTime}
-          </Text>
-        </Flex>
-        <Text w="571px" fontSize="15px" c="#3A3A3A">
-          {props.messageContent}
+        </HStack>
+        <Text color='gray.600' textAlign='left'>
+          {messageContent}
         </Text>
-      </Box>
-    </Flex>
-  );
+      </VStack>
+    </HStack>
+  )
 }
 
-export default EachMessage;
+export default EachMessage

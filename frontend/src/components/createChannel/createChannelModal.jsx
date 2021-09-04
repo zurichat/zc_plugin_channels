@@ -10,7 +10,7 @@ const CreateChannelModal = () => {
     const finalRef = React.useRef()
     return (
         <>
-        <Button onClick={onOpen}>Create New channel</Button>
+        <Button onClick={onOpen}size="sm" bg="#00b87c" color="white" pt="2" pb="2" fontSize="14px">Create New channel</Button>
         <Modal
           initialFocusRef={initialRef}
           finalFocusRef={finalRef}
