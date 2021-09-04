@@ -25,7 +25,7 @@ const AddPeopleModal = () => {
       <Button
         onClick={onOpen}
         size="sm"
-        bg="#00b87c"
+        bg="#e5e5e5"
         color="black"
         pt="2"
         pb="2"
