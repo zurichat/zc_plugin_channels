@@ -2,7 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import ChannelSerializer
+from .serializers import ChannelSerializer, ChannelMessageSerializer
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
@@ -131,3 +131,12 @@ class SearchMessagesAPIView(APIView):
     def get(self, request):
         return Response(
             {"status": True, "message": "Endpoint to search messages, passing '-' will return all messages_data."})
+
+class SendMessageInChannel(APIView):
+    def post(self, request):
+        Serializer = ChannelMessageSerializer(data=request.data)
+        response = {
+            "status": True,
+            "message": "Message successfully sent",
+        }
+        return Response(response, status=status.HTTP_200_OK)
