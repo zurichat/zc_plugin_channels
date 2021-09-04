@@ -1,12 +1,12 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 import { Box } from '@chakra-ui/layout'
 import { Icon, Text, Flex, Center, Spacer } from '@chakra-ui/react'
 import { IoChevronDown } from 'react-icons/io5'
-import { AiOutlineFile } from 'react-icons/Ai'
-import { FiMessageCircle, FiPieChart } from 'react-icons/Fi'
-import { BiMessageRoundedDetail } from 'react-icons/Bi'
-import { BsFileEarmarkText, BsFileText } from 'react-icons/Bs'
+import { AiOutlineFile } from 'react-icons/ai'
+import { FiMessageCircle, FiPieChart } from 'react-icons/fi'
+import { BiMessageRoundedDetail } from 'react-icons/bi'
+import { BsFileEarmarkText, BsFileText } from 'react-icons/bs'
 // import { EditIcon } from '@chakra-ui/icons'
 
 export default function ZuriChat() {
