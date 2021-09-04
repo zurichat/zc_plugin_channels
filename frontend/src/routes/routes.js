@@ -10,7 +10,7 @@ const routes = () => {
   return (
     <Switch>
       <HStack>
-//         <TempSidebar />
+{/* //         <TempSidebar /> */}
 
         <Route exact path='/'>
           <Home />
