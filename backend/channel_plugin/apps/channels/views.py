@@ -3,6 +3,7 @@ from django.conf import settings
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .serializers import ThreadUserRoleSerializer
 from rest_framework.decorators import api_view
 from .serializers import (
     ChannelSerializer,
@@ -94,6 +95,19 @@ class GetChannelRoles(APIView):
         return Response(payload, status=status.HTTP_200_OK)
 
 
+class ThreadUserRoleView(APIView):
+    serializer_class = ThreadUserRoleSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            role_type = serializer.validated_data.get("role_type")
+            message = f"{role_type} was created successfully"
+            return Response({"message": message})
+
+        else:
+            return Response({"message": "invalidation error"})
 @api_view(['POST', 'GET'])
 def create_channel(request):
     if request.method == 'POST':
