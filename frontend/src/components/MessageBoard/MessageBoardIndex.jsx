@@ -6,11 +6,13 @@ import MessageCardContainer from './subs/MessageCardContainer/MessageCardContain
 import InputFieldComponent from './subs/InputFieldComponent/InputFieldComponent'
 
 const MessageBoardIndex = () => {
-  return (<Box>
-    <ChannelDetailsContainer />
-    <MessageCardContainer />
-    <InputFieldComponent />
-  </Box>)
+  return (
+    <Box>
+      <ChannelDetailsContainer />
+      <MessageCardContainer />
+      <InputFieldComponent />
+    </Box>
+  )
 }
 
 export default MessageBoardIndex
