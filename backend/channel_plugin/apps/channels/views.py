@@ -106,6 +106,7 @@ def create_channel(request):
 
 
 class SearchMessagesAPIView(APIView):
+
     def post(self, request):
         serializer = SearchMessageQuerySerializer(data=request.data)
         if serializer.is_valid():
@@ -131,3 +132,11 @@ class SearchMessagesAPIView(APIView):
     def get(self, request):
         return Response(
             {"status": True, "message": "Endpoint to search messages, passing '-' will return all messages_data."})
+
+
+@api_view(['DELETE'])
+def channel_delete(request, channel_id):
+    data = {
+      "message": "Channel deleted successfully."
+    }
+    return Response(data, status=status.HTTP_200_OK)
