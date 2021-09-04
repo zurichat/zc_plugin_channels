@@ -5,7 +5,7 @@ import CreateChannel from '../components/createChannel/index';
 import MessageBoardIndex from '../components/MessageBoard/MessageBoardIndex/';
 import ChannelDetailsAndSetting from '../components/channelDetailsAndSetting/index';
 import userProfile from '../components/UserProfile/UserProfile';
-import Index from '..components/thread/Index';
+import Index from '../components/thread/Index';
 
 const routes = () => {
   return (
