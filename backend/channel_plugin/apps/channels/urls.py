@@ -1,5 +1,5 @@
 from apps.channels.views import (
-    CreateChannelView,
+    CreateThreadView,
     GetChannelInfo,
     SearchMessagesAPIView,
     Test,
@@ -16,7 +16,7 @@ urlpatterns = [
     ),
     path(
         "organizations/<organization_id>/channels/<channel_id>/threads/",
-        CreateChannelView.as_view(),
+        CreateThreadView.as_view(),
         name="Create-Thread-Endpoint",
     ),
 ]

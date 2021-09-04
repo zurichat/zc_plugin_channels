@@ -109,7 +109,7 @@ class SearchMessagesAPIView(APIView):
         )
 
 
-class CreateChannelView(generics.CreateAPIView):
+class CreateThreadView(generics.CreateAPIView):
     serializer_class = ThreadSerializer
     permission_classes = []
 
