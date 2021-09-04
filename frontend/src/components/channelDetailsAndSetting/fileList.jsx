@@ -1,17 +1,11 @@
 import React from 'react'
 import { Box, Text, Flex, Divider } from '@chakra-ui/layout'
 import { Image } from '@chakra-ui/react'
+import files from './files';
 
 
 
 const FileList = () => {
-
-    const files = [
-        { filename: "Image.png", time: "Aug 25th at 10:10pm", username: "Kevin", src: "https://bit.ly/sage-adebayo"},
-        { filename: "Image.png", time: "Aug 25th at 10:10pm", username: "Kevin", src: "https://bit.ly/sage-adebayo"},
-        { filename: "Image.png", time: "Aug 25th at 10:10pm", username: "Kevin", src: "https://bit.ly/sage-adebayo"},
-        { filename: "Image.png", time: "Aug 25th at 10:10pm", username: "Kevin", src: "https://bit.ly/sage-adebayo"}
-    ]
 
     let fileElements = files.map(file => {
         return (
@@ -35,7 +29,7 @@ const FileList = () => {
     })
 
     return (
-        <Box position='absolute' px={8} pt='3' rounded="sm" width='510px' height='343px' left='50px' top='473px' backgroundColor='#FFFFFF' border='1px solid #EBEBEB'>
+        <Box>
             <Flex flexDirection='column'>
                 <Text fontWeight="bold" fontSize="12px" color='#333333' mb='2'>Files</Text>
 

@@ -3,13 +3,13 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
 
 export default function TabsRows({colors}) {
     return (
-        <Tabs>
+        <>
             <TabList borderBottom='0'>
-                <Tab>About</Tab>
+                <Tab pl={0}>About</Tab>
                 <Tab>Members</Tab>
                 <Tab>Integration</Tab>
                 <Tab>Integration</Tab>
             </TabList>
-        </Tabs>
+        </>
     )
 }
