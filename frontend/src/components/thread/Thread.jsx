@@ -4,7 +4,7 @@ import MessageForm from "./subs/MessageForm"
 import ThreadReplies from "./subs/ThreadReplies"
 import { Container } from "@chakra-ui/react"
 
-function Index() {
+function Thread() {
     return(
       <Container maxW="370px"> 
         <ThreadHeader />
@@ -13,4 +13,4 @@ function Index() {
       </Container>
     )
 }
-export default Index
+export default Thread
