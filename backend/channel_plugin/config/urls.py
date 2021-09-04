@@ -59,6 +59,7 @@ urlpatterns += [
     # path("api/", include("config.api_router")),
     path("api/", include("channel_plugin.info.urls")),
     path("api/", include("channel_plugin.users.urls")),
+    path("api/channels/", include("apps.channels.urls")),
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
