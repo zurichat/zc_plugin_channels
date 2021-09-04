@@ -1,9 +1,15 @@
+from django.conf import settings
+
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ThreadUserRoleSerializer
 from rest_framework.decorators import api_view
-from .serializers import ChannelSerializer, ChannelMessageSerializer
+from .serializers import (
+    ChannelSerializer,
+    ChannelMessageSerializer,
+    ThreadSerializer
+)
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
@@ -162,3 +168,20 @@ def channel_delete(request, channel_id):
       "message": "Channel deleted successfully."
     }
     return Response(data, status=status.HTTP_200_OK)
+
+
+class CreateThreadView(generics.CreateAPIView):
+    serializer_class = ThreadSerializer
+    permission_classes = []
+
+    def perform_create(self, serializer):
+        plugin_id = getattr(settings, "PLUGIN_ID", "000000000000000")
+
+        res = serializer.save(
+            plugin_id=plugin_id,
+            headers=self.request.headers,  # header contains auth-token from user
+            collection_name="threads",
+            organization_id=self.kwargs.get("organization_id"),
+            channel_id=self.kwargs.get("channel_id"),
+            save_to="https://api.zuri.chat/data/write/",
+        )

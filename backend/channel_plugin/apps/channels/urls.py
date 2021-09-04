@@ -1,5 +1,8 @@
 from apps.channels import views
-from apps.channels.views import Test, SearchMessagesAPIView, GetChannelInfo, create_channel, GetChannelRoles, ThreadUserRoleView
+from apps.channels.views import (
+    Test, SearchMessagesAPIView, GetChannelInfo,
+    create_channel, GetChannelRoles, CreateThreadView,ThreadUserRoleView
+)
 from apps.channels.views import SendMessageInChannel
 from django.urls import path
 
@@ -12,5 +15,10 @@ urlpatterns = [
     path("search_messages/", SearchMessagesAPIView.as_view(), name='api_search_messages'),
     path("messages/", SendMessageInChannel.as_view()),
 
-    path("<int:channel_id>/delete/", views.channel_delete, name='delete_channel')
+    path("<int:channel_id>/delete/", views.channel_delete, name='delete_channel'),
+    path(
+        "organizations/<organization_id>/channels/<channel_id>/threads/",
+        CreateThreadView.as_view(),
+        name="create-thread",
+    ),
 ]
