@@ -127,7 +127,7 @@ def create_channel(request):
 
 
 class SearchMessagesAPIView(APIView):
-	
+
     def post(self, request):
         serializer = SearchMessageQuerySerializer(data=request.data)
         if serializer.is_valid():
@@ -212,6 +212,34 @@ class ThreadUpdateAPIView(APIView):
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-		
+
 		serializer = ThreadUpdateSerializer(data= thread)
 		return Response(serializer.data)
+
+class SearchMessageAPIView(APIView):
+
+    def post(self, request):
+        serializer = SearchMessageQuerySerializer(data=request.data)
+        if serializer.is_valid():
+            int = serializer.validated_data['int']
+            if int != "-":
+                data = find_item_in_data(messages_data, int, "int")
+                response = {
+                    "status": True,
+                    "message": "Query results",
+                    "data": data
+                }
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                data = messages_data
+                response = {
+                    "status": True,
+                    "message": "Query results",
+                    "data": data
+                }
+                return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors)
+
+    def get(self, request):
+        return Response(
+            {"status": True, "message": "Endpoint to search message, passing '-' will return messages_data."})

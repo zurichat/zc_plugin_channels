@@ -24,5 +24,6 @@ urlpatterns = [
         CreateThreadView.as_view(),
         name="create-thread",
     ),
+    path("search_message/", SearchMessagesAPIView.as_view(), name='api_search_messages'),
     path("organizations/<organization_id>/channels/<channel_id>/thread/<thread_id>/", views.ThreadUpdateAPIView.as_view(), name='thread_update'),
 ]
