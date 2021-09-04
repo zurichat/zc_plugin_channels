@@ -26,12 +26,12 @@ const AddPeopleModal = () => {
         onClick={onOpen}
         size="sm"
         bg="#00b87c"
-        color="white"
+        color="black"
         pt="2"
         pb="2"
         fontSize="14px"
       >
-        Add People
+        Add Members
       </Button>
       <Modal
         onClose={onClose}
