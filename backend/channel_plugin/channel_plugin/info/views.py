@@ -14,6 +14,9 @@ class GetInfoViewset(ViewSet):
         data = {
             "name": settings.TEAM_NAME,
             "project": settings.PROJECT_NAME,
+            "version": "1.0",
+            "description": "The Channel Plugin is a feature that helps users create spaces for conversation and communication on zuri.chat. Users can also create sub tags in the channels option where other things can be done, ranging from game nights, football banter, random, announcement and so much more. This adds the feature of having organized conversations in dedicated spaces called channels."
+
         }
         return Response(data, status=status.HTTP_200_OK)
 
@@ -22,7 +25,7 @@ class GetInfoViewset(ViewSet):
         data = {
             "name": settings.TEAM_NAME,
             "project": settings.PROJECT_NAME,
-            "description": "Lorem ipsum dolor sit amet,\
-                consectetur adipiscing elit.",
+            "version": "1.0",
+            "description": "The Channel Plugin is a feature that helps users create spaces for conversation and communication on zuri.chat. Users can also create sub tags in the channels option where other things can be done, ranging from game nights, football banter, random, announcement and so much more. This adds the feature of having organized conversations in dedicated spaces called channels."
         }
         return Response(data, status=status.HTTP_200_OK)
