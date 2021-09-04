@@ -4,143 +4,136 @@
 
 - [Git Workflow](#git-workflow)
   - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Issues](#issues)
-  - [Branching](#branching)
-  - [Committing](#committing)
-    - [Commit Message Header](#commit-message-header)
-      - [Type](#type)
-      - [Scope](#scope)
-  - [Merging](#merging)
-  - [Workflow](#workflow)
+    - [Workflow for Pull Requests](#workflow-for-pull-requests)
+    - [Contribution Guidelines](#contribution-guidelines)
+  - [Forking](#forking)
+    - [Cloning](#cloning)
+    - [Change to project directory](#change-to-project-directory)
+    - [Set Upstream Remote](#set-upstream-remote)
+    - [Checkout Dev Branch](#checkout-dev-branch)
+    - [Checkout Your Feature Branch](#checkout-your-feature-branch)
+    - [Setup Development Environment](#setup-development-environment)
+  - [When You Have Fixed The Issue](#when-you-have-fixed-the-issue)
+    - [Check status of files to be committed](#check-status-of-files-to-be-committed)
+    - [Stage changes for commit](#stage-changes-for-commit)
+    - [Commit staged changes](#commit-staged-changes)
+    - [Pull Update from Remote](#pull-update-from-remote)
+    - [Push Local Changes to origin](#push-local-changes-to-origin)
+    - [Make PR](#make-pr)
+  - [Testing](#testing)
+    - [Setting up project locally](#setting-up-project-locally)
 
-## Introduction
+Please always open a separate issue for each problem. In particular, do
+not add your bugs to closed issues. They may looks similar to you but
+often are completely different from the maintainer's point of view.
 
-This document describes the workflow, conventions, and best practices we use concerning to Git in [this project](https://gitlab.com/synapse-analytics/konan/backend/konan-backend).
+### Workflow for Pull Requests
 
-## Issues
+We love to get pull requests from you. We operate the "Fork & Pull" model
+explained at [link](https://help.github.com/articles/using-pull-requests)
 
-Defining new issue can inspire from fixing already implemented story, or planning for new feature and mostly told in a meeting.
+You should fork the project into your own repo then checkout to *dev* branch `git checkout dev`, create a *topic/issue* branch from *dev* branch (already created)
+there and then make one or more pull requests back to the upstream repository into the *dev* branch, always make sure your created branch is up to date with *dev* branch.
 
-- How to add new issue ?
-  - Open issue tab in repo side bar.
-  - Click on new issue button.
-  - Fill the new issue form:
-      1. Issue title separated by "-".
-      2. Issue description.
-      3. Assignee who associated to solve the issue.
-  - Issue is created and got an issue ID that used in next flow.
+Your pull requests will then be reviewed and discussed. Please be aware
+that you are responsible for your pull requests. You should be prepared
+to get change requests because as the maintainers we have to make sure
+that your contribution fits well with the rest of the code. Please make
+sure that you have time to react to these comments and amend the code or
+engage in a conversion. Do not expect that others will pick up your code,
+it will almost never happen.
 
-## Branching
+Please open a separate pull request for each issue you want to address.
+Don't mix multiple changes. In particular, don't mix style cleanups with
+feature pull requests. If you plan to make larger changes, please open
+an issue first or comment on the appropriate issue already existing so
+that duplicate work can be avoided.
 
-- `` `master` `` is the branch that gets deployed to production so it should be in a production-ready state.
-- `` `develop` `` is the branch that staged the version of implemented features. # To be determined
+### Contribution Guidelines
 
-Branch name
+Guidelines for contributing to this project. Must be strictly followed by all team members.
+This will guide you from cloning this repository to pushing your contributions.
 
-- Every change, whether it's a new feature, bug fix, or spelling correction should developed in separate branch.
-- Branch names should start with issue id that it's responsible to solve which helps in mapping branch with issue and make workflow easier with merge requests later, then be lower-case and use hyphens to separate words.
+## Forking
 
->Recommended:
+Fork this repository to get a personal copy on your github account
 
-    79-update-app-dependency-packages
-    114-fix-row-validation-error
+### Cloning
 
->Not Recommended:
+To clone the forked repository to your local machine, open command prompt and run:
 
-    53-update (not descriptive)
-    131_fix_syncing_raw_data_error (uses underscores instead of hyphens)
-    adding-new-api-token (miss issue ID)
+  git clone https://github.com/your-account-name/zc_plugin_channels
 
-## Committing
+### Change to project directory
 
-A commit should contain one conceptual change to code which makes commit easily to describe and review in the same time more easier in reverting case.
+Change to the project directory you just cloned
 
-<a name="commit-header"></a>
+  cd zc_plugin_channels
 
-### Commit Message Header
+### Set Upstream Remote
 
-    <type>(<scope>): <short summary>
-      │       │             │
-      │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
-      │       │
-      │       └─⫸ Commit Scope:  local|ci|django|config|users|application|candidate|
-                                  company|job|message|organization|pipeline|recruiter|search
-      │
-      └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
+To set upstream remote so you can pull changes from upstream to update your repo run:
 
-The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
+  git remote add upstream https://github.com/zurichat/zc_plugin_channels
 
-#### Type
+### Checkout Dev Branch
 
-Must be one of the following:
+Checkout *dev* branch by running
 
-- **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-- **ci**: Changes to our CI configuration files and scripts (example scopes: Circle, BrowserStack, SauceLabs)
-- **docs**: Documentation only changes
-- **feat**: A new feature
-- **fix**: A bug fix
-- **perf**: A code change that improves performance
-- **refactor**: A code change that neither fixes a bug nor adds a feature
-- **test**: Adding missing tests or correcting existing tests
+  git checkout dev
 
-#### Scope
+### Checkout Your Feature Branch
 
-The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
+Feature Branching Workflow means you create a new branch for every feature or issue you are working on.
+It is goood practice for the branch name to end with the issue id.
+So if an issue id is **#5** and issue title is **Update ReadMe.md** then our branch name would be **update-readme-#5**.
+create and checkout feature branch by running:
 
-The following is the list of supported scopes:
+  git checkout -b issue-name-id
 
-- `local`
-- `ci`
-- `django`
-- `config`
-- `users`
+### Setup Development Environment
 
-for now, will include as we go on
+see [README.md](README.md)
 
-For more info check [Angular contributing guide](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
+## When You Have Fixed The Issue
 
-## Merging
+When you have finished making changes perform the following to commit your code:
 
-- Merge requests happen when feature developing is done and need to be merged to target branch happened by filling merge request form following these steps:
+### Check status of files to be committed
 
-    1. Choose the target branch, mostly ```develop``` unless you working on hot fix which should be merged to ```master``` directly.
-    2. Merge request title will be by default " Resolve <issue_title> "
-    3. Merge request description content by default " Closes #issue_id" that close issue after accepting the request, you can write more description in this field and assign more issues to be closed.
-    4. Assign the merge request to the person who is associated to review it.
-    5. Set merge request labels
-    6. Finally submit the merge request
+  git status
 
-- Make sure the all tests pass before pushing because the merge request can't be approved with failed tests, the CI/CD pipeline checks the tests with every push to remote branch.
+### Stage changes for commit
 
-- Once merge request is reviewed you will be notified if merge request is approved or be mentioned with comments that have to solve comments and push changes.
+  git add --all
 
-## Workflow
+### Commit staged changes
 
-Here is the simplest development workflow you should use:
+  git commit -m "descriptive commit message"
 
-1. Get the latest version of ```develop```.
+### Pull Update from Remote
 
-         git pull develop
+Pull latest update from the upstream remote repo by running:
 
-2. Make a new branch off of ```develop```.
+  git pull upstream dev
 
-         git checkout -b {BRANCH_NAME}
+### Push Local Changes to origin
 
-   name the branch with the convention described above.
-3. Implement your changes, pass tests, pushing your commits along the way
+Push your new fix or feature to the origin remote branch of your feature.
+If your feature branch title is **update-readme-#5** then run:
 
-         git commit
-         git push -u origin branch_name # for the first time, then:
-         git push
+  git push origin update-readme-#5
 
-   You should push early and often to ensure that the most up to date code is on repo. That can mean pushing some of commits, or pushing every time you stop a work session. At the bare minimum, push before you stop for the day.
-   If you are developing over a long time, and ```develop``` is changing, you should merge ```develop``` into your branch often to make sure it stays up to date. This will reduce merge conflicts when you finally rebase your branch onto ```develop```.
+### Make PR
 
-         git rebase --interactive origin/develop
+Goto your github account and make a **Pull Request** to merge your changes to upstream.
 
-4. When you are ready to start having your code reviewed, open a merge request and assign it to a reviewer.
-As a reviewer, use comments to communicate your feedback on the merge request and mention the requester to resolve comments.
-As a requester, make changes based on the reviewer's comments. Once you have addressed the comments make sure you checked resolve mark to notify the reviewer automatically after resolving the comments to review them again. Repeat this until the reviewer no longer has comments.
+## Testing
 
-5. Finally, once the merge request is approved the reviewer have to merge your branch into ```develop```, then delete feature branch.
+Before submitting a pull request if you're up to the task create test cases and make sure that the tests pass using [pytest](https://github.com/pytest-dev/pytest).
+
+### Setting up project locally
+
+Kindly check [here](README.md)
+
+Goodluck :)
