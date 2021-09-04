@@ -23,16 +23,27 @@ class GetChannelInfo(APIView):
 
     def get(self, request, pk):
         payload = {
-                    "id": pk,
-                    "title": "The Big Bang",
-                    "description": "This is only a theory",
-                    "private": False,
-                    "closed": False,
-                    "members": [],
-                    "roles": [],
-                    "threads": [],
-                    "chats": [],
-                    "pinned_chats": []
-                }
-        
+            "id": pk,
+            "title": "The Big Bang",
+            "description": "This is only a theory",
+            "private": False,
+            "closed": False,
+            "members": [],
+            "roles": [],
+            "threads": [],
+            "chats": [],
+            "pinned_chats": [],
+        }
+
         return Response(payload, status=status.HTTP_200_OK)
+
+
+class userRoles(APIView):
+
+    """
+    Endpoint For UserRoles on A Channel
+    """
+
+    def delete(self, request, pk):
+        data = {"message": f"Role {pk} has been successfully deleted"}
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
