@@ -2,7 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .seriaizers import ChannelSerializer
+from .serializers import ChannelSerializer
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
