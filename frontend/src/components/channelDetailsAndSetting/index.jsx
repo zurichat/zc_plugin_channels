@@ -1,8 +1,11 @@
 import React from 'react'
 import { Box } from '@chakra-ui/layout'
+import ChannelDetails from './channelDetailsAndSettings'
 
-const ChannelDetails = () => {
-  return <Box>Channel Details Page</Box>
+const ChannelDetailsAndSetting = () => {
+  return <Box>
+    <ChannelDetails />
+  </Box>
 }
 
-export default ChannelDetails
+export default ChannelDetailsAndSetting

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ThreadUserRoleSerializer
 from rest_framework.decorators import api_view
-from .serializers import ChannelSerializer
+from .serializers import ChannelSerializer, ChannelMessageSerializer
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
@@ -147,6 +147,14 @@ class SearchMessagesAPIView(APIView):
         return Response(
             {"status": True, "message": "Endpoint to search messages, passing '-' will return all messages_data."})
 
+class SendMessageInChannel(APIView):
+    def post(self, request):
+        Serializer = ChannelMessageSerializer(data=request.data)
+        response = {
+            "status": True,
+            "message": "Message successfully sent",
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
 def channel_delete(request, channel_id):

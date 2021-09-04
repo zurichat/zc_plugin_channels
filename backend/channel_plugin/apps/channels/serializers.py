@@ -16,3 +16,11 @@ class ChannelSerializer(serializers.Serializer):
 class SearchMessageQuerySerializer(serializers.Serializer):
 	value = serializers.CharField(max_length = 100)
 
+class ChannelMessageSerializer(serializers.Serializer):
+    """ """
+
+    id = serializers.IntegerField()
+    creator_id = serializers.IntegerField()
+    timestamp = serializers.DateTimeField()
+    message = serializers.CharField()
+    edited = serializers.BooleanField()
