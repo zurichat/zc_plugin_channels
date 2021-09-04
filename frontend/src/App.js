@@ -9,18 +9,13 @@ import Home from './components/home/Home'
 
 
 function App() {
-  return (
-    <Provider store={store}>
-     
-      <Router>
-        <Route component={routes} />
-        <Home />
-      </Router>
-      
-    </Provider>
-    
-    
-  )
+	return (
+		<Provider store={store}>
+			<Router>
+				<Route component={routes} />
+			</Router>
+		</Provider>
+	)
 }
 
 export default App
