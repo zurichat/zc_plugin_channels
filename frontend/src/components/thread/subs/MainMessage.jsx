@@ -5,7 +5,7 @@ const mainMessage = {
   time: "10:30 am",
   message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis. Volutpat tempus egestas donec pretium.",
   avatar: "https://bit.ly/dan-abramov",
-  replies: 25
+  replies: 20
 }
 const MainMessage = () => {
   const { name, time, message, avatar, replies } = mainMessage
