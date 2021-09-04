@@ -126,7 +126,7 @@ def create_channel(request):
 
 
 class SearchMessagesAPIView(APIView):
-
+	
     def post(self, request):
         serializer = SearchMessageQuerySerializer(data=request.data)
         if serializer.is_valid():
@@ -185,3 +185,13 @@ class CreateThreadView(generics.CreateAPIView):
             channel_id=self.kwargs.get("channel_id"),
             save_to="https://api.zuri.chat/data/write/",
         )
+
+class ThreadUserRoleUpdateAPIView(APIView):
+	def post (self, request):
+		serializer = ThreadUserRoleSerializer(data=request.data)
+		if serializer.is_valid():
+			response = serializer.data
+			return Response(response, status=status.HTTP_200_ok)
+		else:
+			return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
