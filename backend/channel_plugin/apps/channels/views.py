@@ -1,7 +1,8 @@
-from rest_framework import status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from .seriaizers import ChannelSeriali
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
@@ -59,6 +60,22 @@ class GetChannelInfo(APIView):
                 }
 
         return Response(payload, status=status.HTTP_200_OK)
+
+@api_view(['POST','GET'])
+def create_channel(request):
+    if request.method == 'POST':
+        serializer = ChannelSerializer(data=request.data)
+        if serializer.is_valid():
+            response = {
+                "status":True,
+                "message":"Channel Created",
+                "data": serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors)
+
+    return Response({"detail":"//GET// is not allowed, required fields: name, desc, privacy status"})
 
 class SearchMessagesAPIView(APIView):
 	def post(self, request):
