@@ -4,9 +4,11 @@ import appActions from '../../redux/actions/app'
 import { bindActionCreators } from 'redux'
 import { useDispatch, useSelector } from 'react-redux'
 import { Heading } from '@chakra-ui/react'
-import { BiChevronDown } from 'react-icons/bi'
+import { BiBox, BiChevronDown } from 'react-icons/bi'
 import { Flex, Spacer } from '@chakra-ui/react'
 import CreateChannelModal from '../createChannel/createChannelModal'
+import TopSearch from '../createChannel/TopSearch'
+
 
 const Home = () => {
   // STEP FIVE (Extract redux function)
@@ -29,6 +31,9 @@ const Home = () => {
 
   return (
     <Box width='100%' height='100vh' bg='#E5E5E5' pt={4}>
+      <Box  width="95%" ml={8} >
+        <TopSearch/>
+      </Box>
       <Box bg='white' w='95%' p={4} color='black' ml='8' borderRadius='2px'>
         <Flex cursor='pointer' alignItems='center'>
           <Heading as='h5' size='sm' fontWeight='semibold'>
@@ -37,10 +42,17 @@ const Home = () => {
           <BiChevronDown />
           <Spacer />
           <CreateChannelModal />
+          <organisationMembersList />
         </Flex>
       </Box>
     </Box>
+
+  
+  
+
+
   )
 }
 
 export default Home
+
