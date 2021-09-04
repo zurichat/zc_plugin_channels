@@ -3,9 +3,9 @@ import { Box } from "@chakra-ui/layout";
 import UserProfileHeader from "./UserProfileHeader";
 
 const userProfile = () => {
-  return <Box>
+  return (<Box>
               <UserProfileHeader />
-        </Box>;
+        </Box>)
 };
 
 export default userProfile;

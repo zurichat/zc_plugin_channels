@@ -28,7 +28,7 @@ const MessageCardContainer = () =>{
         mb='10px'
         rightIcon={<FaCaretDown />}
       >
-        Yesterday
+        Today
       </Button>
             </Flex>
             
