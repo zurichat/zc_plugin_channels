@@ -1,3 +1,4 @@
+from backend.channel_plugin.apps.channels.serializers import ThreadSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,12 +16,14 @@ class Test(APIView):
 
     def get(self, request):
         return Response({"msg": "working"}, status=status.HTTP_200_OK)
-class DeleteThread(APIView):
 
+class DeleteThread(APIView):
+    
 
     @api_view(['DELETE'])
-    def Delete_Thread(request, thread_id):
+    def Delete_Thread(request, pk):
             data={"msg": "Thread deleted successfully"}
-            # thread_id.delete()
-            return Response(data, status=status.HTTP_200_OK)
-                
+            thread=ThreadSerializer.objects.filter(id=pk)
+            if thread:
+                thread.delete()
+                return Response(data, status=status.HTTP_200_OK)

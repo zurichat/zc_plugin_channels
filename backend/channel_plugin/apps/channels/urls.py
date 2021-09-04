@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from apps.channels.views import  DeleteThread, Test
+=======
+from apps.channels.views import Test, SearchMessagesAPIView, GetChannelInfo, create_channel
+>>>>>>> c6f5a7791aca7f7ecdfc3f34f9eda22c3c21d65c
 from django.urls import path
 from . import views
 
