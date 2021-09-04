@@ -5,6 +5,9 @@ import routes from './routes/routes'
 import store from './redux/store'
 import Home from './components/home/Home'
 
+
+
+
 function App() {
 	return (
 		<Provider store={store}>
