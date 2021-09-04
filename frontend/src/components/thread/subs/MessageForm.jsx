@@ -14,7 +14,6 @@ function MessageForm() {
     const [focused, setFocused] = useState(false);
 
     return (
-        <div>
             <Stack bg="white" h="94px" display="block" maxW="350px" margin="5px" border='1px solid #EBEBEB' borderRadius="3px">
                 <Input onFocus={() => setFocused(true)} outline='none' pl="8px" fontSize='15px' width='100%' height="50px" margin='0' maxW='340px' placeholder="Send a message to John" border='none'  _placeholder={{ color: '#BEBEBE' }} />
                 <Container display='flex' justifyContent="space-between">
@@ -32,8 +31,6 @@ function MessageForm() {
                     </Box>
                 </Container>
             </Stack>
-
-        </div>
     )
 }
 
