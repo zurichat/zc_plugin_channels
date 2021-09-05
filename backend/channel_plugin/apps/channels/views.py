@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import SearchMessageQuerySerializer
+from .serializers import SearchMessageQuerySerializer, ThreadUserRoleSerializer
 from .utils import find_item_in_data
 
 import json
@@ -83,3 +83,12 @@ class SearchMessagesAPIView(APIView):
 		return Response(serializer.errors)
 	def get(self, request):
 		return Response({"status":True, "message":"Endpoint to search messages, passing '-' will return all messages_data."})
+
+class ThreadUserRoleUpdateAPIView(APIView):
+	def post (self, request):
+		serializer = ThreadUserRoleSerializer(data=request.data)
+		if serializer.is_valid():
+			response = serializer.data
+			return Response(response, status=status.HTTP_200_ok)
+		else:
+			return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
