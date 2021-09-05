@@ -1,0 +1,17 @@
+CHANGES.rst
+CONTRIBUTORS.rst
+LICENSE
+MANIFEST.in
+README.md
+pytest_sugar.py
+setup.cfg
+setup.py
+test_sugar.py
+tox.ini
+pytest_sugar.egg-info/PKG-INFO
+pytest_sugar.egg-info/SOURCES.txt
+pytest_sugar.egg-info/dependency_links.txt
+pytest_sugar.egg-info/entry_points.txt
+pytest_sugar.egg-info/not-zip-safe
+pytest_sugar.egg-info/requires.txt
+pytest_sugar.egg-info/top_level.txt
