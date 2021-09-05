@@ -3,7 +3,7 @@ import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
 
-import MessageCard from '../MessageCard/MessageCard'
+import MessageCard from "../MessageCard/MessageCard";
 
 const messages = [
     {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" ,index: 1, isThread: false},
