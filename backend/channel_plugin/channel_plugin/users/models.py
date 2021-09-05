@@ -1,22 +1,31 @@
-from django.contrib.auth.models import AbstractUser
-from django.db.models import CharField
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from dataclasses import dataclass
 
 
-class User(AbstractUser):
-    """Default user for Channel Plugin."""
+@dataclass
+class User:
+    name: str
+    email: str
+    # ID of role in channel
+    role: str
+    contact: str = ""
+    is_admin: bool = False
 
-    #: First and last name do not cover name patterns around the globe
-    name = CharField(_("Name of User"), blank=True, max_length=255)
-    first_name = None  # type: ignore
-    last_name = None  # type: ignore
+    def create(self, organization_id):
+        pass
 
-    def get_absolute_url(self):
-        """Get url for user's detail view.
+    """"
+    organization_id: str
+    params: dict (query params to be appended to url to get data)
+    """
 
-        Returns:
-            str: URL for user detail.
+    def read(self, organization_id, params):
+        pass
 
-        """
-        return reverse("users:detail", kwargs={"username": self.username})
+    def update(self, organization_id, **kwargs):
+        pass
+
+    def delete(self, organization_id, **kwargs):
+        pass
+
+    def __str__(self):
+        return self.name
