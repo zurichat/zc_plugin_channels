@@ -133,10 +133,8 @@ const ChannelDetails = () => {
                     <FileList />
                   </TabPanel>
                   <TabPanel>
-                    <p>Coming Soon</p>
                   </TabPanel>
                   <TabPanel>
-                    <p>Coming soon</p>
                   </TabPanel>
                 </TabPanels>
               </Box>
