@@ -9,11 +9,13 @@ from rest_framework.views import APIView
 
 from .serializers import (
     ChannelMessageSerializer,
+    ThreadSerializer,
     ChannelSerializer,
     SearchMessageQuerySerializer,
     ThreadSerializer,
     ThreadUpdateSerializer,
     ThreadUserRoleSerializer,
+
 )
 from .utils import find_item_in_data
 
@@ -188,6 +190,24 @@ class ThreadUserRoleUpdateAPIView(APIView):
             )
 
 
+class GetChannelList(APIView):
+    def get(self, request, pk=0):
+        channels = [
+            {"id": pk,
+            "title":"Channel title",
+            "description":"Channel description",
+            "private":['false'],
+            "closed":['false'],
+            "members": [
+                {"id":"user_id",
+                        "roles":["id reference to the users role"]
+                }
+            ],
+        },
+        ]
+
+        return Response(channels, status=status.HTTP_200_OK)
+
 class ThreadUpdateAPIView(APIView):
     def get(self, request, organization_id, thread_id, channel_id):
         thread = {
@@ -213,3 +233,4 @@ class channelUserRoles(APIView):
     def delete(self, request, pk):
         data = {"message": f"Role {pk} has been successfully deleted"}
         return Response(data, status=status.HTTP_204_NO_CONTENT)
+
