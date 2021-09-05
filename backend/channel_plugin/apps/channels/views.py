@@ -10,6 +10,7 @@ from rest_framework.viewsets import ViewSet
 
 from .serializers import (
     ChannelMessageSerializer,
+    ThreadSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     SearchMessageQuerySerializer,
@@ -244,7 +245,27 @@ class ThreadUserRoleUpdateAPIView(APIView):
                 serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+class GetChannelList(APIView):
+    def get(self, request, pk=0):
+        channels = [
+            {"id": pk,
+            "title":"Channel title",
+            "description":"Channel description",
+            "private":['false'],
+            "closed":['false'],
+            "members": [
+                {"id":"user_id",
+                        "roles":["id reference to the users role"]
+                }
+            ],
+        },
+        ]
 
+
+        return Response(channels, status=status.HTTP_200_OK)
+		
+		serializer = ThreadUpdateSerializer(data= thread)
+		return Response(serializer.data)
 class ThreadUpdateAPIView(APIView):
     def get(self, request, organization_id, thread_id, channel_id):
         thread = {
@@ -259,7 +280,6 @@ class ThreadUpdateAPIView(APIView):
             response = serializer.data
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class channelUserRoles(APIView):
 
