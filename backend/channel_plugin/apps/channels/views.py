@@ -195,3 +195,20 @@ class ThreadUserRoleUpdateAPIView(APIView):
 		else:
 			return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class GetChannelList(APIView):
+    def get(self, request, pk=0):
+        channels = [
+            {"id": pk,
+            "title":"Channel title",
+            "description":"Channel description",
+            "private":['false'],
+            "closed":['false'],
+            "members": [
+                {"id":"user_id",
+                        "roles":["id reference to the users role"]
+                }
+            ],
+        },
+        ]
+
+        return Response(channels, status=status.HTTP_200_OK)

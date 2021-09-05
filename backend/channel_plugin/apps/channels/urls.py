@@ -2,7 +2,7 @@ from apps.channels import views
 from apps.channels.views import (
     Test, SearchMessagesAPIView, GetChannelInfo,
     create_channel, GetChannelRoles, CreateThreadView,ThreadUserRoleView,
-    ThreadUserRoleUpdateAPIView
+    ThreadUserRoleUpdateAPIView,GetChannelList
 )
 from apps.channels.views import SendMessageInChannel
 from django.urls import path
@@ -23,4 +23,5 @@ urlpatterns = [
         CreateThreadView.as_view(),
         name="create-thread",
     ),
+    path("channels/",GetChannelList.as_view(), name='channels_list'),
 ]
