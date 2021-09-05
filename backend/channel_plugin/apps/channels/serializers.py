@@ -3,6 +3,7 @@ import random
 from django.utils import timezone
 
 from rest_framework import serializers
+from .models import Channel
 
 class ThreadUserRoleSerializer(serializers.Serializer):
     role_id = serializers.CharField(max_length=200)
@@ -12,10 +13,45 @@ class ThreadUserRoleSerializer(serializers.Serializer):
     permission_type = serializers.CharField(max_length=200)
 
 class ChannelSerializer(serializers.Serializer):
-	# id = serializers.PositiveIntegerField()
-	name = serializers.CharField(max_length=30)
-	desc = serializers.CharField(max_length=100)
-	private = serializers.BooleanField()
+    
+    name = serializers.CharField(max_length=100, required=True)
+    description = serializers.CharField(required=False)
+    private = serializers.BooleanField(default=True)
+
+    def validate__name(self, name):
+        pass
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        channel = Channel(**instance)
+        data = {"channel": channel}
+        return data
+
+class ChannelUpdateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100, required=True)
+    description = serializers.CharField(required=False)
+    private = serializers.BooleanField(default=True)
+    users = serializers.ListField(child=serializers.JSONField(), allow_empty=True)
+    roles = serializers.ListField(child=serializers.CharField(max_length=10), allow_empty=True)
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        channel = Channel(**instance)
+        data = {"channel": channel}
+        return data
+
+    def validate__name(self, name):
+        pass
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        channel = Channel(
+            name=instance.get("name"),
+            description=instance.get("desc"),
+            private=instance.get("private")
+        )
+        data = {"channel": channel}
+        return data
 
 class SearchMessageQuerySerializer(serializers.Serializer):
 	value = serializers.CharField(max_length = 100)

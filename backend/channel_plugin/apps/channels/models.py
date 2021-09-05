@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from django.utils import timezone
+from django.utils.text import slugify
 
-from channel_plugin.channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import Request
 
 
 @dataclass
@@ -10,9 +11,9 @@ class Channel:
     # name of channel
     name: str
     # list of user IDs in a channel
-    users: list = []
+    users: list = field(default_factory=list)
     # list of role IDs in a channel
-    roles: list = []
+    roles: list = field(default_factory=list)
     # description of channel
     description: str = ""
     # private / public
@@ -22,18 +23,21 @@ class Channel:
 
     def create(self, organization_id):
         payload = {
+            "_id": "1",
             "name": self.name.lower(),
+            "slug": slugify(self.name.lower()),
             "description": self.description,
             "private": self.private,
-            "user": self.users,
+            "users": self.users,
             "roles": self.roles,
             "created_on": self.created_on,
         }
-        response = Request.post(
-            organization_id, self.__class__.__name__.lower(), payload
-        )
+        return payload
+        # response = Request.post(
+        #     organization_id, self.__class__.__name__.lower(), payload
+        # )
 
-        return response
+        # return response
 
     """"
     organization_id: str
@@ -49,7 +53,17 @@ class Channel:
     """
 
     def update(self, organization_id, **kwargs):
-        pass
+        payload = {
+            "_id": "1",
+            "name": self.name.lower(),
+            "slug": slugify(self.name.lower()),
+            "description": self.description,
+            "private": self.private,
+            "users": self.users,
+            "roles": self.roles,
+            "created_on": self.created_on,
+        }
+        return payload
 
     """"
     organization_id: str
@@ -69,9 +83,9 @@ class ChannelMessage:
     channel_id: str
     content: str
     # list of thread IDs
-    thread: list
+    thread: field(default_factory=list)
     # list of thread emojis
-    emojis: list
+    emojis: field(default_factory=list)
     pinned: bool = False
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
@@ -112,7 +126,7 @@ class Thread:
     user_id: str
     channelmessage_id: str
     content: str
-    emojis: list
+    emojis: field(default_factory=list)
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
@@ -155,7 +169,7 @@ class Role:
 
     name: str
     channel_id: str
-    permission: list
+    permission: field(default_factory=list)
 
     def create(self, organization_id):
         pass

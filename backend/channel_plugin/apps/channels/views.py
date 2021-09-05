@@ -3,14 +3,16 @@ import json
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 from .serializers import (
     ChannelMessageSerializer,
     ThreadSerializer,
     ChannelSerializer,
+    ChannelUpdateSerializer,
     SearchMessageQuerySerializer,
     ThreadSerializer,
     ThreadUpdateSerializer,
@@ -35,28 +37,89 @@ messages_data = [
     },
 ]
 
+class ChannelViewset(ViewSet):
 
-class GetChannelInfo(APIView):
-    """
-    Endpoint to get details about a channel
-    """
+    @swagger_auto_schema(request_body=ChannelSerializer)
+    @action(methods=["POST"], detail=False, url_path="(?P<org_id>[-\w]+)")
+    def channel(self, request, org_id):
+        serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.data.get("channel")
+        result = channel.create(org_id)
+        return Response(result, status=status.HTTP_201_CREATED)
+    
+    @action(methods=["GET"], detail=False, url_path="(?P<org_id>[-\w]+)/all")
+    def channel_all(self, request, org_id):
+        result = [
+            {   
+                "_id": "1",
+                "name": "Team Coelho",
+                "slug": "team-coelho",
+                "description": "string",
+                "private": True,
+                "user": [],
+                "roles": [],
+                "created_on": "2021-09-05T15:16:18.971942+00:00"
+            },
+            {
+                "_id": "2",
+                "name": "string",
+                "slug": "team-coelho",
+                "description": "string",
+                "private": True,
+                "users": [
+                    {
+                        "name": "Team Coelho",
+                        "avatar": "https://channel.zuri.chat/static/logo.png/",
+                        "email": "team-coelho@zuri.chat",
+                        "contact": "+2347039094843",
+                        "role": "1",
+                        "channel_id": "1",
+                        "is_admin": False
+                    }
+                ],
+                "roles": [],
+                "created_on": "2021-09-05T15:16:18.971942+00:00"
+            },
+        ]
+        return Response(result, status=status.HTTP_200_OK)
 
-    def get(self, request, pk):
-        payload = {
-            "id": pk,
-            "title": "The Big Bang",
-            "description": "This is only a theory",
-            "private": False,
-            "closed": False,
-            "members": [],
+
+    @action(methods=["GET"], detail=False, url_path="(?P<org_id>[-\w]+)/(?P<channel_id>[-\w]+)/retrieve")
+    def channel_retrieve(self, request, org_id, channel_id):
+        result = {
+            "name": "string",
+            "slug": "team-coelho",
+            "description": "string",
+            "private": True,
+            "users": [
+                {
+                    "name": "Team Coelho",
+                    "email": "team-coelho@zuri.chat",
+                    "avatar": "https://channel.zuri.chat/static/logo.png/",
+                    "contact": "+2347039094843",
+                    "role": "1",
+                    "channel_id": "1",
+                    "is_admin": False
+                }
+            ],
             "roles": [],
-            "threads": [],
-            "chats": [],
-            "pinned_chats": [],
+            "created_on": "2021-09-05T15:16:18.971942+00:00"
         }
+        return Response(result, status=status.HTTP_200_OK)
 
-        return Response(payload, status=status.HTTP_200_OK)
+    @swagger_auto_schema(request_body=ChannelUpdateSerializer)
+    @action(methods=["PUT"], detail=False, url_path="(?P<org_id>[-\w]+)/(?P<channel_id>[-\w]+)/update")
+    def channel_update(self, request, org_id, channel_id):
+        serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.data.get("channel")
+        result = channel.update(org_id)
+        return Response(result, status=status.HTTP_200_OK)
 
+    @action(methods=["DELETE"], detail=False, url_path="(?P<org_id>[-\w]+)/(?P<channel_id>[-\w]+)/delete")
+    def channel_delete(self, request, org_id, channel_id):
+        return Response({"msg": "To be implemened"}, status=status.HTTP_200_OK)
 
 class GetChannelRoles(APIView):
     """
@@ -152,12 +215,6 @@ class SendMessageInChannel(APIView):
             "message": "Message successfully sent",
         }
         return Response(response, status=status.HTTP_200_OK)
-
-
-@api_view(["DELETE"])
-def channel_delete(request, channel_id):
-    data = {"message": "Channel deleted successfully."}
-    return Response(data, status=status.HTTP_200_OK)
 
 
 class CreateThreadView(generics.CreateAPIView):
