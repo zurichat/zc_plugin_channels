@@ -15,13 +15,13 @@ import googleImage from "../channelDetailsAndSetting/images/images.png";
 
 const OrganisationMembersList = () => {
   return (
-    <Box bg="gray" width="100%" height="100vh">
+    <Box>
       <Box
-        position="absolute"
-        left="460"
-        top="8em"
-        w="430px"
-        h="520px"
+      //   position="absolute"
+      //   left="460"
+      //   top="8em"
+      //   w="430px"
+      //   h="520px"
         alignContent="center"
         backgroundColor="white"
         color="blue"
