@@ -15,37 +15,6 @@ const avatars = [
 ];
 
 const ChannelDetailsContainer = () => {
-<<<<<<< HEAD
-    return(
-        <Box>
-            <Flex align='center' bgColor='#ffffff' height='8vh' boxShadow='xs' w="100%" p={4} letterSpacing="wide">
-                <Flex as='button' borderRadius="md" p="4" align='center' color="white" px={4} h={8} mr='2'>
-                    <Icon as={BsHash} color='#000000' mr='2' w={5} h={5} />
-                    <Box as='span' fontSize="md" color='#000000' fontWeight='bold' mr='2'> Announcements</Box> 
-                    <FaCaretDown />
-                </Flex>
-                <Spacer />
-                <Flex p="4">
-                    <HStack justifyContent='space-between'>
-                        <AvatarGroup size="xs" max={3}>
-                            {avatars.map((avatar) => {
-                                return(
-                                <Avatar size="sm" name={avatar.name} src={avatar.avi} />
-                                )
-                            })}
-                        </AvatarGroup>
-                        <Box as='span'>30,000</Box>
-                        <FiUserPlus color='#333333'/> 
-                    </HStack>
-                </Flex>
-            </Flex>
-        </Box>
-        
-    )
-}
- 
-export default ChannelDetailsContainer;
-=======
   return (
     <Box>
       <Flex
@@ -92,4 +61,3 @@ export default ChannelDetailsContainer;
 };
 
 export default ChannelDetailsContainer;
->>>>>>> 9f8842e3d9ba69dc672d80c041e6ea52cfb8c077
