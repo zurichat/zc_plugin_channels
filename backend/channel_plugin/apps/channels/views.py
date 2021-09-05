@@ -246,6 +246,54 @@ class ThreadUserRoleUpdateAPIView(APIView):
 
 
 class ThreadUpdateAPIView(APIView):
+
+	def get(self, request, organization_id, thread_id, channel_id):
+		thread ={
+			"id": "Matthew",
+			"organization_id": "HNG8",
+			"channel_id" : "slack",
+			"title": "Backend Coelho",
+			"description": "urgent HNG meeting"
+		}
+		serializer = ThreadUpdateSerializer(data = thread)
+		if serializer.is_valid():
+			response = serializer.data
+			return Response(response, status=status.HTTP_200_OK)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+		serializer = ThreadUpdateSerializer(data= thread)
+		return Response(serializer.data)
+
+class SearchMessageAPIView(APIView):
+
+    def post(self, request):
+        serializer = SearchMessageQuerySerializer(data=request.data)
+        if serializer.is_valid():
+            int = serializer.validated_data['int']
+            if int != "-":
+                data = find_item_in_data(messages_data, int, "int")
+                response = {
+                    "status": True,
+                    "message": "Query results",
+                    "data": data
+                }
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                data = messages_data
+                response = {
+                    "status": True,
+                    "message": "Query results",
+                    "data": data
+                }
+                return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors)
+
+    def get(self, request):
+        return Response(
+            {"status": True, "message": "Endpoint to search message, passing '-' will return messages_data."})
+
     def get(self, request, organization_id, thread_id, channel_id):
         thread = {
             "id": "Matthew",
@@ -270,3 +318,4 @@ class channelUserRoles(APIView):
     def delete(self, request, pk):
         data = {"message": f"Role {pk} has been successfully deleted"}
         return Response(data, status=status.HTTP_204_NO_CONTENT)
+
