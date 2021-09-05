@@ -2,7 +2,9 @@ from apps.channels import views
 from apps.channels.views import (
     Test, SearchMessagesAPIView, GetChannelInfo,
     create_channel, GetChannelRoles, CreateThreadView,ThreadUserRoleView,
-    ThreadUserRoleUpdateAPIView
+    ThreadUserRoleUpdateAPIView,
+    ThreadUpdateAPIView,
+    channelUserRoles
 )
 from apps.channels.views import SendMessageInChannel
 from django.urls import path
@@ -23,4 +25,7 @@ urlpatterns = [
         CreateThreadView.as_view(),
         name="create-thread",
     ),
+    path("organizations/<organization_id>/channels/<channel_id>/thread/<thread_id>/", views.ThreadUpdateAPIView.as_view(), name='thread_update'),
+    path("roles/<int:pk>/", channelUserRoles.as_view()),
+
 ]

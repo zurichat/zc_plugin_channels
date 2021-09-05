@@ -8,7 +8,8 @@ from rest_framework.decorators import api_view
 from .serializers import (
     ChannelSerializer,
     ChannelMessageSerializer,
-    ThreadSerializer
+    ThreadSerializer,
+	ThreadUpdateSerializer
 )
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
@@ -195,3 +196,33 @@ class ThreadUserRoleUpdateAPIView(APIView):
 		else:
 			return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class ThreadUpdateAPIView(APIView):
+	def get(self, request, organization_id, thread_id, channel_id):
+		thread ={
+			"id": "Matthew",
+			"organization_id": "HNG8",
+			"channel_id" : "slack",
+			"title": "Backend Coelho",
+			"description": "urgent HNG meeting"
+		}
+		serializer = ThreadUpdateSerializer(data = thread)
+		if serializer.is_valid():
+			response = serializer.data
+			return Response(response, status=status.HTTP_200_OK)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+		
+		serializer = ThreadUpdateSerializer(data= thread)
+		return Response(serializer.data)
+
+
+class channelUserRoles(APIView):
+
+    """
+    Endpoint For UserRoles on A Channel
+    """
+
+    def delete(self, request, pk):
+        data = {"message": f"Role {pk} has been successfully deleted"}
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
