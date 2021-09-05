@@ -3,8 +3,8 @@ from rest_framework import routers
 from users.views import ThreadUserRolesViewset
 
 router = routers.DefaultRouter()
-router.register(r"delete", ThreadUserRolesViewset, basename="users")
+router.register(r"", ThreadUserRolesViewset, basename="users")
 
 urlpatterns = [
-    path("", include((router.urls, "users"))),
+    path("thread_users_info/", include((router.urls, "users"))),
 ]
