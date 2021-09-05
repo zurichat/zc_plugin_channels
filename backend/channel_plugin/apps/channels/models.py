@@ -72,6 +72,7 @@ class ChannelMessage:
     thread: list
     # list of thread emojis
     emojis: list
+    pinned: bool = False
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
