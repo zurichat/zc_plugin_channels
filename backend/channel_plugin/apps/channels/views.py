@@ -211,4 +211,21 @@ class GetChannelList(APIView):
         },
         ]
 
+<<<<<<< HEAD
         return Response(channels, status=status.HTTP_200_OK)
+=======
+		
+		serializer = ThreadUpdateSerializer(data= thread)
+		return Response(serializer.data)
+
+
+class channelUserRoles(APIView):
+
+    """
+    Endpoint For UserRoles on A Channel
+    """
+
+    def delete(self, request, pk):
+        data = {"message": f"Role {pk} has been successfully deleted"}
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+>>>>>>> e7ce37538f96f403747d6cf10a91a50382701858
