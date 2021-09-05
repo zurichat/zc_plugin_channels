@@ -27,20 +27,21 @@ const ChannelDetails = () => {
           isOpen={onOpen}
           onClose={onClose}
           size="lg"
+          colorScheme="whiteAlpha"
         >
           <ModalOverlay />
           <ModalContent p={0} mt="8rem" maxW="590px" height="882px">
           <Tabs>
           
-            <ModalHeader pt={4} pb={2} backgroundColor='#00AD75' color='#fff' height="178px">
+            <ModalHeader pt={3} pb={2} backgroundColor='#00AD75' color='#fff' height="178px">
             <Box px={6}>
               <Flex>
-                <Box pe={2}>
-                  <FaHashtag color="white" fontSize="1.2em" width="18px" height="32" display="inline-block"/>
+                <Box pe={2} pt={1.5}>
+                  <FaHashtag color="#fff" fontSize="1.2em" width="18px" height="32" display="inline-block" />
                 </Box>
                 <Text fontSize="20px" pb={2} mb={2} color='#fff'>Announcement</Text> 
-                <Box ps={2}>
-                  <FaRegStar color="white" fontSize="1.2em" width="18px" height="32.4px" display="inline-block"/>
+                <Box ps={2} pt={1.5}>
+                  <FaRegStar color="#fff" fontSize="1.2em" width="18px" height="32.4px" display="inline-block"/>
                 </Box>
                 <Spacer />
                 <ModalCloseButton color='#fff' border="1px" borderColor="#fff"/>
@@ -48,15 +49,21 @@ const ChannelDetails = () => {
               <Stack direction="row" my={1} py={2}>
                 <Box>
                     <Button color='#fff' colorScheme="whiteAlpha" variant="outline" mr={2}>
-                    <FaRegBell color="white" pe={2}/>Get Notifications for @ mentions<FaChevronDown color="white" />
+                      <Box mr={2} mt={1}><FaRegBell color="#fff" mr={6}/></Box>
+                      <Text>Get Notifications for @ mentions</Text>
+                      <Box ml={2} mt={1}><FaChevronDown color="#fff" mt={4} ml={5}/></Box>
                     </Button>
                     <Button color='#fff' colorScheme="whiteAlpha" variant="outline" ml={2}>
-                    <FaVideo color="white" w={2} />Start Meeting
+                    <Box mr={2} mt={1}><FaVideo color="#fff" w={2}/></Box>
+                    <Text>Start Meeting</Text>
                     </Button>
                 </Box>   
               </Stack>
 
+              <Box w={400}>
               <TabsRows />
+              </Box>
+              
               </Box>
             </ModalHeader>
             
@@ -64,17 +71,17 @@ const ChannelDetails = () => {
             <Box px={6}>
             <TabPanels>
                 <TabPanel>
-                <OrganisationMembersList/>
+                {/* <OrganisationMembersList/> */}
                 </TabPanel>
                 <TabPanel>
                 <About />
                 <FileList />
                 </TabPanel>
                 <TabPanel>
-                <p>three!</p>
+                <p>Coming Soon</p>
                 </TabPanel>
                 <TabPanel>
-                <p>four!</p>
+                <p>Coming soon</p>
                 </TabPanel>
             </TabPanels>
             </Box>
