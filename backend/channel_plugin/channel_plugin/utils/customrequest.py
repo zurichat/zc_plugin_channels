@@ -23,7 +23,7 @@ def check_payload(payload):
 class Request:
     @staticmethod
     def get(org_id, collection, params=None):
-        url = f"{write}/{settings.PLUGIN_ID}/{collection}/{org_id}/?{params}"
+        url = f"{read}/{settings.PLUGIN_ID}/{collection}/{org_id}/?{params}"
         if params is not None:
             params = quote_plus(params)
             url += f"?{params}"
