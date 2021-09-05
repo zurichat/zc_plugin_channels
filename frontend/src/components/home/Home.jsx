@@ -67,11 +67,16 @@ const Home = () => {
           <Button colorScheme="teal" bg="#00b87c" variant="solid">
             <Link to="/channel-detail">Channel Detail</Link>
           </Button>
-          {/* <Button colorScheme="teal" variant="solid">
-            <Link to="/user-profile"> User Profile</Link>
-          </Button> */}
           <Button colorScheme="teal" bg="#00b87c" variant="solid">
             <Link to="/thread"> Threads</Link>
+          </Button>{" "}
+          <Button
+           
+            colorScheme="teal"
+            bg="#00b87c"
+            variant="solid"
+          >
+            <Link to="/user-profile"> User Profile</Link>
           </Button>
         </Stack>
       </Box>
