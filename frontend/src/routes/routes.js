@@ -4,8 +4,8 @@ import Admin from '../components/admin/index';
 import CreateChannel from '../components/createChannel/index';
 import MessageBoardIndex from '../components/MessageBoard/MessageBoardIndex/';
 import ChannelDetailsAndSetting from '../components/channelDetailsAndSetting/index';
-import userProfile from '../components/UserProfile/UserProfile';
-import Index from '../components/thread/Index';
+import UserProfile from '../components/UserProfile/UserProfile';
+import Thread from '../components/thread/Thread';
 
 const routes = () => {
   return (
@@ -26,10 +26,10 @@ const routes = () => {
         <ChannelDetailsAndSetting />
       </Route>
       <Route path='/user-profile'>
-        <userProfile />
+        <UserProfile />
       </Route>
       <Route path='/thread'>
-        <Index />
+        <Thread />
       </Route>
     </Switch>
   );
