@@ -1,12 +1,22 @@
+import random
+from datetime import datetime
+
 from django.conf import settings
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from rest_framework.decorators import api_view
-from datetime import datetime
-import random
+description = """The Channel Plugin is a feature that helps users create spaces
+                for conversation and communication on zuri.chat.
+                Users can also create sub tags in the channels
+                option where other things can be done,
+                ranging from game nights,
+                football banter, random,
+                announcement and so much more.
+                This adds the feature of having organized conversations
+                in dedicated spaces called channels.
+            """
 
 
 class GetInfoViewset(ViewSet):
@@ -19,7 +29,7 @@ class GetInfoViewset(ViewSet):
             "name": settings.TEAM_NAME,
             "project": settings.PROJECT_NAME,
             "version": "1.0",
-            "description": "The Channel Plugin is a feature that helps users create spaces for conversation and communication on zuri.chat. Users can also create sub tags in the channels option where other things can be done, ranging from game nights, football banter, random, announcement and so much more. This adds the feature of having organized conversations in dedicated spaces called channels.",
+            "description": description,
         }
         return Response(data, status=status.HTTP_200_OK)
 
@@ -30,7 +40,7 @@ class GetInfoViewset(ViewSet):
             "project": settings.PROJECT_NAME,
             "version": "1.0",
             "frontend_url": "https://channels.zuri.chat/",
-            "description": "The Channel Plugin is a feature that helps users create spaces for conversation and communication on zuri.chat. Users can also create sub tags in the channels option where other things can be done, ranging from game nights, football banter, random, announcement and so much more. This adds the feature of having organized conversations in dedicated spaces called channels.",
+            "description": description,
         }
         return Response(data, status=status.HTTP_200_OK)
 
