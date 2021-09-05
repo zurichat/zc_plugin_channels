@@ -228,4 +228,7 @@ class channelUserRoles(APIView):
     def delete(self, request, pk):
         data = {"message": f"Role {pk} has been successfully deleted"}
         return Response(data, status=status.HTTP_204_NO_CONTENT)
+<<<<<<< HEAD
 >>>>>>> e7ce37538f96f403747d6cf10a91a50382701858
+=======
+>>>>>>> 7d333c776b2b4bd3baa3f590894592f5c626e249

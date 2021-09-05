@@ -8,7 +8,10 @@ from apps.channels.views import (
     ThreadUserRoleUpdateAPIView,
     ThreadUpdateAPIView,
     channelUserRoles
+<<<<<<< HEAD
 >>>>>>> e7ce37538f96f403747d6cf10a91a50382701858
+=======
+>>>>>>> 7d333c776b2b4bd3baa3f590894592f5c626e249
 )
 from apps.channels.views import SendMessageInChannel
 from django.urls import path
@@ -35,5 +38,8 @@ urlpatterns = [
     path("organizations/<organization_id>/channels/<channel_id>/thread/<thread_id>/", views.ThreadUpdateAPIView.as_view(), name='thread_update'),
     path("roles/<int:pk>/", channelUserRoles.as_view()),
 
+<<<<<<< HEAD
 >>>>>>> e7ce37538f96f403747d6cf10a91a50382701858
+=======
+>>>>>>> 7d333c776b2b4bd3baa3f590894592f5c626e249
 ]
