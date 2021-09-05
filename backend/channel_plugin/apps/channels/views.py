@@ -1,8 +1,16 @@
+from django.conf import settings
+
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .serializers import ThreadUserRoleSerializer
 from rest_framework.decorators import api_view
-from .serializers import ChannelSerializer, ChannelMessageSerializer
+from .serializers import (
+    ChannelSerializer,
+    ChannelMessageSerializer,
+    ThreadSerializer,
+	ThreadUpdateSerializer
+)
 from .serializers import SearchMessageQuerySerializer
 from .utils import find_item_in_data
 
@@ -88,6 +96,19 @@ class GetChannelRoles(APIView):
         return Response(payload, status=status.HTTP_200_OK)
 
 
+class ThreadUserRoleView(APIView):
+    serializer_class = ThreadUserRoleSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            role_type = serializer.validated_data.get("role_type")
+            message = f"{role_type} was created successfully"
+            return Response({"message": message})
+
+        else:
+            return Response({"message": "invalidation error"})
 @api_view(['POST', 'GET'])
 def create_channel(request):
     if request.method == 'POST':
@@ -106,7 +127,7 @@ def create_channel(request):
 
 
 class SearchMessagesAPIView(APIView):
-
+	
     def post(self, request):
         serializer = SearchMessageQuerySerializer(data=request.data)
         if serializer.is_valid():
@@ -148,3 +169,60 @@ def channel_delete(request, channel_id):
       "message": "Channel deleted successfully."
     }
     return Response(data, status=status.HTTP_200_OK)
+
+
+class CreateThreadView(generics.CreateAPIView):
+    serializer_class = ThreadSerializer
+    permission_classes = []
+
+    def perform_create(self, serializer):
+        plugin_id = getattr(settings, "PLUGIN_ID", "000000000000000")
+
+        res = serializer.save(
+            plugin_id=plugin_id,
+            headers=self.request.headers,  # header contains auth-token from user
+            collection_name="threads",
+            organization_id=self.kwargs.get("organization_id"),
+            channel_id=self.kwargs.get("channel_id"),
+            save_to="https://api.zuri.chat/data/write/",
+        )
+
+class ThreadUserRoleUpdateAPIView(APIView):
+	def post (self, request):
+		serializer = ThreadUserRoleSerializer(data=request.data)
+		if serializer.is_valid():
+			response = serializer.data
+			return Response(response, status=status.HTTP_200_ok)
+		else:
+			return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ThreadUpdateAPIView(APIView):
+	def get(self, request, organization_id, thread_id, channel_id):
+		thread ={
+			"id": "Matthew",
+			"organization_id": "HNG8",
+			"channel_id" : "slack",
+			"title": "Backend Coelho",
+			"description": "urgent HNG meeting"
+		}
+		serializer = ThreadUpdateSerializer(data = thread)
+		if serializer.is_valid():
+			response = serializer.data
+			return Response(response, status=status.HTTP_200_OK)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+		
+		serializer = ThreadUpdateSerializer(data= thread)
+		return Response(serializer.data)
+
+
+class channelUserRoles(APIView):
+
+    """
+    Endpoint For UserRoles on A Channel
+    """
+
+    def delete(self, request, pk):
+        data = {"message": f"Role {pk} has been successfully deleted"}
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
