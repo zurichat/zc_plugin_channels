@@ -56,7 +56,7 @@ const Home = () => {
       >
         <Stack direction={["column", "row"]} spacing={4} align="center">
           <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            <Link to="/create-channel">Create Channel</Link>
+            <Link to="/create-channel">Empty Channel</Link>
           </Button>
           <Button colorScheme="teal" bg="#00b87c" variant="solid">
             <Link to="/admin">Admin</Link>
