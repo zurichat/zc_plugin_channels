@@ -6,8 +6,9 @@ import googleImage from "../channelDetailsAndSetting/images/images.png"
 
 
 
-const organisationMembersList = () => {
+const OrganisationMembersList = () => {
  return (
+
   <Box bg='gray' width='100%' height='100vh'>
     <Box position='absolute'
         left='460'
@@ -174,4 +175,4 @@ const organisationMembersList = () => {
  )
 }
 
-export default organisationMembersList;
+export default OrganisationMembersList;
