@@ -77,3 +77,11 @@ class ThreadSerializer(serializers.Serializer):
         res = data["payload"]
         return res
 
+class ThreadUpdateSerializer(serializers.Serializer):
+
+	id = serializers.CharField(max_length=50, read_only =True)
+	organization_id = serializers.CharField(max_length=200, read_only=True)
+	channel_id = serializers.CharField(max_length=200, read_only=True)
+	title = serializers.CharField(required=True, max_length=50)
+	description = serializers.CharField(max_length=1000)
+	date_created = serializers.TimeField(read_only=True, required=False)

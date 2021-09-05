@@ -1,50 +1,38 @@
-from django.conf import settings
+import json
 
-from rest_framework import generics, status, permissions
+from django.conf import settings
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import ThreadUserRoleSerializer
-from rest_framework.decorators import api_view
-from .serializers import (
-    ChannelSerializer,
-    ChannelMessageSerializer,
-    ThreadSerializer
-)
-from .serializers import SearchMessageQuerySerializer
-from .utils import find_item_in_data
 
-import json
+from .serializers import (
+    ChannelMessageSerializer,
+    ChannelSerializer,
+    SearchMessageQuerySerializer,
+    ThreadSerializer,
+    ThreadUpdateSerializer,
+    ThreadUserRoleSerializer,
+)
+from .utils import find_item_in_data
 
 # Create your views here.
 
 # Creating mockup data for the messages_data
 messages_data = [
-    {"user_name": "Buka",
-     "channel_name": "Backend",
-     "value": "Submit all assignments on time"
-     },
-    {"user_name": "Vuie",
-     "channel_name": "Announcements",
-     "value": "Sign up on time"
-     },
-    {"user_name": "Marxo",
-     "channel_name": "Announcements",
-     "value": "Welcome to HNGX8"
-     }
-
+    {
+        "user_name": "Buka",
+        "channel_name": "Backend",
+        "value": "Submit all assignments on time",
+    },
+    {"user_name": "Vuie", "channel_name": "Announcements", "value": "Sign up on time"},
+    {
+        "user_name": "Marxo",
+        "channel_name": "Announcements",
+        "value": "Welcome to HNGX8",
+    },
 ]
-
-
-# messages_data = []
-
-
-class Test(APIView):
-    """
-    Testing endpoint for channel app
-    """
-
-    def get(self, request):
-        return Response({"msg": "working"}, status=status.HTTP_200_OK)
 
 
 class GetChannelInfo(APIView):
@@ -63,7 +51,7 @@ class GetChannelInfo(APIView):
             "roles": [],
             "threads": [],
             "chats": [],
-            "pinned_chats": []
+            "pinned_chats": [],
         }
 
         return Response(payload, status=status.HTTP_200_OK)
@@ -85,9 +73,9 @@ class GetChannelRoles(APIView):
                         {
                             "id": 1,
                             "description": "User can add other user",
-                            "type": "Add-User"
+                            "type": "Add-User",
                         }
-                    ]
+                    ],
                 }
             ],
         }
@@ -108,50 +96,52 @@ class ThreadUserRoleView(APIView):
 
         else:
             return Response({"message": "invalidation error"})
-@api_view(['POST', 'GET'])
+
+
+@api_view(["POST", "GET"])
 def create_channel(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         serializer = ChannelSerializer(data=request.data)
         if serializer.is_valid():
             response = {
                 "status": True,
                 "message": "Channel Created",
-                "data": serializer.data
+                "data": serializer.data,
             }
             return Response(response, status=status.HTTP_200_OK)
 
         return Response(serializer.errors)
 
-    return Response({"detail": "//GET// is not allowed, required fields: name, desc, privacy status"})
+    return Response(
+        {
+            "detail": "//GET// is not allowed, required fields: name, desc, privacy status"
+        }
+    )
 
 
 class SearchMessagesAPIView(APIView):
-	
     def post(self, request):
         serializer = SearchMessageQuerySerializer(data=request.data)
         if serializer.is_valid():
-            value = serializer.validated_data['value']
+            value = serializer.validated_data["value"]
             if value != "-":
                 data = find_item_in_data(messages_data, value, "value")
-                response = {
-                    "status": True,
-                    "message": "Query results",
-                    "data": data
-                }
+                response = {"status": True, "message": "Query results", "data": data}
                 return Response(response, status=status.HTTP_200_OK)
             else:
                 data = messages_data
-                response = {
-                    "status": True,
-                    "message": "Query results",
-                    "data": data
-                }
+                response = {"status": True, "message": "Query results", "data": data}
                 return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors)
 
     def get(self, request):
         return Response(
-            {"status": True, "message": "Endpoint to search messages, passing '-' will return all messages_data."})
+            {
+                "status": True,
+                "message": "Endpoint to search messages, passing '-' will return all messages_data.",
+            }
+        )
+
 
 class SendMessageInChannel(APIView):
     def post(self, request):
@@ -162,11 +152,10 @@ class SendMessageInChannel(APIView):
         }
         return Response(response, status=status.HTTP_200_OK)
 
-@api_view(['DELETE'])
+
+@api_view(["DELETE"])
 def channel_delete(request, channel_id):
-    data = {
-      "message": "Channel deleted successfully."
-    }
+    data = {"message": "Channel deleted successfully."}
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -186,12 +175,41 @@ class CreateThreadView(generics.CreateAPIView):
             save_to="https://api.zuri.chat/data/write/",
         )
 
-class ThreadUserRoleUpdateAPIView(APIView):
-	def post (self, request):
-		serializer = ThreadUserRoleSerializer(data=request.data)
-		if serializer.is_valid():
-			response = serializer.data
-			return Response(response, status=status.HTTP_200_ok)
-		else:
-			return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class ThreadUserRoleUpdateAPIView(APIView):
+    def post(self, request):
+        serializer = ThreadUserRoleSerializer(data=request.data)
+        if serializer.is_valid():
+            response = serializer.data
+            return Response(response, status=status.HTTP_200_ok)
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ThreadUpdateAPIView(APIView):
+    def get(self, request, organization_id, thread_id, channel_id):
+        thread = {
+            "id": "Matthew",
+            "organization_id": "HNG8",
+            "channel_id": "slack",
+            "title": "Backend Coelho",
+            "description": "urgent HNG meeting",
+        }
+        serializer = ThreadUpdateSerializer(data=thread)
+        if serializer.is_valid():
+            response = serializer.data
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class channelUserRoles(APIView):
+
+    """
+    Endpoint For UserRoles on A Channel
+    """
+
+    def delete(self, request, pk):
+        data = {"message": f"Role {pk} has been successfully deleted"}
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
