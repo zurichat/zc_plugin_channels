@@ -4,6 +4,8 @@ import { Flex, Spacer, Avatar, AvatarGroup } from "@chakra-ui/react";
 import { FiUserPlus } from "react-icons/fi";
 import { Icon } from "@chakra-ui/icon";
 import { BsChevronDown, BsHash } from "react-icons/bs";
+import { FaCaretDown } from "react-icons/fa";
+
 
 //avatar details
 const avatars = [

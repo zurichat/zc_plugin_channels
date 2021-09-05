@@ -9,7 +9,9 @@ const MessageBoardIndex = () => {
   return (
     <Box>
       <ChannelDetailsContainer />
-      <MessageCardContainer />
+      <Box overflowY="scroll" height={["75vh","79vh", "80vh", "75vh"]}>
+        <MessageCardContainer />
+      </Box>
       <InputFieldComponent />
     </Box>
   );

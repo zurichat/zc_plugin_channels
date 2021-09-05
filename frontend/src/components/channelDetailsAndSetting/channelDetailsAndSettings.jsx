@@ -44,11 +44,10 @@ const ChannelDetails = () => {
         isOpen={onOpen}
         onClose={onClose}
         size="lg"
-        colorScheme="whiteAlpha"
       >
         <ModalOverlay />
         <ModalContent p={0} mt="8rem" maxW="590px" height="882px">
-          <Tabs>
+          <Tabs colorScheme="#fff">
             <ModalHeader
               pt={3}
               pb={2}
@@ -117,7 +116,7 @@ const ChannelDetails = () => {
                 </Stack>
 
                 <Box w={400}>
-                  <TabsRows />
+                  <TabsRows colorScheme="white"/>
                 </Box>
               </Box>
             </ModalHeader>
