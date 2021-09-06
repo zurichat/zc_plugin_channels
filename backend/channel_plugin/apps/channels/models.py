@@ -11,6 +11,7 @@ class Channel:
     # name of channel
     name: str
     # list of user IDs in a channel
+    slug: str
     users: list = field(default_factory=list)
     # list of role IDs in a channel
     roles: list = field(default_factory=list)
@@ -23,21 +24,18 @@ class Channel:
 
     def create(self, organization_id):
         payload = {
-            "_id": "1",
             "name": self.name.lower(),
-            "slug": slugify(self.name.lower()),
+            "slug": self.slug,
             "description": self.description,
             "private": self.private,
             "users": self.users,
             "roles": self.roles,
             "created_on": self.created_on,
         }
-        return payload
-        # response = Request.post(
-        #     organization_id, self.__class__.__name__.lower(), payload
-        # )
-
-        # return response
+        response = Request.post(
+            organization_id, self.__class__.__name__.lower(), payload
+        )
+        return response
 
     """"
     organization_id: str
@@ -82,16 +80,26 @@ class ChannelMessage:
     user_id: str
     channel_id: str
     content: str
-    # list of thread IDs
-    thread: field(default_factory=list)
     # list of thread emojis
-    emojis: field(default_factory=list)
+    emojis: list = field(default_factory=list)
     pinned: bool = False
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
     def create(self, organization_id):
-        pass
+        payload = {
+            "user_id": self.user_id,
+            "channel_id": self.channel_id,
+            "content": self.content,
+            "emojis": self.emojis,
+            "pinned": self.pinned,
+            "edited": self.edited,
+            "timestamp": self.timestamp,
+        }
+        response = Request.post(
+            organization_id, self.__class__.__name__.lower(), payload
+        )
+        return response
 
     """"
     organization_id: str
@@ -126,12 +134,23 @@ class Thread:
     user_id: str
     channelmessage_id: str
     content: str
-    emojis: field(default_factory=list)
+    emojis: list = field(default_factory=list)
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
     def create(self, organization_id):
-        pass
+        payload = {
+            "user_id": self.user_id,
+            "channelmessage_id": self.channelmessage_id,
+            "content": self.content,
+            "emojis": self.emojis,
+            "edited": self.edited,
+            "timestamp": self.timestamp,
+        }
+        response = Request.post(
+            organization_id, self.__class__.__name__.lower(), payload
+        )
+        return response
 
     """"
     organization_id: str
@@ -169,10 +188,18 @@ class Role:
 
     name: str
     channel_id: str
-    permission: field(default_factory=list)
+    permissions: list = field(default_factory=list)
 
     def create(self, organization_id):
-        pass
+        payload = {
+            "name": self.name,
+            "channel_id": self.channel_id,
+            "permissions": self.permissions,
+        }
+        response = Request.post(
+            organization_id, self.__class__.__name__.lower(), payload
+        )
+        return response
 
     """"
     organization_id: str
