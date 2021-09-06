@@ -1,23 +1,18 @@
-from apps.channels import views
 from apps.channels.views import (
-    Test, SearchMessagesAPIView, GetChannelInfo,
-    create_channel, GetChannelRoles, CreateThreadView
+    ChannelMessageViewset,
+    ChannelViewset,
+    RoleViewset,
+    ThreadViewset,
 )
-from apps.channels.views import SendMessageInChannel
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r"", ChannelViewset, basename="channel")
+router.register(r"^message", ChannelMessageViewset, basename="channelmessage")
+router.register(r"^thread", ThreadViewset, basename="thread")
+router.register(r"^role", RoleViewset, basename="role")
 
 urlpatterns = [
-    path("test/", Test.as_view()),
-    path("<int:pk>/roles/", GetChannelRoles.as_view(), name="api_channel_roles"),
-    path("<int:pk>/", GetChannelInfo.as_view()),
-    path("create_channel/", create_channel, name="api_create_channel"),
-    path("search_messages/", SearchMessagesAPIView.as_view(), name='api_search_messages'),
-    path("messages/", SendMessageInChannel.as_view()),
-
-    path("<int:channel_id>/delete/", views.channel_delete, name='delete_channel'),
-    path(
-        "organizations/<organization_id>/channels/<channel_id>/threads/",
-        CreateThreadView.as_view(),
-        name="create-thread",
-    ),
+    path("", include((router.urls, "channels"))),
 ]
