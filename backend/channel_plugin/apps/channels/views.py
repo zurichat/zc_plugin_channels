@@ -267,6 +267,29 @@ class channelUserRoles(APIView):
     Endpoint For UserRoles on A Channel
     """
 
+class GetChannelList(APIView):
+    """
+    Endpoint to get all the roles on a channel
+    """
+
+    def get(self, request, pk):
+        channels = [
+            {"id": pk,
+            "title":"Channel title",
+            "description":"Channel description",
+            "private":['false'],
+            "closed":['false'],
+            "members": [
+                {"id":"user_id",
+                        "roles":["id reference to the users role"]
+                }
+            ],
+        },
+        ]
+
+        return Response(channels, status=status.HTTP_200_OK)
+
     def delete(self, request, pk):
         data = {"message": f"Role {pk} has been successfully deleted"}
         return Response(data, status=status.HTTP_204_NO_CONTENT)
+

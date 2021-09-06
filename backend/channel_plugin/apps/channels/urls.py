@@ -1,5 +1,9 @@
 from apps.channels import views
 from apps.channels.views import (
+    Test, SearchMessagesAPIView, GetChannelInfo,
+    create_channel, GetChannelRoles, CreateThreadView,ThreadUserRoleView,
+    ThreadUserRoleUpdateAPIView,GetChannelList
+
     ChannelViewset,
     CreateThreadView,
     GetChannelRoles,
@@ -10,6 +14,7 @@ from apps.channels.views import (
     ThreadUserRoleView,
     channelUserRoles,
     create_channel,
+
 )
 from django.urls import path, include
 from rest_framework import routers
@@ -32,6 +37,7 @@ urlpatterns = [
         CreateThreadView.as_view(),
         name="create-thread",
     ),
+    path("channes/",GetChannelList.as_view(), name="channels"),
     path(
         "organizations/<organization_id>/channels/<channel_id>/thread/<thread_id>/",
         views.ThreadUpdateAPIView.as_view(),
