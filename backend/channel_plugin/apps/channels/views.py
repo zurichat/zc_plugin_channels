@@ -270,3 +270,11 @@ class channelUserRoles(APIView):
     def delete(self, request, pk):
         data = {"message": f"Role {pk} has been successfully deleted"}
         return Response(data, status=status.HTTP_204_NO_CONTENT)
+
+
+class messageList(APIView):
+
+    def get(self, request):
+        message_data= [{"message": message}]
+        results = ChannelMessageSerializer(message_data, many=True).data
+        return Response(results)

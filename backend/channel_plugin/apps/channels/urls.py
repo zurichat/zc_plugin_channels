@@ -38,4 +38,6 @@ urlpatterns = [
         name="thread_update",
     ),
     path("roles/<int:pk>/", channelUserRoles.as_view()),
+
+    path("messageList/<int:channel_id>/", views.messageList.as_view(), name='messageList'),
 ]
