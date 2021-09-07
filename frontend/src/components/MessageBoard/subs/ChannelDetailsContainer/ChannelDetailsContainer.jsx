@@ -4,6 +4,9 @@ import { Flex, Spacer, Avatar, AvatarGroup } from "@chakra-ui/react";
 import { FiUserPlus } from "react-icons/fi";
 import { Icon } from "@chakra-ui/icon";
 import { BsChevronDown, BsHash } from "react-icons/bs";
+import { FaCaretDown } from "react-icons/fa";
+import { Link } from "react-router-dom";
+
 
 //avatar details
 const avatars = [
@@ -42,7 +45,7 @@ const ChannelDetailsContainer = () => {
           <Icon as={BsChevronDown} color="black" w={3} h={6} />
         </Flex>
         <Spacer />
-        <Flex p="4">
+       <Link to="/channel-detail"> <Flex p="4">
           <HStack justifyContent="space-between">
             <AvatarGroup size="xs" max={3}>
               {avatars.map((avatar) => {
@@ -52,7 +55,7 @@ const ChannelDetailsContainer = () => {
             <Box as="span">30,000</Box>
             <FiUserPlus color="#333333" />
           </HStack>
-        </Flex>
+        </Flex></Link>
       </Flex>
     </Box>
   );

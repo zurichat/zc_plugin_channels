@@ -19,6 +19,7 @@ import {
 import { Text } from "@chakra-ui/layout";
 
 import React from "react";
+import { Link } from "react-router-dom";
 
 const CreateChannelModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -110,6 +111,7 @@ const CreateChannelModal = () => {
           </ModalBody>
 
           <ModalFooter>
+            <Link to="/create-channel">
             <Button
               backgroundColor="#00B87C"
               pt={6}
@@ -121,7 +123,8 @@ const CreateChannelModal = () => {
               onClick={onClose}
             >
               Create
-            </Button>
+            </Button> 
+            </Link>
           </ModalFooter>
         </ModalContent>
       </Modal>

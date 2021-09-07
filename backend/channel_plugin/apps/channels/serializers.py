@@ -1,87 +1,80 @@
-import random
-
-from django.utils import timezone
-
+from apps.roles.serializers import RoleSerializer
+from django.utils.text import slugify
 from rest_framework import serializers
 
-class ThreadUserRoleSerializer(serializers.Serializer):
-    role_id = serializers.CharField(max_length=200)
-    role_type = serializers.CharField(max_length=200)
-    permission_id = serializers.CharField(max_length=200)
-    permission_description = serializers.CharField(max_length=200)
-    permission_type = serializers.CharField(max_length=200)
+from channel_plugin.utils.customrequest import Request
+
+from .models import Channel
+
 
 class ChannelSerializer(serializers.Serializer):
-	# id = serializers.PositiveIntegerField()
-	name = serializers.CharField(max_length=30)
-	desc = serializers.CharField(max_length=100)
-	private = serializers.BooleanField()
+
+    name = serializers.CharField(max_length=100, required=True)
+    description = serializers.CharField(required=False)
+    private = serializers.BooleanField(default=False)
+
+    def validate_name(self, name):
+        """
+        Validate name doesnt alreat exist in organization
+        """
+        data = {"name": name}
+        response = Request.get(self.context.get("org_id"), "channel", data)
+
+        try:
+            if response.json():
+                raise serializers.ValidationError({"error": "Name already exist"})
+        except AttributeError:
+            if response:
+                raise serializers.ValidationError({"error": "Name already exist"})
+        return name
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        slug = slugify(instance.get("name"))
+        channel = Channel(**instance, slug=slug)
+        data = {"channel": channel}
+        return data
+
+
+class UserSerializer(serializers.Serializer):
+
+    _id = serializers.CharField(max_length=10, required=True)
+    role_id = serializers.CharField(max_length=10, required=False)
+    is_admin = serializers.BooleanField(default=False)
+
+
+class ChannelUpdateSerializer(serializers.Serializer):
+
+    _id = serializers.ReadOnlyField()
+    name = serializers.CharField(max_length=100, required=True)
+    description = serializers.CharField(required=False)
+    private = serializers.BooleanField(default=True)
+    users = UserSerializer(many=True)
+    roles = RoleSerializer(many=True)
+
+    def validate_name(self, name):
+        """
+        Validate name doesnt already exist here
+        """
+        data = {"name": name}
+        response = Request.get(self.context.get("org_id"), "channel", data)
+        try:
+            if response.json():
+                raise serializers.ValidationError({"error": "Name already exist"})
+        except AttributeError:
+            if response:
+                raise serializers.ValidationError({"error": "Name already exist"})
+        return name
+
+    def to_representation(self, instance):
+        if instance:
+            instance = dict(instance)
+            slug = slugify(instance.get("name"))
+            channel = Channel(**instance, slug=slug)
+            data = {"channel": channel}
+            return data
+        return super().to_representation(instance)
+
 
 class SearchMessageQuerySerializer(serializers.Serializer):
-	value = serializers.CharField(max_length = 100)
-
-class ThreadUserRoleSerializer(serializers.Serializer):
-	id = serializers.IntegerField()
-	type = serializers.CharField()
-	value = serializers.CharField(max_length = 100)
-	
-class ChannelMessageSerializer(serializers.Serializer):
-    """ """
-
-    id = serializers.IntegerField()
-    creator_id = serializers.IntegerField()
-    timestamp = serializers.DateTimeField()
-    message = serializers.CharField()
-    edited = serializers.BooleanField()
-
-
-class ThreadSerializer(serializers.Serializer):
-
-    # Fields
-    id = serializers.CharField(max_length=20, read_only=True)
-
-    organization_id = serializers.CharField(max_length=200, read_only=True)
-
-    channel_id = serializers.CharField(max_length=200, read_only=True)
-
-    title = serializers.CharField(required=True, max_length=50)
-
-    description = serializers.CharField(max_length=1000)
-    date_created = serializers.TimeField(read_only=True, required=False)
-
-    def create(self, validated_data):
-        alpha_num = "abcdefghijklmnopqrstuvwxyz" + "0123456789"
-        kwargs = {}
-
-        validated_data["id"] = "".join(random.choices(alpha_num, k=20))
-        validated_data["date_created"] = timezone.now().isoformat()
-
-        kwargs["bulk_write"] = False
-        kwargs["obeject_id"] = None
-        kwargs["filter"] = {}
-
-        # save_to = validated_data.pop("save_to", "")
-
-        data = {
-            **kwargs,
-            "payload": {**validated_data},
-        }
-
-        # send data to zc-core at this point
-        """uncomment this block once plugin is registered to zc-core"""
-        # header = kwargs.get("Headers")
-        # response = post(url=save_to, data=data, headers=self.Headers)
-        # allowed = [200, 201]
-        # assert response.status_code in allowed
-
-        res = data["payload"]
-        return res
-
-class ThreadUpdateSerializer(serializers.Serializer):
-
-	id = serializers.CharField(max_length=50, read_only =True)
-	organization_id = serializers.CharField(max_length=200, read_only=True)
-	channel_id = serializers.CharField(max_length=200, read_only=True)
-	title = serializers.CharField(required=True, max_length=50)
-	description = serializers.CharField(max_length=1000)
-	date_created = serializers.TimeField(read_only=True, required=False)
+    value = serializers.CharField(max_length=100)

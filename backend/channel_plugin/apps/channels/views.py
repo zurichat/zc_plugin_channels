@@ -1,215 +1,115 @@
-import json
-
-from django.conf import settings
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, permissions, status
-from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
-from .serializers import (
-    ChannelMessageSerializer,
+from channel_plugin.utils.customrequest import Request
+
+from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
-    SearchMessageQuerySerializer,
-    ThreadSerializer,
-    ThreadUpdateSerializer,
-    ThreadUserRoleSerializer,
+    ChannelUpdateSerializer,
 )
-from .utils import find_item_in_data
 
 # Create your views here.
 
-# Creating mockup data for the messages_data
-messages_data = [
-    {
-        "user_name": "Buka",
-        "channel_name": "Backend",
-        "value": "Submit all assignments on time",
-    },
-    {"user_name": "Vuie", "channel_name": "Announcements", "value": "Sign up on time"},
-    {
-        "user_name": "Marxo",
-        "channel_name": "Announcements",
-        "value": "Welcome to HNGX8",
-    },
-]
 
+class ChannelViewset(ViewSet):
+    @swagger_auto_schema(
+        request_body=ChannelSerializer,
+        responses={201: openapi.Response("Response", ChannelUpdateSerializer)},
+    )
+    @action(methods=["POST"], detail=False, url_path="(?P<org_id>[^/.]+)")
+    def channels(self, request, org_id):
 
-class GetChannelInfo(APIView):
-    """
-    Endpoint to get details about a channel
-    """
+        """
+        This creates a channel for a
+        particular organization identified by ID
+        """
 
-    def get(self, request, pk):
-        payload = {
-            "id": pk,
-            "title": "The Big Bang",
-            "description": "This is only a theory",
-            "private": False,
-            "closed": False,
-            "members": [],
-            "roles": [],
-            "threads": [],
-            "chats": [],
-            "pinned_chats": [],
-        }
+        serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.data.get("channel")
+        result = channel.create(org_id)
+        return Response(result, status=status.HTTP_201_CREATED)
 
-        return Response(payload, status=status.HTTP_200_OK)
-
-
-class GetChannelRoles(APIView):
-    """
-    Endpoint to get all the roles on a channel
-    """
-
-    def get(self, request, pk):
-        payload = {
-            "id": pk,
-            "roles": [
-                {
-                    "id": 1,
-                    "type": "admin",
-                    "permissions": [
-                        {
-                            "id": 1,
-                            "description": "User can add other user",
-                            "type": "Add-User",
-                        }
-                    ],
-                }
-            ],
-        }
-
-        return Response(payload, status=status.HTTP_200_OK)
-
-
-class ThreadUserRoleView(APIView):
-    serializer_class = ThreadUserRoleSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            role_type = serializer.validated_data.get("role_type")
-            message = f"{role_type} was created successfully"
-            return Response({"message": message})
-
-        else:
-            return Response({"message": "invalidation error"})
-
-
-@api_view(["POST", "GET"])
-def create_channel(request):
-    if request.method == "POST":
-        serializer = ChannelSerializer(data=request.data)
-        if serializer.is_valid():
-            response = {
-                "status": True,
-                "message": "Channel Created",
-                "data": serializer.data,
-            }
-            return Response(response, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors)
-
-    return Response(
-        {
-            "detail": "//GET// is not allowed, required fields: name, desc, privacy status"
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Response", ChannelUpdateSerializer(many=True))
         }
     )
+    @action(methods=["GET"], detail=False, url_path="(?P<org_id>[^/.]+)/all")
+    def channel_all(self, request, org_id):
 
+        """
+        This gets all channels for a
+        particular organization identified by ID
+        """
+        data = {}
+        data.update(dict(request.query_params))
+        result = Request.get(org_id, "channel", data)
+        return Response(result, status=status.HTTP_200_OK)
 
-class SearchMessagesAPIView(APIView):
-    def post(self, request):
-        serializer = SearchMessageQuerySerializer(data=request.data)
-        if serializer.is_valid():
-            value = serializer.validated_data["value"]
-            if value != "-":
-                data = find_item_in_data(messages_data, value, "value")
-                response = {"status": True, "message": "Query results", "data": data}
-                return Response(response, status=status.HTTP_200_OK)
-            else:
-                data = messages_data
-                response = {"status": True, "message": "Query results", "data": data}
-                return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.errors)
+    @swagger_auto_schema(
+        responses={200: openapi.Response("Response", ChannelUpdateSerializer)}
+    )
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/retrieve",
+    )
+    def channel_retrieve(self, request, org_id, channel_id):
+        data = {"_id": channel_id}
+        result = Request.get(org_id, "channel", data)
+        return Response(result, status=status.HTTP_200_OK)
 
-    def get(self, request):
-        return Response(
-            {
-                "status": True,
-                "message": "Endpoint to search messages, passing '-' will return all messages_data.",
-            }
+    @swagger_auto_schema(
+        request_body=ChannelUpdateSerializer,
+        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+    )
+    @action(
+        methods=["PUT"],
+        detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/update",
+    )
+    def channel_update(self, request, org_id, channel_id):
+        serializer = ChannelUpdateSerializer(
+            data=request.data, context={"org_id": org_id}
         )
+        serializer.is_valid(raise_exception=True)
+        channel = serializer.data.get("channel")
+        result = channel.update(org_id, channel_id)
+        return Response(result, status=status.HTTP_200_OK)
+
+    @action(
+        methods=["DELETE"],
+        detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/delete",
+    )
+    def channel_delete(self, request, org_id, channel_id):
+        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
 
 
-class SendMessageInChannel(APIView):
-    def post(self, request):
-        Serializer = ChannelMessageSerializer(data=request.data)
-        response = {
-            "status": True,
-            "message": "Message successfully sent",
-        }
-        return Response(response, status=status.HTTP_200_OK)
+# class SearchMessagesAPIView(APIView):
+#     def post(self, request):
+#         serializer = SearchMessageQuerySerializer(data=request.data)
+#         if serializer.is_valid():
+#             value = serializer.validated_data["value"]
+#             if value != "-":
+#                 data = find_item_in_data(messages_data, value, "value")
+#                 response = {"status": True, "message": "Query results", "data": data}
+#                 return Response(response, status=status.HTTP_200_OK)
+#             else:
+#                 data = messages_data
+#                 response = {"status": True, "message": "Query results", "data": data}
+#                 return Response(response, status=status.HTTP_200_OK)
+#         return Response(serializer.errors)
 
-
-@api_view(["DELETE"])
-def channel_delete(request, channel_id):
-    data = {"message": "Channel deleted successfully."}
-    return Response(data, status=status.HTTP_200_OK)
-
-
-class CreateThreadView(generics.CreateAPIView):
-    serializer_class = ThreadSerializer
-    permission_classes = []
-
-    def perform_create(self, serializer):
-        plugin_id = getattr(settings, "PLUGIN_ID", "000000000000000")
-
-        res = serializer.save(
-            plugin_id=plugin_id,
-            headers=self.request.headers,  # header contains auth-token from user
-            collection_name="threads",
-            organization_id=self.kwargs.get("organization_id"),
-            channel_id=self.kwargs.get("channel_id"),
-            save_to="https://api.zuri.chat/data/write/",
-        )
-
-
-class ThreadUserRoleUpdateAPIView(APIView):
-    def post(self, request):
-        serializer = ThreadUserRoleSerializer(data=request.data)
-        if serializer.is_valid():
-            response = serializer.data
-            return Response(response, status=status.HTTP_200_ok)
-        else:
-            return Response(
-                serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-
-class ThreadUpdateAPIView(APIView):
-    def get(self, request, organization_id, thread_id, channel_id):
-        thread = {
-            "id": "Matthew",
-            "organization_id": "HNG8",
-            "channel_id": "slack",
-            "title": "Backend Coelho",
-            "description": "urgent HNG meeting",
-        }
-        serializer = ThreadUpdateSerializer(data=thread)
-        if serializer.is_valid():
-            response = serializer.data
-            return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class channelUserRoles(APIView):
-
-    """
-    Endpoint For UserRoles on A Channel
-    """
-
-    def delete(self, request, pk):
-        data = {"message": f"Role {pk} has been successfully deleted"}
-        return Response(data, status=status.HTTP_204_NO_CONTENT)
+#     def get(self, request):
+#         return Response(
+#             {
+#                 "status": True,
+#                 "message": "Endpoint to search messages, passing '-' will return all messages_data.",
+#             }
+#         )

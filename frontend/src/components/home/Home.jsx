@@ -55,24 +55,24 @@ const Home = () => {
         borderRadius="2px"
       >
         <Stack direction={["column", "row"]} spacing={4} align="center">
+          <Link to="/admin"> 
           <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            <Link to="/create-channel">Empty Channel</Link>
+            Admin
           </Button>
-          <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            <Link to="/admin">Admin</Link>
-          </Button>
-          <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            <Link to="/message-board">Message Board</Link>
-          </Button>
-          <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            <Link to="/channel-detail">Channel Detail</Link>
-          </Button>
-          {/* <Button colorScheme="teal" variant="solid">
-            <Link to="/user-profile"> User Profile</Link>
-          </Button> */}
-          <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            <Link to="/thread"> Threads</Link>
-          </Button>
+          </Link>
+          <Link to="/message-board"> <Button colorScheme="teal" bg="#00b87c" variant="solid">
+           Message Board
+          </Button></Link>
+         
+           <Link to="/user-profile">
+          <Button
+           
+            colorScheme="teal"
+            bg="#00b87c"
+            variant="solid"
+          >
+             User Profile
+          </Button></Link>
         </Stack>
       </Box>
     </Box>
