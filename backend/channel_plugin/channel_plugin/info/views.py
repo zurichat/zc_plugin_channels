@@ -1,9 +1,9 @@
 import random
-from datetime import datetime
 
 from django.conf import settings
+from django.utils import timezone
 from rest_framework import status
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -33,8 +33,8 @@ class GetInfoViewset(ViewSet):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(methods=["GET"], detail=False, url_path="side-info")
-    def side_info(self, request):
+    @action(methods=["GET"], detail=False, url_path="sidebar")
+    def info_sidebar(self, request):
         data = {
             "name": settings.TEAM_NAME,
             "project": settings.PROJECT_NAME,
@@ -44,15 +44,9 @@ class GetInfoViewset(ViewSet):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-
-now = datetime.now()
-
-
-@api_view(["GET"])
-def vistingDetail(request):
-    if request.method == "GET":
-
-        date = now.strftime("%m/%d/%Y, %H:%M:%S")
+    @action(methods=["GET"], detail=False, url_path="details")
+    def info_details(self, request):
+        date = timezone.now().isoformat()
         no_of_times = random.randint(11, 25) + random.randint(10, 20)
         return Response(
             data={
