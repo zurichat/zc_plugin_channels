@@ -72,11 +72,11 @@ class Request:
             return payload  # to be changed later
 
     @staticmethod
-    def put(org_id, collection, payload, filter=None, object_id=None):
+    def put(org_id, collection_name, payload, filter=None, object_id=None):
         data.update(
             {
                 "organization_id": org_id,
-                "collection_name": collection,
+                "collection_name": collection_name,
                 "bulk_write": check_payload(payload),
                 "payload": payload,
             }
@@ -99,8 +99,14 @@ class Request:
                 return response.json()
             return JsonResponse({"error": response.json()}, status_code=400)
         except:  # noqa
-            payload.update({"_id": str(random.randint(1, 100))})
-            return payload  # to be changed later
+            document = {}
+            for item in fixtures.get(collection_name):
+                if item.get("_id") == object_id:
+                    document.update(item)
+            if document:
+                document.update(payload)
+                return document
+            return dict()  # to be changed later
 
     @staticmethod
     def delete(org_id, collection, payload, filter=None, object_id=None):
