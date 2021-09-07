@@ -44,6 +44,8 @@ class UserSerializer(serializers.Serializer):
 
 
 class ChannelUpdateSerializer(serializers.Serializer):
+
+    _id = serializers.ReadOnlyField()
     name = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(default=True)

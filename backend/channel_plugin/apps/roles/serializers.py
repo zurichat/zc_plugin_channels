@@ -12,6 +12,7 @@ class Permission(serializers.Serializer):
 
 class RoleSerializer(serializers.Serializer):
 
+    _id = serializers.ReadOnlyField()
     name = serializers.CharField(max_length=10)
     channel_id = serializers.CharField(read_only=True)
     permissions = Permission(many=True)

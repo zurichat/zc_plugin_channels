@@ -19,11 +19,12 @@ class ThreadSerializer(serializers.Serializer):
 
 class ThreadUpdateSerializer(serializers.Serializer):
 
+    _id = serializers.ReadOnlyField()
     user_id = serializers.CharField(read_only=True)
     channelmessage_id = serializers.CharField(read_only=True)
     content = serializers.CharField()
     emojis = serializers.ListField(serializers.CharField(), allow_empty=True)
-    edited = serializers.BooleanField(default=False)
+    edited = serializers.BooleanField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
 
     def to_representation(self, instance):
