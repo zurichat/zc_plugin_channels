@@ -1,8 +1,18 @@
-from apps.channels.views import Test, SearchMessagesAPIView, GetChannelInfo
-from django.urls import path
+from apps.channels.views import (
+    ChannelMessageViewset,
+    ChannelViewset,
+    RoleViewset,
+    ThreadViewset,
+)
+from django.urls import include, path
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r"", ChannelViewset, basename="channel")
+router.register(r"^message", ChannelMessageViewset, basename="channelmessage")
+router.register(r"^thread", ThreadViewset, basename="thread")
+router.register(r"^role", RoleViewset, basename="role")
 
 urlpatterns = [
-    path("test/", Test.as_view()),
-    path("<int:pk>/", GetChannelInfo.as_view()),
-    path("search_messages/", SearchMessagesAPIView.as_view(), name='api_search_messages'),
+    path("", include((router.urls, "channels"))),
 ]
