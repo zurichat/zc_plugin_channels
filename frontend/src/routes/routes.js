@@ -2,7 +2,7 @@ import { Switch, Route } from 'react-router-dom';
 import Home from '../components/home/Home';
 import Admin from '../components/admin/index';
 import CreateChannel from '../components/createChannel/index';
-import MessageBoardIndex from '../components/MessageBoard/MessageBoardIndex/';
+import MessageBoardIndex from '../components/MessageBoard/MessageBoardIndex';
 import ChannelDetailsAndSetting from '../components/channelDetailsAndSetting/index';
 import userProfile from '../components/UserProfile/UserProfile';
 import Index from '../components/thread/Index';
