@@ -1,123 +1,142 @@
-import random
-
-from django.utils import timezone
-
+from django.utils.text import slugify
 from rest_framework import serializers
-from .models import Channel
 
-class ThreadUserRoleSerializer(serializers.Serializer):
-    role_id = serializers.CharField(max_length=200)
-    role_type = serializers.CharField(max_length=200)
-    permission_id = serializers.CharField(max_length=200)
-    permission_description = serializers.CharField(max_length=200)
-    permission_type = serializers.CharField(max_length=200)
+from .models import Channel, ChannelMessage, Role, Thread
+
 
 class ChannelSerializer(serializers.Serializer):
-    
+
     name = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(required=False)
-    private = serializers.BooleanField(default=True)
+    private = serializers.BooleanField(default=False)
 
-    def validate__name(self, name):
-        pass
+    def validate_name(self, name):
+        """
+        Validate name doesnt alreat exist in organization
+        """
+        return name
 
     def to_representation(self, instance):
         instance = dict(instance)
-        channel = Channel(**instance)
+        slug = slugify(instance.get("name"))
+        channel = Channel(**instance, slug=slug)
         data = {"channel": channel}
         return data
+
+
+class Permission(serializers.Serializer):
+
+    name = serializers.CharField(max_length=50)
+    description = serializers.CharField()
+
+
+class RoleSerializer(serializers.Serializer):
+
+    name = serializers.CharField(max_length=10)
+    channel_id = serializers.CharField(read_only=True)
+    permissions = Permission(many=True)
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        channel_id = self.context.get("channel_id")
+        instance["permissions"] = [
+            {**item, "key": slugify(item.get("name"))}
+            for item in instance.get("permissions")
+        ]
+        role = Role(**instance, channel_id=channel_id)
+        data = {"role": role}
+        return data
+
+
+class UserSerializer(serializers.Serializer):
+
+    _id = serializers.CharField(max_length=10, required=True)
+    role_id = serializers.CharField(max_length=10, required=False)
+    is_admin = serializers.BooleanField(default=False)
+
 
 class ChannelUpdateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(default=True)
-    users = serializers.ListField(child=serializers.JSONField(), allow_empty=True)
-    roles = serializers.ListField(child=serializers.CharField(max_length=10), allow_empty=True)
+    users = UserSerializer(many=True)
+    roles = RoleSerializer(many=True)
+
+    def validate_name(self, name):
+        """
+        Validate name doesnt already exist here
+        """
+        return name
 
     def to_representation(self, instance):
-        instance = dict(instance)
-        channel = Channel(**instance)
-        data = {"channel": channel}
-        return data
+        if instance:
+            instance = dict(instance)
+            channel = Channel(**instance)
+            data = {"channel": channel}
+            return data
+        return super().to_representation(instance)
 
-    def validate__name(self, name):
-        pass
 
-    def to_representation(self, instance):
-        instance = dict(instance)
-        channel = Channel(
-            name=instance.get("name"),
-            description=instance.get("desc"),
-            private=instance.get("private")
-        )
-        data = {"channel": channel}
-        return data
-
-class SearchMessageQuerySerializer(serializers.Serializer):
-	value = serializers.CharField(max_length = 100)
-
-class ThreadUserRoleSerializer(serializers.Serializer):
-	id = serializers.IntegerField()
-	type = serializers.CharField()
-	value = serializers.CharField(max_length = 100)
-	
 class ChannelMessageSerializer(serializers.Serializer):
-    """ """
 
-    id = serializers.IntegerField()
-    creator_id = serializers.IntegerField()
-    timestamp = serializers.DateTimeField()
-    message = serializers.CharField()
-    edited = serializers.BooleanField()
+    user_id = serializers.CharField(max_length=10, required=True)
+    content = serializers.CharField()
+    timestamp = serializers.DateTimeField(read_only=True)
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        channel_id = self.context.get("channel_id")
+        message = ChannelMessage(**instance, channel_id=channel_id)
+        data = {"channelmessage": message}
+        return data
+
+
+class ChannelMessageUpdateSerializer(serializers.Serializer):
+
+    user_id = serializers.CharField(read_only=True)
+    channel_id = serializers.CharField(read_only=True)
+    content = serializers.CharField()
+    emojis = serializers.ListField(serializers.CharField(), allow_empty=True)
+    pinned = serializers.BooleanField(default=False)
+    edited = serializers.BooleanField(default=False)
+    timestamp = serializers.DateTimeField(read_only=True)
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        message = ChannelMessage(**instance)
+        data = {"message": message}
+        return data
 
 
 class ThreadSerializer(serializers.Serializer):
 
-    # Fields
-    id = serializers.CharField(max_length=20, read_only=True)
+    user_id = serializers.CharField(max_length=10, required=True)
+    content = serializers.CharField()
+    timestamp = serializers.DateTimeField(read_only=True)
 
-    organization_id = serializers.CharField(max_length=200, read_only=True)
+    def to_representation(self, instance):
+        instance = dict(instance)
+        channelmessage_id = self.context.get("channelmessage_id")
+        thread = Thread(**instance, channelmessage_id=channelmessage_id)
+        data = {"thread": thread}
+        return data
 
-    channel_id = serializers.CharField(max_length=200, read_only=True)
-
-    title = serializers.CharField(required=True, max_length=50)
-
-    description = serializers.CharField(max_length=1000)
-    date_created = serializers.TimeField(read_only=True, required=False)
-
-    def create(self, validated_data):
-        alpha_num = "abcdefghijklmnopqrstuvwxyz" + "0123456789"
-        kwargs = {}
-
-        validated_data["id"] = "".join(random.choices(alpha_num, k=20))
-        validated_data["date_created"] = timezone.now().isoformat()
-
-        kwargs["bulk_write"] = False
-        kwargs["obeject_id"] = None
-        kwargs["filter"] = {}
-
-        # save_to = validated_data.pop("save_to", "")
-
-        data = {
-            **kwargs,
-            "payload": {**validated_data},
-        }
-
-        # send data to zc-core at this point
-        """uncomment this block once plugin is registered to zc-core"""
-        # header = kwargs.get("Headers")
-        # response = post(url=save_to, data=data, headers=self.Headers)
-        # allowed = [200, 201]
-        # assert response.status_code in allowed
-
-        res = data["payload"]
-        return res
 
 class ThreadUpdateSerializer(serializers.Serializer):
 
-	id = serializers.CharField(max_length=50, read_only =True)
-	organization_id = serializers.CharField(max_length=200, read_only=True)
-	channel_id = serializers.CharField(max_length=200, read_only=True)
-	title = serializers.CharField(required=True, max_length=50)
-	description = serializers.CharField(max_length=1000)
-	date_created = serializers.TimeField(read_only=True, required=False)
+    user_id = serializers.CharField(read_only=True)
+    channelmessage_id = serializers.CharField(read_only=True)
+    content = serializers.CharField()
+    emojis = serializers.ListField(serializers.CharField(), allow_empty=True)
+    edited = serializers.BooleanField(default=False)
+    timestamp = serializers.DateTimeField(read_only=True)
+
+    def to_representation(self, instance):
+        instance = dict(instance)
+        thread = Thread(**instance)
+        data = {"thread": thread}
+        return data
+
+
+class SearchMessageQuerySerializer(serializers.Serializer):
+    value = serializers.CharField(max_length=100)

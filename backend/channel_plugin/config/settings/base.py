@@ -312,6 +312,13 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # ------------------------------------------------------------------------------
 TEAM_NAME = "Team Coelho"
 PROJECT_NAME = "Zuri Chat Channel Plugin"
-PLUGIN_ID = "xxx-99-987-093-xxx"
+
+try:
+    with open("plugin_id.txt") as f:
+        PLUGIN_ID = f.readline()
+        f.close()
+except:  # noqa
+    PLUGIN_ID = ""
+
 READ_URL = "https://zuri.chat/data/read/"
 WRITE_URL = "https://zuri.chat/data/write/"
