@@ -71,7 +71,8 @@ class ChannelViewset(ViewSet):
         return Response({"message":True,"data" :result}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelUpdateSerializer)}
+        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+operation_id="message read one channel",
     )
     @action(
         methods=["GET"],
@@ -109,6 +110,34 @@ class ChannelViewset(ViewSet):
     def channel_delete(self, request, org_id, channel_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
 
+channel_views = ChannelViewset.as_view(
+{
+    "get": "channel_all",
+    "post": "channels",
+}
+)        
 
-class ChannelsModelViewset(ModelViewSet):
-    pass
+channel_views_group = ChannelViewset.as_view(
+    {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
+)
+# class SearchMessagesAPIView(APIView):
+#     def post(self, request):
+#         serializer = SearchMessageQuerySerializer(data=request.data)
+#         if serializer.is_valid():
+#             value = serializer.validated_data["value"]
+#             if value != "-":
+#                 data = find_item_in_data(messages_data, value, "value")
+#                 response = {"status": True, "message": "Query results", "data": data}
+#                 return Response(response, status=status.HTTP_200_OK)
+#             else:
+#                 data = messages_data
+#                 response = {"status": True, "message": "Query results", "data": data}
+#                 return Response(response, status=status.HTTP_200_OK)
+#         return Response(serializer.errors)
+#     def get(self, request):
+#         return Response(
+#             {
+#                 "status": True,
+#                 "message": "Endpoint to search messages, passing '-' will return all messages_data.",
+#             }
+#         )
