@@ -2,6 +2,6 @@ from apps.channelmessages.views import channelmessage_views, channelmessage_view
 from django.urls import path
 
 urlpatterns = [
-    path("message/<str:org_id>/<str:channel_id>/", channelmessage_views),
-    path("message/<str:org_id>/<str:msg_id>/", channelmessage_views_group),
+    path("<str:org_id>/channels/<str:channel_id>/messages/", channelmessage_views),
+    path("<str:org_id>/messages/<str:msg_id>/", channelmessage_views_group),
 ]

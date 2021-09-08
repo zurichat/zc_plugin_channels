@@ -6,7 +6,7 @@ import requests
 To run `python manage.py runscript plugin`
 """
 
-url = "https://api.zuri.chat/plugin/register"
+url = "https://api.zuri.chat/plugins/register"
 data = {
     "name": "channels",
     "developer_name": "Team Coelho",
@@ -14,7 +14,7 @@ data = {
     "description": "Channel Plugin",
     "template_url": "https://channels.zuri.chat",
     "install_url": "https://channels.zuri.chat/install",
-    "sidebar_url": "https://channels.zuri.chat/api/sidebar/",
+    "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar/",
     "icon_url": "https://channels.zuri.chat/static/images/full-logo.png/",
 }
 
