@@ -33,7 +33,7 @@ class GetInfoViewset(ViewSet):
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(methods=["GET"], detail=False, url_path="v1/sidebar")
+    @action(methods=["GET"], detail=False, url_path="sidebar")
     def info_sidebar(self, request):
         org_id = request.GET.get('org', '')
         user_id = request.GET.get('user', '')
@@ -53,8 +53,8 @@ class GetInfoViewset(ViewSet):
                     "id": "DFGHH-EDDDDS-DFDDF",
                     "unread": 2,
                     "members": 23,
-                    "icon" : "shovel"
-                    "action" : "open"
+                    "icon" : "shovel",
+                    "action": "open"
                     },
                 {
                     "title": "announcements",
