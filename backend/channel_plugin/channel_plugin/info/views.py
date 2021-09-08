@@ -53,8 +53,8 @@ class GetInfoViewset(ViewSet):
                     "id": "DFGHH-EDDDDS-DFDDF",
                     "unread": 2,
                     "members": 23,
-                    "icon" : "shovel"
-                    "action" : "open"
+                    "icon" : "shovel",
+                    "action": "open"
                     },
                 {
                     "title": "announcements",
