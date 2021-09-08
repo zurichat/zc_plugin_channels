@@ -1,10 +1,7 @@
-from apps.channels.views import ChannelViewset
-from django.urls import include, path
-from rest_framework import routers
-
-router = routers.DefaultRouter()
-router.register(r"", ChannelViewset, basename="channel")
+from apps.channels.views import channel_views, channel_views_group
+from django.urls import path
 
 urlpatterns = [
-    path("", include((router.urls, "channels"))),
+    path("<str:org_id>/", channel_views),
+    path("<str:org_id>/<str:channel_id>/", channel_views_group),
 ]

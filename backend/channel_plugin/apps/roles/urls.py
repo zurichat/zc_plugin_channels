@@ -1,10 +1,7 @@
-from apps.roles.views import RoleViewset
-from django.urls import include, path
-from rest_framework import routers
-
-router = routers.DefaultRouter()
-router.register(r"^roles", RoleViewset, basename="role")
+from apps.roles.views import role_views, role_views_group
+from django.urls import path
 
 urlpatterns = [
-    path("", include((router.urls, "roles"))),
+    path("roles/<str:org_id>/<str:channel_id>/", role_views),
+    path("roles/<str:org_id>/<str:role_id>/", role_views_group),
 ]

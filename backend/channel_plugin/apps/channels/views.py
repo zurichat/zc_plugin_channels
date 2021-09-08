@@ -20,7 +20,10 @@ class ChannelViewset(ViewSet):
         request_body=ChannelSerializer,
         responses={201: openapi.Response("Response", ChannelUpdateSerializer)},
     )
-    @action(methods=["POST"], detail=False, url_path="(?P<org_id>[^/.]+)")
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
     def channels(self, request, org_id):
 
         """
@@ -39,7 +42,10 @@ class ChannelViewset(ViewSet):
             200: openapi.Response("Response", ChannelUpdateSerializer(many=True))
         }
     )
-    @action(methods=["GET"], detail=False, url_path="(?P<org_id>[^/.]+)/all")
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
     def channel_all(self, request, org_id):
 
         """
@@ -52,12 +58,12 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelUpdateSerializer)}
+        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+        operation_id="message read one channel",
     )
     @action(
         methods=["GET"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/retrieve",
     )
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
@@ -71,7 +77,6 @@ class ChannelViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/update",
     )
     def channel_update(self, request, org_id, channel_id):
         serializer = ChannelUpdateSerializer(
@@ -85,12 +90,21 @@ class ChannelViewset(ViewSet):
     @action(
         methods=["DELETE"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/delete",
     )
     def channel_delete(self, request, org_id, channel_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
 
 
+channel_views = ChannelViewset.as_view(
+    {
+        "get": "channel_all",
+        "post": "channels",
+    }
+)
+
+channel_views_group = ChannelViewset.as_view(
+    {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
+)
 # class SearchMessagesAPIView(APIView):
 #     def post(self, request):
 #         serializer = SearchMessageQuerySerializer(data=request.data)
