@@ -31,6 +31,9 @@ messages_data = [
 
 	]
 
+# messages_data = []
+
+
 class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         request_body=ChannelSerializer,
