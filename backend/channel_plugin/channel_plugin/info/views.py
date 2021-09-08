@@ -1,4 +1,5 @@
 import random
+import requests
 
 from django.conf import settings
 from django.utils import timezone
@@ -38,49 +39,60 @@ class GetInfoViewset(ViewSet):
         org_id = request.GET.get('org', '')
         user_id = request.GET.get('user', '')
         token = request.GET.get('token', '')
-        data = {
-                "name" : "Channels Plugin",
-                "description" : description,
-                "plugin_id" : "DGGF-DSDFFDDF-EDFDFDF",
-                "organisation_id" : org_id,
-                "user_id" : user_id,
-                "group_name" : "Zuri",
-                "show_group" : False,
+        url = f"https://api.zuri.chat/v1/users/{user_id}"
+        zc_response = requests.GET(url, headers = {'Authorization' : f'Bearer {token}'})
+        if zc_response.status_code == 200:
+            data = {
+                    "name" : "Channels Plugin",
+                    "description" : description,
+                    "plugin_id" : "DGGF-DSDFFDDF-EDFDFDF",
+                    "organisation_id" : org_id,
+                    "user_id" : user_id,
+                    "group_name" : "Zuri",
+                    "show_group" : False,
 
-                "joined_rooms": [
-                {
-                    "title": "general",
-                    "id": "DFGHH-EDDDDS-DFDDF",
-                    "unread": 2,
-                    "members": 23,
-                    "icon" : "shovel",
-                    "action": "open"
-                    },
-                {
-                    "title": "announcements",
-                    "id": "DFGfH-EDDDDS-DFDDF",
-                    "unread": 0,
-                    "badge_type": "info",
-                    "members": 132,
-                    "parent_id": "DFGHH-EDDDDS-DFDDF",
-                    "icon" : "spear",
-                    "action" : "open"
-                    },
-                ],
-                "public_rooms": [
-                {
-                    "title": "jokes",
-                    "id": "DFGfH-EDDDDS-DFDDF",
-                    "unread": 342,
-                    "members": 32,
-                    "icon" : "cdn.cloudflare.com/445345453345/hello.jpeg",
-                    "action" : "open",
-                    "auto-join" : True
-                    },
-                ]
+                    "joined_rooms": [
+                    {
+                        "title": "general",
+                        "id": "DFGHH-EDDDDS-DFDDF",
+                        "unread": 2,
+                        "members": 23,
+                        "icon" : "shovel",
+                        "action": "open"
+                        },
+                    {
+                        "title": "announcements",
+                        "id": "DFGfH-EDDDDS-DFDDF",
+                        "unread": 0,
+                        "badge_type": "info",
+                        "members": 132,
+                        "parent_id": "DFGHH-EDDDDS-DFDDF",
+                        "icon" : "spear",
+                        "action" : "open"
+                        },
+                    ],
+                    "public_rooms": [
+                    {
+                        "title": "jokes",
+                        "id": "DFGfH-EDDDDS-DFDDF",
+                        "unread": 342,
+                        "members": 32,
+                        "icon" : "cdn.cloudflare.com/445345453345/hello.jpeg",
+                        "action" : "open",
+                        "auto-join" : True
+                        },
+                    ]
+                }
+        elif zc_response.status_code == 404:
+            data = {
+            "msg" : "User Does Not Exist"
+            }
+        else:
+            data = {
+            "msg": "Internal Server Error"
             }
 
-# AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
+# VALIDATION DONE, NOW WHAT'S LEFT IS TO RETURN ACTUAL CHANNELS DATA
 
         # data = {
         #     "name": settings.TEAM_NAME,
