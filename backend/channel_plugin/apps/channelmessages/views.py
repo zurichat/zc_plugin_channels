@@ -18,6 +18,7 @@ class ChannelMessageViewset(ViewSet):
     @action(
         methods=["POST"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)",
     )
     def message(self, request, org_id, channel_id):
         serializer = ChannelMessageSerializer(
@@ -36,6 +37,7 @@ class ChannelMessageViewset(ViewSet):
     @action(
         methods=["GET"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/all",
     )
     def message_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
@@ -44,12 +46,12 @@ class ChannelMessageViewset(ViewSet):
         return Response(result, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelMessageUpdateSerializer)},
-        operation_id="message read one channelmessage",
+        responses={200: openapi.Response("Response", ChannelMessageUpdateSerializer)}
     )
     @action(
         methods=["GET"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<msg_id>[^/.]+)/retrieve",
     )
     def message_retrieve(self, request, org_id, msg_id, channel_id):
         data = {"channel_id": channel_id, "_id": msg_id}
@@ -64,6 +66,7 @@ class ChannelMessageViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<msg_id>[^/.]+)/update",
     )
     def message_update(self, request, org_id, msg_id):
         serializer = ChannelMessageUpdateSerializer(data=request.data)
@@ -75,18 +78,7 @@ class ChannelMessageViewset(ViewSet):
     @action(
         methods=["DELETE"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<msg_id>[^/.]+)/delete",
     )
     def message_delete(self, request, org_id, channel_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
-
-
-channelmessage_views = ChannelMessageViewset.as_view(
-    {
-        "get": "message_all",
-        "post": "message",
-    }
-)
-
-channelmessage_views_group = ChannelMessageViewset.as_view(
-    {"get": "message_retrieve", "put": "message_update", "delete": "message_delete"}
-)

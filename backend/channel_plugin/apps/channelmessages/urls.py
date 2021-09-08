@@ -1,7 +1,10 @@
-from apps.channelmessages.views import channelmessage_views, channelmessage_views_group
-from django.urls import path
+from apps.channelmessages.views import ChannelMessageViewset
+from django.urls import include, path
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r"^messages", ChannelMessageViewset, basename="channelmessage")
 
 urlpatterns = [
-    path("<str:org_id>/channels/<str:channel_id>/messages/", channelmessage_views),
-    path("<str:org_id>/messages/<str:msg_id>/", channelmessage_views_group),
+    path("", include((router.urls, "channelmessages"))),
 ]

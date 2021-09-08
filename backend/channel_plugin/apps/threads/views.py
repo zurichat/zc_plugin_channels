@@ -18,6 +18,7 @@ class ThreadViewset(ViewSet):
     @action(
         methods=["POST"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channelmessage_id>[^/.]+)",
     )
     def thread_message(self, request, org_id, channelmessage_id):
         serializer = ThreadSerializer(
@@ -34,6 +35,7 @@ class ThreadViewset(ViewSet):
     @action(
         methods=["GET"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channelmessage_id>[^/.]+)/all",
     )
     def thread_message_all(self, request, org_id, channelmessage_id):
         data = {"channelmessage_id": channelmessage_id}
@@ -48,25 +50,15 @@ class ThreadViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channelmessage_id>[^/.]+)/update",
     )
-    def thread_message_update(self, request, org_id, thread_id):
+    def thread_message_update(self, request, org_id, channelmessage_id):
         pass
 
     @action(
         methods=["DELETE"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channelmessage_id>[^/.]+)/delete",
     )
-    def thread_message_delete(self, request, org_id, thread_id):
+    def thread_message_delete(self, request, org_id, channelmessage_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
-
-
-thread_views = ThreadViewset.as_view(
-    {
-        "get": "thread_message_all",
-        "post": "thread_message",
-    }
-)
-
-thread_views_group = ThreadViewset.as_view(
-    {"put": "thread_message_update", "delete": "thread_message_delete"}
-)

@@ -19,6 +19,7 @@ class RoleViewset(ViewSet):
     @action(
         methods=["POST"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)",
     )
     def role(self, request, org_id, channel_id):
         serializer = RoleSerializer(
@@ -35,6 +36,7 @@ class RoleViewset(ViewSet):
     @action(
         methods=["GET"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/all",
     )
     def role_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
@@ -42,13 +44,11 @@ class RoleViewset(ViewSet):
         result = Request.get(org_id, "role", data)
         return Response(result, status=status.HTTP_200_OK)
 
-    @swagger_auto_schema(
-        responses={200: openapi.Response("Response", RoleSerializer)},
-        operation_id="message read one role",
-    )
+    @swagger_auto_schema(responses={200: openapi.Response("Response", RoleSerializer)})
     @action(
         methods=["GET"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<role_id>[^/.]+)/retrieve",
     )
     def role_retrieve(self, request, org_id, role_id):
         data = {"_id": role_id}
@@ -63,25 +63,15 @@ class RoleViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<role_id>[^/.]+)/update",
     )
-    def role_update(self, request, org_id, role_id):
+    def message_update(self, request, org_id, role_id):
         pass
 
     @action(
         methods=["DELETE"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<role_id>[^/.]+)/delete",
     )
-    def role_delete(self, request, role_id):
+    def message_delete(self, request, role_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
-
-
-role_views = RoleViewset.as_view(
-    {
-        "get": "role_all",
-        "post": "role",
-    }
-)
-
-role_views_group = RoleViewset.as_view(
-    {"get": "role_retrieve", "put": "role_update", "delete": "role_delete"}
-)
