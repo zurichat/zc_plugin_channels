@@ -120,7 +120,8 @@ class ChannelMemberViewset(ViewSet):
         """
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data)
-        return result
+
+        return result[0] if result else None
 
     def find_user(self, users, user_id):
         """
@@ -188,44 +189,53 @@ class ChannelMemberViewset(ViewSet):
         """
 
         "get the channel from zc-core"
-        channel = self.retrieve_channel(request, org_id, channel_id)
-        assert bool(channel) == True
-    
-        "check if the user is aleady a member of the channel"
-        user = self.find_user(channel["users"], request.data.get("_id"))
-        
-        if not user:
-            "add the add the user to the channel"    
-            user_data = {
-                "_id": request.data.get("_id"),
-                "role_id": request.data.get("role_id"),
-                "is_admin": request.data.get("is_admin", "false"),
-            }
-
-            serializer = UserSerializer(data=user_data)
-            serializer.is_valid(raise_exception=True)
-            # add user to the channel
-            channel["users"].update({
-                f"{user_data['_id']}": serializer.data
-            })
-
-            serializer = ChannelUpdateSerializer(data=channel, context={"org_id": org_id})
+        try:
+            channel = self.retrieve_channel(request, org_id, channel_id)
+            assert bool(channel) == True 
+        except AssertionError:
+            return Response(
+                {"error": "channel not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        else:
+            "check if the user is aleady a member of the channel"
+            user = self.find_user(channel["users"], request.data.get("_id"))
             
-            # hack to overide serializer's validate_name method
-            serializer.validate_name = self.validate_name
+            if not user:
+                "add the add the user to the channel"    
+                user_data = {
+                    "_id": request.data.get("_id"),
+                    "role_id": request.data.get("role_id"),
+                    "is_admin": request.data.get("is_admin", "false"),
+                }
 
-            serializer.is_valid(raise_exception=True)
-            channel = serializer.data.get("channel")
-            result = channel.update(org_id, channel_id)   
-            
-            if type(result) == JsonResponse:
-                assert result.status_code >= 200 and result.status_code < 300
-            
-            # send signal to centri app to message centrifugo
-            
-            return Response(user_data, status=status.HTTP_201_CREATED)
+                serializer = UserSerializer(data=user_data)
+                serializer.is_valid(raise_exception=True)
+                # add user to the channel
+                channel["users"].update({
+                    f"{user_data['_id']}": serializer.data
+                })
 
-        return Response(user, status=status.HTTP_200_OK)
+                serializer = ChannelUpdateSerializer(data=channel, context={"org_id": org_id})
+                
+                # hack to overide serializer's validate_name method
+                serializer.validate_name = self.validate_name
+
+                # do not raise exception since users ins not a list 
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except:
+                    channel = serializer.data.get("channel")
+                    result = channel.update(org_id, channel_id)
+                    
+                    if type(result) == JsonResponse:
+                        assert result.status_code >= 200 and result.status_code < 300
+                
+                # send signal to centri app to message centrifugo
+                
+                return Response(user_data, status=status.HTTP_201_CREATED)
+
+            return Response(user, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         responses={
@@ -243,28 +253,25 @@ class ChannelMemberViewset(ViewSet):
         particular channel identified by ID
         """
 
-        data = {'_id': channel_id}
-        # data.update(dict(request.query_params))
+        try:
+            "get the channel from zc-core"
+            channel = self.retrieve_channel(request, org_id, channel_id)
+            assert bool(channel) == True 
+        except AssertionError:
+            return Response(
+                {"error": "channel not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        else:
+            #apply filtering from query params
+            users = self.filter_users(
+                channel["users"],
+                self.filter_params(UserSerializer, request.query_params)
+            )
 
-        "get the channel from zc-core"
-        channel = self.retrieve_channel(request, org_id, channel_id)
-        assert bool(channel) == True #make sure the channel was found
-
-        #clean params
-        test_data = {
-            "1": {"role": "20", "is_admin":"true", "_id": "1"},
-            "2": {"role": "20", "is_admin":"true", "_id": "1"},
-            "3": {"role": "20", "is_admin":"false", "_id": "1"}
-        }
-
-        users = self.filter_users(
-            test_data,
-            self.filter_params(UserSerializer, request.query_params)
-        )
-
-        serializer = UserSerializer(data=users, many=True)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer = UserSerializer(data=users, many=True)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
