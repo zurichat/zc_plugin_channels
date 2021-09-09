@@ -41,13 +41,13 @@ class GetInfoViewset(ViewSet):
     def info_sidebar(self, request):
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
+        token = request.query_params.get("token")
         data = {
                 "name": "Channels Plugin",
                 "description": description,
                 "plugin_id": settings.PLUGIN_ID
             }
         if org_id is not None or user_id is not None:
-            token = request.GET.get("token", "")
             channels = Request.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
