@@ -1,22 +1,22 @@
 {
   "channel": [
     {
-      "_id": "1",
+      "id": "1",
       "name": "team-coelho",
       "description": "Description will be here",
       "private": true,
-      "users": [
-        {
-          "_id": "200",
+      "users": {
+        "200": {
+          "id": "200",
           "role_id": "198",
           "is_admin": false
         },
-        {
-          "_id": "202",
+        "202": {
+          "id": "202",
           "role_id": "199",
           "is_admin": true
         }
-      ],
+      },
       "roles": [
         "198",
         "199"
@@ -26,7 +26,7 @@
   ],
   "channel_message":[
     {
-      "_id": "86",
+      "id": "86",
       "user_id": "200",
       "channel_id": "1",
       "emojis": [],
@@ -36,7 +36,7 @@
       "timestamp": "12-08-2021 12:00:00"
     },
     {
-      "_id": "87",
+      "id": "87",
       "user_id": "201",
       "channel_id": "1",
       "emojis": [],
@@ -48,7 +48,7 @@
   ],
   "thread": [
     {
-      "_id": "100",
+      "id": "100",
       "user_id": "201",
       "channelmessage_id": "86",
       "emojis": [],
@@ -60,7 +60,7 @@
   ],
   "role": [
     {
-      "_id": "198",
+      "id": "198",
       "channel_id": "1",
       "name": "Admin",
       "permission": [
@@ -72,7 +72,7 @@
       ]
     },
     {
-      "_id": "199",
+      "id": "199",
       "channel_id": "1",
       "name": "Team Lead",
       "permission": [
