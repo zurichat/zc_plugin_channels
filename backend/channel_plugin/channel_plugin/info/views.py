@@ -82,6 +82,47 @@ class GetInfoViewset(ViewSet):
                     )
                     public_rooms.append(data_p)
 
+=======
+            joined_rooms = list(
+                map(
+                    lambda channel: {
+                        "id": channel.get("_id"),
+                        "title": channel.get("name"),
+                        "members": channel.get("members", len(channel["users"].keys())),
+                        "unread": channel.get("unread", random.randint(0, 50)),
+                        "icon": channel.get(
+                            "icon", icons[random.randint(0, len(icons) - 1)]
+                        ),
+                        "action": "open",
+                    },
+                    list(
+                        filter(
+                            lambda channel: user_id in channel["users"].keys(), channels
+                        )
+                    ),
+                )
+            )
+            public_rooms = list(
+                map(
+                    lambda channel: {
+                        "id": channel.get("_id"),
+                        "title": channel.get("name"),
+                        "members": channel.get("members", len(channel["users"].keys())),
+                        "unread": channel.get("unread", random.randint(0, 50)),
+                        "icon": channel.get(
+                            "icon", icons[random.randint(0, len(icons) - 1)]
+                        ),
+                        "action": "open",
+                    },
+                    list(
+                        filter(
+                            lambda channel: user_id not in channel["users"].keys()
+                            and not channel.get("private"),
+                            channels,
+                        )
+                    ),
+                )
+            )
         data = {
             "name": "Channels Plugin",
             "description": description,
