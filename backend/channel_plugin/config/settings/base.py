@@ -300,7 +300,7 @@ SOCIALACCOUNT_ADAPTER = "channel_plugin.users.adapters.SocialAccountAdapter"
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
@@ -315,10 +315,10 @@ PROJECT_NAME = "Zuri Chat Channel Plugin"
 
 try:
     with open("plugin_id.txt") as f:
-        PLUGIN_ID = f.readline()
+        PLUGIN_ID = f.readline().strip("\n")
         f.close()
 except:  # noqa
     PLUGIN_ID = ""
 
-READ_URL = "https://zuri.chat/data/read/"
-WRITE_URL = "https://zuri.chat/data/write/"
+READ_URL = "https://api.zuri.chat/data/read"
+WRITE_URL = "https://api.zuri.chat/data/write"
