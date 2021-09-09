@@ -54,26 +54,8 @@ const Home = () => {
         ml="8"
         borderRadius="2px"
       >
-        <Stack direction={["column", "row"]} spacing={4} align="center">
-          <Link to="/admin"> 
-          <Button colorScheme="teal" bg="#00b87c" variant="solid">
-            Admin
-          </Button>
-          </Link>
-          <Link to="/message-board"> <Button colorScheme="teal" bg="#00b87c" variant="solid">
-           Message Board
-          </Button></Link>
-         
-           <Link to="/user-profile">
-          <Button
-           
-            colorScheme="teal"
-            bg="#00b87c"
-            variant="solid"
-          >
-             User Profile
-          </Button></Link>
-        </Stack>
+      {/* Mount your component here and unmount when done */}
+      
       </Box>
     </Box>
   );
