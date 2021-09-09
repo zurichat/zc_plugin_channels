@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from channel_plugin.utils.customrequest import Request
+
 description = """The Channel Plugin is a feature that helps users create spaces
                 for conversation and communication on zuri.chat.
                 Users can also create sub tags in the channels
@@ -17,6 +19,8 @@ description = """The Channel Plugin is a feature that helps users create spaces
                 This adds the feature of having organized conversations
                 in dedicated spaces called channels.
             """
+
+icons = ["shovel", "cdn.cloudflare.com/445345453345/hello.jpeg", "spear"]
 
 
 class GetInfoViewset(ViewSet):
@@ -35,9 +39,53 @@ class GetInfoViewset(ViewSet):
 
     @action(methods=["GET"], detail=False, url_path="sidebar")
     def info_sidebar(self, request):
-        org_id = request.GET.get("org", "")
-        user_id = request.GET.get("user", "")
+        org_id = request.query_params.get("org", "")
+        user_id = request.query_params.get("user", "")
         token = request.GET.get("token", "")
+        channels = Request.get(org_id, "channel")
+        joined_rooms = list()
+        public_rooms = list()
+        if type(channels) == list:
+            joined_rooms = list(
+                map(
+                    lambda channel: {
+                        "id": channel.get("_id"),
+                        "title": channel.get("name"),
+                        "members": channel.get("members", len(channel["users"].keys())),
+                        "unread": channel.get("unread", random.randint(0, 50)),
+                        "icon": channel.get(
+                            "icon", icons[random.randint(0, len(icons) - 1)]
+                        ),
+                        "action": "open",
+                    },
+                    list(
+                        filter(
+                            lambda channel: user_id in channel["users"].keys(), channels
+                        )
+                    ),
+                )
+            )
+            public_rooms = list(
+                map(
+                    lambda channel: {
+                        "id": channel.get("_id"),
+                        "title": channel.get("name"),
+                        "members": channel.get("members", len(channel["users"].keys())),
+                        "unread": channel.get("unread", random.randint(0, 50)),
+                        "icon": channel.get(
+                            "icon", icons[random.randint(0, len(icons) - 1)]
+                        ),
+                        "action": "open",
+                    },
+                    list(
+                        filter(
+                            lambda channel: user_id not in channel["users"].keys()
+                            and not channel.get("private"),
+                            channels,
+                        )
+                    ),
+                )
+            )
         data = {
             "name": "Channels Plugin",
             "description": description,
@@ -46,37 +94,8 @@ class GetInfoViewset(ViewSet):
             "user_id": user_id,
             "group_name": "Zuri",
             "show_group": False,
-            "joined_rooms": [
-                {
-                    "title": "general",
-                    "id": "DFGHH-EDDDDS-DFDDF",
-                    "unread": 2,
-                    "members": 23,
-                    "icon": "shovel",
-                    "action": "open",
-                },
-                {
-                    "title": "announcements",
-                    "id": "DFGfH-EDDDDS-DFDDF",
-                    "unread": 0,
-                    "badge_type": "info",
-                    "members": 132,
-                    "parent_id": "DFGHH-EDDDDS-DFDDF",
-                    "icon": "spear",
-                    "action": "open",
-                },
-            ],
-            "public_rooms": [
-                {
-                    "title": "jokes",
-                    "id": "DFGfH-EDDDDS-DFDDF",
-                    "unread": 342,
-                    "members": 32,
-                    "icon": "cdn.cloudflare.com/445345453345/hello.jpeg",
-                    "action": "open",
-                    "auto-join": True,
-                },
-            ],
+            "joined_rooms": joined_rooms,
+            "public_rooms": public_rooms,
         }
 
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP

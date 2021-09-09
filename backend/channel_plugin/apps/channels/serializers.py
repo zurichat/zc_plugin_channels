@@ -1,5 +1,8 @@
 from apps.roles.serializers import RoleSerializer
 from django.utils.text import slugify
+
+# from django.conf import settings
+# from channel_plugin.info.views import description
 from rest_framework import serializers
 
 from channel_plugin.utils.customrequest import Request
@@ -66,14 +69,16 @@ class ChannelUpdateSerializer(serializers.Serializer):
         try:
             if response[0]["_id"] != self.context.get("_id"):
                 raise serializers.ValidationError({"error": "Name already exist"})
-        except:  # noqa
+        except TypeError:
+            return name
+        except Exception as e:  # noqa
             raise serializers.ValidationError({"error": "Name already exist"})
         return name
 
     def to_representation(self, instance):
         if instance:
             instance = dict(instance)
-            users = instance.pop("users")
+            users = instance.pop("users", None)
             new_users_dict = dict()
 
             if users:
