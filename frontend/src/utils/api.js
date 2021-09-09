@@ -28,67 +28,67 @@ class APIServices {
   }
 
   async createMessage(org_id, channel_id, data) {
-    return api.post(`/channels/message/${org_id}/${channel_id}`, data);
+    return api.post(`/channels/messages/${org_id}/${channel_id}`, data);
   }
 
   async getMessages(org_id, channel_id) {
-    return api.get(`​/channels​/message​/${org_id}​/${channel_id}​/all​`);
+    return api.get(`​/channels​/message​s/${org_id}​/${channel_id}​/all​`);
   }
 
-  async deleteMessage(org_id, channel_id, msg_id) {
+  async deleteMessage(org_id, msg_id) {
     return api.delete(
-      `/channels​/message​/${org_id}​/${channel_id}​/${msg_id}​/delete​`
+      `/channels​/messages​/${org_id}​/${msg_id}​/delete​`
     );
   }
 
-  async retrieveMessage(org_id, channel_id, msg_id) {
+  async retrieveMessage(org_id, msg_id) {
     return api.get(
-      `/channels​/message​/${org_id}​/${channel_id}​/${msg_id}​/retrieve​`
+      `/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`
     );
   }
 
-  async updateMessage(org_id, channel_id, msg_id, data) {
+  async updateMessage(org_id, msg_id, data) {
     return api.put(
-      `/channels​/message​/${org_id}​/${channel_id}​/${msg_id}​/update`,
+      `/channels​/messages​/${org_id}​/${msg_id}​/update`,
       data
     );
   }
 
   async createRole(org_id, channel_id, data) {
-    return api.post(`/channels/role/${org_id}/${channel_id}`, data);
+    return api.post(`/channels/roles/${org_id}/${channel_id}`, data);
   }
 
   async getRoles(org_id, channel_id) {
-    return api.get(`/channels​/role​/${org_id}​/${channel_id}​/all​`);
+    return api.get(`/channels​/roles​/${org_id}​/${channel_id}​/all​`);
   }
 
   async deleteRole(org_id, role_id) {
-    return api.delete(`​/channels​/role​/${org_id}​/${role_id}​/delete`);
+    return api.delete(`​/channels​/roles​/${org_id}​/${role_id}​/delete`);
   }
 
   async retriveRole(org_id, role_id) {
-    return api.get(`/channels​/role​/${org_id}​/${role_id}​/retrieve`);
+    return api.get(`/channels​/role​s/${org_id}​/${role_id}​/retrieve`);
   }
 
   async updateRole(org_id, role_id, data) {
-    return api.put(`/channels​/role​/${org_id}​/${role_id}​/update`, data);
+    return api.put(`/channels​/roles​/${org_id}​/${role_id}​/update`, data);
   }
 
   async createThread(org_id, channelmessage_id, data) {
-    return api.post(`/channels/thread/${org_id}/${channelmessage_id}`, data);
+    return api.post(`/channels/threads/${org_id}/${channelmessage_id}`, data);
   }
 
   async getThreads(org_id, channelmessage_id) {
-    return api.get(`/channels/thread/${org_id}/${channelmessage_id}/all`);
+    return api.get(`/channels/threads/${org_id}/${channelmessage_id}/all`);
   }
 
   async deleteThread(org_id, channelmessage_id) {
-    return api.delete(`/channels/thread/${org_id}/${channelmessage_id}/delete`);
+    return api.delete(`/channels/threads/${org_id}/${channelmessage_id}/delete`);
   }
 
   async updateThread(org_id, channelmessage_id, data) {
     return api.put(
-      `/channels/thread/${org_id}/${channelmessage_id}/update`,
+      `/channels/threads/${org_id}/${channelmessage_id}/update`,
       data
     );
   }
