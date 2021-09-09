@@ -6,16 +6,12 @@ fixtures = {
             "slug": "team-coelho",
             "description": "string",
             "private": True,
-<<<<<<< HEAD
-            "users": [{"_id": "1", "role_id": "200"}],
-=======
             "users": {
                 "1": {
                     "role_id": "200",
                     "is_admin": False,
                 }
             },
->>>>>>> 5fd7a2ee49985bcd8e9fdbeb266400f4dc018519
             "roles": [
                 {
                     "id": "200",
