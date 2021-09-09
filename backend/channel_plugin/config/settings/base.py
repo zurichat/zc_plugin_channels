@@ -323,3 +323,11 @@ except:  # noqa
 
 READ_URL = "https://api.zuri.chat/data/read"
 WRITE_URL = "https://api.zuri.chat/data/write"
+
+
+try:
+    with open("centri.txt") as f:
+        CENTRIFUGO_API_KEY = f.readline().strip("\n")
+        f.close()
+except:  # noqa
+    CENTRIFUGO_API_KEY = ""

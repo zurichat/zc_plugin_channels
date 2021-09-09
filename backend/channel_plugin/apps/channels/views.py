@@ -204,7 +204,11 @@ class ChannelMemberViewset(ViewSet):
             )
         else:
             "check if the user is aleady a member of the channel"
-            user = self.find_user(channel["users"], request.data.get("_id"))
+            # print(channel["users"])
+            user = self.find_user(
+                channel["users"].values(), 
+                request.data.get("_id")
+            )
             
             if not user:
                 "add the add the user to the channel"    
@@ -216,30 +220,21 @@ class ChannelMemberViewset(ViewSet):
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
+                
                 # add user to the channel
                 channel["users"].update({
                     f"{user_data['_id']}": serializer.data
                 })
 
-                serializer = ChannelUpdateSerializer(data=channel, context={"org_id": org_id})
-                
-                # hack to overide serializer's validate_name method
-                serializer.validate_name = self.validate_name
+                #remove channel ID to avoid changing it
+                channel.pop("_id", None) 
 
-                # do not raise exception since users ins not a list 
-                try:
-                    serializer.is_valid(raise_exception=True)
-                except:
-                    channel = serializer.data.get("channel")
-                    result = channel.update(org_id, channel_id)
-                    
-                    if type(result) == JsonResponse:
-                        assert result.status_code >= 200 and result.status_code < 300
+                result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
                 
-                # send signal to centri app to message centrifugo
-                
-                return Response(user_data, status=status.HTTP_201_CREATED)
-
+                if result.status_code >= 200 and result.status_code < 300:
+                    return Response(user_data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(result, status=result.status_code)
             return Response(user, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
@@ -291,7 +286,10 @@ class ChannelMemberViewset(ViewSet):
         assert bool(channel) == True
     
         "check if the user is aleady a member of the channel"
-        user_data = self.find_user(channel["users"], member_id)
+        user_data = self.find_user(
+            channel["users"].values(),
+            member_id
+        )
         
         if user_data:
             "add the add the user to the channel"
@@ -304,8 +302,8 @@ class ChannelMemberViewset(ViewSet):
         )
 
     @swagger_auto_schema(
-        request_body=ChannelUpdateSerializer,
-        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+        request_body=UserSerializer,
+        responses={200: openapi.Response("Response", UserSerializer)},
         operation_id="upadte-member-details",
     )
     @action(
@@ -322,7 +320,10 @@ class ChannelMemberViewset(ViewSet):
         assert bool(channel) == True
     
         "check if the user is aleady a member of the channel"
-        user_data = self.find_user(channel["users"], member_id)
+        user_data = self.find_user(
+            channel["users"].values(),
+            member_id
+        )
         
         if user_data:
             "update the users data"    
@@ -338,18 +339,10 @@ class ChannelMemberViewset(ViewSet):
                 f"{member_id}": serializer.data
             })
 
-            serializer = ChannelUpdateSerializer(data=channel, context={"org_id": org_id})
-            
-            # hack to overide serializer's validate_name method
-            serializer.validate_name = self.validate_name
+            #remove channel id to avoid changing it
+            channel.pop("_id", None) 
 
-            serializer.is_valid(raise_exception=True)
-            channel = serializer.data.get("channel")
-            result = channel.update(org_id, channel_id)
-            
-            if type(result) == JsonResponse:
-                assert result.status_code >= 200 and result.status_code < 300
-            
+            result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
             return Response(user_data, status=status.HTTP_200_OK)
         return Response(
             {"error": "User not found"}, 
@@ -364,25 +357,19 @@ class ChannelMemberViewset(ViewSet):
         assert bool(channel) == True
     
         "check if the user is aleady a member of the channel"
-        user_data = self.find_user(channel["users"], member_id)
+        user_data = self.find_user(
+            channel["users"].values(),
+            member_id
+        )
 
         if user_data:
             "Remove  the user from the channel"
             del channel["users"][member_id]
-            serializer = ChannelUpdateSerializer(data=channel, context={"org_id": org_id})
-
-            # hack to overide serializer's validate_name method
-            serializer.validate_name = self.validate_name
-
-            serializer.is_valid(raise_exception=True)
-            channel = serializer.data.get("channel")
-            result = channel.update(org_id, channel_id)   
-            
-            if type(result) == JsonResponse:
-                assert result.status_code >= 200 and result.status_code < 300
             
             # send signal to centri app to left message centrifugo
+            channel.pop("_id", None) 
 
+            result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
             return Response({"msg": "success"}, status=status.HTTP_204_NO_CONTENT)
 
         return Response({"error": "member not found"}, status=status.HTTP_404_NOT_FOUND)
