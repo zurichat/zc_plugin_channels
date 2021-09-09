@@ -40,7 +40,9 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     re_path(
-        r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
+        r"^docs/v1/$",
+        schema_view.with_ui("redoc", cache_timeout=0),
+        name="schema-redoc",
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
@@ -49,14 +51,18 @@ urlpatterns = [
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
-    # Static file serving when using Gunicorn + Uvicorn for local web socket development
+    # Static file serving when using Gunicorn +
+    #  Uvicorn for local web socket development
     urlpatterns += staticfiles_urlpatterns()
 
 # API URLS
 urlpatterns += [
     # API base url
-    # path("api/", include("config.api_router")),
-    path("api/", include("channel_plugin.info.urls")),
+    path("api/v1/", include("channel_plugin.info.urls")),
+    path("api/v1/", include("apps.channels.urls")),
+    path("api/v1/", include("apps.channelmessages.urls")),
+    path("api/v1/", include("apps.roles.urls")),
+    path("api/v1/", include("apps.threads.urls")),
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
