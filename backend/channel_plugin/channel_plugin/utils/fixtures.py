@@ -6,7 +6,7 @@ fixtures = {
             "slug": "team-coelho",
             "description": "string",
             "private": True,
-            "user": [{"_id": "1", "role_id": "200"}],
+            "users": [{"_id": "1", "role_id": "200"}],
             "roles": [
                 {
                     "_id": "200",

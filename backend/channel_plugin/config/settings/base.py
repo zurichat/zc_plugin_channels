@@ -321,5 +321,5 @@ try:
 except:  # noqa
     PLUGIN_ID = ""
 
-READ_URL = "https://zuri.chat/data/read/"
-WRITE_URL = "https://zuri.chat/data/write/"
+READ_URL = "https://zuri.chat/data"
+WRITE_URL = "https://zuri.chat/data"
