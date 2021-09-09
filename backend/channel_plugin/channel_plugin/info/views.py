@@ -82,7 +82,7 @@ class GetInfoViewset(ViewSet):
                     )
                     public_rooms.append(data_p)
 
-=======
+
             joined_rooms = list(
                 map(
                     lambda channel: {
