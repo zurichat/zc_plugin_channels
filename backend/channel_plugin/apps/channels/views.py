@@ -120,7 +120,7 @@ class ChannelMemberViewset(ViewSet):
 
     def retrieve_channel(self, request, org_id, channel_id):
         """
-            This method get's a retrives channel data
+            This method get's a retrieves channel data
             from zc-core
         """
         data = {"_id": channel_id}
@@ -215,12 +215,11 @@ class ChannelMemberViewset(ViewSet):
                 user_data = {
                     "_id": request.data.get("_id"),
                     "role_id": request.data.get("role_id"),
-                    "is_admin": request.data.get("is_admin", "false"),
+                    "is_admin": request.data.get("is_admin", False),
                 }
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-                
                 # add user to the channel
                 channel["users"].update({
                     f"{user_data['_id']}": serializer.data
@@ -228,10 +227,8 @@ class ChannelMemberViewset(ViewSet):
 
                 #remove channel ID to avoid changing it
                 channel.pop("_id", None) 
-
                 result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
-                
-                if result.status_code >= 200 and result.status_code < 300:
+                if result:
                     return Response(user_data, status=status.HTTP_201_CREATED)
                 else:
                     return Response(result, status=result.status_code)
