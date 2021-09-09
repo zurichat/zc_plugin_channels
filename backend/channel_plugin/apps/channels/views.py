@@ -152,18 +152,6 @@ class ChannelMemberViewset(ViewSet):
 
     def filter_users(self, users, params):
         output = []
-        
-        for param in params.items():
-            out = list(filter(
-                    lambda user: param in user.items(),
-                    users.values())
-            )
-
-            for item in out:
-                if item not in output:
-                    output.append(item)
-        
-        output = []
         for user in users.values():
             flag = 0
             
