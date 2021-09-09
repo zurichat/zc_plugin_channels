@@ -24,6 +24,9 @@ class RoleSerializer(serializers.Serializer):
             {**item, "key": slugify(item.get("name"))}
             for item in instance.get("permissions")
         ]
-        role = Role(**instance, channel_id=channel_id)
+        if self.context.get("type") == "create":
+            role = Role(**instance, channel_id=channel_id)
+        else:
+            role = instance
         data = {"role": role}
         return data

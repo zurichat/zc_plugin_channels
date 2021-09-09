@@ -19,11 +19,10 @@ class RoleViewset(ViewSet):
     @action(
         methods=["POST"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)",
     )
     def role(self, request, org_id, channel_id):
         serializer = RoleSerializer(
-            data=request.data, context={"channel_id": channel_id}
+            data=request.data, context={"channel_id": channel_id, "type": "create"}
         )
         serializer.is_valid(raise_exception=True)
         role = serializer.data.get("role")
@@ -36,7 +35,6 @@ class RoleViewset(ViewSet):
     @action(
         methods=["GET"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/all",
     )
     def role_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
@@ -48,11 +46,9 @@ class RoleViewset(ViewSet):
         responses={200: openapi.Response("Response", RoleSerializer)},
         operation_id="message read one role",
     )
-
     @action(
         methods=["GET"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<role_id>[^/.]+)/retrieve",
     )
     def role_retrieve(self, request, org_id, role_id):
         data = {"_id": role_id}
@@ -67,18 +63,21 @@ class RoleViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<role_id>[^/.]+)/update",
     )
     def role_update(self, request, org_id, role_id):
-        pass
+        serializer = RoleSerializer(data=request.data, context={"type": "create"})
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.data.get("role")
+        result = Request.put(org_id, "channel", payload, object_id=role_id)
+        return Response(result, status=status.HTTP_200_OK)
 
     @action(
         methods=["DELETE"],
         detail=False,
-        url_path="(?P<org_id>[^/.]+)/(?P<role_id>[^/.]+)/delete",
     )
     def role_delete(self, request, role_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+
 
 role_views = RoleViewset.as_view(
     {

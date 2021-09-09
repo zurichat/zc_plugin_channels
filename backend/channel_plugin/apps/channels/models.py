@@ -11,8 +11,8 @@ class Channel:
     # name of channel
     name: str
     # list of user IDs in a channel
-    slug: str
-    users: list = field(default_factory=list)
+    slug: str = ""
+    users: dict = field(default_factory=dict)
     # list of role IDs in a channel
     roles: list = field(default_factory=list)
     # description of channel
@@ -45,14 +45,17 @@ class Channel:
     def update(self, organization_id, object_id):
         payload = {
             "name": self.name.lower(),
-            "slug": slugify(self.name.lower()),
+            "slug": self.slug,
             "description": self.description,
             "private": self.private,
             "users": self.users,
             "roles": self.roles,
         }
         response = Request.put(
-            organization_id, self.__class__.__name__.lower(), payload, object_id= object_id
+            organization_id,
+            self.__class__.__name__.lower(),
+            payload,
+            object_id=object_id,
         )
         return response
 

@@ -26,38 +26,12 @@ class Request:
     @staticmethod
     def get(org_id, collection_name, params=None):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
-        print(repr(url))
         if params is not None and len(params) > 0:
             url += f"?{urlencode(params)}"
-            print("We have params")
-            print(repr(url))
-        print("Sending request to : " + url + " now")
-        try:
-            # response = requests.get("https://api.zuri.chat/data/read/613654ede2358b02686503bb/channel/xxxYYY")
-            response = requests.get(url)
-            # if response.status_code >= 200 and response.status_code < 300:
-            try:
-                return response.json()['data']
-            except:
-                return response.json()
-            # return JsonResponse({"error": response.json()}, status_code=400)
-        except Exception as e:  # no internet access
-            # flag = True
-            # document = [str(e)]
-            # items = fixtures.get(collection_name)
-            # for item in items:
-            #     for x, y in params.items():
-            #         if item[x] != y:
-            #             flag = False
-            #     if flag:
-            #         document.append(item)
-            #     flag = True
-
-            # if document:
-            #     if len(document) == 1:
-            #         return document[0]
-            #     return document
-            return {'error':str(e)}
+        response = requests.get(url)
+        if response.status_code >= 200 and response.status_code < 300:
+            return response.json()["data"]
+        return response.json()
 
     @staticmethod
     def post(org_id, collection_name, payload):
@@ -69,14 +43,11 @@ class Request:
                 "payload": payload,
             }
         )
-        try:
-            response = requests.post(write, data=json.dumps(data))
-            if response.status_code >= 200 and response.status_code < 300:
-                return response.json()
-            return JsonResponse({"error": response.json()}, status_code=400)
-        except:  # noqa
-            payload.update({"_id": str(random.randint(1, 100))})
-            return payload  # to be changed later
+        response = requests.post(write, data=json.dumps(data))
+        if response.status_code >= 200 and response.status_code < 300:
+            payload.update({"_id": response.json().get("data", {}).get("object_id")})
+            return payload
+        return JsonResponse({"error": response.json()}, status_code=400)
 
     @staticmethod
     def put(org_id, collection_name, payload, data_filter=None, object_id=None):
@@ -88,7 +59,8 @@ class Request:
                 "payload": payload,
             }
         )
-        if data.get("bulk_write"):
+        bulk_write = data.get("bulk_write")
+        if bulk_write:
             if data_filter is None:
                 return JsonResponse(
                     {"error": "Filter must be set for multiple payload"}
@@ -100,20 +72,17 @@ class Request:
                     {"error": "Object ID must be set for multiple payload"}
                 )
             data.update({"object_id": object_id})
-        try:
-            response = requests.patch(write, data=json.dumps(data))
-            if response.status_code >= 200 and response.status_code < 300:
-                return response.json()
-            return JsonResponse({"error": response.json()}, status_code=400)
-        except:  # noqa
-            document = {}
-            for item in fixtures.get(collection_name):
-                if item.get("_id") == object_id:
-                    document.update(item)
-            if document:
-                document.update(payload)
-                return document
-            return dict()  # to be changed later
+
+        response = requests.put(write, data=json.dumps(data))
+        if response.status_code >= 200 and response.status_code < 300:
+            if not bulk_write:
+                tmp = {"_id": object_id}
+                response = Request.get(org_id, collection_name, tmp)
+                return response[0]
+            else:
+                response = Request.get(org_id, collection_name)
+                return response
+        return {"error": response}
 
     @staticmethod
     def delete(org_id, collection, payload, data_filter=None, object_id=None):
