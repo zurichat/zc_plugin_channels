@@ -22,7 +22,7 @@ class RoleViewset(ViewSet):
     )
     def role(self, request, org_id, channel_id):
         serializer = RoleSerializer(
-            data=request.data, context={"channel_id": channel_id}
+            data=request.data, context={"channel_id": channel_id, "type": "create"}
         )
         serializer.is_valid(raise_exception=True)
         role = serializer.data.get("role")
@@ -65,7 +65,11 @@ class RoleViewset(ViewSet):
         detail=False,
     )
     def role_update(self, request, org_id, role_id):
-        pass
+        serializer = RoleSerializer(data=request.data, context={"type": "create"})
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.data.get("role")
+        result = Request.put(org_id, "channel", payload, object_id=role_id)
+        return Response(result, status=status.HTTP_200_OK)
 
     @action(
         methods=["DELETE"],
@@ -81,7 +85,6 @@ role_views = RoleViewset.as_view(
         "post": "role",
     }
 )
-
 role_views_group = RoleViewset.as_view(
     {"get": "role_retrieve", "put": "role_update", "delete": "role_delete"}
 )

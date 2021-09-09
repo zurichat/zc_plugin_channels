@@ -1,15 +1,24 @@
 fixtures = {
     "channel": [
         {
-            "_id": "1",
+            "id": "1",
             "name": "Team Coelho",
             "slug": "team-coelho",
             "description": "string",
             "private": True,
+<<<<<<< HEAD
             "users": [{"_id": "1", "role_id": "200"}],
+=======
+            "users": {
+                "1": {
+                    "role_id": "200",
+                    "is_admin": False,
+                }
+            },
+>>>>>>> 5fd7a2ee49985bcd8e9fdbeb266400f4dc018519
             "roles": [
                 {
-                    "_id": "200",
+                    "id": "200",
                     "name": "Team Coelho",
                     "channel_id": "2",
                     "permissions": [
@@ -24,15 +33,15 @@ fixtures = {
             "created_on": "2021-09-05T15:16:18.971942+00:00",
         },
         {
-            "_id": "2",
+            "id": "2",
             "name": "string",
             "slug": "team-coelho",
             "description": "string",
             "private": True,
-            "users": [{"_id": "1", "role_id": "200"}],
+            "users": {"1": {"role_id": "200", "is_admin": True}},
             "roles": [
                 {
-                    "_id": "200",
+                    "id": "200",
                     "name": "Team Coelho",
                     "channel_id": "2",
                     "permissions": [
@@ -49,7 +58,7 @@ fixtures = {
     ],
     "channelmessage": [
         {
-            "_id": "86",
+            "id": "86",
             "user_id": "200",
             "channel_id": "1",
             "emojis": [],
@@ -59,7 +68,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "87",
+            "id": "87",
             "user_id": "1",
             "channel_id": "1",
             "emojis": [],
@@ -69,7 +78,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:01:00",
         },
         {
-            "_id": "286",
+            "id": "286",
             "user_id": "1",
             "channel_id": "2",
             "emojis": [],
@@ -79,7 +88,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "387",
+            "id": "387",
             "user_id": "201",
             "channel_id": "2",
             "emojis": [],
@@ -91,7 +100,7 @@ fixtures = {
     ],
     "thread": [
         {
-            "_id": "101",
+            "id": "101",
             "user_id": "201",
             "channelmessage_id": "86",
             "emojis": [],
@@ -101,7 +110,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "102",
+            "id": "102",
             "user_id": "201",
             "channelmessage_id": "86",
             "emojis": [],
@@ -111,7 +120,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "103",
+            "id": "103",
             "user_id": "201",
             "channelmessage_id": "86",
             "emojis": [],
@@ -121,7 +130,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "104",
+            "id": "104",
             "user_id": "201",
             "channelmessage_id": "87",
             "emojis": [],
@@ -131,7 +140,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "105",
+            "id": "105",
             "user_id": "201",
             "channelmessage_id": "286",
             "emojis": [],
@@ -141,7 +150,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "106",
+            "id": "106",
             "user_id": "201",
             "channelmessage_id": "387",
             "emojis": [],
@@ -151,7 +160,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "107",
+            "id": "107",
             "user_id": "201",
             "channelmessage_id": "286",
             "emojis": [],
@@ -161,7 +170,7 @@ fixtures = {
             "timestamp": "12-08-2021 12:00:00",
         },
         {
-            "_id": "108",
+            "id": "108",
             "user_id": "201",
             "channelmessage_id": "387",
             "emojis": [],
@@ -173,7 +182,7 @@ fixtures = {
     ],
     "role": [
         {
-            "_id": "198",
+            "id": "198",
             "channel_id": "1",
             "name": "Admin",
             "permission": [
@@ -190,7 +199,7 @@ fixtures = {
             ],
         },
         {
-            "_id": "199",
+            "id": "199",
             "channel_id": "1",
             "name": "Team Lead",
             "permission": [
@@ -202,7 +211,7 @@ fixtures = {
             ],
         },
         {
-            "_id": "200",
+            "id": "200",
             "channel_id": "2",
             "name": "Admin",
             "permission": [
@@ -219,7 +228,7 @@ fixtures = {
             ],
         },
         {
-            "_id": "300",
+            "id": "300",
             "channel_id": "2",
             "name": "Team Lead",
             "permission": [

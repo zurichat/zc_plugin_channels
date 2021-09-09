@@ -51,8 +51,8 @@ class ChannelMessageViewset(ViewSet):
         methods=["GET"],
         detail=False,
     )
-    def message_retrieve(self, request, org_id, msg_id, channel_id):
-        data = {"channel_id": channel_id, "_id": msg_id}
+    def message_retrieve(self, request, org_id, msg_id):
+        data = {"_id": msg_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data)
         return Response(result, status=status.HTTP_200_OK)
@@ -68,8 +68,9 @@ class ChannelMessageViewset(ViewSet):
     def message_update(self, request, org_id, msg_id):
         serializer = ChannelMessageUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        channelmessage = serializer.data.get("message")
-        result = channelmessage.update(org_id, msg_id)
+        payload = serializer.data.get("message")
+        payload.update({"edited": True})
+        result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
         return Response(result, status=status.HTTP_200_OK)
 
     @action(

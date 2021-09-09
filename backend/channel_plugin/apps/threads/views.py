@@ -50,7 +50,12 @@ class ThreadViewset(ViewSet):
         detail=False,
     )
     def thread_message_update(self, request, org_id, thread_id):
-        pass
+        serializer = ThreadUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.data.get("thread")
+        payload.update({"edited": True})
+        result = Request.put(org_id, "thread", payload, object_id=thread_id)
+        return Response(result, status=status.HTTP_200_OK)
 
     @action(
         methods=["DELETE"],
@@ -66,7 +71,6 @@ thread_views = ThreadViewset.as_view(
         "post": "thread_message",
     }
 )
-
 thread_views_group = ThreadViewset.as_view(
     {"put": "thread_message_update", "delete": "thread_message_delete"}
 )

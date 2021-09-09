@@ -6,10 +6,17 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+<<<<<<< HEAD
 from rest_framework.viewsets import ViewSet
+=======
+from rest_framework.viewsets import ModelViewSet, ViewSet
+
+>>>>>>> 5fd7a2ee49985bcd8e9fdbeb266400f4dc018519
 from channel_plugin.utils.customrequest import Request
 
+from . import models
 from .serializers import (  # SearchMessageQuerySerializer,
+    ChannelGetSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     UserSerializer,
@@ -41,14 +48,9 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(
-        responses={
-            200: openapi.Response("Response", ChannelUpdateSerializer(many=True))
-        }
+        responses={200: openapi.Response("Response", ChannelGetSerializer(many=True))}
     )
-    @action(
-        methods=["GET"],
-        detail=False,
-    )
+    @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
 
         """
@@ -61,7 +63,7 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+        responses={200: openapi.Response("Response", ChannelGetSerializer)},
         operation_id="message read one channel",
     )
     @action(
@@ -75,7 +77,7 @@ class ChannelViewset(ViewSet):
 
     @swagger_auto_schema(
         request_body=ChannelUpdateSerializer,
-        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+        responses={200: openapi.Response("Response", ChannelGetSerializer)},
     )
     @action(
         methods=["PUT"],
@@ -83,11 +85,11 @@ class ChannelViewset(ViewSet):
     )
     def channel_update(self, request, org_id, channel_id):
         serializer = ChannelUpdateSerializer(
-            data=request.data, context={"org_id": org_id}
+            data=request.data, context={"org_id": org_id, "_id": channel_id}
         )
         serializer.is_valid(raise_exception=True)
-        channel = serializer.data.get("channel")
-        result = channel.update(org_id, channel_id)
+        payload = serializer.data.get("channel")
+        result = Request.put(org_id, "channel", payload, object_id=channel_id)
         return Response(result, status=status.HTTP_200_OK)
 
     @action(
@@ -408,7 +410,6 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 #                 response = {"status": True, "message": "Query results", "data": data}
 #                 return Response(response, status=status.HTTP_200_OK)
 #         return Response(serializer.errors)
-
 #     def get(self, request):
 #         return Response(
 #             {

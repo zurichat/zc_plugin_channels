@@ -35,27 +35,26 @@ class GetInfoViewset(ViewSet):
 
     @action(methods=["GET"], detail=False, url_path="sidebar")
     def info_sidebar(self, request):
-        org_id = request.GET.get('org', '')
-        user_id = request.GET.get('user', '')
-        token = request.GET.get('token', '')
+        org_id = request.GET.get("org", "")
+        user_id = request.GET.get("user", "")
+        token = request.GET.get("token", "")
         data = {
-                "name" : "Channels Plugin",
-                "description" : description,
-                "plugin_id" : "DGGF-DSDFFDDF-EDFDFDF",
-                "organisation_id" : org_id,
-                "user_id" : user_id,
-                "group_name" : "Zuri",
-                "show_group" : False,
-
-                "joined_rooms": [
+            "name": "Channels Plugin",
+            "description": description,
+            "plugin_id": settings.PLUGIN_ID,
+            "organisation_id": org_id,
+            "user_id": user_id,
+            "group_name": "Zuri",
+            "show_group": False,
+            "joined_rooms": [
                 {
                     "title": "general",
                     "id": "DFGHH-EDDDDS-DFDDF",
                     "unread": 2,
                     "members": 23,
-                    "icon" : "shovel",
-                    "action": "open"
-                    },
+                    "icon": "shovel",
+                    "action": "open",
+                },
                 {
                     "title": "announcements",
                     "id": "DFGfH-EDDDDS-DFDDF",
@@ -63,24 +62,24 @@ class GetInfoViewset(ViewSet):
                     "badge_type": "info",
                     "members": 132,
                     "parent_id": "DFGHH-EDDDDS-DFDDF",
-                    "icon" : "spear",
-                    "action" : "open"
-                    },
-                ],
-                "public_rooms": [
+                    "icon": "spear",
+                    "action": "open",
+                },
+            ],
+            "public_rooms": [
                 {
                     "title": "jokes",
                     "id": "DFGfH-EDDDDS-DFDDF",
                     "unread": 342,
                     "members": 32,
-                    "icon" : "cdn.cloudflare.com/445345453345/hello.jpeg",
-                    "action" : "open",
-                    "auto-join" : True
-                    },
-                ]
-            }
+                    "icon": "cdn.cloudflare.com/445345453345/hello.jpeg",
+                    "action": "open",
+                    "auto-join": True,
+                },
+            ],
+        }
 
-# AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
+        # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
         # data = {
         #     "name": settings.TEAM_NAME,
