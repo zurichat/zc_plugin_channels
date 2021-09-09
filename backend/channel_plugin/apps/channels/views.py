@@ -3,10 +3,10 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSet, ModelViewSet
 
 from channel_plugin.utils.customrequest import Request
-
+from . import models
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
@@ -14,16 +14,32 @@ from .serializers import (  # SearchMessageQuerySerializer,
 
 # Create your views here.
 
+# Creating mockup data for the messages_data
+messages_data = [
+	{	"user_name":"Buka",
+		"channel_name": "Backend",
+		"value": "Submit all assignments on time"
+	},
+	{	"user_name":"Vuie",
+		"channel_name": "Announcements",
+		"value": "Sign up on time"
+	},
+	{	"user_name":"Marxo",
+		"channel_name": "Announcements",
+		"value": "Welcome to HNGX8"
+	}
+
+	]
+
+# messages_data = []
+
 
 class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         request_body=ChannelSerializer,
         responses={201: openapi.Response("Response", ChannelUpdateSerializer)},
     )
-    @action(
-        methods=["POST"],
-        detail=False,
-    )
+    @action(methods=["POST"], detail=False, url_path="(?P<org_id>[^/.]+)")
     def channels(self, request, org_id):
 
         """
@@ -42,10 +58,7 @@ class ChannelViewset(ViewSet):
             200: openapi.Response("Response", ChannelUpdateSerializer(many=True))
         }
     )
-    @action(
-        methods=["GET"],
-        detail=False,
-    )
+    @action(methods=["GET"], detail=False, url_path="(?P<org_id>[^/.]+)/all")
     def channel_all(self, request, org_id):
 
         """
@@ -55,15 +68,16 @@ class ChannelViewset(ViewSet):
         data = {}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channel", data)
-        return Response(result, status=status.HTTP_200_OK)
+        return Response({"message":True,"data" :result}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
-        operation_id="message read one channel",
+operation_id="message read one channel",
     )
     @action(
         methods=["GET"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/retrieve",
     )
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
@@ -77,6 +91,7 @@ class ChannelViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/update",
     )
     def channel_update(self, request, org_id, channel_id):
         serializer = ChannelUpdateSerializer(
@@ -90,17 +105,17 @@ class ChannelViewset(ViewSet):
     @action(
         methods=["DELETE"],
         detail=False,
+        url_path="(?P<org_id>[^/.]+)/(?P<channel_id>[^/.]+)/delete",
     )
     def channel_delete(self, request, org_id, channel_id):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
 
-
 channel_views = ChannelViewset.as_view(
-    {
-        "get": "channel_all",
-        "post": "channels",
-    }
-)
+{
+    "get": "channel_all",
+    "post": "channels",
+}
+)        
 
 channel_views_group = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
@@ -119,7 +134,6 @@ channel_views_group = ChannelViewset.as_view(
 #                 response = {"status": True, "message": "Query results", "data": data}
 #                 return Response(response, status=status.HTTP_200_OK)
 #         return Response(serializer.errors)
-
 #     def get(self, request):
 #         return Response(
 #             {

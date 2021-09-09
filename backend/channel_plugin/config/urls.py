@@ -57,7 +57,6 @@ if settings.DEBUG:
 urlpatterns += [
     # API base url
     # path("api/", include("config.api_router")),
-    path("api/v1/", include("channel_plugin.info.urls")),
     path("api/", include("apps.channels.urls")),
     path("api/", include("apps.channelmessages.urls")),
     path("api/", include("apps.roles.urls")),

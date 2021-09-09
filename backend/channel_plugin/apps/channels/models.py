@@ -42,7 +42,7 @@ class Channel:
     kwargs: either filter (dict) or object_id (str)
     """
 
-    def update(self, organization_id, id):
+    def update(self, organization_id, object_id):
         payload = {
             "name": self.name.lower(),
             "slug": slugify(self.name.lower()),
@@ -52,7 +52,7 @@ class Channel:
             "roles": self.roles,
         }
         response = Request.put(
-            organization_id, self.__class__.__name__.lower(), payload, object_id=id
+            organization_id, self.__class__.__name__.lower(), payload, object_id= object_id
         )
         return response
 
