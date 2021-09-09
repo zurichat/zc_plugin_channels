@@ -41,6 +41,7 @@ class ChannelViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
         result = channel.create(org_id)
+        result.update({"members": len(result["users"].keys())})
         return Response(result, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(
@@ -56,6 +57,8 @@ class ChannelViewset(ViewSet):
         data = {}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channel", data)
+        for i, channel in enumerate(result):
+            result[i].update({"members": len(channel["users"].keys())})
         return Response(result, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
@@ -68,7 +71,8 @@ class ChannelViewset(ViewSet):
     )
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data)
+        result = Request.get(org_id, "channel", data)[0]
+        result.update({"members": len(result["users"].keys())})
         return Response(result, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
@@ -86,6 +90,7 @@ class ChannelViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("channel")
         result = Request.put(org_id, "channel", payload, object_id=channel_id)
+        result.update({"members": len(result["users"].keys())})
         return Response(result, status=status.HTTP_200_OK)
 
     @action(
