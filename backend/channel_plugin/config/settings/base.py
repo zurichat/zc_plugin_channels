@@ -96,12 +96,6 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-# https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
-AUTH_USER_MODEL = "users.User"
-# https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
-# https://docs.djangoproject.com/en/dev/ref/settings/#login-url
-LOGIN_URL = "account_login"
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -306,7 +300,7 @@ SOCIALACCOUNT_ADAPTER = "channel_plugin.users.adapters.SocialAccountAdapter"
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
@@ -318,3 +312,13 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # ------------------------------------------------------------------------------
 TEAM_NAME = "Team Coelho"
 PROJECT_NAME = "Zuri Chat Channel Plugin"
+
+try:
+    with open("plugin_id.txt") as f:
+        PLUGIN_ID = f.readline().strip("\n")
+        f.close()
+except:  # noqa
+    PLUGIN_ID = ""
+
+READ_URL = "https://api.zuri.chat/data/read"
+WRITE_URL = "https://api.zuri.chat/data/write"

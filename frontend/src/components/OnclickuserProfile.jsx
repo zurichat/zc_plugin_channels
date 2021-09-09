@@ -4,7 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import {FaRegComment} from "react-icons/fa";
 import {FaRegFolder} from "react-icons/fa";
 import {FaTwitch} from "react-icons/fa";
-import userimage from '../../assets/Ellipse 12.png'
+// import userimage from '../../assets/Ellipse 12.png'
 
 function OnclickuserProfile() {
     return (
@@ -23,7 +23,7 @@ function OnclickuserProfile() {
             </Box>
 
             <Box>
-                <Image src={userimage} alt="My-images"  d="block" ml="auto" mr="auto" mt="40px" />
+                <Image src="https://bit.ly/ryan-florence" alt="My-images"  d="block" ml="auto" mr="auto" mt="40px" />
             </Box>
             <Box mt="40px" fontWeight="700" fontSize="20px" textAlign="center">
                 <h5 >Adeeko Emmanuel</h5>
