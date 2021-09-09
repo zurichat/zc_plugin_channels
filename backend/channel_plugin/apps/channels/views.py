@@ -6,12 +6,8 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-<<<<<<< HEAD
-from rest_framework.viewsets import ViewSet
-=======
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
->>>>>>> 5fd7a2ee49985bcd8e9fdbeb266400f4dc018519
 from channel_plugin.utils.customrequest import Request
 
 from . import models
