@@ -11,8 +11,7 @@
         - [For Windows](#for-windows)
       - [Install Requirements](#install-requirements)
       - [Run server](#run-server)
-      - [To create new django app in Linux environment](#to-create-new-django-app-in-linux-environment)
-      - [To create new django app in Windows environment](#to-create-new-django-app-in-windows-environment)
+      - [To create new django app](#to-create-new-django-app)
     - [Production Development](#production-development)
     - [Committing changes](#committing-changes)
     - [Contribution](#contribution)
@@ -64,24 +63,13 @@
 
 - Run server (where you can see manage.py file) run command
 
-        python manage.py runserver --nostatic
+        python manage.py runserver
 
-#### To create new django app in Linux environment
+#### To create new django app
 
 - [x] Make sure you're in the folder that has manage.py file
 - [ ] cd into apps folder
-- [ ] run `python ../manage.py startapp <name-of-app>`
-- [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
-to *INSTALLED_APPS*
-
-#### To create new django app in Windows environment
-
-- [x] Goto apps folder
-- [ ] create a folder with `<name-of-app>`
-- [ ] go back to folder where you have manage.py file
-- [ ] run `python manage.py startapp apps/<name-of-app>`
-- [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
-to *INSTALLED_APPS*
+- [ ] run `django-admin startapp <name-of-app>`
 
 ### Production Development
 
