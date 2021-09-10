@@ -1,12 +1,9 @@
-import json
-from typing import Set
-from django.http.response import Http404, JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.viewsets import  ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
