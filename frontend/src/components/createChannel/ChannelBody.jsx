@@ -5,7 +5,6 @@ import { useDisclosure } from "@chakra-ui/react";
 import AddPeopleModal from "./addPeopleModal";
 
 const ChannelBody = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Box width="80%" m="auto" height="sm" pt="3rem" fontSize="16px">
       <Text color="black">
