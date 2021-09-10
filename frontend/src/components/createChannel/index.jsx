@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@chakra-ui/layout";
-import MessageInput from "./MessageInput";
+import MessageInput from "../shared/MessageInput";
 import TopBar from "./TopBar";
 import ChannelBody from "./ChannelBody";
 import TopSearch from "./TopSearch";
