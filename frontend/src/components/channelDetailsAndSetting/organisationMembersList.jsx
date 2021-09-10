@@ -7,9 +7,41 @@ import googleImage from "../channelDetailsAndSetting/images/images.png"
 
 
 const OrganisationMembersList = () => {
+
+      const MembersList =  [
+            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
+            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
+            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
+            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
+            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
+            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' }
+      ]
+
+      let MembersElements = MembersList.map( member => { 
+            return (
+            <Box>
+                  <Box display='flex'  pos='relative' left='-2.3em'>
+                  <Image src={googleImage} 
+                          borderRadius='50%' h='30px' w='32px' 
+                          alignItems='flex-start'  alt='' />
+                  <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
+                        borderColor='white' borderWidth='.141rem' bg='gray'>
+                  </Box>
+                <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>{member.FirstName} |  
+                <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>{member.FullName}</Text></Text>
+              </Box>
+              <Text left='-2.9em' position='relative' 
+                    color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
+                    fontWeight='normal' fontSize='.8rem'>{member.stack}
+              </Text>
+            </Box>
+            )
+      })
+      
+
  return (
 
-  <Box bg='gray' width='100%' height='100vh'>
+ 
     <Box position='absolute'
         left='460'
         top= '8em'
@@ -42,136 +74,12 @@ const OrganisationMembersList = () => {
 
   <Stack mt='1.5rem' ml='4.5rem' pos='relative'   direction={'column'}  spacing='18px'  >
    <Stack direction={'column'} spacing='0'>
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='#00B87C'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='#00B87C'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='gray'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='#00B87C'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='#00B87C'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='gray'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='#00B87C'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
-
-
-    <Box display='flex'  pos='relative' left='-2.3em'>
-        <Image src={googleImage} 
-                borderRadius='50%' h='30px' w='32px' 
-                alignItems='flex-start'  alt='' />
-        <Box borderRadius='50%' ml='-.8rem' mt='1.5rem' w='.7em' h='.7em' 
-              borderColor='white' borderWidth='.141rem' bg='#00B87C'>
-        </Box>
-      <Text display='flex' position='relative' color='black' ml='8px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>Abibola |  
-      <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>Ifunanyachi Abibola Oworu-Chima</Text></Text>
-    </Box>
-    <Text left='-2.9em' position='relative' 
-          color='gray' zIndex='2' paddingLeft='40px' top='-.9rem'  margin='0' mt='.1rem'
-          fontWeight='normal' fontSize='.8rem'>Frontend Devloper
-    </Text>
+             {MembersElements}
     </Stack> 
   </Stack>
  
  </Box>
-</Box>
+
  )
 }
 

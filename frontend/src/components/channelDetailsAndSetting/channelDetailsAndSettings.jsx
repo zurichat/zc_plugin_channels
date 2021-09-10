@@ -5,8 +5,9 @@ import TabsRows from './TabsRow'
 import { FaVideo } from 'react-icons/fa';
 import { FaRegBell } from 'react-icons/fa';
 import { FaChevronDown } from 'react-icons/fa';
-
+import OrganisationMembersList from '../channelDetailsAndSetting/organisationMembersList';
 import React from 'react'
+
 
 const ChannelDetails = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -37,7 +38,9 @@ const ChannelDetails = () => {
             </Stack>
             <TabsRows />
             </ModalHeader>
-            
+            <ModalBody>
+              <OrganisationMembersList />
+            </ModalBody>
           </ModalContent>
         </Modal>
       </>
