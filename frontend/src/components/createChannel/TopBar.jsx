@@ -1,33 +1,32 @@
 import React from "react";
-import { Avatar, Flex, Spacer, Text } from "@chakra-ui/react";
+import { Avatar, Spacer, Text } from "@chakra-ui/react";
 import { Heading } from "@chakra-ui/react";
 import { BiChevronDown, BiUserPlus } from "react-icons/bi";
-import { Box } from "@chakra-ui/layout";
+import { Box, HStack } from "@chakra-ui/layout";
+import { Icon } from "@chakra-ui/icon";
 
 const TopBar = () => {
   return (
-    <Box bg="white" p={4} color="black" borderRadius="2px">
-      <Flex cursor="pointer" alignItems="center">
-        <Heading as="h5" size="sm" fontWeight="semibold">
+    <Box bg="white" p={4} borderRadius="2px">
+      <HStack alignItems="center">
+        <Heading as="h5" size="sm">
           # Announcements
         </Heading>
-        <BiChevronDown />
+
+        <Icon as={BiChevronDown} />
+
         <Spacer />
-        <Flex alignItems="center" width="8rem">
-          <Box mr="11px">
-            <Avatar
-              src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
-              alt=""
-              boxSize="36px"
-            />
-          </Box>
-          <Text mr="11px" color="black" fontWeight="bolder">
-            {" "}
-            1{" "}
-          </Text>
-          <BiUserPlus color="black" size="1.5rem" />
-        </Flex>
-      </Flex>
+        <HStack spacing={4}>
+          <Avatar
+            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
+            alt=""
+            boxSize="36px"
+          />
+
+          <Text fontWeight="bold">1</Text>
+          <Icon boxSize="22px" as={BiUserPlus} />
+        </HStack>
+      </HStack>
     </Box>
   );
 };
