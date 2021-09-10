@@ -186,51 +186,77 @@ class ChannelMemberViewset(ViewSet):
         channel = self.retrieve_channel(request, org_id, channel_id)
         
         if channel:
-        
+
             #"check if the user is aleady a member of the channel"
-            user_id = request.data.get("_id")
-            user_data = channel["users"].get(user_id)
+            output = None 
 
-            if not user_data:
-                #add the add the user to the channel    
-
-                serializer = UserSerializer(data=request.data)
+            if type(request.data) == list:
+                # user_id = request.data.get("_id")
+                # user_data = channel["users"].get(user_id)
+                serializer = UserSerializer(data=request.data, many=True)
                 serializer.is_valid(raise_exception=True)
-                user_data =  serializer.data
-
-                # add user to the channel
-                channel["users"].update({
-                    f"{user_data['_id']}": serializer.data
-                })
-
-                #remove channel ID to avoid changing it
-                channel.pop("_id", None) 
+                user_list = serializer.initial_data
                 
-                result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
-                
-                if result:
-                    if (type(result) == dict):
-                        data = (
-                            user_data
-                            if not result.get("error") else
-                            result
-                        )
-                        status_code = (
-                            status.HTTP_201_CREATED
-                            if not result.get("error") else 
-                            status.HTTP_400_BAD_REQUEST
-                        )
-                        return Response(
-                            data,
-                            status=status_code
-                        )
+                # add all users not in group
+                for user in user_list:
+                    if channel["users"].get(user["_id"]):
+                        user_list.pop(user)
                     else:
-                        return Response(
-                            result, 
-                            status=result.status_code
-                        )
-            return Response(user_data, status=status.HTTP_200_OK)
-        
+                        channel["users"].update({
+                            f"{user['_id']}": user
+                        })
+
+                output = user_list
+            
+            else:
+                user_id = request.data.get("_id")
+                user_data = channel["users"].get(user_id)
+
+                if not user_data:
+                    #add the add the user to the channel    
+
+                    serializer = UserSerializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    user_data =  serializer.data
+
+                    # add user to the channel
+                    channel["users"].update({
+                        f"{user_data['_id']}": serializer.data
+                    })
+
+                    output = user_data
+                else:
+                    return Response(
+                        user_data,
+                        status=status.HTTP_200_OK
+                    )
+
+            #remove channel ID to avoid changing it
+            channel.pop("_id", None) 
+            
+            result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
+            
+            if result:
+                if (type(result) == dict):
+                    data = (
+                        output
+                        if not result.get("error") else
+                        result
+                    )
+                    status_code = (
+                        status.HTTP_201_CREATED
+                        if not result.get("error") else 
+                        status.HTTP_400_BAD_REQUEST
+                    )
+                    return Response(
+                        data,
+                        status=status_code
+                    )
+                else:
+                    return Response(
+                        result, 
+                        status=result.status_code
+                    )        
         return Response(
             {"error": "channel not found"},
             status=status.HTTP_404_NOT_FOUND
