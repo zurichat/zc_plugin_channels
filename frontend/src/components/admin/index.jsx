@@ -1,9 +1,11 @@
 import React from "react";
 import { Box, HStack, VStack } from "@chakra-ui/layout";
 import MessageBoardTop from "./subs/MessageBoardTop/MessageBoardTop";
-import MessageInput from "./subs/MessageInput";
+// import MessageInput from "./subs/MessageInput";
+import MessageInput from "../shared/MessageInput";
 import ChannelDetails from "./subs/channelDetails";
-import ChannelNameBanner from "./subs/ChannelNameBanner/ChannelNameBanner";
+import ChannelHeader from '../shared/ChannelHeader'
+
 
 const Admin = () => {
   return (
@@ -14,8 +16,9 @@ const Admin = () => {
         position="relative"
         alignSelf="stretch"
         justifyContent="flex-end"
+        spacing={2}
       >
-        <ChannelNameBanner />
+        <ChannelHeader />
         <MessageBoardTop />
         <MessageInput />
       </VStack>
