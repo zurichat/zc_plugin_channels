@@ -120,7 +120,11 @@ class ChannelMemberViewset(ViewSet):
 
     def retrieve_channel(self, request, org_id, channel_id):
         """
+<<<<<<< HEAD
             This method get's a retrives channel data
+=======
+            This method get's a retrieves channel data
+>>>>>>> fd331d55a117e7eee1c3a6bd5ec1219a98e53d07
             from zc-core
         """
         data = {"_id": channel_id}
@@ -152,6 +156,21 @@ class ChannelMemberViewset(ViewSet):
 
     def filter_users(self, users, params):
         output = []
+<<<<<<< HEAD
+=======
+        
+        for param in params.items():
+            out = list(filter(
+                    lambda user: param in user.items(),
+                    users.values())
+            )
+
+            for item in out:
+                if item not in output:
+                    output.append(item)
+        
+        output = []
+>>>>>>> fd331d55a117e7eee1c3a6bd5ec1219a98e53d07
         for user in users.values():
             flag = 0
             
@@ -203,12 +222,19 @@ class ChannelMemberViewset(ViewSet):
                 user_data = {
                     "_id": request.data.get("_id"),
                     "role_id": request.data.get("role_id"),
+<<<<<<< HEAD
                     "is_admin": request.data.get("is_admin", "false"),
+=======
+                    "is_admin": request.data.get("is_admin", False),
+>>>>>>> fd331d55a117e7eee1c3a6bd5ec1219a98e53d07
                 }
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
+<<<<<<< HEAD
                 
+=======
+>>>>>>> fd331d55a117e7eee1c3a6bd5ec1219a98e53d07
                 # add user to the channel
                 channel["users"].update({
                     f"{user_data['_id']}": serializer.data
@@ -216,10 +242,15 @@ class ChannelMemberViewset(ViewSet):
 
                 #remove channel ID to avoid changing it
                 channel.pop("_id", None) 
+<<<<<<< HEAD
 
                 result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
                 
                 if result.status_code >= 200 and result.status_code < 300:
+=======
+                result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
+                if result:
+>>>>>>> fd331d55a117e7eee1c3a6bd5ec1219a98e53d07
                     return Response(user_data, status=status.HTTP_201_CREATED)
                 else:
                     return Response(result, status=result.status_code)
