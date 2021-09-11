@@ -4,11 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import {FaRegComment} from "react-icons/fa";
 import {FaRegFolder} from "react-icons/fa";
 import {FaTwitch} from "react-icons/fa";
-<<<<<<< HEAD
-import userimage from '../assets/Ellipse 12.png'
-=======
 // import userimage from '../../assets/Ellipse 12.png'
->>>>>>> 6ef1f909b13b645babb05cad808008132f34e146
 
 function OnclickuserProfile() {
     return (
