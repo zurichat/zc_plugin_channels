@@ -70,7 +70,7 @@ class Request:
             if not bulk_write:
                 tmp = {"_id": object_id}
                 response = Request.get(org_id, collection_name, tmp)
-                return response[0]
+                return response
             else:
                 response = Request.get(org_id, collection_name)
                 return response
