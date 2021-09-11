@@ -1,13 +1,13 @@
+from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import  ViewSet
+from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
-from . import models
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelGetSerializer,
     ChannelSerializer,
@@ -21,7 +21,10 @@ from .serializers import (  # SearchMessageQuerySerializer,
 class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         request_body=ChannelSerializer,
-        responses={201: openapi.Response("Response", ChannelUpdateSerializer)},
+        responses={
+            201: openapi.Response("Response", ChannelUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
     )
     @action(
         methods=["POST"],
@@ -38,11 +41,17 @@ class ChannelViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
         result = channel.create(org_id)
-        result.update({"members": len(result["users"].keys())})
-        return Response(result, status=status.HTTP_201_CREATED)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            result.update({"members": len(result["users"].keys())})
+            status_code = status.HTTP_201_CREATED
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelGetSerializer(many=True))}
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer(many=True)),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        }
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
@@ -54,12 +63,18 @@ class ChannelViewset(ViewSet):
         data = {}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channel", data)
-        for i, channel in enumerate(result):
-            result[i].update({"members": len(channel["users"].keys())})
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if type(result) == list:
+            for i, channel in enumerate(result):
+                result[i].update({"members": len(channel["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelGetSerializer)},
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
         operation_id="message read one channel",
     )
     @action(
@@ -69,12 +84,18 @@ class ChannelViewset(ViewSet):
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data)[0]
-        result.update({"members": len(result["users"].keys())})
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            result.update({"members": len(result["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         request_body=ChannelUpdateSerializer,
-        responses={200: openapi.Response("Response", ChannelGetSerializer)},
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
     )
     @action(
         methods=["PUT"],
@@ -87,8 +108,11 @@ class ChannelViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("channel")
         result = Request.put(org_id, "channel", payload, object_id=channel_id)
-        result.update({"members": len(result["users"].keys())})
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            result.update({"members": len(result["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @action(
         methods=["DELETE"],
@@ -98,27 +122,26 @@ class ChannelViewset(ViewSet):
         return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
 
 
-channel_views = ChannelViewset.as_view(
+channel_list_create_view = ChannelViewset.as_view(
     {
         "get": "channel_all",
         "post": "channels",
     }
 )
 
-channel_views_group = ChannelViewset.as_view(
+channel_retrieve_update_delete_view = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
 )
 
 
 class ChannelMemberViewset(ViewSet):
-    
     def validate_name(self, name):
         return name
 
     def retrieve_channel(self, request, org_id, channel_id):
         """
-            This method retrieves a channel's data
-            from zc-core
+        This method retrieves a channel's data
+        from zc-core
         """
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data)
@@ -127,31 +150,25 @@ class ChannelMemberViewset(ViewSet):
             return result[0] if (type(result) == list) else None
 
     def filter_params(self, serializer, params):
-        """ 
-            This method removes all query parameters
-            not in user serializer
+        """
+        This method removes all query parameters
+        not in user serializer
         """
         fields = list(serializer().get_fields().keys())
-        
-        keys = list(filter(
-                lambda param: bool(param in fields),
-                params.keys()
-        ))
+
+        keys = list(filter(lambda param: bool(param in fields), params.keys()))
 
         for key in params:
             if key not in keys:
                 del params[key]
         return params
 
-    def filter_objects(self, data:list, serializer:serializers.Serializer):
+    def filter_objects(self, data: list, serializer: serializers.Serializer):
         # method  applies filteration to user list
         output = []
 
-        params = self.filter_params(
-            serializer,
-            self.request.query_params
-        )
-        
+        params = self.filter_params(serializer, self.request.query_params)
+
         for obj in data:
             flag = 0
 
@@ -168,7 +185,11 @@ class ChannelMemberViewset(ViewSet):
 
     @swagger_auto_schema(
         request_body=UserSerializer,
-        responses={201: openapi.Response("Response", UserSerializer)},
+        responses={
+            201: openapi.Response("Response", UserSerializer),
+            400: openapi.Response("Error Response"),
+            404: openapi.Response("Collection Not Found"),
+        },
         operation_id="add-channel-member",
     )
     @action(
@@ -177,15 +198,15 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-            Method adds a user to a channel identified
+        Method adds a user to a channel identified
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
-        
+
         if channel:
 
-            #"check if the user is aleady a member of the channel"
-            output = None 
+            # "check if the user is aleady a member of the channel"
+            output = None
 
             if type(request.data) == list:
                 # user_id = request.data.get("_id")
@@ -193,75 +214,63 @@ class ChannelMemberViewset(ViewSet):
                 serializer = UserSerializer(data=request.data, many=True)
                 serializer.is_valid(raise_exception=True)
                 user_list = serializer.initial_data
-                
+
                 # add all users not in group
                 for user in user_list:
                     if channel["users"].get(user["_id"]):
                         user_list.pop(user)
                     else:
-                        channel["users"].update({
-                            f"{user['_id']}": user
-                        })
+                        channel["users"].update({f"{user['_id']}": user})
 
                 output = user_list
-            
+
             else:
                 user_id = request.data.get("_id")
                 user_data = channel["users"].get(user_id)
 
                 if not user_data:
-                    #add the add the user to the channel    
+                    # add the add the user to the channel
 
                     serializer = UserSerializer(data=request.data)
                     serializer.is_valid(raise_exception=True)
-                    user_data =  serializer.data
+                    user_data = serializer.data
 
                     # add user to the channel
-                    channel["users"].update({
-                        f"{user_data['_id']}": serializer.data
-                    })
+                    channel["users"].update({f"{user_data['_id']}": serializer.data})
 
                     output = user_data
                 else:
-                    return Response(
-                        user_data,
-                        status=status.HTTP_200_OK
-                    )
+                    return Response(user_data, status=status.HTTP_200_OK)
 
-            #remove channel ID to avoid changing it
-            channel.pop("_id", None) 
-            
-            result = Request.put(org_id, "channel", payload=channel, object_id=channel_id)
-            
+            # remove channel ID to avoid changing it
+            channel.pop("_id", None)
+
+            # only update user dict
+            payload = {"users": channel["users"]}
+
+            result = Request.put(
+                org_id, "channel", payload=payload, object_id=channel_id
+            )
+
             if result:
-                if (type(result) == dict):
-                    data = (
-                        output
-                        if not result.get("error") else
-                        result
-                    )
+                if type(result) == dict:
+                    data = output if not result.get("error") else result
                     status_code = (
                         status.HTTP_201_CREATED
-                        if not result.get("error") else 
-                        status.HTTP_400_BAD_REQUEST
+                        if not result.get("error")
+                        else status.HTTP_400_BAD_REQUEST
                     )
-                    return Response(
-                        data,
-                        status=status_code
-                    )
+                    return Response(data, status=status_code)
                 else:
-                    return Response(
-                        result, 
-                        status=result.status_code
-                    )        
+                    return Response(result, status=result.status_code)
         return Response(
-            {"error": "channel not found"},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", UserSerializer(many=True))
+            200: openapi.Response("Response", UserSerializer(many=True)),
+            404: openapi.Response("Not Found"),
         },
         operation_id="list-channel-members",
     )
@@ -271,8 +280,8 @@ class ChannelMemberViewset(ViewSet):
     )
     def list_members(self, request, org_id, channel_id):
         """
-            This method gets all members for a
-            channel identified
+        This method gets all members for a
+        channel identified
         """
 
         # get the channel from zc-core
@@ -290,22 +299,23 @@ class ChannelMemberViewset(ViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(
-            {"error": "Channel not found"},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelUpdateSerializer)},
+        responses={
+            200: openapi.Response("Response", ChannelUpdateSerializer),
+            404: openapi.Response("Not Found"),
+        },
         operation_id="retrieve-member-detail",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
-
     def get_member(self, request, org_id, channel_id, member_id):
         """
-            Method adds a user to a channel
+        Method adds a user to a channel
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
 
@@ -313,23 +323,20 @@ class ChannelMemberViewset(ViewSet):
 
             # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
-            
+
             if user_data:
-                #add the user to the channel
+                # add the user to the channel
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            
+
             return Response(
-                {"error": "member not found"}, 
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
         return Response(
-            {"error": "Channel not found"},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
-
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -340,74 +347,58 @@ class ChannelMemberViewset(ViewSet):
         methods=["PUT"],
         detail=False,
     )
-
     def update_member(self, request, org_id, channel_id, member_id):
         """
-            Method updates a user's channel memberhip details 
+        Method updates a user's channel memberhip details
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
-        
+
         if channel:
-            
-            #check if the user is aleady a member of the channel
+
+            # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
 
             if user_data:
-                
-                #update the users data    
+
+                # update the users data
                 for key in user_data.keys():
                     if key != "_id":
                         user_data[key] = request.data.get(key, user_data[key])
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-                
-                # add user to the channel
-                channel["users"].update({
-                    f"{member_id}": serializer.data
-                })
 
-                #remove channel id to avoid changing it
-                channel.pop("_id", None) 
+                # add user to the channel
+                channel["users"].update({f"{member_id}": serializer.data})
+
+                # remove channel id to avoid changing it
+                channel.pop("_id", None)
+
+                payload = {"users": channel["users"]}
 
                 result = Request.put(
-                    org_id,
-                    "channel",
-                    payload=channel, 
-                    object_id=channel_id
+                    org_id, "channel", payload=payload, object_id=channel_id
                 )
 
                 if result:
-                    if (type(result) == dict):
-                        data = (
-                            user_data
-                            if not result.get("error") else
-                            result
-                        )
+                    if type(result) == dict:
+                        data = user_data if not result.get("error") else result
                         status_code = (
                             status.HTTP_201_CREATED
-                            if not result.get("error") else 
-                            status.HTTP_400_BAD_REQUEST
+                            if not result.get("error")
+                            else status.HTTP_400_BAD_REQUEST
                         )
 
-                        return Response(
-                            data,
-                            status=status_code
-                        )
+                        return Response(data, status=status_code)
                     else:
-                        return Response(
-                            result, 
-                            status=result.status_code
-                        )
+                        return Response(result, status=result.status_code)
 
             return Response(
-                {"error": "member not found"}, 
-                status=status.HTTP_404_NOT_FOUND
-            )        
+                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         return Response(
-            {"error": "Channel not found"},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
     @action(
@@ -419,47 +410,37 @@ class ChannelMemberViewset(ViewSet):
 
         if channel:
 
-            #check if the user is aleady a member of the channel
+            # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
 
             if user_data:
-                #Remove  the user from the channel
+                # Remove  the user from the channel
                 del channel["users"][member_id]
-                
+
                 # send signal to centri app to left message centrifugo
-                channel.pop("_id", None) 
+                channel.pop("_id", None)
+
+                payload = {"users": channel["users"]}
 
                 result = Request.put(
-                    org_id, 
-                    "channel", 
-                    payload=channel, 
-                    object_id=channel_id
+                    org_id, "channel", payload=payload, object_id=channel_id
                 )
 
-                if (type(result) == dict):
-                        data = (
-                            {"msg": "success"}
-                            if not result.get("error") else
-                            result
-                        )
+                if type(result) == dict:
+                    data = {"msg": "success"} if not result.get("error") else result
 
-                        status_code = (
-                            status.HTTP_204_NO_CONTENT
-                            if not result.get("error") else 
-                            status.HTTP_400_BAD_REQUEST
-                        )
-                        return Response(
-                            data,
-                            status=status_code
-                        )
+                    status_code = (
+                        status.HTTP_204_NO_CONTENT
+                        if not result.get("error")
+                        else status.HTTP_400_BAD_REQUEST
+                    )
+                    return Response(data, status=status_code)
 
             return Response(
-                {"error": "member not found"}, 
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
             )
         return Response(
-            {"error": "Channel not found"},
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
 
@@ -471,11 +452,7 @@ channel_members_list_create_views = ChannelMemberViewset.as_view(
 )
 
 channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
-    {
-        "get": "get_member",
-        "put":"update_member",
-        "delete": "remove_member"
-    }
+    {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
 
 

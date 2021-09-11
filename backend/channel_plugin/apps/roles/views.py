@@ -27,7 +27,10 @@ class RoleViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         role = serializer.data.get("role")
         result = role.create(org_id)
-        return Response(result, status=status.HTTP_201_CREATED)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            status_code = status.HTTP_201_CREATED
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         responses={200: openapi.Response("Response", RoleSerializer(many=True))}
@@ -40,7 +43,10 @@ class RoleViewset(ViewSet):
         data = {"channel_id": channel_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "role", data)
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if type(result) == list:
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         responses={200: openapi.Response("Response", RoleSerializer)},
@@ -53,8 +59,11 @@ class RoleViewset(ViewSet):
     def role_retrieve(self, request, org_id, role_id):
         data = {"_id": role_id}
         data.update(dict(request.query_params))
+        status_code = status.HTTP_404_NOT_FOUND
         result = Request.get(org_id, "role", data)
-        return Response(result, status=status.HTTP_200_OK)
+        if result.__contains__("_id"):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         request_body=RoleSerializer,
@@ -69,7 +78,10 @@ class RoleViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("role")
         result = Request.put(org_id, "channel", payload, object_id=role_id)
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @action(
         methods=["DELETE"],
