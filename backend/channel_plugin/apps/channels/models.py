@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 
 from django.utils import timezone
-from django.utils.text import slugify
 
 from channel_plugin.utils.customrequest import Request
 
@@ -10,8 +9,10 @@ from channel_plugin.utils.customrequest import Request
 class Channel:
     # name of channel
     name: str
-    # list of user IDs in a channel
+    # creator of channel
+    owner: str
     slug: str = ""
+    # list of user IDs in a channel
     users: dict = field(default_factory=dict)
     # list of role IDs in a channel
     roles: list = field(default_factory=list)
@@ -19,6 +20,7 @@ class Channel:
     description: str = ""
     # private / public
     private: bool = False
+    archived: bool = False
     # when channel was created
     created_on: str = timezone.now().isoformat()
 
@@ -26,36 +28,16 @@ class Channel:
         payload = {
             "name": self.name.lower(),
             "slug": self.slug,
+            "owner": self.owner,
             "description": self.description,
             "private": self.private,
+            "archived": self.archived,
             "users": self.users,
             "roles": self.roles,
             "created_on": self.created_on,
         }
         response = Request.post(
             organization_id, self.__class__.__name__.lower(), payload
-        )
-        return response
-
-    """"
-    organization_id: str
-    kwargs: either filter (dict) or object_id (str)
-    """
-
-    def update(self, organization_id, object_id):
-        payload = {
-            "name": self.name.lower(),
-            "slug": self.slug,
-            "description": self.description,
-            "private": self.private,
-            "users": self.users,
-            "roles": self.roles,
-        }
-        response = Request.put(
-            organization_id,
-            self.__class__.__name__.lower(),
-            payload,
-            object_id=object_id,
         )
         return response
 

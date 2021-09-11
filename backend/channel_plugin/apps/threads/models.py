@@ -28,24 +28,5 @@ class Thread:
         )
         return response
 
-    """"
-    organization_id: str
-    kwargs: either filter (dict) or object_id (str)
-    """
-
-    def update(self, organization_id, object_id):
-        payload = {
-            "content": self.content,
-            "emojis": self.emojis,
-            "edited": True,
-        }
-        response = Request.put(
-            organization_id,
-            self.__class__.__name__.lower(),
-            payload,
-            object_id=object_id,
-        )
-        return response
-
     def __str__(self):
         return self.content

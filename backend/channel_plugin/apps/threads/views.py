@@ -1,3 +1,4 @@
+from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -13,7 +14,10 @@ from .serializers import ThreadSerializer, ThreadUpdateSerializer
 class ThreadViewset(ViewSet):
     @swagger_auto_schema(
         request_body=ThreadSerializer,
-        responses={201: openapi.Response("Response", ThreadUpdateSerializer)},
+        responses={
+            201: openapi.Response("Response", ThreadUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
     )
     @action(
         methods=["POST"],
@@ -26,10 +30,16 @@ class ThreadViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         thread = serializer.data.get("thread")
         result = thread.create(org_id)
-        return Response(result, status=status.HTTP_201_CREATED)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            status_code = status.HTTP_201_CREATED
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ThreadUpdateSerializer(many=True))}
+        responses={
+            200: openapi.Response("Response", ThreadUpdateSerializer(many=True)),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        }
     )
     @action(
         methods=["GET"],
@@ -39,11 +49,17 @@ class ThreadViewset(ViewSet):
         data = {"channelmessage_id": channelmessage_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "thread", data)
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if type(result) == list:
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         request_body=ThreadUpdateSerializer,
-        responses={200: openapi.Response("Response", ThreadUpdateSerializer)},
+        responses={
+            200: openapi.Response("Response", ThreadUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
     )
     @action(
         methods=["PUT"],
@@ -55,7 +71,10 @@ class ThreadViewset(ViewSet):
         payload = serializer.data.get("thread")
         payload.update({"edited": True})
         result = Request.put(org_id, "thread", payload, object_id=thread_id)
-        return Response(result, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @action(
         methods=["DELETE"],
