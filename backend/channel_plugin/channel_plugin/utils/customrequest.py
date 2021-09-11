@@ -1,13 +1,9 @@
 import json
-import random
 from dataclasses import dataclass
 from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
-from django.http import JsonResponse
-
-from .fixtures import fixtures
 
 data = {"plugin_id": settings.PLUGIN_ID, "bulk_write": False, "payload": {}}
 read = settings.READ_URL
@@ -31,7 +27,7 @@ class Request:
         response = requests.get(url)
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
-        return response.json()
+        return {"error": response.json()}
 
     @staticmethod
     def post(org_id, collection_name, payload):
@@ -47,7 +43,7 @@ class Request:
         if response.status_code >= 200 and response.status_code < 300:
             payload.update({"_id": response.json().get("data", {}).get("object_id")})
             return payload
-        return JsonResponse({"error": response.json()}, status_code=400)
+        return {"error": response.json()}
 
     @staticmethod
     def put(org_id, collection_name, payload, data_filter=None, object_id=None):
@@ -62,15 +58,11 @@ class Request:
         bulk_write = data.get("bulk_write")
         if bulk_write:
             if data_filter is None:
-                return JsonResponse(
-                    {"error": "Filter must be set for multiple payload"}
-                )
+                return {"error": "Filter must be set for multiple payload"}
             data.update({"filter": data_filter})
         else:
             if object_id is None:
-                return JsonResponse(
-                    {"error": "Object ID must be set for multiple payload"}
-                )
+                return {"error": "Object ID must be set for multiple payload"}
             data.update({"object_id": object_id})
 
         response = requests.put(write, data=json.dumps(data))
