@@ -31,6 +31,7 @@ import FileList from "./fileList";
 
 import React from "react";
 
+
 const ChannelDetails = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef();
