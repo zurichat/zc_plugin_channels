@@ -47,14 +47,20 @@ const UserProfileOnHover = () => {
 
   return (
     <Box
-      maxW="245px"
+      maxW="58rem"
+      w='20rem'
+      top='5rem'
+      pos='absolute'
+      left='20rem'
       borderWidth="1px"
       borderRadius="lg"
       overflow="hidden"
       bg="white"
       m="6"
-      p="6"
+      p="6" transform='scale(0.8)'
+      shadow='md'
     >
+      <Box p='10px'>
       <Center>
         <Avatar size="2xl" name={data.name} src={data.imageUrl} />{" "}
       </Center>
@@ -127,6 +133,7 @@ const UserProfileOnHover = () => {
           Call
         </Button>
       </Stack>
+      </Box>
     </Box>
   );
 };
