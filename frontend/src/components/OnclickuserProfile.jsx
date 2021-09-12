@@ -11,18 +11,7 @@ import userimage from '../assets/Ellipse 12.png'
 function OnclickuserProfile() {
     return (
         <Box>
-            <Box 
-                display="flex" 
-                justifyContent="space-between" 
-                >
-                <Box 
-                fontSize="18px" 
-                fontWeight="700" 
-                pl="14px" 
-                pr="10px">Profile
-                </Box>
-                <IconButton icon={<FaTimes/>} />
-            </Box>
+        
 
             <Box>
                 <Image src="https://bit.ly/ryan-florence" alt="My-images"  d="block" ml="auto" mr="auto" mt="40px" />
