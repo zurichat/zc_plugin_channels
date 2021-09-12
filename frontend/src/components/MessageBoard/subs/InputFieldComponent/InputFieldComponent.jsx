@@ -10,7 +10,7 @@ function InputFieldComponent() {
   const [input, setInput] = useState(false);
   return (
     <Box p={3}>
-      <Box display="flex" flexDirection="column" borderWidth="1px" p={3}>
+      <Box display="flex" flexDirection="column" borderWidth="1px" p={3} height="94px">
         <Input
           variant="unstyled"
           placeholder="Send a Message"
@@ -23,12 +23,18 @@ function InputFieldComponent() {
           maxW="100%"
           display="flex"
           justifyContent="space-between"
-          mt={5}
+          mt={7}
           flexDirection="row"
           alignItems="center"
+          overflowX="auto"
+          css={{
+            '&::-webkit-scrollbar':{
+              display:'none'
+            }
+          }}
         >
           <Box
-            width={{ base: "100px", sm: "150px", md: "180px" }}
+            width={{ base: "7em", sm: "10em", md: "12em" }}
             display="flex"
             flexDirection="row"
             justifyContent="space-between"
@@ -46,11 +52,12 @@ function InputFieldComponent() {
             flexDirection="row"
             justifyContent="space-between"
             alignItems="center"
-            width={{ base: "60px", sm: "80px", md: "120px" }}
-            _hover={{ cursor: "pointer" }}
+            width={{ base: "5em", sm: "8em", md: "10em" }}
+            _hover={{ cursor: "pointer" }} marginLeft={['30px']}
+            minW="60px"
           >
             <FiAtSign />
-            <GrAttachment />
+            <GrAttachment color="#8B8B8B"/>
             {input ? (
               <Button bg="#00B87C" size="xs">
                 <IoSendSharp color="white" />
