@@ -155,7 +155,7 @@ class ChannelMemberViewset(ViewSet):
         result = Request.get(org_id, "channel", data)
 
         if result:
-            return result[0] if (type(result) == list) else None
+            return result if (type(result) == dict) else None
 
     def filter_params(self, serializer, params):
         """
@@ -263,11 +263,34 @@ class ChannelMemberViewset(ViewSet):
             if result:
                 if type(result) == dict:
                     data = output if not result.get("error") else result
+                    
                     status_code = (
                         status.HTTP_201_CREATED
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
+
+
+                    if not result.get("error"):                        
+                        if type(output) == dict:
+                            # when only one user is added
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["name"],
+                                user_id=output["_id"],
+                            )
+                        else:
+                            # when output is a list multiple users where added
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["name"],
+                                added_by="active-duser_id-gotten",
+                                added=output 
+                            )
                     return Response(data, status=status_code)
                 else:
                     return Response(result, status=result.status_code)
@@ -437,11 +460,22 @@ class ChannelMemberViewset(ViewSet):
                 if type(result) == dict:
                     data = {"msg": "success"} if not result.get("error") else result
 
+                    if not result.get("error"):                        
+                        # when only one user is removed
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="LeftChannelSignal",
+                            org_id=org_id,
+                            channel_name=channel["name"],
+                            user_id=user_data["_id"],
+                        )
+
                     status_code = (
                         status.HTTP_204_NO_CONTENT
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
+
                     return Response(data, status=status_code)
 
             return Response(
