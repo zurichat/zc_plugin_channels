@@ -1,0 +1,305 @@
+<html>
+    <head>
+        <title>Centrifugo quick start</title>
+    </head>
+    <body>
+        <div id="counter">-</div>
+        <div>
+
+        </div>
+        <div id="addChannel">
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/gh/centrifugal/centrifuge-js@2.8.0/dist/centrifuge.min.js"></script>
+        <script type="text/javascript">
+            const container = document.getElementById('counter');
+            let socketUrl = "";
+            
+            if (window.location.hostname == "127.0.0.1")
+            {
+              socketUrl = "ws://localhost:8000/connection/websocket";
+            } else {
+              socketUrl = "wss://realtime.zuri.chat:16800/connection/websocket";
+            }
+            
+            const centrifuge = new Centrifuge(socketUrl);
+            centrifuge.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2MzE5NTU4NjJ9.KCN9FTQV3B_xlAjq4eBlVCTRH-lrQo7M1KO5FnJUFJc");
+
+            centrifuge.on('connect', function(ctx) {
+              console.log("connected", ctx);
+            });
+
+            centrifuge.on('disconnect', function(ctx) {
+              console.log("disconnected", ctx);
+            });
+
+            centrifuge.on('publish', (ctx) => {
+              console.log("A publication has been detected");
+            });
+
+            function build_url(endpoint, params)
+            {
+              let strParam = "";
+              Object.keys(params).forEach(key => {
+                  strParam += `${key}=${params[key]}&`;
+              });
+              
+              return endpoint + strParam;
+            }
+
+            function getCookies() {
+              let arr = document.cookie.split(/\s+/);
+              let cookies = {}; 
+              let path = /(\w+)[=](\w+)/;
+              
+              arr.forEach(cookie => {
+                if (path.test(cookie)){
+                  let res = path.exec(cookie);
+                  cookies[res[1]] = res[2];
+                }
+              });
+  
+              return cookies;
+            }
+
+            function getSidebarData()
+            {
+              return new Promise((resolve, reject)=> {
+
+                let url = build_url(
+                    `${window.location.origin}/api/v1/sidebar/?`,
+                    {
+                      "user":"{{ user_id }}",
+                      "org":"1",
+                      "token":"345x4345634x3436x445z343"
+                    }
+                );
+  
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.send();
+  
+                xhr.onload = async () => {
+                  if (xhr.status >= 200 & xhr.status < 300){
+                    resolve(JSON.parse(xhr.responseText));
+                  } else {
+                    reject(xhr.responseText);
+                  }
+                };
+  
+                xhr.onerror = (error) => {
+                  if (xhr.status >= 500){
+                    setTimeout(()=>{
+                      resolve(getSidebarData());
+                    }, 3000);
+                  } else {
+                    console.log(error);
+                    reject(null);
+                  }
+                };
+              });
+            }
+
+            function subscribeUserToChannelSocket(socketId)
+            {
+              centrifuge.subscribe(socketId, function(ctx) {
+                  container.innerHTML = ctx.data.value;
+                  document.title = ctx.data.value;
+              });
+              return null;
+            }
+
+            async function getChannelSocketName(channelId)
+            {
+              return new Promise((resolve, reject) => {
+                const orgId = 1;
+                const xhr = new XMLHttpRequest();
+                let url = `${window.location.origin}/api/v1/${orgId}/channels/${channelId}/socket/`;
+                  
+                xhr.open('GET', url, true);
+                xhr.send();
+  
+                xhr.onload = () => {
+                  if  (xhr.status >= 200 & xhr.status <300){
+                    resolve(JSON.parse(xhr.responseText)['socket_name']);
+                  } else {
+                    console.log(xhr.responseText);
+                    resolve(null);
+                  }
+                };
+  
+                xhr.onerror = (error) => {
+                  if (xhr.status >= 500){
+                    setTimeout(()=>{
+                      resolve(getChannelSocketName(channelId));
+                    }, 3000);
+                  } else {
+                    console.log(error);
+                    reject(xhr.responseText);
+                  }
+                };
+              });
+
+            }
+
+            async function addUserToChannels(user, channels)
+            {
+              const orgId = 1;
+              const xhr = new XMLHttpRequest();
+              
+              let headers = {
+                "X-CSRFToken": getCookies().csrftoken,
+                "Content-Type":"application/json",
+              };
+
+              channels.forEach(channel => {
+                
+                const url = `${window.location.origin}/api/v1/${orgId}/channels/${channel["id"]}/members/`;
+
+                xhr.open("POST", url, true);
+                
+                Object.keys(headers).forEach(header => {
+                  xhr.setRequestHeader(header, headers[header]);
+                });
+
+                payload = JSON.stringify(user);
+
+                xhr.send(payload);
+
+                xhr.onload = async () => 
+                {
+                  if  (xhr.status >= 200 & xhr.status <300)
+                  {
+                    
+                    let socketName = await getChannelSocketName(channel['id']);
+                    if (socketName)
+                    {
+                      //subscribe user to channels socket
+                      await subscribeUserToChannelSocket(socketName);
+                    }
+
+                    return true;
+                  } else {
+                    console.log(xhr.responseText);
+                    return false;
+                  }
+                };
+                
+                xhr.onerror = async (error) => 
+                {
+                  console.log(error);
+                  return false;
+                } 
+
+              });
+            }
+
+            (async function main(){
+              let sideBarData = await getSidebarData();
+              let joinedChannels = sideBarData["joined_rooms"];
+              let publicRooms = sideBarData["public_rooms"];
+
+              // adds user to all public channels
+              await addUserToChannels(
+                {
+                  '_id': "{{ user_id }}",
+                  "role": "200",
+                  "is_admin": true
+                },
+                publicRooms
+              );
+              
+              let subscribed = 0;
+
+              joinedChannels.forEach(async channel => {
+                let socketId = await getChannelSocketName(channel["id"]);
+
+                if (socketId) {
+                  subscribeUserToChannelSocket(socketId);
+                }
+
+                subscribed++;
+                
+                if (subscribed == joinedChannels.length){
+                  centrifuge.connect();
+                } 
+
+              });
+
+                            
+              const channelContainer = "";
+              const addUserContainer = document.querySelector("#addChannel");
+              
+              /* 
+                now that user is in all channels and is also listening each channels websocket
+                user can add other user to channels and listen to broadcast on the websocketof the channel 
+              */ 
+              
+
+              let channelOptions = '';
+              
+              joinedChannels.forEach(channel => {
+                channelOptions +=  `
+                  <option value="${channel["id"]}">${channel["title"]}</option>
+                `;
+              });
+
+              addUserContainer.innerHTML = `
+                  <h4>Add a user to channel</h4>
+                  <label for="channel-selection">
+                    Pick a channel
+                  </label>
+                  <select id="channel-selection">
+                    ${channelOptions}
+                  </select>
+                  <br/>
+                  
+                  <label for="channel-detail">
+                    Input user details
+                  </label>
+                  <textarea name="" id="channel-detail" cols="50" rows="10">
+                    {
+                    "_id": "kido77",
+                    "role": "300",
+                    "is_admin": false
+                    }
+                  </textarea>
+                  <br/>
+                  <small>change the _id user value to any uuid you wish</small>
+                  <button id="submit" role="button" >Add</button>
+                `;
+
+              const btn = document.querySelector("#submit");              
+              btn.onclick = async (event) => {
+                event.preventDefault();
+                btn.disabled = true;
+                let channelId = document.querySelector("#channel-selection").value;
+                let userDetails = document.querySelector("#channel-detail").value;
+                
+                try
+                {
+                  userDetails = JSON.parse(userDetails); 
+                } catch(error) {
+                  alert("DO not change the structure of the user data please just change the ID");
+                  userDetails.value = `
+                    {
+                      "_id": "kido77",
+                      "role": "300",
+                      "is_admin": false
+                    }
+                  `;
+                }
+                
+                await addUserToChannels(
+                  userDetails, 
+                  [{"id": channelId}]
+                );
+
+                btn.disabled = false;
+              };
+
+            })();
+        
+        </script>
+    </body>
+</html>
