@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from django.http.response import JsonResponse
 
-
 from channel_plugin.utils.customrequest import Request
 
 from .serializers import (  # SearchMessageQuerySerializer,
@@ -155,6 +154,7 @@ class ChannelMemberViewset(ViewSet):
         result = Request.get(org_id, "channel", data)
 
         if result:
+
             return result if (type(result) == dict) else None
 
     def filter_params(self, serializer, params):
@@ -263,14 +263,11 @@ class ChannelMemberViewset(ViewSet):
             if result:
                 if type(result) == dict:
                     data = output if not result.get("error") else result
-                    
                     status_code = (
                         status.HTTP_201_CREATED
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
-
-
                     if not result.get("error"):                        
                         if type(output) == dict:
                             # when only one user is added
@@ -399,7 +396,7 @@ class ChannelMemberViewset(ViewSet):
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-
+                
                 # add user to the channel
                 channel["users"].update({f"{member_id}": serializer.data})
 
@@ -443,7 +440,7 @@ class ChannelMemberViewset(ViewSet):
 
             # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
-
+            
             if user_data:
                 # Remove  the user from the channel
                 del channel["users"][member_id]
@@ -475,7 +472,6 @@ class ChannelMemberViewset(ViewSet):
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
-
                     return Response(data, status=status_code)
 
             return Response(

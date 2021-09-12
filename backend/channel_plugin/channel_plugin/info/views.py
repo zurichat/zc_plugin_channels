@@ -74,7 +74,7 @@ class GetInfoViewset(ViewSet):
             "description": description,
             "plugin_id": settings.PLUGIN_ID,
         }
-        
+
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
         token = request.query_params.get("token")
