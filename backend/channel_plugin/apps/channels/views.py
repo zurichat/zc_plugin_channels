@@ -1,10 +1,14 @@
 from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
+from django.core.signals import request_finished
+
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from django.http.response import JsonResponse
 
 from channel_plugin.utils.customrequest import Request
 
@@ -14,6 +18,8 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelUpdateSerializer,
     UserSerializer,
 )
+
+from apps.centri.helperfuncs import build_room_name
 
 # Create your views here.
 
@@ -151,8 +157,9 @@ channel_retrieve_update_delete_view = ChannelViewset.as_view(
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):
         return name
-
-    def retrieve_channel(self, request, org_id, channel_id):
+    
+    @staticmethod
+    def retrieve_channel(request, org_id, channel_id):
         """
         This method retrieves a channel's data
         from zc-core
@@ -161,6 +168,7 @@ class ChannelMemberViewset(ViewSet):
         result = Request.get(org_id, "channel", data)
 
         if result:
+
             return result if (type(result) == dict) else None
 
     def filter_params(self, serializer, params):
@@ -274,6 +282,26 @@ class ChannelMemberViewset(ViewSet):
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
+                    if not result.get("error"):                        
+                        if type(output) == dict:
+                            # when only one user is added
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["name"],
+                                user_id=output["_id"],
+                            )
+                        else:
+                            # when output is a list multiple users where added
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["name"],
+                                added_by="active-duser_id-gotten",
+                                added=output 
+                            )
                     return Response(data, status=status_code)
                 else:
                     return Response(result, status=result.status_code)
@@ -382,7 +410,7 @@ class ChannelMemberViewset(ViewSet):
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-
+                
                 # add user to the channel
                 channel["users"].update({f"{member_id}": serializer.data})
 
@@ -426,7 +454,7 @@ class ChannelMemberViewset(ViewSet):
 
             # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
-
+            
             if user_data:
                 # Remove  the user from the channel
                 del channel["users"][member_id]
@@ -442,6 +470,16 @@ class ChannelMemberViewset(ViewSet):
 
                 if type(result) == dict:
                     data = {"msg": "success"} if not result.get("error") else result
+
+                    if not result.get("error"):                        
+                        # when only one user is removed
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="LeftChannelSignal",
+                            org_id=org_id,
+                            channel_name=channel["name"],
+                            user_id=user_data["_id"],
+                        )
 
                     status_code = (
                         status.HTTP_204_NO_CONTENT
@@ -469,6 +507,22 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
 
+
+def get_channel_socket_name(request, org_id, channel_id):
+    
+    channel = ChannelMemberViewset.retrieve_channel(
+        request, 
+        org_id, 
+        channel_id
+    )
+    
+    if channel:
+        name = build_room_name(org_id, channel['name'])
+        return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse(
+            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+        )
 
 # class SearchMessagesAPIView(APIView):
 #     def post(self, request):
