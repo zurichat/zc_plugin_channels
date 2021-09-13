@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Box, Divider, HStack, Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/button";
 import { IoMdClose } from "react-icons/io";
@@ -16,15 +16,17 @@ import {
   AccordionIcon,
   AccordionPanel,
 } from "@chakra-ui/accordion";
+import AddPeopleModal from "../../../createChannel/addPeopleModal";
 
 const ChannelDetails = ({ channelName="Announcements" }) => {
+  const [ showAddPeopleModal, setShowAddPeopleModal ] = useState(true);
   const options = useMemo(
     () => [
       {
         title: "Add",
         icon: <FiUserPlus color="#333333" />,
         id: v4(),
-        onClick: () => {},
+        onClick: () => {setShowAddPeopleModal(true)},
       },
       {
         title: "Find",
@@ -79,6 +81,7 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
   );
 
   return (
+    <>
     <Box>
       <HStack justifyContent="space-between" px="21px" py="8px" bg="white">
         <Box>
@@ -199,6 +202,8 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
         </Text>
       </Box>
     </Box>
+    <AddPeopleModal isOpen={showAddPeopleModal} onClose={() => setShowAddPeopleModal(false)} />
+    </>
   );
 };
 
