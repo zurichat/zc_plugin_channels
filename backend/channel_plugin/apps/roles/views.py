@@ -42,7 +42,7 @@ class RoleViewset(ViewSet):
     def role_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "role", data)
+        result = Request.get(org_id, "role", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if type(result) == list:
             status_code = status.HTTP_200_OK
@@ -60,8 +60,8 @@ class RoleViewset(ViewSet):
         data = {"_id": role_id}
         data.update(dict(request.query_params))
         status_code = status.HTTP_404_NOT_FOUND
-        result = Request.get(org_id, "role", data)
-        if result.__contains__("_id"):
+        result = Request.get(org_id, "role", data) or {}
+        if result.__contains__("_id") or type(result) == dict:
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -77,9 +77,9 @@ class RoleViewset(ViewSet):
         serializer = RoleSerializer(data=request.data, context={"type": "create"})
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("role")
-        result = Request.put(org_id, "channel", payload, object_id=role_id)
+        result = Request.put(org_id, "channel", payload, object_id=role_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
+        if result.__contains__("_id") or type(result) == dict:
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -87,8 +87,9 @@ class RoleViewset(ViewSet):
         methods=["DELETE"],
         detail=False,
     )
-    def role_delete(self, request, role_id):
-        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+    def role_delete(self, request, org_id, role_id):
+        result = Request.delete(org_id, "role", object_id=org_id)
+        return Response(result, status=status.HTTP_204_NO_CONTENT)
 
 
 role_views = RoleViewset.as_view(
