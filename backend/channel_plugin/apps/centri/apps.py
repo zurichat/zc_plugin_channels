@@ -5,5 +5,9 @@ class CentriConfig(AppConfig):
     name = 'apps.centri'
 
     def ready(self) -> None:
-        from apps.centri import signals
+        try:
+            import apps.centri.signals
+        except ImportError:
+            pass
+
         return super().ready()
