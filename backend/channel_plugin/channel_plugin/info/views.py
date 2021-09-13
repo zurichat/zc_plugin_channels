@@ -16,7 +16,11 @@ description = ("The Channel Plugin is a feature\
     conversation and communication on zuri.chat."
 )
 
-icons = ["shovel", "cdn.cloudflare.com/445345453345/hello.jpeg", "spear"]
+icons = [
+    "shovel", 
+    "cdn.cloudflare.com/445345453345/hello.jpeg", 
+    "spear",
+]
 
 
 class GetInfoViewset(ViewSet):
@@ -153,13 +157,6 @@ class GetInfoViewset(ViewSet):
 
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
-        # data = {
-        #     "name": settings.TEAM_NAME,
-        #     "project": settings.PROJECT_NAME,
-        #     "version": "1.0",
-        #     "frontend_url": "https://channels.zuri.chat/",
-        #     "description": description,
-        # }
         return Response(data, status=status.HTTP_200_OK)
 
     @action(methods=["GET"], detail=False, url_path="details")
@@ -175,10 +172,12 @@ class GetInfoViewset(ViewSet):
             status=status.HTTP_200_OK,
         )
 
-    # @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
-    # def collections(self, request, plugin_id):
-    #     result = requests.get(f"https://api.zuri.chat/data/collection/{plugin_id}")
-    #     import pdb; pdb.set_trace()
-    #     return Response({},
-    #         status=status.HTTP_200_OK,
-    #     )
+    @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
+    def collections(self, request, plugin_id):
+        response = requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}").json() or {}
+        return Response(response, status=status.HTTP_200_OK)
+
+    @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)/organizations/(?P<org_id>[^/.]+)")
+    def collections_by_organization(self, request, org_id, plugin_id):
+        response = requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}").json() or {}
+        return Response(response, status=status.HTTP_200_OK)
