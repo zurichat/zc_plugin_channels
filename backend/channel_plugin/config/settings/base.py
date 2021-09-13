@@ -323,6 +323,7 @@ except:  # noqa
 
 READ_URL = "https://api.zuri.chat/data/read"
 WRITE_URL = "https://api.zuri.chat/data/write"
+DELETE_URL = "https://api.zuri.chat/data/delete"
 
 
 try:

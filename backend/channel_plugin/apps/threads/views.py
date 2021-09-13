@@ -81,7 +81,8 @@ class ThreadViewset(ViewSet):
         detail=False,
     )
     def thread_message_delete(self, request, org_id, thread_id):
-        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+        result = Request.delete(org_id, "thread", object_id=thread_id)
+        return Response(result, status=status.HTTP_204_NO_CONTENT)
 
 
 thread_views = ThreadViewset.as_view(

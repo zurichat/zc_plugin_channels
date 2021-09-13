@@ -5,9 +5,10 @@ from urllib.parse import urlencode
 import requests
 from django.conf import settings
 
-data = {"plugin_id": settings.PLUGIN_ID, "bulk_write": False, "payload": {}}
+data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
 write = settings.WRITE_URL
+delete = settings.DELETE_URL
 
 
 def check_payload(payload):
@@ -70,12 +71,29 @@ class Request:
             if not bulk_write:
                 tmp = {"_id": object_id}
                 response = Request.get(org_id, collection_name, tmp)
-                return response[0]
+                return response
             else:
                 response = Request.get(org_id, collection_name)
                 return response
         return {"error": response}
 
     @staticmethod
-    def delete(org_id, collection, payload, data_filter=None, object_id=None):
-        raise NotImplementedError("Zuri Core has not implemeted")
+    def delete(org_id, collection_name, data_filter=None, object_id=None):
+        data.update(
+            {
+                "organization_id": org_id,
+                "collection_name": collection_name,
+            }
+        )
+        if data_filter is not None:
+            data.update({"filter": data_filter})
+        else:
+            if object_id is None:
+                return {"error": "Object ID or Filter must be set"}
+            data.update({"object_id": object_id})
+
+        response = requests.post(delete, data=json.dumps(data))
+
+        if response.status_code >= 200 and response.status_code < 300:
+            return response.json()
+        return {"error": response}
