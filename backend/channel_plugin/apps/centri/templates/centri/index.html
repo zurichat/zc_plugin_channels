@@ -19,11 +19,14 @@
             {
               socketUrl = "ws://localhost:8000/connection/websocket";
             } else {
-              socketUrl = "wss://realtime.zuri.chat:16800/connection/websocket";
+              socketUrl = "wss://realtime.zuri.chat/connection/websocket";
             }
-            
             const centrifuge = new Centrifuge(socketUrl);
-            centrifuge.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2MzE5NTU4NjJ9.KCN9FTQV3B_xlAjq4eBlVCTRH-lrQo7M1KO5FnJUFJc");
+            
+            if (window.location.hostname == "127.0.0.1")
+            {
+              centrifuge.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2MzE5NTU4NjJ9.KCN9FTQV3B_xlAjq4eBlVCTRH-lrQo7M1KO5FnJUFJc");
+            }
 
             centrifuge.on('connect', function(ctx) {
               console.log("connected", ctx);
@@ -197,7 +200,7 @@
             (async function main(){
               let sideBarData = await getSidebarData();
               let joinedChannels = sideBarData["joined_rooms"];
-              let publicRooms = sideBarData["public_rooms"];
+              let publicChannels = sideBarData["public_rooms"];
 
               // adds user to all public channels
               await addUserToChannels(
@@ -226,6 +229,21 @@
 
               });
 
+
+              publicChannels.forEach(async channel => {
+                let socketId = await getChannelSocketName(channel["id"]);
+
+                if (socketId) {
+                  subscribeUserToChannelSocket(socketId);
+                }
+
+                subscribed++;
+                
+                if (subscribed == joinedChannels.length){
+                  centrifuge.connect();
+                } 
+
+              });
                             
               const channelContainer = "";
               const addUserContainer = document.querySelector("#addChannel");
