@@ -197,7 +197,7 @@
             (async function main(){
               let sideBarData = await getSidebarData();
               let joinedChannels = sideBarData["joined_rooms"];
-              let publicRooms = sideBarData["public_rooms"];
+              let publicChannels = sideBarData["public_rooms"];
 
               // adds user to all public channels
               await addUserToChannels(
@@ -226,6 +226,21 @@
 
               });
 
+
+              publicChannels.forEach(async channel => {
+                let socketId = await getChannelSocketName(channel["id"]);
+
+                if (socketId) {
+                  subscribeUserToChannelSocket(socketId);
+                }
+
+                subscribed++;
+                
+                if (subscribed == joinedChannels.length){
+                  centrifuge.connect();
+                } 
+
+              });
                             
               const channelContainer = "";
               const addUserContainer = document.querySelector("#addChannel");
