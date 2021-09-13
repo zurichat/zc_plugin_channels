@@ -25,7 +25,7 @@ class ChannelMessageViewset(ViewSet):
     )
     def message(self, request, org_id, channel_id):
         serializer = ChannelMessageSerializer(
-            data=request.data, context={"channel_id": channel_id}
+            data=request.data, context={"channel_id": channel_id, "org_id": org_id}
         )
         serializer.is_valid(raise_exception=True)
         channelmessage = serializer.data.get("channelmessage")
@@ -50,7 +50,7 @@ class ChannelMessageViewset(ViewSet):
     def message_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "channelmessage", data)
+        result = Request.get(org_id, "channelmessage", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if type(result) == list:
             status_code = status.HTTP_200_OK
@@ -70,9 +70,9 @@ class ChannelMessageViewset(ViewSet):
     def message_retrieve(self, request, org_id, msg_id):
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "channelmessage", data)
+        result = Request.get(org_id, "channelmessage", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
+        if result.__contains__("_id") or type(result) == dict:
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -92,9 +92,9 @@ class ChannelMessageViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("message")
         payload.update({"edited": True})
-        result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
+        result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
+        if result.__contains__("_id") or type(result) == dict:
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -104,8 +104,12 @@ class ChannelMessageViewset(ViewSet):
     )
     def message_delete(self, request, org_id, msg_id):
         result = Request.delete(org_id, "channelmessage", object_id=msg_id)
-        return Response(result, status=status.HTTP_204_NO_CONTENT)
-
+        if result.get("status_code") == 200:
+            if result.get("data", {}).get("deleted_count") > 0:
+                Request.delete(
+                    org_id, "thread", data_filter={"channelmessage_id": msg_id}
+                )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 channelmessage_views = ChannelMessageViewset.as_view(

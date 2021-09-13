@@ -68,11 +68,12 @@ class ChannelViewset(ViewSet):
         """
         data = {}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "channel", data)
+        result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if type(result) == list:
-            for i, channel in enumerate(result):
-                result[i].update({"members": len(channel["users"].keys())})
+            if result:
+                for i, channel in enumerate(result):
+                    result[i].update({"members": len(channel["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -89,10 +90,11 @@ class ChannelViewset(ViewSet):
     )
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data)
+        result = Request.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
-            result.update({"members": len(result["users"].keys())})
+        if result.__contains__("_id") or type(result) == dict:
+            if result:
+                result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -113,10 +115,11 @@ class ChannelViewset(ViewSet):
         )
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("channel")
-        result = Request.put(org_id, "channel", payload, object_id=channel_id)
+        result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
-            result.update({"members": len(result["users"].keys())})
+        if result.__contains__("_id") or type(result) == dict:
+            if result:
+                result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -126,7 +129,17 @@ class ChannelViewset(ViewSet):
     )
     def channel_delete(self, request, org_id, channel_id):
         result = Request.delete(org_id, "channel", object_id=channel_id)
-        return Response(result, status=status.HTTP_204_NO_CONTENT)
+
+        # delete relationships
+        if result.get("status") == 200:
+            if result.get("data", {}).get("deleted_count") > 0:
+                Request.delete(
+                    org_id, "channelmessage", data_filter={"channel_id": channel_id}
+                )
+                Request.delete(org_id, "thread", data_filter={"channel_id": channel_id})
+                Request.delete(org_id, "role", data_filter={"channel_id": channel_id})
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 channel_list_create_view = ChannelViewset.as_view(

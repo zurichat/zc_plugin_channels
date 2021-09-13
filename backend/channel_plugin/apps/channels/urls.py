@@ -8,6 +8,8 @@ from apps.channels.views import (
 )
 from django.urls import path
 
+app_name = "channels"
+
 urlpatterns = [
     path("<str:org_id>/channels/", channel_list_create_view),
     path(
@@ -16,6 +18,7 @@ urlpatterns = [
     path(
         "<str:org_id>/channels/<str:channel_id>/members/",
         channel_members_list_create_views,
+        name="channel-members-list",
     ),
     path(
         "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/",
