@@ -1,25 +1,48 @@
-import { Box, Flex, Link, Text } from '@chakra-ui/react'
-import React from 'react'
-import { BiUserPlus } from 'react-icons/bi'
-
+import { Box, Flex, Link, Text, Button } from "@chakra-ui/react";
+import React from "react";
+import { BiUserPlus } from "react-icons/bi";
+import { useDisclosure } from "@chakra-ui/react";
+import AddPeopleModal from "./addPeopleModal";
+import { Circle, HStack } from "@chakra-ui/layout";
+import { Icon } from "@chakra-ui/icon";
 
 const ChannelBody = () => {
-    return (
-        <Box width="80%" m="auto" height="sm" pt="3rem" fontSize="16px" >
-            <Text color="black">This is the very beginning of the <Link color="#0562ed" fontWeight="bold"> #Announcement</Link> channel</Text>
-            <Text color="grey"><Link color="#0562ed" fontWeight="bold">@Abibola</Link> created this channel on Aug 30th.</Text>
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-            <Box mt="6" cursor="pointer">
-                <Flex alignItems="center">
-                <p style={{backgroundColor:"#00B87C",padding:".3rem", borderRadius:"50%" }}>
-                    <BiUserPlus color="white" fontSize="1.3rem"/>
-                </p>
-                <Text fontWeight="bold" pl={4}>Add members</Text>
-                </Flex>
-                
-            </Box>
-        </Box>
-    )
-}
+  return (
+    <Box width="80%" m="auto" height="sm" fontSize="16px">
+      <AddPeopleModal isOpen={isOpen} onClose={onClose} />
 
-export default ChannelBody
+      <Text color="black" mt="2rem">
+        This is the very beginning of the{" "}
+        <Link color="#0562ed" fontWeight="bold" mr="0.3rem">
+          #Announcement
+        </Link>
+        channel
+      </Text>
+      <Text color="grey">
+        <Link color="#0562ed" fontWeight="bold">
+          @Abibola
+        </Link>{" "}
+        created this channel on Aug 30th.
+      </Text>
+
+      <HStack mt="6">
+        <Circle
+          cursor="pointer"
+          bg="whatsapp.600"
+          color="white"
+          size="35px"
+          onClick={onOpen}
+        >
+          <Icon as={BiUserPlus} />
+        </Circle>
+        <Text cursor="pointer" onClick={onOpen}>
+          Add Members
+        </Text>
+      </HStack>
+    </Box>
+  );
+};
+
+export default ChannelBody;

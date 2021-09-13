@@ -1,7 +1,22 @@
-from apps.channels.views import Test, GetChannelInfo
+from apps.channels.views import (
+    channel_list_create_view,
+    channel_members_list_create_views,
+    channel_members_update_retrieve_views,
+    channel_retrieve_update_delete_view,
+)
 from django.urls import path
 
 urlpatterns = [
-    path("test/", Test.as_view()),
-    path("<int:pk>/", GetChannelInfo.as_view()),
+    path("<str:org_id>/channels/", channel_list_create_view),
+    path(
+        "<str:org_id>/channels/<str:channel_id>/", channel_retrieve_update_delete_view
+    ),
+    path(
+        "<str:org_id>/channels/<str:channel_id>/members/",
+        channel_members_list_create_views,
+    ),
+    path(
+        "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/",
+        channel_members_update_retrieve_views,
+    ),
 ]
