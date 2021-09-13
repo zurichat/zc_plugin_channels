@@ -331,5 +331,3 @@ try:
         f.close()
 except:  # noqa
     CENTRIFUGO_API_KEY = ""
-
-CENTRIFUGO_URL = "https://realtime.zuri.chat:16800"
