@@ -83,7 +83,7 @@ class ChannelViewset(ViewSet):
     )
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data)[0]
+        result = Request.get(org_id, "channel", data)
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             result.update({"members": len(result["users"].keys())})
@@ -119,7 +119,8 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def channel_delete(self, request, org_id, channel_id):
-        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+        result = Request.delete(org_id, "channel", object_id=channel_id)
+        return Response(result, status=status.HTTP_204_NO_CONTENT)
 
 
 channel_list_create_view = ChannelViewset.as_view(
@@ -147,7 +148,7 @@ class ChannelMemberViewset(ViewSet):
         result = Request.get(org_id, "channel", data)
 
         if result:
-            return result[0] if (type(result) == list) else None
+            return result if (type(result) == dict) else None
 
     def filter_params(self, serializer, params):
         """

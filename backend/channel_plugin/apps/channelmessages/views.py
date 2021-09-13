@@ -102,8 +102,10 @@ class ChannelMessageViewset(ViewSet):
         methods=["DELETE"],
         detail=False,
     )
-    def message_delete(self, request, org_id, channel_id):
-        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+    def message_delete(self, request, org_id, msg_id):
+        result = Request.delete(org_id, "channelmessage", object_id=msg_id)
+        return Response(result, status=status.HTTP_204_NO_CONTENT)
+
 
 
 channelmessage_views = ChannelMessageViewset.as_view(
