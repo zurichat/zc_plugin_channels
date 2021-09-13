@@ -8,10 +8,24 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
+from .permissions import IsMember
 from .serializers import ChannelMessageSerializer, ChannelMessageUpdateSerializer
 
 
 class ChannelMessageViewset(ViewSet):
+
+    authentication_classes = []
+
+    def get_permissions(self):
+
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        permissions = super().get_permissions()
+        if self.action in ["message"]:
+            permissions.append(IsMember())
+        return permissions
+
     @swagger_auto_schema(
         request_body=ChannelMessageSerializer,
         responses={
@@ -52,7 +66,7 @@ class ChannelMessageViewset(ViewSet):
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data) or []
         status_code = status.HTTP_404_NOT_FOUND
-        if type(result) == list:
+        if isinstance(result, list):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -72,7 +86,7 @@ class ChannelMessageViewset(ViewSet):
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or type(result) == dict:
+        if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -94,7 +108,7 @@ class ChannelMessageViewset(ViewSet):
         payload.update({"edited": True})
         result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or type(result) == dict:
+        if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 

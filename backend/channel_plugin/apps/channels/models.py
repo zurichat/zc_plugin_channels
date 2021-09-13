@@ -14,8 +14,6 @@ class Channel:
     slug: str = ""
     # list of user IDs in a channel
     users: dict = field(default_factory=dict)
-    # list of role IDs in a channel
-    roles: list = field(default_factory=list)
     # description of channel
     description: str = ""
     # private / public
@@ -33,7 +31,6 @@ class Channel:
             "private": self.private,
             "archived": self.archived,
             "users": self.users,
-            "roles": self.roles,
             "created_on": self.created_on,
         }
         response = Request.post(

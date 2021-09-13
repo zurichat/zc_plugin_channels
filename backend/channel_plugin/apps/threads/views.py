@@ -8,10 +8,24 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
+from .permissions import IsMember
 from .serializers import ThreadSerializer, ThreadUpdateSerializer
 
 
 class ThreadViewset(ViewSet):
+
+    authentication_classes = []
+
+    def get_permissions(self):
+
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        permissions = super().get_permissions()
+        if self.action in ["thread_message"]:
+            permissions.append(IsMember())
+        return permissions
+
     @swagger_auto_schema(
         request_body=ThreadSerializer,
         responses={
