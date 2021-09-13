@@ -1,5 +1,5 @@
 import random
-
+import requests
 from django.conf import settings
 from django.utils import timezone
 from drf_yasg import openapi
@@ -11,31 +11,46 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
-description = """The Channel Plugin is a feature that helps users create spaces
-                for conversation and communication on zuri.chat.
-                Users can also create sub tags in the channels
-                option where other things can be done,
-                ranging from game nights,
-                football banter, random,
-                announcement and so much more.
-                This adds the feature of having organized conversations
-                in dedicated spaces called channels.
-            """
+description = ("The Channel Plugin is a feature\
+    that helps users create spaces for\
+    conversation and communication on zuri.chat."
+)
 
 icons = ["shovel", "cdn.cloudflare.com/445345453345/hello.jpeg", "spear"]
 
 
 class GetInfoViewset(ViewSet):
+
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def ping(self, request):
+        return Response({"success": True}, status=status.HTTP_200_OK)
+
     @action(
         methods=["GET"],
         detail=False,
     )
     def info(self, request):
         data = {
-            "name": settings.TEAM_NAME,
-            "project": settings.PROJECT_NAME,
-            "version": "1.0",
-            "description": description,
+            "message":"Plugin Information Retrieved",
+            "data":{
+                "type":"Plugin Information",
+                "plugin_info":{
+                    "name":"Channels Plugin",
+                    "description":[
+                        "Zuri.chat plugin",
+                        description
+                    ]
+                },
+                "scaffold_structure":"Monolith",
+                "team":"HNG 8.0/Team Coelho",
+                "sidebar_url":"https://channels.zuri.chat/api/v1/sidebar/",
+                "ping_url":"https://channels.zuri.chat/api/v1/ping/",
+                "homepage_url":"https://channels.zuri.chat/"
+            },
+            "success":True
         }
         return Response(data, status=status.HTTP_200_OK)
 
@@ -159,3 +174,11 @@ class GetInfoViewset(ViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+    # @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
+    # def collections(self, request, plugin_id):
+    #     result = requests.get(f"https://api.zuri.chat/data/collection/{plugin_id}")
+    #     import pdb; pdb.set_trace()
+    #     return Response({},
+    #         status=status.HTTP_200_OK,
+    #     )

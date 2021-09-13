@@ -87,8 +87,9 @@ class RoleViewset(ViewSet):
         methods=["DELETE"],
         detail=False,
     )
-    def role_delete(self, request, role_id):
-        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+    def role_delete(self, request, org_id, role_id):
+        result = Request.delete(org_id, "role", object_id=org_id)
+        return Response(result, status=status.HTTP_204_NO_CONTENT)
 
 
 role_views = RoleViewset.as_view(
