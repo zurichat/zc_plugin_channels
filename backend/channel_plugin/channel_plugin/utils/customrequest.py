@@ -86,7 +86,7 @@ class Request:
             }
         )
         if data_filter is not None:
-            data.update({"filter": data_filter})
+            data.update({"filter": data_filter, "bulk_delete": True})
         else:
             if object_id is None:
                 return {"error": "Object ID or Filter must be set"}

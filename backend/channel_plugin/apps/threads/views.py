@@ -25,7 +25,8 @@ class ThreadViewset(ViewSet):
     )
     def thread_message(self, request, org_id, channelmessage_id):
         serializer = ThreadSerializer(
-            data=request.data, context={"channelmessage_id": channelmessage_id}
+            data=request.data,
+            context={"channelmessage_id": channelmessage_id, "org_id": org_id},
         )
         serializer.is_valid(raise_exception=True)
         thread = serializer.data.get("thread")
@@ -48,7 +49,7 @@ class ThreadViewset(ViewSet):
     def thread_message_all(self, request, org_id, channelmessage_id):
         data = {"channelmessage_id": channelmessage_id}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "thread", data)
+        result = Request.get(org_id, "thread", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if type(result) == list:
             status_code = status.HTTP_200_OK
@@ -70,9 +71,9 @@ class ThreadViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("thread")
         payload.update({"edited": True})
-        result = Request.put(org_id, "thread", payload, object_id=thread_id)
+        result = Request.put(org_id, "thread", payload, object_id=thread_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
+        if result.__contains__("_id") or type(result) == dict:
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -81,8 +82,8 @@ class ThreadViewset(ViewSet):
         detail=False,
     )
     def thread_message_delete(self, request, org_id, thread_id):
-        result = Request.delete(org_id, "thread", object_id=thread_id)
-        return Response(result, status=status.HTTP_204_NO_CONTENT)
+        Request.delete(org_id, "thread", object_id=thread_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 thread_views = ThreadViewset.as_view(
