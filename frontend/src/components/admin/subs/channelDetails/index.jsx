@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Box, Divider, HStack, Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/button";
 import { IoMdClose } from "react-icons/io";
@@ -16,15 +16,17 @@ import {
   AccordionIcon,
   AccordionPanel,
 } from "@chakra-ui/accordion";
+import AddPeopleModal from "../../../createChannel/addPeopleModal";
 
-const ChannelDetails = () => {
+const ChannelDetails = ({ channelName="Announcements" }) => {
+  const [ showAddPeopleModal, setShowAddPeopleModal ] = useState(true);
   const options = useMemo(
     () => [
       {
         title: "Add",
         icon: <FiUserPlus color="#333333" />,
         id: v4(),
-        onClick: () => {},
+        onClick: () => {setShowAddPeopleModal(true)},
       },
       {
         title: "Find",
@@ -79,11 +81,12 @@ const ChannelDetails = () => {
   );
 
   return (
-    <Box borderRadius="md" shadow="md">
-      <HStack justifyContent="space-between" px="21px" py="8px">
+    <>
+    <Box>
+      <HStack justifyContent="space-between" px="21px" py="8px" bg="white">
         <Box>
           <Text fontWeight="bold">Details</Text>
-          <Text color="#999999"># Announcements</Text>
+          <Text color="#999999"># { channelName }</Text>
         </Box>
         <IconButton
           size="sm"
@@ -92,16 +95,19 @@ const ChannelDetails = () => {
           variant="ghost"
         />
       </HStack>
-      <Box mb="0.8rem">
+      <Box mt="2px">
         <Image src={ChannelImage} />
       </Box>
       <HStack
-        borderBottomWidth="1px"
-        borderColor="gray.100"
         justifyContent="space-between"
         px="2.8rem"
         pb="0.5rem"
+        pt="1.38rem"
+        mt="2px" 
         spacing={4}
+        bg="white"
+        borderTopLeftRadius="3px"
+        borderTopRightRadius="3px"
       >
         {options.map((option) => (
           <Box key={option.id} textAlign="center">
@@ -118,7 +124,7 @@ const ChannelDetails = () => {
             </Text>
           </Box>
         ))}
-        <Box>
+        <Box textAlign="center">
           <MoreOption />
           <Text fontSize="xs" fontWeight="bold">
             More
@@ -126,10 +132,13 @@ const ChannelDetails = () => {
         </Box>
       </HStack>
 
-      <Box px="29px" py="0.5rem">
+      <Box mt="2px" pb=".2rem" bg="white" borderTopLeftRadius="3px" borderTopRightRadius="3px">
         <Accordion allowMultiple>
           <AccordionItem border="none">
             <AccordionButton
+              h="60px" 
+              px="29px" 
+              pt="1.2rem"
               _hover={{ bg: "none" }}
               _focus={{ outline: "none" }}
             >
@@ -140,9 +149,8 @@ const ChannelDetails = () => {
               </Box>
               <AccordionIcon />
             </AccordionButton>
-
             <AccordionPanel pb={2}>
-              <Box py="1rem">
+              <Box py="8px" px="30px">
                 <Text color="gray.700" fontSize="1rem">
                   Topic
                 </Text>
@@ -150,7 +158,8 @@ const ChannelDetails = () => {
                   Announcments
                 </Text>
               </Box>
-              <Box py="0.5rem">
+              <Divider orientation="horizontal" />
+              <Box py="8px" px="30px">
                 <Text color="gray.700" fontSize="1rem">
                   Description
                 </Text>
@@ -162,15 +171,19 @@ const ChannelDetails = () => {
           </AccordionItem>
         </Accordion>
       </Box>
-      <Divider orientation="horizontal" />
       <Box>
         {moreDetails.map((detail) => (
           <>
             <HStack
-              py="0.8rem"
-              px="29px"
               key={detail.id}
+              py="0.75rem"
+              px="29px"
+              mt="2px"
+              h="60px"
+              borderTopLeftRadius="3px"
+              borderTopRightRadius="3px"
               justifyContent="space-between"
+              bg="white"
             >
               <Text fontSize="xs" fontWeight="bold">
                 {detail.name}
@@ -180,16 +193,17 @@ const ChannelDetails = () => {
                 <Icon aria-label={detail.name} as={detail.icon} />
               </HStack>
             </HStack>
-            <Divider orientation="horizontal" />
           </>
         ))}
       </Box>
-      <Box py="1rem" px="29px">
+      <Box py="1rem" px="29px" h="56px" bg="white" mt="2px" borderTopLeftRadius="3px" borderTopRightRadius="3px">
         <Text fontWeight="bold" fontSize="sm" color="gray.400">
           Channel created Aug 30th 2021
         </Text>
       </Box>
     </Box>
+    <AddPeopleModal isOpen={showAddPeopleModal} onClose={() => setShowAddPeopleModal(false)} />
+    </>
   );
 };
 

@@ -8,6 +8,7 @@ from channel_plugin.utils.customrequest import Request
 @dataclass
 class Thread:
     user_id: str
+    channel_id: str
     channelmessage_id: str
     content: str
     emojis: list = field(default_factory=list)
@@ -18,6 +19,7 @@ class Thread:
         payload = {
             "user_id": self.user_id,
             "channelmessage_id": self.channelmessage_id,
+            "channel_id": self.channel_id,
             "content": self.content,
             "emojis": self.emojis,
             "edited": self.edited,
@@ -25,25 +27,6 @@ class Thread:
         }
         response = Request.post(
             organization_id, self.__class__.__name__.lower(), payload
-        )
-        return response
-
-    """"
-    organization_id: str
-    kwargs: either filter (dict) or object_id (str)
-    """
-
-    def update(self, organization_id, object_id):
-        payload = {
-            "content": self.content,
-            "emojis": self.emojis,
-            "edited": True,
-        }
-        response = Request.put(
-            organization_id,
-            self.__class__.__name__.lower(),
-            payload,
-            object_id=object_id,
         )
         return response
 

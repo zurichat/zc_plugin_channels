@@ -1,3 +1,4 @@
+from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -7,13 +8,30 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
+from .permissions import IsMember
 from .serializers import ChannelMessageSerializer, ChannelMessageUpdateSerializer
 
 
 class ChannelMessageViewset(ViewSet):
+
+    authentication_classes = []
+
+    def get_permissions(self):
+
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        permissions = super().get_permissions()
+        if self.action in ["message"]:
+            permissions.append(IsMember())
+        return permissions
+
     @swagger_auto_schema(
         request_body=ChannelMessageSerializer,
-        responses={201: openapi.Response("Response", ChannelMessageUpdateSerializer)},
+        responses={
+            201: openapi.Response("Response", ChannelMessageUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
     )
     @action(
         methods=["POST"],
@@ -21,16 +39,22 @@ class ChannelMessageViewset(ViewSet):
     )
     def message(self, request, org_id, channel_id):
         serializer = ChannelMessageSerializer(
-            data=request.data, context={"channel_id": channel_id}
+            data=request.data, context={"channel_id": channel_id, "org_id": org_id}
         )
         serializer.is_valid(raise_exception=True)
         channelmessage = serializer.data.get("channelmessage")
         result = channelmessage.create(org_id)
-        return Response(result, status=status.HTTP_201_CREATED)
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id"):
+            status_code = status.HTTP_201_CREATED
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", ChannelMessageUpdateSerializer(many=True))
+            200: openapi.Response(
+                "Response", ChannelMessageUpdateSerializer(many=True)
+            ),
+            404: openapi.Response("Error Response", ErrorSerializer),
         }
     )
     @action(
@@ -40,11 +64,17 @@ class ChannelMessageViewset(ViewSet):
     def message_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "channelmessage", data)
-        return Response(result, status=status.HTTP_200_OK)
+        result = Request.get(org_id, "channelmessage", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result, list):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", ChannelMessageUpdateSerializer)},
+        responses={
+            200: openapi.Response("Response", ChannelMessageUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
         operation_id="message read one channelmessage",
     )
     @action(
@@ -54,12 +84,18 @@ class ChannelMessageViewset(ViewSet):
     def message_retrieve(self, request, org_id, msg_id):
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "channelmessage", data)
-        return Response(result, status=status.HTTP_200_OK)
+        result = Request.get(org_id, "channelmessage", data) or {}
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id") or isinstance(result, dict):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @swagger_auto_schema(
         request_body=ChannelMessageUpdateSerializer,
-        responses={200: openapi.Response("Response", ChannelMessageUpdateSerializer)},
+        responses={
+            200: openapi.Response("Response", ChannelMessageUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
     )
     @action(
         methods=["PUT"],
@@ -70,15 +106,24 @@ class ChannelMessageViewset(ViewSet):
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("message")
         payload.update({"edited": True})
-        result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
-        return Response(result, status=status.HTTP_200_OK)
+        result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id") or isinstance(result, dict):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
     @action(
         methods=["DELETE"],
         detail=False,
     )
-    def message_delete(self, request, org_id, channel_id):
-        return Response({"msg": "To be implemened"}, status=status.HTTP_204_NO_CONTENT)
+    def message_delete(self, request, org_id, msg_id):
+        result = Request.delete(org_id, "channelmessage", object_id=msg_id)
+        if result.get("status_code") == 200:
+            if result.get("data", {}).get("deleted_count") > 0:
+                Request.delete(
+                    org_id, "thread", data_filter={"channelmessage_id": msg_id}
+                )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 channelmessage_views = ChannelMessageViewset.as_view(

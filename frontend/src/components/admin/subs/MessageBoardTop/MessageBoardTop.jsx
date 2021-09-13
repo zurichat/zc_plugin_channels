@@ -5,12 +5,40 @@ import EachMessage from "./EachMessage";
 import { Button } from "@chakra-ui/button";
 import { FiChevronDown } from "react-icons/fi";
 import { v4 } from "uuid";
+import MessageCard from "../../../shared/MessageCard";
 
 //DEMO MESSAGES THIS WOULD BE FETCHED LATER FROM THE BACK END TEAM
 
 function MessageBoardTop() {
   const messages = useMemo(
     () => [
+      {
+        id: v4(),
+        avatar:
+          "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+        userName: "Deyrin",
+        time: "10:30 am",
+        message:
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+      },
+      {
+        id: v4(),
+        avatar:
+          "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+        userName: "Deyrin",
+        time: "10:30 am",
+        message:
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+      },
+      {
+        id: v4(),
+        avatar:
+          "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+        userName: "Deyrin",
+        time: "10:30 am",
+        message:
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+      },
       {
         id: v4(),
         avatar:
@@ -56,6 +84,7 @@ function MessageBoardTop() {
       textAlign="center"
       overflowY="auto"
       p="20px"
+      mt="10px"
       css={{
         "&::-webkit-scrollbar": {
           width: "0",
@@ -78,16 +107,18 @@ function MessageBoardTop() {
       </Button>
       <Box>
         {messages.map((message) => (
-          <EachMessage
-            userName={message.userName}
-            messageTime={message.time}
-            src={message.avatar}
-            messageContent={message.message}
-          />
+          <MessageCard 
+            name={message.userName}
+            time={message.time}
+            icon={message.avatar}
+            message={message.message}
+           />
         ))}
       </Box>
     </Box>
   );
 }
+
+
 
 export default MessageBoardTop;
