@@ -74,6 +74,9 @@ urlpatterns += [
     re_path(r"^(?:.*)/?$", render_react),
 ]
 
+handler500 = 'rest_framework.exceptions.server_error'
+handler400 = 'rest_framework.exceptions.bad_request'
+
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
