@@ -78,7 +78,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "channel_plugin.utils.storages.MediaRootS3Boto3Storage"
-MEDIA_URL = f"media/"
+MEDIA_URL = "media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -170,3 +170,4 @@ LOGGING = {
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+BASE_URL = "https://channels.zuri.chat"
