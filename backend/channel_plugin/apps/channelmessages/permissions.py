@@ -11,13 +11,11 @@ class IsMember(permissions.BasePermission):
 
         org_id = request.parser_context.get("kwargs", {}).get("org_id")
         user_id = request.data.get("user_id") or request.query_params.get("user_id")
-        channel_id = (
-            request.data.get("channel_id")
-            or request.query_params.get("channel_id")
-        )
+        channel_id = request.parser_context.get("kwargs", {}).get(
+            "channel_id"
+        ) or request.query_params.get("channel_id")
 
         response = Request.get(org_id, "channel", {"_id": channel_id}) or {}
-
         if response.get("users", {}).get(user_id):
             return True
         return False

@@ -14,9 +14,13 @@ DEFAULT_MESSAGE_TYPE = "message"
 class ChannelMessage:
     user_id: str
     channel_id: str
-    content: str
+    content: str = ""
+
     # list of thread emojis
     emojis: list = field(default_factory=list)
+    # list of files
+    files: list = field(default_factory=list)
+    has_files: str = "no"
     pinned: bool = False
     edited: bool = False
     can_reply: bool = True
@@ -29,6 +33,8 @@ class ChannelMessage:
             "channel_id": self.channel_id,
             "content": self.content,
             "emojis": self.emojis,
+            "has_files": self.has_files,
+            "files": self.files,
             "pinned": self.pinned,
             "edited": self.edited,
             "type": self.type,
