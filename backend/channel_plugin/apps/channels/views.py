@@ -339,13 +339,16 @@ class ChannelMemberViewset(ViewSet):
                     if not result.get("error"):
                         if isinstance(output, dict):
                             # when only one user is added
-                            request_finished.send(
-                                sender=self.__class__,
-                                dispatch_uid="JoinedChannelSignal",
-                                org_id=org_id,
-                                channel_name=channel["name"],
-                                user_id=output["_id"],
-                            )
+                            # try:
+                                request_finished.send(
+                                    sender=self.__class__,
+                                    dispatch_uid="JoinedChannelSignal",
+                                    org_id=org_id,
+                                    channel_name=channel["name"],
+                                    user_id=output["_id"]
+                                )
+                            # except:
+                            #     print("FOUND")
                         else:
                             # when output is a list multiple users where added
                             request_finished.send(
@@ -353,8 +356,8 @@ class ChannelMemberViewset(ViewSet):
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
                                 channel_name=channel["name"],
-                                added_by="active-duser_id-gotten",
-                                added=output,
+                                added_by="logged-in-user_id",
+                                added=output
                             )
                     return Response(data, status=status_code)
                 else:

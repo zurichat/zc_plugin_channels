@@ -13,7 +13,7 @@ CLIENT = CentClient(
     address = settings.CENTRIFUGO_URL,
     api_key = settings.CENTRIFUGO_API_KEY,
     timeout = 1,
-    verify= True
+    verify = True
 )
 
 @receiver(request_finished, sender=ChannelMemberViewset)
@@ -36,13 +36,11 @@ def JoinedChannelSignal(sender, **kwargs):
         # send notification to channel that user has joined
         payload = {
             "type": "event",
+            "action": "JOIN",
             "data": {
-                "action": "JOIN",
-                "data": {
-                    "carrier": kwargs.get("added_by", user_id),
-                    "recipient": kwargs.get("added", [user_id]),
-                    "timestamp": timezone.now().isoformat()
-                }
+                "carrier": kwargs.get("added_by", user_id),
+                "recipients": kwargs.get("added", [user_id]),
+                "timestamp": timezone.now().isoformat()
             }
         }
 
@@ -77,7 +75,7 @@ def LeftChannelSignal(sender, **kwargs):
                 "acion": "LEAVE",
                 "data": {
                     "carrier": kwargs.get("removed_by", user_id),
-                    "recipient": kwargs.get("removed", [user_id]),
+                    "recipients": kwargs.get("removed", [user_id]),
                     "timestamp": timezone.now().isoformat()
                 }
             }
