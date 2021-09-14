@@ -5,6 +5,8 @@
       "name": "team-coelho",
       "description": "Description will be here",
       "private": true,
+      "archived": true,
+      "owner": "200",
       "users": {
         "200": {
           "id": "200",
@@ -17,14 +19,10 @@
           "is_admin": true
         }
       },
-      "roles": [
-        "198",
-        "199"
-      ],
       "created_on": "12-08-2021 12:00:00"
     }
   ],
-  "channel_message":[
+  "channelmessage":[
     {
       "id": "86",
       "user_id": "200",

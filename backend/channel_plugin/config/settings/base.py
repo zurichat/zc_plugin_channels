@@ -80,7 +80,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "channel_plugin.users.apps.UsersConfig",
     # Your stuff: custom apps go here
-    "apps.centri.apps.CentriConfig"
+    "apps.centri.apps.CentriConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -325,10 +325,11 @@ READ_URL = "https://api.zuri.chat/data/read"
 WRITE_URL = "https://api.zuri.chat/data/write"
 DELETE_URL = "https://api.zuri.chat/data/delete"
 
-
 try:
     with open("centri.txt") as f:
         CENTRIFUGO_API_KEY = f.readline().strip("\n")
         f.close()
 except:  # noqa
     CENTRIFUGO_API_KEY = ""
+
+CENTRIFUGO_URL = "https://realtime.zuri.chat"

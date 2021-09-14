@@ -1,12 +1,21 @@
+import json
+from apps.centri.helperfuncs import build_room_name
+from apps.channelmessages.serializers import ChannelMessageUpdateSerializer
 from apps.utils.serializers import ErrorSerializer
+from django.core.signals import request_finished
+from django.http.response import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from django.http.response import JsonResponse
+# from rest_framework.filters
 
 from channel_plugin.utils.customrequest import Request
+
+from channel_plugin.utils.wrappers import FilterWrapper
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelGetSerializer,
@@ -62,11 +71,44 @@ class ChannelViewset(ViewSet):
         """
         data = {}
         data.update(dict(request.query_params))
-        result = Request.get(org_id, "channel", data)
+        result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
-        if type(result) == list:
-            for i, channel in enumerate(result):
-                result[i].update({"members": len(channel["users"].keys())})
+        if isinstance(result, list):
+            if result:
+                for i, channel in enumerate(result):
+                    result[i].update({"members": len(channel["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
+
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response(
+                "Response", ChannelMessageUpdateSerializer(many=True)
+            ),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(methods=["GET"], detail=False)
+    def channel_media_all(self, request, org_id, channel_id):
+
+        """
+        This gets all media for a prticular channel for a
+        particular organization identified by ID
+        splitted into channelmessage and thread objects.
+        """
+        data = {"channel_id": channel_id, "has_files": "yes"}
+        data.update(dict(request.query_params))
+        result = {}
+        result_message = Request.get(org_id, "channelmessage", data) or []
+        result_thread = Request.get(org_id, "thread", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result_message, list) or isinstance(result_thread, list):
+            result.update(
+                {
+                    "channelmessage": result_message,
+                    "thread": result_thread,
+                }
+            )
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -83,10 +125,11 @@ class ChannelViewset(ViewSet):
     )
     def channel_retrieve(self, request, org_id, channel_id):
         data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data)
+        result = Request.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
-            result.update({"members": len(result["users"].keys())})
+        if result.__contains__("_id") or isinstance(result, dict):
+            if result:
+                result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -107,10 +150,11 @@ class ChannelViewset(ViewSet):
         )
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("channel")
-        result = Request.put(org_id, "channel", payload, object_id=channel_id)
+        result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id"):
-            result.update({"members": len(result["users"].keys())})
+        if result.__contains__("_id") or isinstance(result, dict):
+            if result:
+                result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -120,7 +164,17 @@ class ChannelViewset(ViewSet):
     )
     def channel_delete(self, request, org_id, channel_id):
         result = Request.delete(org_id, "channel", object_id=channel_id)
-        return Response(result, status=status.HTTP_204_NO_CONTENT)
+
+        # delete relationships
+        if result.get("status") == 200:
+            if result.get("data", {}).get("deleted_count") > 0:
+                Request.delete(
+                    org_id, "channelmessage", data_filter={"channel_id": channel_id}
+                )
+                Request.delete(org_id, "thread", data_filter={"channel_id": channel_id})
+                Request.delete(org_id, "role", data_filter={"channel_id": channel_id})
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 channel_list_create_view = ChannelViewset.as_view(
@@ -134,12 +188,19 @@ channel_retrieve_update_delete_view = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
 )
 
+channel_media_all_view = ChannelViewset.as_view(
+    {
+        "get": "channel_media_all",
+    }
+)
+
 
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):
         return name
 
-    def retrieve_channel(self, request, org_id, channel_id):
+    @staticmethod
+    def retrieve_channel(request, org_id, channel_id):
         """
         This method retrieves a channel's data
         from zc-core
@@ -148,41 +209,55 @@ class ChannelMemberViewset(ViewSet):
         result = Request.get(org_id, "channel", data)
 
         if result:
-            return result if (type(result) == dict) else None
 
-    def filter_params(self, serializer, params):
+            return result if isinstance(result, dict) else None
+
+    def prepare_params(self):
+        param_checkers = {
+            "__starts": "$",
+            "__ends": "#",
+            "__contains": "*",
+            "__gt": ">",
+            "__lt": "<"
+        }
+        
+        params = dict(self.request.query_params)
+        
         """
-        This method removes all query parameters
-        not in user serializer
+            Note if your planing to use the filterwrapper class
+            you have to convert the values of your query_parameter
+            to a python value byt using json.loads
         """
-        fields = list(serializer().get_fields().keys())
 
-        keys = list(filter(lambda param: bool(param in fields), params.keys()))
+        for key in self.request.query_params.keys():
+            try:
+                params[key] = json.loads(params.get(key)[0])
+            except:
+                params[key] =  params.get(key)[0]
 
-        for key in params:
-            if key not in keys:
-                del params[key]
+            for chk in param_checkers: 
+                if key.endswith(chk):
+                    p = param_checkers[chk] + key.replace(chk, "")
+                    
+                    try:
+                        params[p] = json.loads(params.get(key))
+                    except:
+                        params[p] = params.get(key)
+                    params.pop(key)
         return params
 
     def filter_objects(self, data: list, serializer: serializers.Serializer):
         # method  applies filteration to user list
         output = []
 
-        params = self.filter_params(serializer, self.request.query_params)
+        params = self.prepare_params()
+        params = FilterWrapper.filter_params(
+            allowed=list(serializer().get_fields().keys()),
+            params=params
+        )
 
-        for obj in data:
-            flag = 0
-
-            for param in params.items():
-                if param in obj:
-                    flag += 1
-                else:
-                    break
-
-            if flag == len(list(params.items())):
-                output.append(obj)
-
-        return list(output) if params else list(data)
+        output = FilterWrapper.filter_objects(data, params)
+        return output
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -199,7 +274,7 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-        Method adds a user to a channel identified
+        Method adds a user to a channel identified by id
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -209,7 +284,7 @@ class ChannelMemberViewset(ViewSet):
             # "check if the user is aleady a member of the channel"
             output = None
 
-            if type(request.data) == list:
+            if isinstance(request.data, list):
                 # user_id = request.data.get("_id")
                 # user_data = channel["users"].get(user_id)
                 serializer = UserSerializer(data=request.data, many=True)
@@ -254,13 +329,33 @@ class ChannelMemberViewset(ViewSet):
             )
 
             if result:
-                if type(result) == dict:
+                if isinstance(result, dict):
                     data = output if not result.get("error") else result
                     status_code = (
                         status.HTTP_201_CREATED
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
+                    if not result.get("error"):
+                        if isinstance(output, dict):
+                            # when only one user is added
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["name"],
+                                user_id=output["_id"],
+                            )
+                        else:
+                            # when output is a list multiple users where added
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["name"],
+                                added_by="active-duser_id-gotten",
+                                added=output,
+                            )
                     return Response(data, status=status_code)
                 else:
                     return Response(result, status=result.status_code)
@@ -383,7 +478,7 @@ class ChannelMemberViewset(ViewSet):
                 )
 
                 if result:
-                    if type(result) == dict:
+                    if isinstance(result, dict):
                         data = user_data if not result.get("error") else result
                         status_code = (
                             status.HTTP_201_CREATED
@@ -427,8 +522,18 @@ class ChannelMemberViewset(ViewSet):
                     org_id, "channel", payload=payload, object_id=channel_id
                 )
 
-                if type(result) == dict:
+                if isinstance(result, dict):
                     data = {"msg": "success"} if not result.get("error") else result
+
+                    if not result.get("error"):
+                        # when only one user is removed
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="LeftChannelSignal",
+                            org_id=org_id,
+                            channel_name=channel["name"],
+                            user_id=user_data["_id"],
+                        )
 
                     status_code = (
                         status.HTTP_204_NO_CONTENT
@@ -455,6 +560,19 @@ channel_members_list_create_views = ChannelMemberViewset.as_view(
 channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
+
+
+def get_channel_socket_name(request, org_id, channel_id):
+
+    channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
+
+    if channel:
+        name = build_room_name(org_id, channel["name"])
+        return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse(
+            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+        )
 
 
 # class SearchMessagesAPIView(APIView):
