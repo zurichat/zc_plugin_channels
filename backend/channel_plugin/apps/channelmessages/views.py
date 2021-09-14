@@ -17,17 +17,18 @@ class ChannelMessageViewset(ViewSet):
 
     authentication_classes = []
 
-    def get_permissions(self):
+    # def get_permissions(self):
 
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        permissions = super().get_permissions()
-        if self.action in ["message", "message_delete", "message_update"]:
-            permissions.append(IsMember())
-            if self.action in ["message_delete", "message_update"]:
-                permissions.append(IsOwner())
-        return permissions
+    #     """
+    #     Instantiates and returns the list of permissions that this view requires.
+    #     """
+    #     permissions = super().get_permissions()
+    #     if self.action in ["message", "message_delete", "message_update"]:
+    #         permissions.append(IsMember())
+    #     if self.action in ["message_delete", "message_update"]:
+    #         permissions.append(IsOwner())
+        
+    #     return permissions
 
     @swagger_auto_schema(
         request_body=ChannelMessageSerializer,
