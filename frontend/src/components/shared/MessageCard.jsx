@@ -126,7 +126,9 @@ const HoverOptions = ({ show }) => {
           <MenuList border="0.5px solid #8B8B8B">
             {
               menuItemImpl.map(({ label, divider=false, ...rest }, index) => (
-                !divider ? <MenuItem {...rest} {...commonMoreOptionStyle}>{ label }</MenuItem> : <MenuDivider />
+                <React.Fragment key={`menu-item-${index}`}>
+                  { !divider ? <MenuItem {...rest} {...commonMoreOptionStyle}>{ label }</MenuItem> : <MenuDivider /> }
+                </React.Fragment>
               ))
             }
             <MenuItem command="delete" {...deleteMoreOptionStyle}>Delete message</MenuItem>
