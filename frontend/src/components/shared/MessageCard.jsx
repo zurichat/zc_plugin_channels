@@ -79,7 +79,7 @@ const HoverOptions = ({ show }) => {
     { label: "Mark as Unread", command: "U" },
     { label: "Remind me about this" },
     { divider: true },
-    { label: "Send replay to this channel" },
+    { label: "Send reply to this channel" },
     { label: "Share message", command: "S" },
     { label: "Copy Link" },
     { divider: true },
@@ -144,10 +144,12 @@ const commonOptionStyle = {
   _hover: { bg: "#E7E7E7" }
 }
 const commonMoreOptionStyle = {
-  _hover: { bg: "#00B87C", color: "white" }
+  _hover: { bg: "#00B87C", color: "white" },
+  _focus: { bg: "#00B87C", color: "white" }
 }
 const deleteMoreOptionStyle = {
   _hover: { bg: "#ED5564", color: "white" },
+  _focus: { bg: "#ED5564", color: "white" },
   color: "#ED5564"
 }
 
