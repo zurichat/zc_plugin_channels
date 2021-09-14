@@ -1,14 +1,12 @@
 from rest_framework import serializers
 
-from .models import ChannelMessage
+from .models import MESSAGE_TYPES, ChannelMessage
 
 
 class ChannelMessageSerializer(serializers.Serializer):
 
     user_id = serializers.CharField(max_length=30, required=True)
-
     content = serializers.CharField()
-
     timestamp = serializers.DateTimeField(read_only=True)
 
     def to_representation(self, instance):
@@ -25,22 +23,18 @@ class ChannelMessageSerializer(serializers.Serializer):
 class ChannelMessageUpdateSerializer(serializers.Serializer):
 
     _id = serializers.ReadOnlyField()
-
     user_id = serializers.CharField(read_only=True)
-
     channel_id = serializers.CharField(read_only=True)
+    can_reply = serializers.BooleanField(read_only=True)
+    type = serializers.ChoiceField(choices=MESSAGE_TYPES, read_only=True)
+    edited = serializers.BooleanField(read_only=True)
+    timestamp = serializers.DateTimeField(read_only=True)
 
+    pinned = serializers.BooleanField(required=False)
     content = serializers.CharField(required=False)
-
     emojis = serializers.ListField(
         serializers.CharField(), allow_empty=True, required=False
     )
-
-    pinned = serializers.BooleanField(required=False)
-
-    edited = serializers.BooleanField(read_only=True)
-
-    timestamp = serializers.DateTimeField(read_only=True)
 
     def to_representation(self, instance):
         instance = dict(instance)
