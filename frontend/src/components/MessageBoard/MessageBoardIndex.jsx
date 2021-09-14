@@ -20,6 +20,7 @@ import {
   Lorem,
   Button
 } from "@chakra-ui/react"
+import PinAndBookmarkDisplay from "../shared/PinAndBookmarkDisplay";
 
 const MessageBoardIndex = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -28,6 +29,7 @@ const MessageBoardIndex = () => {
       <Flex>
         <Box width="85vw">
         <ChannelDetailsContainer />
+        <PinAndBookmarkDisplay />
         <Box m="5px" bg="white" overflowY="scroll" height={["75vh","75vh", "80vh", "72vh"]}
         css={{
         "&::-webkit-scrollbar": {
