@@ -37,7 +37,7 @@ def JoinedChannelSignal(sender, **kwargs):
         payload = {
             "type": "event",
             "data": {
-                "acion": "JOIN",
+                "action": "JOIN",
                 "data": {
                     "carrier": kwargs.get("added_by", user_id),
                     "recipient": kwargs.get("added", [user_id]),
