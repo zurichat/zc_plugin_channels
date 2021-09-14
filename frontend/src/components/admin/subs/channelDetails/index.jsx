@@ -19,7 +19,7 @@ import {
 import AddPeopleModal from "../../../createChannel/addPeopleModal";
 
 const ChannelDetails = ({ channelName="Announcements" }) => {
-  const [ showAddPeopleModal, setShowAddPeopleModal ] = useState(true);
+  const [ showAddPeopleModal, setShowAddPeopleModal ] = useState(false);
   const options = useMemo(
     () => [
       {
