@@ -162,6 +162,46 @@ class ChannelMessageViewset(ViewSet):
                 )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @swagger_auto_schema(
+        request_body=ChannelMessageUpdateSerializer,
+        responses={
+            200: openapi.Response("Response", ChannelMessageUpdateSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+    )
+    @action(
+        methods=["PUT"],
+        detail=False,
+    )
+    def message_pinned_update(self, request, org_id, msg_id):
+        serializer = ChannelMessageUpdateSerializer(data=request.data)
+        # print('serializer',serializer)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.data.get("message")
+        # print(serializer.data)
+        # print(payload)
+        payload.update({"pinned": True})
+        result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id") or isinstance(result, dict):
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
@@ -172,4 +212,8 @@ channelmessage_views = ChannelMessageViewset.as_view(
 
 channelmessage_views_group = ChannelMessageViewset.as_view(
     {"get": "message_retrieve", "put": "message_update", "delete": "message_delete"}
+)
+
+channelmessage_views_pinned = ChannelMessageViewset.as_view(
+    {"put":"message_pinned_update"}
 )
