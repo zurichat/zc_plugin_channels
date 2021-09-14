@@ -17,26 +17,26 @@ function LeaveChannel() {
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay bg='#00000060' />
-                <ModalContent bg='white' p='50px' maxW="617px" m="auto">
+                <ModalContent bg='white' p='50px' maxW="604px" m="auto">
                     <ModalHeader display='flex' alignItems='center' justifyContent='space-between'>
-                        <Text m='0px' p='0px' fontSize='25px' fontWeight='700'>Leave #Announcement</Text>
-                        <ModalCloseButton cursor='pointer' p='3px' bg='none' w='22.5px' h='22.5px' fontSize='10px' borderRadius='3px' border='2px solid #2B2B2B' />
+                        <Text m='0px' p='0px' fontSize='28px' fontWeight='700'>Leave #Announcement</Text>
+                        <ModalCloseButton cursor='pointer' p='3px' bg='none' w='22.5px' h='22.5px' fontSize='14px' border='none'/>
                     </ModalHeader>
 
                     <ModalBody>
-                        <Text fontSize='18px' maxW='500px' mb='60px'> Channel members won’t be notified that you’ve left. You can rejoin anytime</Text>
+                        <Text color='#8B8B8B' fontSize='18px' maxW='500px' mb='60px'> Channel members won’t be notified that you’ve left. You can rejoin anytime</Text>
                     </ModalBody>
 
                     <ModalFooter display='flex' justifyContent='space-between'>
                         <Container display='flex' alignItems='center'>
-                            <Checkbox w='18px' height='18px' border='2px solid #616061' borderRadius='3px' isInvalid></Checkbox>
-                            <Text m='0' ml='13px' fontSize='16px' color='616061'>Don’t show this again</Text>
+                            <Checkbox w='18px' height='18px' border='3px solid #1D1C1D' borderRadius='3px' isInvalid></Checkbox>
+                            <Text m='0' ml='13px' fontSize='18px' color='#8B8B8B'>Don’t show this again</Text>
                         </Container>
                         <Container>
-                            <Button cursor='pointer' p='13px 20px' mr='15px' borderRadius='5px' fontSize='16px' color='#2B2B2B' fontWeight='700' border='2px solid #2B2B2B' bg='white' onClick={onClose}>
+                            <Button cursor='pointer' h='30px' p='16px 16px' mr='15px' borderRadius='5px' fontSize='16px' color='#00AD75' fontWeight='700' border='2px solid #00AD75' bg='white' onClick={onClose}>
                                 Cancel
                             </Button>
-                            <Button cursor='pointer' p='14px 20px' border='none' borderRadius='5px' fontSize='16px' color='#fff' fontWeight='700' bg='#00AD75' >Leave Channel</Button>
+                            <Button cursor='pointer' h='30px' p='18px 16px' border='none' borderRadius='5px' fontSize='16px' color='#fff' fontWeight='700' bg='#00AD75' >Leave Channel</Button>
                         </Container>
                     </ModalFooter>
                 </ModalContent>
