@@ -1,3 +1,4 @@
+import json
 from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -9,8 +10,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from django.http.response import JsonResponse
+# from rest_framework.filters
 
 from channel_plugin.utils.customrequest import Request
+
+from channel_plugin.utils.wrappers import FilterWrapper
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelGetSerializer,
@@ -171,39 +175,52 @@ class ChannelMemberViewset(ViewSet):
 
             return result if (type(result) == dict) else None
 
-    def filter_params(self, serializer, params):
+    def prepare_params(self):
+        param_checkers = {
+            "__starts": "$",
+            "__ends": "#",
+            "__contains": "*",
+            "__gt": ">",
+            "__lt": "<"
+        }
+        
+        params = dict(self.request.query_params)
+        
         """
-        This method removes all query parameters
-        not in user serializer
+            Note if your planing to use the filterwrapper class
+            you have to convert the values of your query_parameter
+            to a python value byt using json.loads
         """
-        fields = list(serializer().get_fields().keys())
 
-        keys = list(filter(lambda param: bool(param in fields), params.keys()))
+        for key in self.request.query_params.keys():
+            try:
+                params[key] = json.loads(params.get(key)[0])
+            except:
+                params[key] =  params.get(key)[0]
 
-        for key in params:
-            if key not in keys:
-                del params[key]
+            for chk in param_checkers: 
+                if key.endswith(chk):
+                    p = param_checkers[chk] + key.replace(chk, "")
+                    
+                    try:
+                        params[p] = json.loads(params.get(key))
+                    except:
+                        params[p] = params.get(key)
+                    params.pop(key)
         return params
 
     def filter_objects(self, data: list, serializer: serializers.Serializer):
         # method  applies filteration to user list
         output = []
 
-        params = self.filter_params(serializer, self.request.query_params)
+        params = self.prepare_params()
+        params = FilterWrapper.filter_params(
+            allowed=list(serializer().get_fields().keys()),
+            params=params
+        )
 
-        for obj in data:
-            flag = 0
-
-            for param in params.items():
-                if param in obj:
-                    flag += 1
-                else:
-                    break
-
-            if flag == len(list(params.items())):
-                output.append(obj)
-
-        return list(output) if params else list(data)
+        output = FilterWrapper.filter_objects(data, params)
+        return output
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -220,7 +237,7 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-        Method adds a user to a channel identified
+        Method adds a user to a channel identified by id
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
