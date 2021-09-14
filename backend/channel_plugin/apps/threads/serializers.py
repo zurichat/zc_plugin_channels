@@ -13,7 +13,7 @@ class ThreadSerializer(serializers.Serializer):
     timestamp = serializers.DateTimeField(read_only=True)
 
     def validate(self, attrs):
-        if bool(attrs.get("content")) or bool(attrs.get("files")):
+        if bool(attrs.get("content")) and bool(attrs.get("files")):
             raise serializers.ValidationError(
                 {"error": "Both content & files cannot be none"}
             )
