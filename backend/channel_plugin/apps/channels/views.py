@@ -570,7 +570,7 @@ def get_channel_socket_name(request, org_id, channel_id):
     channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
     if channel:
-        name = build_room_name(org_id, channel["name"])
+        name = build_room_name(org_id, channel["_id"])
         return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
     else:
         return JsonResponse(
