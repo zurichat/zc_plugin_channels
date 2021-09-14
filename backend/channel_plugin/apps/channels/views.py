@@ -1,10 +1,11 @@
 import json
+from apps.centri.helperfuncs import build_room_name
+from apps.channelmessages.serializers import ChannelMessageUpdateSerializer
 from apps.utils.serializers import ErrorSerializer
+from django.core.signals import request_finished
+from django.http.response import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-
-from django.core.signals import request_finished
-
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -22,8 +23,6 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelUpdateSerializer,
     UserSerializer,
 )
-
-from apps.centri.helperfuncs import build_room_name
 
 # Create your views here.
 
@@ -74,10 +73,42 @@ class ChannelViewset(ViewSet):
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
-        if type(result) == list:
+        if isinstance(result, list):
             if result:
                 for i, channel in enumerate(result):
                     result[i].update({"members": len(channel["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
+
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response(
+                "Response", ChannelMessageUpdateSerializer(many=True)
+            ),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(methods=["GET"], detail=False)
+    def channel_media_all(self, request, org_id, channel_id):
+
+        """
+        This gets all media for a prticular channel for a
+        particular organization identified by ID
+        splitted into channelmessage and thread objects.
+        """
+        data = {"channel_id": channel_id, "has_files": "yes"}
+        data.update(dict(request.query_params))
+        result = {}
+        result_message = Request.get(org_id, "channelmessage", data) or []
+        result_thread = Request.get(org_id, "thread", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result_message, list) or isinstance(result_thread, list):
+            result.update(
+                {
+                    "channelmessage": result_message,
+                    "thread": result_thread,
+                }
+            )
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -96,7 +127,7 @@ class ChannelViewset(ViewSet):
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or type(result) == dict:
+        if result.__contains__("_id") or isinstance(result, dict):
             if result:
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
@@ -121,7 +152,7 @@ class ChannelViewset(ViewSet):
         payload = serializer.data.get("channel")
         result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or type(result) == dict:
+        if result.__contains__("_id") or isinstance(result, dict):
             if result:
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
@@ -157,11 +188,17 @@ channel_retrieve_update_delete_view = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
 )
 
+channel_media_all_view = ChannelViewset.as_view(
+    {
+        "get": "channel_media_all",
+    }
+)
+
 
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):
         return name
-    
+
     @staticmethod
     def retrieve_channel(request, org_id, channel_id):
         """
@@ -173,7 +210,7 @@ class ChannelMemberViewset(ViewSet):
 
         if result:
 
-            return result if (type(result) == dict) else None
+            return result if isinstance(result, dict) else None
 
     def prepare_params(self):
         param_checkers = {
@@ -247,7 +284,7 @@ class ChannelMemberViewset(ViewSet):
             # "check if the user is aleady a member of the channel"
             output = None
 
-            if type(request.data) == list:
+            if isinstance(request.data, list):
                 # user_id = request.data.get("_id")
                 # user_data = channel["users"].get(user_id)
                 serializer = UserSerializer(data=request.data, many=True)
@@ -292,15 +329,15 @@ class ChannelMemberViewset(ViewSet):
             )
 
             if result:
-                if type(result) == dict:
+                if isinstance(result, dict):
                     data = output if not result.get("error") else result
                     status_code = (
                         status.HTTP_201_CREATED
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
-                    if not result.get("error"):                        
-                        if type(output) == dict:
+                    if not result.get("error"):
+                        if isinstance(output, dict):
                             # when only one user is added
                             request_finished.send(
                                 sender=self.__class__,
@@ -317,7 +354,7 @@ class ChannelMemberViewset(ViewSet):
                                 org_id=org_id,
                                 channel_name=channel["name"],
                                 added_by="active-duser_id-gotten",
-                                added=output 
+                                added=output,
                             )
                     return Response(data, status=status_code)
                 else:
@@ -427,7 +464,7 @@ class ChannelMemberViewset(ViewSet):
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-                
+
                 # add user to the channel
                 channel["users"].update({f"{member_id}": serializer.data})
 
@@ -441,7 +478,7 @@ class ChannelMemberViewset(ViewSet):
                 )
 
                 if result:
-                    if type(result) == dict:
+                    if isinstance(result, dict):
                         data = user_data if not result.get("error") else result
                         status_code = (
                             status.HTTP_201_CREATED
@@ -471,7 +508,7 @@ class ChannelMemberViewset(ViewSet):
 
             # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
-            
+
             if user_data:
                 # Remove  the user from the channel
                 del channel["users"][member_id]
@@ -485,10 +522,10 @@ class ChannelMemberViewset(ViewSet):
                     org_id, "channel", payload=payload, object_id=channel_id
                 )
 
-                if type(result) == dict:
+                if isinstance(result, dict):
                     data = {"msg": "success"} if not result.get("error") else result
 
-                    if not result.get("error"):                        
+                    if not result.get("error"):
                         # when only one user is removed
                         request_finished.send(
                             sender=self.__class__,
@@ -526,20 +563,17 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 
 
 def get_channel_socket_name(request, org_id, channel_id):
-    
-    channel = ChannelMemberViewset.retrieve_channel(
-        request, 
-        org_id, 
-        channel_id
-    )
-    
+
+    channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
+
     if channel:
-        name = build_room_name(org_id, channel['name'])
+        name = build_room_name(org_id, channel["name"])
         return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
     else:
         return JsonResponse(
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
+
 
 # class SearchMessagesAPIView(APIView):
 #     def post(self, request):
