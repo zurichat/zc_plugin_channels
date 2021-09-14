@@ -1,6 +1,3 @@
-import requests
-from django.conf import settings
-from django.urls import reverse
 from rest_framework import serializers
 
 from .models import ChannelMessage
@@ -13,32 +10,6 @@ class ChannelMessageSerializer(serializers.Serializer):
     content = serializers.CharField()
 
     timestamp = serializers.DateTimeField(read_only=True)
-
-    def validate_user_id(self, user_id):
-
-        channel_id = self.context.get("channel_id")
-
-        org_id = self.context.get("org_id")
-
-        url = settings.BASE_URL + (
-            reverse(
-                "channels:channel-members-list",
-                kwargs={"org_id": org_id, "channel_id": channel_id},
-            )
-        )
-
-        res = requests.get(url).json()
-
-        if type(res) != list:
-
-            raise serializers.ValidationError(res)
-
-        tmp = list(filter(lambda item: item.get("_id") == user_id, res))
-
-        if not bool(tmp):
-
-            raise serializers.ValidationError({"error": "User not in channel"})
-        return user_id
 
     def to_representation(self, instance):
         instance = dict(instance)
