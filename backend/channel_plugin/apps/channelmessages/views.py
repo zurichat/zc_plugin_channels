@@ -2,6 +2,7 @@ from apps.multimedia.models import Media
 from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from django.core.signals import request_finished
 from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -49,6 +50,14 @@ class ChannelMessageViewset(ViewSet):
         result = channelmessage.create(org_id)
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
+            # call signal here
+            request_finished.send(
+                sender=self.__class__,
+                dispatch_uid="CreateMessageSignal",
+                org_id=org_id,
+                channel_id=channel_id,
+                data=result,
+            )
             status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code)
 
@@ -127,7 +136,17 @@ class ChannelMessageViewset(ViewSet):
         payload.update({"edited": True})
         result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
+
         if result.__contains__("_id") or isinstance(result, dict):
+            #put signal here also
+            request_finished.send(
+                sender=self.__class__,
+                dispatch_uid="EditMessageSignal",
+                org_id=org_id,
+                channel_id=result.get("channel_id"),
+                data=result,
+            )
+
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -154,12 +173,29 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_delete(self, request, org_id, msg_id):
+
         result = Request.delete(org_id, "channelmessage", object_id=msg_id)
+
         if result.get("status_code") == 200:
             if result.get("data", {}).get("deleted_count") > 0:
                 Request.delete(
                     org_id, "thread", data_filter={"channelmessage_id": msg_id}
                 )
+        
+        # add a signal here for delete signal
+        channel_id = request.query_params.get("channel_id")
+        request_finished.send(
+            sender=self.__class__,
+            dispatch_uid="DeleteMessageSignal",
+            org_id=org_id,
+            channel_id=channel_id,
+            data = {
+                '_id': msg_id,
+                'channel_id': channel_id,
+                'user_id': request.query_params.get("user_id")
+            }
+        )
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

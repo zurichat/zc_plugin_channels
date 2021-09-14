@@ -374,13 +374,16 @@ class ChannelMemberViewset(ViewSet):
                     if not result.get("error"):
                         if isinstance(output, dict):
                             # when only one user is added
-                            request_finished.send(
-                                sender=self.__class__,
-                                dispatch_uid="JoinedChannelSignal",
-                                org_id=org_id,
-                                channel_name=channel["name"],
-                                user_id=output["_id"],
-                            )
+                            # try:
+                                request_finished.send(
+                                    sender=self.__class__,
+                                    dispatch_uid="JoinedChannelSignal",
+                                    org_id=org_id,
+                                    channel_name=channel["name"],
+                                    user_id=output["_id"]
+                                )
+                            # except:
+                            #     print("FOUND")
                         else:
                             # when output is a list multiple users where added
                             request_finished.send(
@@ -388,8 +391,8 @@ class ChannelMemberViewset(ViewSet):
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
                                 channel_name=channel["name"],
-                                added_by="active-duser_id-gotten",
-                                added=output,
+                                added_by="logged-in-user_id",
+                                added=output
                             )
                     return Response(data, status=status_code)
                 else:
@@ -602,7 +605,7 @@ def get_channel_socket_name(request, org_id, channel_id):
     channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
     if channel:
-        name = build_room_name(org_id, channel["name"])
+        name = build_room_name(org_id, channel["_id"])
         return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
     else:
         return JsonResponse(

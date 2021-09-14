@@ -333,4 +333,4 @@ try:
 except:  # noqa
     CENTRIFUGO_API_KEY = ""
 
-CENTRIFUGO_URL = "https://realtime.zuri.chat"
+CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
