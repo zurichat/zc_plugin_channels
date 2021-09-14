@@ -1,4 +1,3 @@
-from apps.roles.serializers import RoleSerializer
 from django.utils.text import slugify
 from rest_framework import serializers
 
@@ -50,7 +49,6 @@ class ChannelGetSerializer(serializers.Serializer):
     owner = serializers.CharField(required=False)
     archived = serializers.BooleanField(required=False)
     users = serializers.DictField(child=serializers.DictField(), required=False)
-    roles = RoleSerializer(many=True, required=False)
 
 
 class ChannelUpdateSerializer(serializers.Serializer):
@@ -59,7 +57,6 @@ class ChannelUpdateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100, required=False)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(required=False)
-    roles = RoleSerializer(required=False, many=True)
 
     def validate_name(self, name):
         """
