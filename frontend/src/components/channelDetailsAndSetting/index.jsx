@@ -3,11 +3,7 @@ import { Box } from "@chakra-ui/layout";
 import ChannelDetails from "./channelDetailsAndSettings";
 
 const ChannelDetailsAndSetting = () => {
-  return (
-    <Box>
-      <ChannelDetails />
-    </Box>
-  );
+  return <ChannelDetails />;
 };
 
 export default ChannelDetailsAndSetting;
