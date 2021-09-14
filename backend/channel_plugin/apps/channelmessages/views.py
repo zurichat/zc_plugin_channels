@@ -8,7 +8,7 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
-from .permissions import IsMember
+from .permissions import IsMember, IsOwner
 from .serializers import ChannelMessageSerializer, ChannelMessageUpdateSerializer
 
 
@@ -22,8 +22,11 @@ class ChannelMessageViewset(ViewSet):
         Instantiates and returns the list of permissions that this view requires.
         """
         permissions = super().get_permissions()
-        if self.action in ["message"]:
+        if self.action in ["message", "message_delete", "message_update"]:
             permissions.append(IsMember())
+            if self.action in ["message_delete", "message_update"]:
+                self.permission_type = "owner"
+                permissions.append(IsOwner())
         return permissions
 
     @swagger_auto_schema(
@@ -96,6 +99,22 @@ class ChannelMessageViewset(ViewSet):
             200: openapi.Response("Response", ChannelMessageUpdateSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
     @action(
         methods=["PUT"],
@@ -112,6 +131,24 @@ class ChannelMessageViewset(ViewSet):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ]
+    )
     @action(
         methods=["DELETE"],
         detail=False,

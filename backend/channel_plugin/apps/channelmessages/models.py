@@ -4,8 +4,12 @@ from django.utils import timezone
 
 from channel_plugin.utils.customrequest import Request
 
+MESSAGE_TYPES = ["message", "event"]
+DEFAULT_MESSAGE_TYPE = "message"
 
 # Create your models here.
+
+
 @dataclass
 class ChannelMessage:
     user_id: str
@@ -15,6 +19,8 @@ class ChannelMessage:
     emojis: list = field(default_factory=list)
     pinned: bool = False
     edited: bool = False
+    can_reply: bool = True
+    type: str = DEFAULT_MESSAGE_TYPE
     timestamp: str = timezone.now().isoformat()
 
     def create(self, organization_id):
@@ -25,6 +31,8 @@ class ChannelMessage:
             "emojis": self.emojis,
             "pinned": self.pinned,
             "edited": self.edited,
+            "type": self.type,
+            "can_reply": self.can_reply,
             "timestamp": self.timestamp,
         }
         response = Request.post(
