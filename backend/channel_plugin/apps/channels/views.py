@@ -310,6 +310,46 @@ class ChannelMemberViewset(ViewSet):
         )
 
     @swagger_auto_schema(
+        request_body=UserSerializer,
+        responses={
+            201: openapi.Response("Response", UserSerializer),
+            404: openapi.Response("Collection Not Found"),
+        },
+        operation_id="channel-member-can-input",
+    )
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    def can_input(self, request, org_id, channel_id):
+        """
+        Method checks if a user input should be disabled or enabled
+        """
+        # get the channel from zc-core
+        channel = self.retrieve_channel(request, org_id, channel_id)
+
+        if channel:
+            if channel["allow_members_input"] == True:
+                can_input = True
+                return Response(can_input, status=status.HTTP_200_OK)
+            else:
+                user_id = request.data.get("_id")
+                user_data = channel["users"].get(user_id)
+
+                if user_data:
+                    # Check if user is an admin
+                    if user_data.is_admin:
+                        can_input = True
+                        return Response(can_input, status=status.HTTP_200_OK)
+                    else:
+                        can_input = False
+                        return Response(can_input, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+                    )                    
+
+    @swagger_auto_schema(
         responses={
             200: openapi.Response("Response", UserSerializer(many=True)),
             404: openapi.Response("Not Found"),
@@ -391,7 +431,7 @@ class ChannelMemberViewset(ViewSet):
     )
     def update_member(self, request, org_id, channel_id, member_id):
         """
-        Method updates a user's channel memberhip details
+        Method updates a user's channel membership details
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -495,7 +535,11 @@ class ChannelMemberViewset(ViewSet):
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
-
+channel_members_can_input_view =  ChannelMemberViewset.as_view(
+    {
+        "post": "can_input",
+    }
+)
 channel_members_list_create_views = ChannelMemberViewset.as_view(
     {
         "get": "list_members",
