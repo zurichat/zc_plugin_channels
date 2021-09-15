@@ -374,23 +374,20 @@ class ChannelMemberViewset(ViewSet):
                     if not result.get("error"):
                         if isinstance(output, dict):
                             # when only one user is added
-                            # try:
-                                request_finished.send(
-                                    sender=self.__class__,
-                                    dispatch_uid="JoinedChannelSignal",
-                                    org_id=org_id,
-                                    channel_name=channel["name"],
-                                    user_id=output["_id"]
-                                )
-                            # except:
-                            #     print("FOUND")
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_name=channel["_id"],
+                                user_id=output["_id"]
+                            )
                         else:
                             # when output is a list multiple users where added
                             request_finished.send(
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["name"],
+                                channel_name=channel["_id"],
                                 added_by="logged-in-user_id",
                                 added=output
                             )
@@ -569,7 +566,7 @@ class ChannelMemberViewset(ViewSet):
                             sender=self.__class__,
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
-                            channel_name=channel["name"],
+                            channel_name=channel["_id"],
                             user_id=user_data["_id"],
                         )
 
