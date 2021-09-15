@@ -7,7 +7,7 @@ import { FaCaretDown } from "react-icons/fa";
 import MessageCard from '../../../shared/MessageCard';
 
 const messages = [
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" ,index: 1, isThread: false},
+    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus. xz ,nxc,mx c,mx c,mx c,m x,cm x,m ,mx c,mx c,mx  ,mznmxz bx,c x,cjkkjsc sjcxbn jxbnc kjxbc kjsxbc jkazb xçln lznm≈c zn∫≈ ckjzbdclkjn jzk cjz c bzkjbc zkjbçj sjhcdcbkxb kxb.", icon: "https://bit.ly/dan-abramov" ,index: 1, isThread: false},
     {name: "Deyrin Cutting", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/code-beast" , index: 1, isThread: true},
     {name: "Kelvin monument", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/ryan-florence" , index: 1, isThread: true},
     {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" , index: 1, isThread: false},

@@ -5,6 +5,7 @@ from apps.channels.views import (
     channel_members_update_retrieve_views,
     channel_retrieve_update_delete_view,
     get_channel_socket_name,
+    user_channel_list,
 )
 from django.urls import path
 
@@ -26,4 +27,5 @@ urlpatterns = [
         channel_members_update_retrieve_views,
     ),
     path("<str:org_id>/channels/<str:channel_id>/socket/", get_channel_socket_name),
+    path("<str:org_id>/channels/<str:user_id>/", user_channel_list),
 ]

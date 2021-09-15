@@ -130,6 +130,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "channel_plugin.utils.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -332,4 +333,4 @@ try:
 except:  # noqa
     CENTRIFUGO_API_KEY = ""
 
-CENTRIFUGO_URL = "https://realtime.zuri.chat"
+CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
