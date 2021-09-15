@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Divider, Input, Button,Spacer } from "@chakra-ui/react";
+import { Box, Divider, Input, Button} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
 import { FiAtSign, FiItalic } from "react-icons/fi";
