@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Modal,
     ModalOverlay,
@@ -7,13 +7,12 @@ import {
     ModalBody,
     ModalCloseButton,
     HStack,
-    Switch,
     Button,
     ModalFooter,
     Text,
-    Flex,
-
 } from "@chakra-ui/react";
+
+
 const ArchiveChannelModal = ({isOpen, onClose}) => {
     return(
         <Modal isOpen={isOpen} onClose={onClose} size="xl">

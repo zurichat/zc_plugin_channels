@@ -12,8 +12,8 @@ import {
     ModalFooter,
     Text,
     Flex,
-
 } from "@chakra-ui/react";
+
 const AdditionalSettingModal = ({ actions, isOpen, onClose }) => {
     const [archiveChannel, setArchiveChannel] = useState(false);
     const [makePrivate, setPrivate] = useState(false);
