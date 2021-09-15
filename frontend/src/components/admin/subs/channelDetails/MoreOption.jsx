@@ -1,19 +1,17 @@
 import { IconButton } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
-import React from "react";
+import React,{useState} from "react";
 import { BsThreeDots } from "react-icons/bs";
-import AdditionalSettingsModal from "./AdditionalSettingsModal";
 import NotificationModal from "../NotificationModal/NotificationModal";
-
+import AdditionalSettingModal from "../AdditionalSettingModal/AdditionalSettingModal";
 const MoreOption = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const { isOpen: isAddtionalSettingsOpen, onClose: onCloseAdditionalSettings, onOpen: onOpenAdditionalSettings } = useDisclosure();
-
+  const [additionalModal, setAdditionalModal] = useState(false)
   return (
     <>
       <NotificationModal isOpen={isOpen} onClose={onClose} />
-      <AdditionalSettingsModal isOpen={isAddtionalSettingsOpen} onClose={onCloseAdditionalSettings} />
+      <AdditionalSettingModal isOpen={additionalModal} onClose={()=>setAdditionalModal(false)}/>
       <Menu>
         <MenuButton
           as={IconButton}
@@ -26,7 +24,7 @@ const MoreOption = () => {
         <MenuList>
           <MenuItem onClick={onOpen}>Notification settings</MenuItem>
           <MenuItem>Huddle settings</MenuItem>
-          <MenuItem onClick={onOpenAdditionalSettings}>Additional options</MenuItem>
+          <MenuItem onClick={()=>setAdditionalModal(true)}>Additional options</MenuItem>
         </MenuList>
       </Menu>
     </>
