@@ -4,8 +4,9 @@ import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
 import { FiAtSign, FiItalic } from "react-icons/fi";
 import { AiOutlineBars } from "react-icons/ai";
-import { GrAttachment } from "react-icons/gr";
+import {GrEmoji } from "react-icons/gr";
 import {RiArrowDropDownLine} from 'react-icons/ri';
+import {ImAttachment} from 'react-icons/im';
 
 function InputFieldComponent() {
   const [input, setInput] = useState(false);
@@ -32,7 +33,7 @@ function InputFieldComponent() {
           css={{
             '&::-webkit-scrollbar':{
               display:'none'
-            }
+            },
           }}
         >
           <Box
@@ -40,10 +41,10 @@ function InputFieldComponent() {
             display="flex"
             flexDirection="row"
             justifyContent="space-between"
-            _hover={{ cursor: "pointer" }}
+            _hover={{ cursor: "pointer"}}
           >
-            <IoFlashOutline />
-            <Divider height="20px" color="gray.500" orientation="vertical" />
+            <IoFlashOutline/>
+            <Divider height="20px" orientation="vertical"/>
             <BsTypeBold />
             <FiItalic />
             <BsLink45Deg />
@@ -59,15 +60,16 @@ function InputFieldComponent() {
             minW="60px"
           >
             <FiAtSign />
-            <GrAttachment/>
+            <ImAttachment/>
+            <GrEmoji/>
             {input ? (
               <Button bg="#00B87C" size="xs">
                 <IoSendSharp color="white" />
               </Button>
             ) : (
-              <IoSendSharp />
+              <Button size="xs" disabled><IoSendSharp /></Button>
             )}
-            <Divider height="20px" color="gray.500" orientation="vertical" className="box"/>
+            <Divider height="20px" color="gray.500" orientation="vertical"/>
             <RiArrowDropDownLine size="30px"/>
           </Box>
         </Box>
@@ -85,18 +87,19 @@ function InputFieldComponent() {
                 <Input variant="unstyled" placeholder="Send a message" size="lg" fontSize="md"
                  onInput={()=>setInput(true)} onMouseOut={()=>setInput(false), ()=>setOnclick(false)}/>
                   {
-                  input ? <Button bg="#00B87C" size="xs"><IoSendSharp color="white"/></Button> : <IoSendSharp/>
+                  input ?<IoSendSharp color="black"/> : <Button size="xs" disabled><IoSendSharp /></Button>
                   }
                 </Box>
                   <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="10em" marginTop="25px" overflowX="auto">
                     <IoFlashOutline/>
                     <Divider height="20px" color="gray.500" orientation="vertical"/>
+                    <GrEmoji/>
                     <BsTypeBold/>
                     <FiItalic/>
                     <BsLink45Deg/>
                     <AiOutlineBars/>
                     <FiAtSign/>
-                    <GrAttachment/>
+                    <ImAttachment/>
                   </Box>
                 </Box>
                :
@@ -113,7 +116,7 @@ function InputFieldComponent() {
             <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
             <AiOutlineBars/>
             <FiAtSign/>
-            <GrAttachment/>
+            <ImAttachment/>
             </Box>
           </Box>
         </Box>
