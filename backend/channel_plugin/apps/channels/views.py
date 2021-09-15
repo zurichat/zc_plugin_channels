@@ -177,6 +177,35 @@ class ChannelViewset(ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer(many=True)),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        }
+    )
+    @action(methods=["GET"], detail=False)
+    def user_channel_retrieve(self, request, org_id, user_id):
+        data = {}
+        data.update(dict(request.query_params))
+        response = Request.get(org_id, "channel", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(response, list):
+            if response:
+                result = []
+                channel = {}
+                status_code = status.HTTP_204_NO_CONTENT
+                for i in len(response):
+                    b_response = response[i]
+                    if user_id in b_response['users']:
+                        channel["name"] = b_response["name"]
+                        channel["ID"] = b_response["_id"]
+                        channel["description"] = b_response["description"]
+                        result.append(channel)
+                        status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
+
+
 channel_list_create_view = ChannelViewset.as_view(
     {
         "get": "channel_all",
@@ -191,6 +220,12 @@ channel_retrieve_update_delete_view = ChannelViewset.as_view(
 channel_media_all_view = ChannelViewset.as_view(
     {
         "get": "channel_media_all",
+    }
+)
+
+user_channel_list = ChannelViewset.as_view(
+    {
+        "get": "user_channel_retrieve",
     }
 )
 
@@ -220,9 +255,9 @@ class ChannelMemberViewset(ViewSet):
             "__gt": ">",
             "__lt": "<"
         }
-        
+
         params = dict(self.request.query_params)
-        
+
         """
             Note if your planing to use the filterwrapper class
             you have to convert the values of your query_parameter
@@ -235,10 +270,10 @@ class ChannelMemberViewset(ViewSet):
             except:
                 params[key] =  params.get(key)[0]
 
-            for chk in param_checkers: 
+            for chk in param_checkers:
                 if key.endswith(chk):
                     p = param_checkers[chk] + key.replace(chk, "")
-                    
+
                     try:
                         params[p] = json.loads(params.get(key))
                     except:
@@ -339,13 +374,16 @@ class ChannelMemberViewset(ViewSet):
                     if not result.get("error"):
                         if isinstance(output, dict):
                             # when only one user is added
-                            request_finished.send(
-                                sender=self.__class__,
-                                dispatch_uid="JoinedChannelSignal",
-                                org_id=org_id,
-                                channel_name=channel["name"],
-                                user_id=output["_id"],
-                            )
+                            # try:
+                                request_finished.send(
+                                    sender=self.__class__,
+                                    dispatch_uid="JoinedChannelSignal",
+                                    org_id=org_id,
+                                    channel_name=channel["name"],
+                                    user_id=output["_id"]
+                                )
+                            # except:
+                            #     print("FOUND")
                         else:
                             # when output is a list multiple users where added
                             request_finished.send(
@@ -353,8 +391,8 @@ class ChannelMemberViewset(ViewSet):
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
                                 channel_name=channel["name"],
-                                added_by="active-duser_id-gotten",
-                                added=output,
+                                added_by="logged-in-user_id",
+                                added=output
                             )
                     return Response(data, status=status_code)
                 else:
@@ -614,7 +652,7 @@ def get_channel_socket_name(request, org_id, channel_id):
     channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
     if channel:
-        name = build_room_name(org_id, channel["name"])
+        name = build_room_name(org_id, channel["_id"])
         return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
     else:
         return JsonResponse(
