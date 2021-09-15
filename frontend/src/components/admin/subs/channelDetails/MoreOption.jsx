@@ -3,15 +3,17 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import React from "react";
 import { BsThreeDots } from "react-icons/bs";
+import AdditionalSettingsModal from "./AdditionalSettingsModal";
 import NotificationModal from "../NotificationModal/NotificationModal";
 
 const MoreOption = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const { isOpen: isAddtionalSettingsOpen, onClose: onCloseAdditionalSettings, onOpen: onOpenAdditionalSettings } = useDisclosure();
 
   return (
     <>
       <NotificationModal isOpen={isOpen} onClose={onClose} />
-
+      <AdditionalSettingsModal isOpen={isAddtionalSettingsOpen} onClose={onCloseAdditionalSettings} />
       <Menu>
         <MenuButton
           as={IconButton}
@@ -24,7 +26,7 @@ const MoreOption = () => {
         <MenuList>
           <MenuItem onClick={onOpen}>Notification settings</MenuItem>
           <MenuItem>Huddle settings</MenuItem>
-          <MenuItem>Additional options</MenuItem>
+          <MenuItem onClick={onOpenAdditionalSettings}>Additional options</MenuItem>
         </MenuList>
       </Menu>
     </>

@@ -17,11 +17,9 @@ import {
   AccordionPanel,
 } from "@chakra-ui/accordion";
 import AddPeopleModal from "../../../createChannel/addPeopleModal";
-import AdditionalSettingsModal from "./AdditionalSettingsModal";
 
 const ChannelDetails = ({ channelName="Announcements" }) => {
   const [showAddPeopleModal, setShowAddPeopleModal] = useState(false);
-  const [showAdditionalSettings, setShowAdditionalSettings] = useState(true);
   const options = useMemo(
     () => [
       {
@@ -205,7 +203,6 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
       </Box>
     </Box>
     <AddPeopleModal isOpen={showAddPeopleModal} onClose={() => setShowAddPeopleModal(false)} />
-    <AdditionalSettingsModal isOpen={showAdditionalSettings} onClose={() => setShowAdditionalSettings(false)} />
     </>
   );
 };

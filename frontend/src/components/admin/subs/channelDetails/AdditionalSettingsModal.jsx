@@ -34,11 +34,46 @@ const AdditionalSettingsModal = ({ isOpen, onClose }) => {
                     If you don’t think it  will be  used anymore you can archive it
                     (All members will be removed ).  You can retireive it later. 
                 </Text>
-                <Switch ml="3.75rem" />
+                <Switch colorScheme="green" ml="3.75rem" />
+            </Flex>
+          </Box>
+          <Box mt="1.75rem">
+            <Text fontWeight="bold">Rename this channel</Text>
+            <Flex mt="10px">
+                <Text flex="1" color="#8B8B8B" fontSize="16px" fontWeight="normal">
+                  You can rename your channel any time, but dont do it too  often as it
+                  can confuse your members.
+                </Text>
+            </Flex>
+          </Box>
+          <Box mt="1.75rem">
+            <Flex mt="10px">
+              <Text flex="1" fontWeight="bold">Set this  channel to private</Text>
+              <Switch colorScheme="green" ml="3.75rem" />
+            </Flex>
+          </Box>
+          <Box mt="1.75rem">
+            <Text fontWeight="bold">Delete this channel</Text>
+            <Flex mt="10px">
+                <Text flex="1" color="#8B8B8B" fontSize="16px" fontWeight="normal">
+                  Deleting a channel will permanently remove all of its messages. This cannot be undone.  
+                </Text>
+                <Button
+                  bg="#00B87C"
+                  background="#E23434"
+                  color="white"
+                  mb="4"
+                  borderRadius="3px"
+                  onClick={onClose}
+                  py="0.75rem"
+                  px="1.125rem"
+                >
+                  Delete
+                </Button>
             </Flex>
           </Box>
         </ModalBody>
-        <ModalFooter mt="44px">
+        <ModalFooter mt="44px" p="0">
           <Button
             bg="#00B87C"
             color="white"
