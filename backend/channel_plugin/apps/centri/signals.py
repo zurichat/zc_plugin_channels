@@ -18,8 +18,6 @@ CLIENT = CentClient(
 )
 
 
-print(CLIENT.info())
-
 
 # >>>>>>>>>>> channels signals <<<<<<<<<<<<<<<<<<
 @receiver(request_finished, sender=ChannelMemberViewset)
