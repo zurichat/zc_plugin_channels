@@ -3,17 +3,21 @@ import React from "react";
 import { BiUserPlus } from "react-icons/bi";
 import { useDisclosure } from "@chakra-ui/react";
 import AddPeopleModal from "./addPeopleModal";
+import { Circle, HStack } from "@chakra-ui/layout";
+import { Icon } from "@chakra-ui/icon";
 
 const ChannelBody = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <Box width="80%" m="auto" height="sm" pt="3rem" fontSize="16px">
-      <Text color="black">
+    <Box width="80%" m="auto" height="sm" fontSize="16px">
+      <AddPeopleModal isOpen={isOpen} onClose={onClose} />
+
+      <Text color="black" mt="2rem">
         This is the very beginning of the{" "}
-        <Link color="#0562ed" fontWeight="bold">
-          {" "}
+        <Link color="#0562ed" fontWeight="bold" mr="0.3rem">
           #Announcement
-        </Link>{" "}
+        </Link>
         channel
       </Text>
       <Text color="grey">
@@ -23,20 +27,20 @@ const ChannelBody = () => {
         created this channel on Aug 30th.
       </Text>
 
-      <Box mt="6" cursor="pointer">
-        <Flex alignItems="center">
-          <p
-            style={{
-              backgroundColor: "#00B87C",
-              padding: ".3rem",
-              borderRadius: "50%",
-            }}
-          >
-            <BiUserPlus color="white" fontSize="1.3rem" />
-          </p>
-          <AddPeopleModal />
-        </Flex>
-      </Box>
+      <HStack mt="6">
+        <Circle
+          cursor="pointer"
+          bg="whatsapp.600"
+          color="white"
+          size="35px"
+          onClick={onOpen}
+        >
+          <Icon as={BiUserPlus} />
+        </Circle>
+        <Text cursor="pointer" onClick={onOpen}>
+          Add Members
+        </Text>
+      </HStack>
     </Box>
   );
 };

@@ -9,12 +9,6 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["example.com"])
 
-# DATABASES
-# ------------------------------------------------------------------------------
-# DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
-# DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
-# DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
-
 # CACHES
 # ------------------------------------------------------------------------------
 # CACHES = {
@@ -55,6 +49,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 # STORAGES
 # ------------------------------------------------------------------------------
 # https://django-storages.readthedocs.io/en/latest/#installation
@@ -84,7 +80,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "channel_plugin.utils.storages.MediaRootS3Boto3Storage"
-MEDIA_URL = f"media/"
+MEDIA_URL = "media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -176,3 +172,4 @@ LOGGING = {
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+BASE_URL = "https://channels.zuri.chat"

@@ -1,0 +1,85 @@
+{
+  "channel": [
+    {
+      "id": "1",
+      "name": "team-coelho",
+      "description": "Description will be here",
+      "private": true,
+      "archived": true,
+      "owner": "200",
+      "users": {
+        "200": {
+          "id": "200",
+          "role_id": "198",
+          "is_admin": false
+        },
+        "202": {
+          "id": "202",
+          "role_id": "199",
+          "is_admin": true
+        }
+      },
+      "created_on": "12-08-2021 12:00:00"
+    }
+  ],
+  "channelmessage":[
+    {
+      "id": "86",
+      "user_id": "200",
+      "channel_id": "1",
+      "emojis": [],
+      "content": "This is a message yadda yadda",
+      "pinned": false,
+      "edited": false,
+      "timestamp": "12-08-2021 12:00:00"
+    },
+    {
+      "id": "87",
+      "user_id": "201",
+      "channel_id": "1",
+      "emojis": [],
+      "content": "This is a message yadda yadda",
+      "pinned": false,
+      "edited": true,
+      "timestamp": "12-08-2021 12:01:00"
+    }
+  ],
+  "thread": [
+    {
+      "id": "100",
+      "user_id": "201",
+      "channelmessage_id": "86",
+      "emojis": [],
+      "content": "This is a message yadda yadda",
+      "pinned": false,
+      "edited": false,
+      "timestamp": "12-08-2021 12:00:00"
+    }
+  ],
+  "role": [
+    {
+      "id": "198",
+      "channel_id": "1",
+      "name": "Admin",
+      "permission": [
+        {
+          "name": "Admin Permission",
+          "key": "admin",
+          "description": "Description for admin permission"
+        }
+      ]
+    },
+    {
+      "id": "199",
+      "channel_id": "1",
+      "name": "Team Lead",
+      "permission": [
+        {
+          "name": "Team Lead Permission",
+          "key": "team-lead",
+          "description": "Description for team lead permission"
+        }
+      ]
+    }
+  ]
+}

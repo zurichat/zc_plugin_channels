@@ -40,7 +40,9 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     re_path(
-        r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
+        r"^docs/v1/$",
+        schema_view.with_ui("redoc", cache_timeout=0),
+        name="schema-redoc",
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
@@ -56,10 +58,12 @@ if settings.DEBUG:
 # API URLS
 urlpatterns += [
     # API base url
-    # path("api/", include("config.api_router")),
-    path("api/", include("channel_plugin.info.urls")),
-    path("api/", include("channel_plugin.users.urls")),
-    path("api/channels/", include("apps.channels.urls")),
+    path("api/v1/", include("channel_plugin.info.urls")),
+    path("api/v1/", include("apps.channels.urls")),
+    path("api/v1/", include("apps.channelmessages.urls")),
+    path("api/v1/", include("apps.roles.urls")),
+    path("api/v1/", include("apps.threads.urls")),
+    path("api/v1/", include("apps.centri.urls"))
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
@@ -69,6 +73,9 @@ urlpatterns += [
     re_path(r"^$", render_react),
     re_path(r"^(?:.*)/?$", render_react),
 ]
+
+handler500 = 'rest_framework.exceptions.server_error'
+handler400 = 'rest_framework.exceptions.bad_request'
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
