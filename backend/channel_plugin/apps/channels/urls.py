@@ -5,8 +5,7 @@ from apps.channels.views import (
     channel_members_update_retrieve_views,
     channel_retrieve_update_delete_view,
     get_channel_socket_name, 
-    channel_members_can_input_view
-
+    channel_members_can_input_view,
     get_channel_socket_name,
 )
 from django.urls import path
@@ -25,8 +24,8 @@ urlpatterns = [
         name="channel-members-list",
     ),
     path(
-        "<str:org_id>/channels/<str:channel_id>/members/",
-        channel_members_can_input_view
+        "<str:org_id>/channels/<str:channel_id>/members/can_input/",
+        channel_members_can_input_view,
         name="channel-members-can-input",
     ),    
     path(

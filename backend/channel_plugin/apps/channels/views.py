@@ -401,7 +401,10 @@ class ChannelMemberViewset(ViewSet):
                 else:
                     return Response(
                         {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
-                    )                    
+                    )   
+        return Response(
+            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+        )                                       
 
     @swagger_auto_schema(
         responses={
