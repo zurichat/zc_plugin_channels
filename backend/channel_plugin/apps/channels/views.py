@@ -250,12 +250,12 @@ class ChannelMemberViewset(ViewSet):
         This method retrieves a channel's data
         from zc-core
         """
-        data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data)
-
-        if result:
-
-            return result if isinstance(result, dict) else None
+        data = {"_id": [channel_id]}
+        result = Request.get(org_id, "channel", data) or {}
+        if result.__contains__("_id") or isinstance(result, dict):
+            if result:
+                return result
+        return None
 
     def prepare_params(self):
         param_checkers = {
@@ -329,8 +329,6 @@ class ChannelMemberViewset(ViewSet):
             output = None
 
             if isinstance(request.data, list):
-                # user_id = request.data.get("_id")
-                # user_data = channel["users"].get(user_id)
                 serializer = UserSerializer(data=request.data, many=True)
                 serializer.is_valid(raise_exception=True)
                 user_list = serializer.initial_data
@@ -363,7 +361,7 @@ class ChannelMemberViewset(ViewSet):
                     return Response(user_data, status=status.HTTP_200_OK)
 
             # remove channel ID to avoid changing it
-            channel.pop("_id", None)
+            channel_id = channel.pop("_id", None)
 
             # only update user dict
             payload = {"users": channel["users"]}
@@ -387,8 +385,8 @@ class ChannelMemberViewset(ViewSet):
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["_id"],
-                                user_id=output["_id"],
+                                channel_id=channel_id,
+                                user_id=output["_id"]
                             )
                         else:
                             # when output is a list multiple users where added
@@ -396,7 +394,7 @@ class ChannelMemberViewset(ViewSet):
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["_id"],
+                                channel_id=channel_id,
                                 added_by="logged-in-user_id",
                                 added=output,
                             )
@@ -461,11 +459,10 @@ class ChannelMemberViewset(ViewSet):
 
         if channel:
 
-            # check if the user is aleady a member of the channel
+            # checks if the user is a member of the channel
             user_data = channel["users"].get(member_id)
 
             if user_data:
-                # add the user to the channel
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -558,7 +555,7 @@ class ChannelMemberViewset(ViewSet):
                 del channel["users"][member_id]
 
                 # send signal to centri app to left message centrifugo
-                channel.pop("_id", None)
+                channel_id = channel.pop("_id", None)
 
                 payload = {"users": channel["users"]}
 
@@ -575,7 +572,7 @@ class ChannelMemberViewset(ViewSet):
                             sender=self.__class__,
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
-                            channel_name=channel["_id"],
+                            channel_id=channel_id,
                             user_id=user_data["_id"],
                         )
 

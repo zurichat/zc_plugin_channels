@@ -133,7 +133,7 @@ class ChannelMessageViewset(ViewSet):
         serializer = ChannelMessageUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("message")
-        payload.update({"edited": True})
+        payload.update({"edited": str(True)})
         result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
 

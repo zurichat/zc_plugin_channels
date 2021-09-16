@@ -56,3 +56,9 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
 
         data = {"message": instance}
         return data
+
+    def validate_pinned(self, pinned):
+        
+        if pinned:
+            return "True"
+        return "False"
