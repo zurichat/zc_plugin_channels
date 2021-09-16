@@ -10,8 +10,8 @@ class IsMember(permissions.BasePermission):
     def has_permission(self, request, view):
 
         org_id = request.parser_context.get("kwargs", {}).get("org_id")
-        channel_id = request.query_params.get("channel_id")
-        user_id = request.data.get("user_id") or request.query_params.get("user_id")
+        channel_id = request.parser_context.get("kwargs", {}).get("channel_id")
+        user_id = request.query_params.get("user_id")
 
         response = Request.get(org_id, "channel", {"_id": channel_id}) or {}
         if response.get("users", {}).get(user_id):
@@ -21,20 +21,20 @@ class IsMember(permissions.BasePermission):
 
 class IsOwner(permissions.BasePermission):
 
-    message = "Cannot edit someone else's message."
+    message = "Cannot delete someone else's media."
 
     def has_permission(self, request, view):
 
-        if request.method == "DELETE":
-            self.message = "Cannot delete someone else's message."
-
         org_id = request.parser_context.get("kwargs", {}).get("org_id")
-        thread_id = request.parser_context.get("kwargs", {}).get("thread_id")
+        msg_id = request.parser_context.get("kwargs", {}).get("msg_id")
         user_id = request.query_params.get("user_id")
 
-        response = Request.get(org_id, "thread", {"_id": thread_id}) or {}
+        response = (
+            Request.get(org_id, "media", {"message_id": msg_id, "user_id": user_id})
+            or {}
+        )
 
-        if response.get("user_id") == user_id:
+        if response[0].get("user_id") == user_id:
             return True
         return False
 
