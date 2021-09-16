@@ -27,5 +27,5 @@ urlpatterns = [
         channel_members_update_retrieve_views,
     ),
     path("<str:org_id>/channels/<str:channel_id>/socket/", get_channel_socket_name),
-    path("<str:org_id>/channels/<str:user_id>/", user_channel_list),
+    path("<str:org_id>/channels/users/<str:user_id>/", user_channel_list),
 ]
