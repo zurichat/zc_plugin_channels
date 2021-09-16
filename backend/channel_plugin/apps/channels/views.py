@@ -354,7 +354,7 @@ class ChannelMemberViewset(ViewSet):
                     return Response(user_data, status=status.HTTP_200_OK)
 
             # remove channel ID to avoid changing it
-            channel.pop("_id", None)
+            channel_id = channel.pop("_id", None)
 
             # only update user dict
             payload = {"users": channel["users"]}
@@ -378,7 +378,7 @@ class ChannelMemberViewset(ViewSet):
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["_id"],
+                                channel_id=channel_id,
                                 user_id=output["_id"]
                             )
                         else:
@@ -387,7 +387,7 @@ class ChannelMemberViewset(ViewSet):
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["_id"],
+                                channel_id=channel_id,
                                 added_by="logged-in-user_id",
                                 added=output
                             )
@@ -549,7 +549,7 @@ class ChannelMemberViewset(ViewSet):
                 del channel["users"][member_id]
 
                 # send signal to centri app to left message centrifugo
-                channel.pop("_id", None)
+                channel_id = channel.pop("_id", None)
 
                 payload = {"users": channel["users"]}
 
@@ -566,7 +566,7 @@ class ChannelMemberViewset(ViewSet):
                             sender=self.__class__,
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
-                            channel_name=channel["_id"],
+                            channel_id=channel_id,
                             user_id=user_data["_id"],
                         )
 
