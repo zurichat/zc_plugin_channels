@@ -24,9 +24,10 @@ class Request:
     def get(org_id, collection_name, params=None):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
         if params is not None and len(params) > 0:
-            data = dict()
+            data = params
             for k, v in params.items():
-                data.update({k: v[0]})
+                if isinstance(v, list):
+                    data.update({k: v[0]})
             url += f"?{urlencode(data)}"
         response = requests.get(url)
         if response.status_code >= 200 and response.status_code < 300:

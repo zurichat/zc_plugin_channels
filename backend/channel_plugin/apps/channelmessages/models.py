@@ -33,7 +33,7 @@ class ChannelMessage:
             "channel_id": self.channel_id,
             "content": self.content,
             "emojis": self.emojis,
-            "has_files": self.has_files,
+            "has_files": str(self.has_files),
             "files": self.files,
             "pinned": str(self.pinned),
             "edited": str(self.edited),
