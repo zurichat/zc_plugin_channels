@@ -227,11 +227,8 @@ class ChannelMessageViewset(ViewSet):
     )
     def message_pinned_update(self, request, org_id, msg_id):
         serializer = ChannelMessageUpdateSerializer(data=request.data)
-        # print('serializer',serializer)
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("message")
-        # print(serializer.data)
-        # print(payload)
         payload.update({"pinned": True})
         result = Request.put(org_id, "channelmessage", payload, object_id=msg_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
@@ -239,17 +236,41 @@ class ChannelMessageViewset(ViewSet):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response(
+                "Response", ChannelMessageUpdateSerializer(many=True)
+            ),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        }
+    )
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def message_pinned_all(self, request, org_id, channel_id):
+        data = {"channel_id": channel_id}
+        data.update(dict(request.query_params))
+        result = Request.get(org_id, "channelmessage", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        pinned_list = []
+        for index in result:  
+            for key, value in index.items():
+                if key == 'pinned' and value == True:
+                    pinned_list.append(index)
+        if isinstance(pinned_list, list):
+            status_code = status.HTTP_200_OK
+        return Response(pinned_list, status=status_code)
+        
+
 channelmessage_views = ChannelMessageViewset.as_view(
     {
         "get": "message_all",
         "post": "message",
+        "get":"message_pinned_all",
     }
 )
 
 channelmessage_views_group = ChannelMessageViewset.as_view(
-    {"get": "message_retrieve", "put": "message_update", "delete": "message_delete"}
-)
-
-channelmessage_views_pinned = ChannelMessageViewset.as_view(
-    {"put":"message_pinned_update"}
+    {"get": "message_retrieve", "put": "message_update", "delete": "message_delete","put":"message_pinned_update"}
 )
