@@ -91,3 +91,10 @@ class ChannelUpdateSerializer(serializers.Serializer):
 
 class SearchMessageQuerySerializer(serializers.Serializer):
     value = serializers.CharField(max_length=100)
+
+
+class UserChannelGetSerializer(serializers.Serializer):
+
+    _id = serializers.ReadOnlyField()
+    name = serializers.CharField(max_length=100, required=False)
+    description = serializers.CharField(required=False)
