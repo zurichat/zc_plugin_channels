@@ -99,7 +99,7 @@ class ChannelViewset(ViewSet):
         particular organization identified by ID
         splitted into channelmessage and thread objects.
         """
-        data = {"channel_id": channel_id, "has_files": "yes"}
+        data = {"channel_id": channel_id, "has_files": str(True)}
         data.update(dict(request.query_params))
         result = {}
         result_message = Request.get(org_id, "channelmessage", data) or []
