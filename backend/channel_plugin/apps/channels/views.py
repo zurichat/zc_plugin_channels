@@ -11,6 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from django.http.response import JsonResponse
+
 # from rest_framework.filters
 
 from channel_plugin.utils.customrequest import Request
@@ -22,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     UserSerializer,
+    UserChannelGetSerializer,
 )
 
 # Create your views here.
@@ -176,33 +178,41 @@ class ChannelViewset(ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", ChannelGetSerializer(many=True)),
+            200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
+            204: openapi.Response("User Does Not Belong To Any Channels"),
             404: openapi.Response("Error Response", ErrorSerializer),
         }
     )
     @action(methods=["GET"], detail=False)
     def user_channel_retrieve(self, request, org_id, user_id):
+
+        """
+
+        This gets a list of all channels that a user belongs to
+
+        """
         data = {}
         data.update(dict(request.query_params))
         response = Request.get(org_id, "channel", data) or []
-        status_code = status.HTTP_404_NOT_FOUND
-        if isinstance(response, list):
-            if response:
-                result = []
-                channel = {}
-                status_code = status.HTTP_204_NO_CONTENT
-                for i in len(response):
-                    b_response = response[i]
-                    if user_id in b_response['users']:
-                        channel["name"] = b_response["name"]
-                        channel["ID"] = b_response["_id"]
-                        channel["description"] = b_response["description"]
-                        result.append(channel)
-                        status_code = status.HTTP_200_OK
+        response = list(enumerate(response))
+        result = []
+        status_code = status.HTTP_204_NO_CONTENT
+        if response:
+            status_code = status.HTTP_200_OK
+            for i in response:
+                if user_id in i[1]["users"].keys():
+                    channel = {}
+                    channel["_id"] = i[1]["_id"]
+                    channel["name"] = i[1]["name"]
+                    channel["description"] = i[1]["description"]
+                    result.append(channel)
+                else:
+                    pass
+        else:
+            status_code = status.HTTP_404_NOT_FOUND
+
         return Response(result, status=status_code)
 
 
@@ -253,7 +263,7 @@ class ChannelMemberViewset(ViewSet):
             "__ends": "#",
             "__contains": "*",
             "__gt": ">",
-            "__lt": "<"
+            "__lt": "<",
         }
 
         params = dict(self.request.query_params)
@@ -268,7 +278,7 @@ class ChannelMemberViewset(ViewSet):
             try:
                 params[key] = json.loads(params.get(key)[0])
             except:
-                params[key] =  params.get(key)[0]
+                params[key] = params.get(key)[0]
 
             for chk in param_checkers:
                 if key.endswith(chk):
@@ -287,8 +297,7 @@ class ChannelMemberViewset(ViewSet):
 
         params = self.prepare_params()
         params = FilterWrapper.filter_params(
-            allowed=list(serializer().get_fields().keys()),
-            params=params
+            allowed=list(serializer().get_fields().keys()), params=params
         )
 
         output = FilterWrapper.filter_objects(data, params)
@@ -387,7 +396,7 @@ class ChannelMemberViewset(ViewSet):
                                 org_id=org_id,
                                 channel_id=channel_id,
                                 added_by="logged-in-user_id",
-                                added=output
+                                added=output,
                             )
                     return Response(data, status=status_code)
                 else:

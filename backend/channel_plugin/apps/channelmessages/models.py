@@ -20,7 +20,7 @@ class ChannelMessage:
     emojis: list = field(default_factory=list)
     # list of files
     files: list = field(default_factory=list)
-    has_files: str = "no"
+    has_files: bool = False
     pinned: bool = False
     edited: bool = False
     can_reply: bool = True
@@ -35,10 +35,10 @@ class ChannelMessage:
             "emojis": self.emojis,
             "has_files": self.has_files,
             "files": self.files,
-            "pinned": self.pinned,
-            "edited": self.edited,
+            "pinned": str(self.pinned),
+            "edited": str(self.edited),
             "type": self.type,
-            "can_reply": self.can_reply,
+            "can_reply": str(self.can_reply),
             "timestamp": self.timestamp,
         }
         response = Request.post(
