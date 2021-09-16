@@ -26,7 +26,7 @@ class Request:
         if params is not None and len(params) > 0:
             data = dict()
             for k, v in params.items():
-                data.update({k: v[0]})
+                data.update({k: v})
             url += f"?{urlencode(data)}"
         response = requests.get(url)
         if response.status_code >= 200 and response.status_code < 300:
@@ -70,6 +70,7 @@ class Request:
             data.update({"object_id": object_id})
 
         response = requests.put(write, data=json.dumps(data))
+        print(response)
         if response.status_code >= 200 and response.status_code < 300:
             if not bulk_write:
                 tmp = {"_id": object_id}
