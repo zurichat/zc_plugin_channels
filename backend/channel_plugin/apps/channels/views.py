@@ -250,7 +250,7 @@ class ChannelMemberViewset(ViewSet):
         This method retrieves a channel's data
         from zc-core
         """
-        data = {"_id": channel_id}
+        data = {"_id": [channel_id]}
         result = Request.get(org_id, "channel", data) or {}
         if result.__contains__("_id") or isinstance(result, dict):
             if result:
