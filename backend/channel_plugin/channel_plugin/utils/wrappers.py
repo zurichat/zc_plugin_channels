@@ -1,8 +1,5 @@
 from dataclasses import dataclass
 
-from django.core.exceptions import NON_FIELD_ERRORS
-
-
 @dataclass
 class OrderingWrapper:
     pass

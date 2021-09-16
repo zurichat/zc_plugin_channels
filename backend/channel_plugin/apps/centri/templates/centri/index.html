@@ -173,14 +173,6 @@
                 {
                   if  (xhr.status >= 200 & xhr.status <300)
                   {
-                    
-                    let socketName = await getChannelSocketName(channel['id']);
-                    if (socketName)
-                    {
-                      //subscribe user to channels socket
-                      await subscribeUserToChannelSocket(socketName);
-                    }
-
                     return true;
                   } else {
                     console.log(xhr.responseText);
@@ -220,15 +212,9 @@
                 if (socketId) {
                   subscribeUserToChannelSocket(socketId);
                 }
-
-                subscribed++;
                 
-                if (subscribed == joinedChannels.length){
-                  centrifuge.connect();
-                } 
-
+                subscribed++;
               });
-
 
               publicChannels.forEach(async channel => {
                 let socketId = await getChannelSocketName(channel["id"]);
@@ -239,7 +225,7 @@
 
                 subscribed++;
                 
-                if (subscribed == joinedChannels.length){
+                if (subscribed == publicChannels.length + joinedChannels.length){
                   centrifuge.connect();
                 } 
 
@@ -277,9 +263,9 @@
                   </label>
                   <textarea name="" id="channel-detail" cols="50" rows="10">
                     {
-                    "_id": "kido77",
+                    "_id": "sdhjshdjshdjkh",
                     "role": "300",
-                    "is_admin": false
+                    "is_admin": true
                     }
                   </textarea>
                   <br/>
