@@ -15,10 +15,10 @@ const MessageCard = ({ name, time, message, icon, isThread }) => {
       <Box textAlign="left">
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="15px">
           <Box>
-            <Avatar name="Dan Abrahmov" src={icon} />
+            <Avatar name="Dan Abrahmov" size="sm" borderRadius="4px" src={icon} />
           </Box>
           <Flex flexDir="column" gridGap="5px">
-            <Flex flexWrap="nowrap" flexDir="row" gridGap="10px">
+            <Flex flexWrap="nowrap" fontSize={["12px", "15px"]} flexDir="row" gridGap="10px">
               <Text fontSize="15px" fontWeight="bold">
                 {name}
               </Text>
@@ -27,28 +27,37 @@ const MessageCard = ({ name, time, message, icon, isThread }) => {
               </Text>
             </Flex>
             <Box m="0px">
-              <Text pr="40px">{message}</Text>
+              <Text pr="40px" fontSize={["12px", "15px"]}>{message}</Text>
             </Box>
             {isThread && (
               <Flex
-                p="15px"
+                p={["2px","15px"]}
                 flexDirection="row"
-                gridGap="15px"
+                gridGap={["10px","15px"]}
                 alignItems="center"
               >
-                <AvatarGroup>
+                <AvatarGroup gridGap="10px">
                   {replies.map((reply) => {
                     return (
                       <Avatar
-                        size="sm"
+                        size="xs"
+                        // width="20px"
+                        // height="20px"
                         name={reply.name}
                         src={reply.profilePic}
+                        borderRadius="5px"
                       />
                     );
                   })}
                 </AvatarGroup>
                 <Link fontSize={["8px", "16px"]} color="#0562ED">20 Replies</Link>
-                <Text fontSize={["8px", "16px"]} color="#8B8B8B">Last reply 2 hours ago</Text>
+                <Text 
+                css={{
+                    "@media (max-width: 400px)": {
+                        display: "none",
+                    }
+                }}
+                fontSize={["8px", "16px"]} color="#8B8B8B">Last reply 2 hours ago</Text>
               </Flex>
             )}
           </Flex>
