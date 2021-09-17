@@ -11,9 +11,26 @@ import {
     ModalFooter,
     Text,
 } from "@chakra-ui/react";
+import appActions from "../../../../redux/actions/app";
 
 
-const ArchiveChannelModal = ({isOpen, onClose}) => {
+const ArchiveChannelModal = ({ isOpen, onClose }) => {
+    
+    // Archive a channel
+    const archiveChannel = () => {
+        const { _alert } = appActions;
+        // close the modal first
+        onClose()
+        
+        // code to archive the channel with Id from props
+        try {
+            // code here ...
+            _alert("success", "Channel successfully archived")
+        } catch (err) {
+            _alert("error", "An error occcured! Channel was not archived")
+        }
+    }
+
     return(
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalOverlay />
@@ -30,7 +47,7 @@ const ArchiveChannelModal = ({isOpen, onClose}) => {
                         <Button onClick={onClose} borderRadius="3px" bg="transparent" border="1px #000000 solid" px="3.28rem" py="12px">
                             Cancel
                         </Button>
-                        <Button onClick={onClose} borderRadius="3px" bg="#00B87C" color="#ffffff" px="3.28rem" py="12px">
+                        <Button onClick={archiveChannel} borderRadius="3px" bg="#00B87C" color="#ffffff" px="3.28rem" py="12px">
                             Done
                         </Button>
                     </HStack>
