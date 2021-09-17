@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const baseURL = "channels.zuri.chat/api/v1";
+const baseURL = "https://channels.zuri.chat/api/v1";
 
 const defaultConfig = {
   baseURL,
   timeout: 60000,
   headers: {
     "Content-type": "application/json",
-    "Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Origin": "*",
   },
 };
 
@@ -21,7 +21,6 @@ api.interceptors.request.use(
   },
   (err) => Promise.reject(err)
 );
-
 class APIServices {
   // @desc End Point Example
   async getUsers(data) {
@@ -37,15 +36,22 @@ class APIServices {
   }
 
   async deleteMessage(org_id, msg_id) {
-    return api.delete(`/channels​/messages​/${org_id}​/${msg_id}​/delete​`);
+    return api.delete(
+      `/channels​/messages​/${org_id}​/${msg_id}​/delete​`
+    );
   }
 
   async retrieveMessage(org_id, msg_id) {
-    return api.get(`/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`);
+    return api.get(
+      `/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`
+    );
   }
 
   async updateMessage(org_id, msg_id, data) {
-    return api.put(`/channels​/messages​/${org_id}​/${msg_id}​/update`, data);
+    return api.put(
+      `/channels​/messages​/${org_id}​/${msg_id}​/update`,
+      data
+    );
   }
 
   async createRole(org_id, channel_id, data) {
@@ -77,9 +83,7 @@ class APIServices {
   }
 
   async deleteThread(org_id, channelmessage_id) {
-    return api.delete(
-      `/channels/threads/${org_id}/${channelmessage_id}/delete`
-    );
+    return api.delete(`/channels/threads/${org_id}/${channelmessage_id}/delete`);
   }
 
   async updateThread(org_id, channelmessage_id, data) {
@@ -94,7 +98,7 @@ class APIServices {
   }
 
   async getChannels(org_id) {
-    return api.get(`/channels/${org_id}/all`);
+    return api.get(`/${org_id}/channels/`);
   }
 
   async deleteChannel(org_id, channel_id) {
@@ -106,11 +110,11 @@ class APIServices {
   }
 
   async updateChannel(org_id, channel_id, data) {
-    return api.put(`/channels/${org_id}/${channel_id}/update`, data);
+    return api.put(`/${org_id}/channels/${channel_id}/update`, data);
   }
 
-  async channelDetail(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}`);
+  async archiveChannel(org_id, channel_id) {
+    return api.put(`/${org_id}/channels/${channel_id}?archived=True`)
   }
 }
 

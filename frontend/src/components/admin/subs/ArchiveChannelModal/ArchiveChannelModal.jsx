@@ -12,22 +12,32 @@ import {
     Text,
 } from "@chakra-ui/react";
 import appActions from "../../../../redux/actions/app";
+import APIService from "../../../../utils/api";
 
 
 const ArchiveChannelModal = ({ isOpen, onClose }) => {
     
     // Archive a channel
-    const archiveChannel = () => {
+    const archiveChannel = async () => {
         const { _alert } = appActions;
         // close the modal first
         onClose()
         
+        const orgId = 1
+        const channelId = "613f70bd6173056af01b4aba"
+        const data = {
+            archived: true
+        }
         // code to archive the channel with Id from props
         try {
             // code here ...
+            let response = await APIService.getChannels(orgId)
+            console.log({ response })
+            response = await APIService.archiveChannel(orgId, channelId)
+            console.log({ response })
             _alert("success", "Channel successfully archived")
         } catch (err) {
-            _alert("error", "An error occcured! Channel was not archived")
+            _alert("error")
         }
     }
 
