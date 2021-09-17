@@ -111,3 +111,8 @@ class UserChannelGetSerializer(serializers.Serializer):
     _id = serializers.ReadOnlyField()
     name = serializers.CharField(max_length=100, required=False)
     description = serializers.CharField(required=False)
+
+
+class SocketSerializer(serializers.Serializer):
+    socket_name = serializers.CharField(max_length=200, required=True) 
+    channel_id = serializers.CharField(max_length=30, required=True)
