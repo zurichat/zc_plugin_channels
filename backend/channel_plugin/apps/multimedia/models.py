@@ -6,28 +6,21 @@ from channel_plugin.utils.customrequest import Request
 
 
 @dataclass
-class Thread:
+class Media:
     user_id: str
     channel_id: str
-    channelmessage_id: str
-    content: str = ""
-    emojis: list = field(default_factory=list)
-    # list of files
+    message_id: str
+    type: str = "channelmessage"
     files: list = field(default_factory=list)
-    has_files: str = "no"
-    edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
     def create(self, organization_id):
         payload = {
             "user_id": self.user_id,
-            "channelmessage_id": self.channelmessage_id,
+            "message_id": self.message_id,
             "channel_id": self.channel_id,
-            "content": self.content,
+            "type": self.type,
             "files": self.files,
-            "has_files": self.has_files,
-            "emojis": self.emojis,
-            "edited": str(self.edited),
             "timestamp": self.timestamp,
         }
         response = Request.post(
@@ -36,4 +29,4 @@ class Thread:
         return response
 
     def __str__(self):
-        return self.content
+        return self.message_id

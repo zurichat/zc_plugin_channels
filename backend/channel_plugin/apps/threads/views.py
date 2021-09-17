@@ -121,7 +121,7 @@ class ThreadViewset(ViewSet):
         serializer = ThreadUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("thread")
-        payload.update({"edited": True})
+        payload.update({"edited": str(True)})
         result = Request.put(org_id, "thread", payload, object_id=thread_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
