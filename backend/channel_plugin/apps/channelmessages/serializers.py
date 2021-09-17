@@ -15,7 +15,7 @@ class ChannelMessageSerializer(serializers.Serializer):
     timestamp = serializers.DateTimeField(read_only=True)
 
     def validate(self, attrs):
-        if bool(attrs.get("content")) and bool(attrs.get("files")):
+        if not bool(attrs.get("content")) and not bool(attrs.get("files")):
             raise serializers.ValidationError(
                 {"error": "Both content & files cannot be none"}
             )
