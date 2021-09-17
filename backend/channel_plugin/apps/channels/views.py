@@ -22,6 +22,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelGetSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
+    SocketSerializer,
     UserSerializer,
     UserChannelGetSerializer,
 )
@@ -214,6 +215,35 @@ class ChannelViewset(ViewSet):
             status_code = status.HTTP_404_NOT_FOUND
 
         return Response(result, status=status_code)
+    
+    @swagger_auto_schema(
+        responses={200: openapi.Response("Response", SocketSerializer())},
+        operation_id="get-channel's-socket-name",
+    )
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def get_channel_socket_name(self, request, org_id, channel_id):
+
+        channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
+
+        if channel:
+            name = build_room_name(org_id, channel["_id"])
+            
+            data = {
+                'socket_name': build_room_name(org_id, channel["_id"]),
+                'channel_id': channel_id
+            }
+
+            serializer = SocketSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse(
+                {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+    
 
 
 channel_list_create_view = ChannelViewset.as_view(
@@ -239,6 +269,10 @@ user_channel_list = ChannelViewset.as_view(
     }
 )
 
+channel_socket_view = ChannelViewset.as_view(
+    {"get": "get_channel_socket_name"}
+)
+
 
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):
@@ -250,7 +284,7 @@ class ChannelMemberViewset(ViewSet):
         This method retrieves a channel's data
         from zc-core
         """
-        data = {"_id": [channel_id]}
+        data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
         if result.__contains__("_id") or isinstance(result, dict):
             if result:
@@ -325,9 +359,9 @@ class ChannelMemberViewset(ViewSet):
 
         if channel:
 
-            # "check if the user is aleady a member of the channel"
             output = None
 
+            # if multiple users are been added
             if isinstance(request.data, list):
                 serializer = UserSerializer(data=request.data, many=True)
                 serializer.is_valid(raise_exception=True)
@@ -347,8 +381,6 @@ class ChannelMemberViewset(ViewSet):
                 user_data = channel["users"].get(user_id)
 
                 if not user_data:
-                    # add the add the user to the channel
-
                     serializer = UserSerializer(data=request.data)
                     serializer.is_valid(raise_exception=True)
                     user_data = serializer.data
@@ -370,37 +402,32 @@ class ChannelMemberViewset(ViewSet):
                 org_id, "channel", payload=payload, object_id=channel_id
             )
 
-            if result:
-                if isinstance(result, dict):
-                    data = output if not result.get("error") else result
-                    status_code = (
-                        status.HTTP_201_CREATED
-                        if not result.get("error")
-                        else status.HTTP_400_BAD_REQUEST
-                    )
-                    if not result.get("error"):
-                        if isinstance(output, dict):
-                            # when only one user is added
-                            request_finished.send(
-                                sender=self.__class__,
-                                dispatch_uid="JoinedChannelSignal",
-                                org_id=org_id,
-                                channel_id=channel_id,
-                                user_id=output["_id"]
-                            )
-                        else:
-                            # when output is a list multiple users where added
-                            request_finished.send(
-                                sender=self.__class__,
-                                dispatch_uid="JoinedChannelSignal",
-                                org_id=org_id,
-                                channel_id=channel_id,
-                                added_by="logged-in-user_id",
-                                added=output,
-                            )
-                    return Response(data, status=status_code)
+            if isinstance(result, dict):
+                if not result.get("error"):                    
+                    if isinstance(output, dict):
+                        # when only one user is added
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="JoinedChannelSignal",
+                            org_id=org_id,
+                            channel_id=channel_id,
+                            user_id=output["_id"]
+                        )
+                    else:
+                        # when output is a list multiple users where added
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="JoinedChannelSignal",
+                            org_id=org_id,
+                            channel_id=channel_id,
+                            added_by="logged-in-user_id",
+                            added=output,
+                        )
+                    return Response(output, status=status.HTTP_201_CREATED)
                 else:
-                    return Response(result, status=result.status_code)
+                    return Response(result.get("error"), status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(result, status=result.status_code)
         return Response(
             {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
@@ -456,7 +483,7 @@ class ChannelMemberViewset(ViewSet):
         Method adds a user to a channel
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
-
+        
         if channel:
 
             # checks if the user is a member of the channel
@@ -591,6 +618,7 @@ class ChannelMemberViewset(ViewSet):
         )
 
 
+
 channel_members_list_create_views = ChannelMemberViewset.as_view(
     {
         "get": "list_members",
@@ -602,18 +630,6 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
 
-
-def get_channel_socket_name(request, org_id, channel_id):
-
-    channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
-
-    if channel:
-        name = build_room_name(org_id, channel["_id"])
-        return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
-    else:
-        return JsonResponse(
-            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
-        )
 
 
 # class SearchMessagesAPIView(APIView):

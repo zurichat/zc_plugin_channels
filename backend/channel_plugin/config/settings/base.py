@@ -55,6 +55,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
+    # "corsheaders",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -73,7 +74,7 @@ THIRD_PARTY_APPS = [
     # "django_celery_beat",
     "rest_framework",
     # "rest_framework.authtoken",
-    "corsheaders",
+    #"corsheaders",
     "drf_yasg",
 ]
 
@@ -124,12 +125,13 @@ AUTH_PASSWORD_VALIDATORS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    #"corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    #"channel_plugin.utils.middleware.CorsMiddleware",
     "channel_plugin.utils.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
@@ -334,3 +336,17 @@ except:  # noqa
     CENTRIFUGO_API_KEY = ""
 
 CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
+
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.zuri\.chat$",
+    r"^http://localhost:\d+",
+    r"^http://127.0.0.1:\d+"
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
