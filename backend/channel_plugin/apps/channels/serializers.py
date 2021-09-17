@@ -19,7 +19,7 @@ class ChannelSerializer(serializers.Serializer):
         """
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
-        if isinstance(response, list)(response):
+        if isinstance(response, list):
             raise serializers.ValidationError({"error": "Name already exist"})
         return name
 
