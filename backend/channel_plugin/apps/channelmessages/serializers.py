@@ -51,15 +51,14 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
         serializers.CharField(), allow_empty=True, required=False
     )
 
-    def validate(self, attrs):
-        if bool(attrs.get("content")) or bool(attrs.get("files")):
-            raise serializers.ValidationError(
-                {"error": "Both content & files cannot be none"}
-            )
-        return super().validate(attrs)
-
     def to_representation(self, instance):
         instance = dict(instance)
 
         data = {"message": instance}
         return data
+
+    def validate_pinned(self, pinned):
+        
+        if pinned:
+            return "True"
+        return "False"

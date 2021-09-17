@@ -78,7 +78,7 @@
         {
             "create-message": [
                 {
-                    "type":"chat",
+                    "type":"message",
                     "data": {
                         "action": "CREATE",
                         "data": 

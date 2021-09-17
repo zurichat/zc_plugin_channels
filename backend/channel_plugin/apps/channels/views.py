@@ -11,6 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from django.http.response import JsonResponse
+
 # from rest_framework.filters
 
 from channel_plugin.utils.customrequest import Request
@@ -22,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     UserSerializer,
+    UserChannelGetSerializer,
 )
 
 # Create your views here.
@@ -96,7 +98,7 @@ class ChannelViewset(ViewSet):
         particular organization identified by ID
         splitted into channelmessage and thread objects.
         """
-        data = {"channel_id": channel_id, "has_files": "yes"}
+        data = {"channel_id": channel_id, "has_files": str(True)}
         data.update(dict(request.query_params))
         result = {}
         result_message = Request.get(org_id, "channelmessage", data) or []
@@ -176,6 +178,43 @@ class ChannelViewset(ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
+            204: openapi.Response("User Does Not Belong To Any Channels"),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        }
+    )
+    @action(methods=["GET"], detail=False)
+    def user_channel_retrieve(self, request, org_id, user_id):
+
+        """
+
+        This gets a list of all channels that a user belongs to
+
+        """
+        data = {}
+        data.update(dict(request.query_params))
+        response = Request.get(org_id, "channel", data) or []
+        response = list(enumerate(response))
+        result = []
+        status_code = status.HTTP_204_NO_CONTENT
+        if response:
+            status_code = status.HTTP_200_OK
+            for i in response:
+                if user_id in i[1]["users"].keys():
+                    channel = {}
+                    channel["_id"] = i[1]["_id"]
+                    channel["name"] = i[1]["name"]
+                    channel["description"] = i[1]["description"]
+                    result.append(channel)
+                else:
+                    pass
+        else:
+            status_code = status.HTTP_404_NOT_FOUND
+
+        return Response(result, status=status_code)
+
 
 channel_list_create_view = ChannelViewset.as_view(
     {
@@ -194,6 +233,12 @@ channel_media_all_view = ChannelViewset.as_view(
     }
 )
 
+user_channel_list = ChannelViewset.as_view(
+    {
+        "get": "user_channel_retrieve",
+    }
+)
+
 
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):
@@ -205,12 +250,12 @@ class ChannelMemberViewset(ViewSet):
         This method retrieves a channel's data
         from zc-core
         """
-        data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data)
-
-        if result:
-
-            return result if isinstance(result, dict) else None
+        data = {"_id": [channel_id]}
+        result = Request.get(org_id, "channel", data) or {}
+        if result.__contains__("_id") or isinstance(result, dict):
+            if result:
+                return result
+        return None
 
     def prepare_params(self):
         param_checkers = {
@@ -218,11 +263,11 @@ class ChannelMemberViewset(ViewSet):
             "__ends": "#",
             "__contains": "*",
             "__gt": ">",
-            "__lt": "<"
+            "__lt": "<",
         }
-        
+
         params = dict(self.request.query_params)
-        
+
         """
             Note if your planing to use the filterwrapper class
             you have to convert the values of your query_parameter
@@ -233,12 +278,12 @@ class ChannelMemberViewset(ViewSet):
             try:
                 params[key] = json.loads(params.get(key)[0])
             except:
-                params[key] =  params.get(key)[0]
+                params[key] = params.get(key)[0]
 
-            for chk in param_checkers: 
+            for chk in param_checkers:
                 if key.endswith(chk):
                     p = param_checkers[chk] + key.replace(chk, "")
-                    
+
                     try:
                         params[p] = json.loads(params.get(key))
                     except:
@@ -252,8 +297,7 @@ class ChannelMemberViewset(ViewSet):
 
         params = self.prepare_params()
         params = FilterWrapper.filter_params(
-            allowed=list(serializer().get_fields().keys()),
-            params=params
+            allowed=list(serializer().get_fields().keys()), params=params
         )
 
         output = FilterWrapper.filter_objects(data, params)
@@ -285,8 +329,6 @@ class ChannelMemberViewset(ViewSet):
             output = None
 
             if isinstance(request.data, list):
-                # user_id = request.data.get("_id")
-                # user_data = channel["users"].get(user_id)
                 serializer = UserSerializer(data=request.data, many=True)
                 serializer.is_valid(raise_exception=True)
                 user_list = serializer.initial_data
@@ -319,7 +361,7 @@ class ChannelMemberViewset(ViewSet):
                     return Response(user_data, status=status.HTTP_200_OK)
 
             # remove channel ID to avoid changing it
-            channel.pop("_id", None)
+            channel_id = channel.pop("_id", None)
 
             # only update user dict
             payload = {"users": channel["users"]}
@@ -343,8 +385,8 @@ class ChannelMemberViewset(ViewSet):
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["name"],
-                                user_id=output["_id"],
+                                channel_id=channel_id,
+                                user_id=output["_id"]
                             )
                         else:
                             # when output is a list multiple users where added
@@ -352,8 +394,8 @@ class ChannelMemberViewset(ViewSet):
                                 sender=self.__class__,
                                 dispatch_uid="JoinedChannelSignal",
                                 org_id=org_id,
-                                channel_name=channel["name"],
-                                added_by="active-duser_id-gotten",
+                                channel_id=channel_id,
+                                added_by="logged-in-user_id",
                                 added=output,
                             )
                     return Response(data, status=status_code)
@@ -417,11 +459,10 @@ class ChannelMemberViewset(ViewSet):
 
         if channel:
 
-            # check if the user is aleady a member of the channel
+            # checks if the user is a member of the channel
             user_data = channel["users"].get(member_id)
 
             if user_data:
-                # add the user to the channel
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -514,7 +555,7 @@ class ChannelMemberViewset(ViewSet):
                 del channel["users"][member_id]
 
                 # send signal to centri app to left message centrifugo
-                channel.pop("_id", None)
+                channel_id = channel.pop("_id", None)
 
                 payload = {"users": channel["users"]}
 
@@ -531,7 +572,7 @@ class ChannelMemberViewset(ViewSet):
                             sender=self.__class__,
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
-                            channel_name=channel["name"],
+                            channel_id=channel_id,
                             user_id=user_data["_id"],
                         )
 
@@ -567,7 +608,7 @@ def get_channel_socket_name(request, org_id, channel_id):
     channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
     if channel:
-        name = build_room_name(org_id, channel["name"])
+        name = build_room_name(org_id, channel["_id"])
         return JsonResponse({"socket_name": name}, status=status.HTTP_200_OK)
     else:
         return JsonResponse(
