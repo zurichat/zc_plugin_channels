@@ -29,6 +29,7 @@ const MessageBoardIndex = () => {
       <Flex>
         <Box width="85vw">
         <ChannelHeader />
+        <PinAndBookmarkDisplay />
         <Box m="5px" bg="white" overflowY="scroll" height={["75vh","75vh", "80vh", "72vh"]}
         css={{
         "&::-webkit-scrollbar": {
