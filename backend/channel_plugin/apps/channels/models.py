@@ -30,8 +30,8 @@ class Channel:
             "slug": self.slug,
             "owner": self.owner,
             "description": self.description,
-            "private": self.private,
-            "archived": self.archived,
+            "private": str(self.private),
+            "archived": str(self.archived),
             "users": self.users,
             "created_on": self.created_on,
             "allow_members_input": self.allow_members_input
