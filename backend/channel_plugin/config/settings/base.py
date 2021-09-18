@@ -74,7 +74,7 @@ THIRD_PARTY_APPS = [
     # "django_celery_beat",
     "rest_framework",
     # "rest_framework.authtoken",
-    #"corsheaders",
+    "corsheaders",
     "drf_yasg",
 ]
 
@@ -123,10 +123,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     #"channel_plugin.utils.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    #"corsheaders.middleware.CorsMiddleware",
+    
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -313,6 +314,15 @@ REST_FRAMEWORK = {
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
+CORS_ALLOW_METHODS = [
+'DELETE',
+'GET',
+'OPTIONS',
+'PATCH',
+'POST',
+'PUT',
+]
+CORS_ALLOW_ALL_ORIGINS =True
 # Your stuff...
 # ------------------------------------------------------------------------------
 TEAM_NAME = "Team Coelho"
