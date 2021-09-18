@@ -7,11 +7,7 @@ const defaultConfig = {
   timeout: 60000,
   headers: {
     "Content-type": "application/json",
-<<<<<<< HEAD
-    // "Access-Control-Allow-Origin": "*"
-=======
     // "Access-Control-Allow-Origin": "*",
->>>>>>> 790a3a1d74e343fce58c5dfaae703d6f16a7c1eb
   },
 };
 
