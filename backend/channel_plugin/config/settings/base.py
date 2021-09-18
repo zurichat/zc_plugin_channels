@@ -73,7 +73,7 @@ THIRD_PARTY_APPS = [
     # "django_celery_beat",
     "rest_framework",
     # "rest_framework.authtoken",
-    "corsheaders",
+    #"corsheaders",
     "drf_yasg",
 ]
 
@@ -123,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    #"corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
