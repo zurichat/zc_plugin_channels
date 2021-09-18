@@ -60,8 +60,8 @@ const ChannelHeader = () => {
           <Spacer/>
             <Button variant='outline' bgColor='#ffffff' size='sm' width="85%" borderRadius='4px'  height='33px' mr='0.5%'>
                 <AvatarGroup ml='1px' size="sm" max={3} spacing='-2' >
-                  {avatars.map((avatar) => {
-                    return <Avatar borderRadius="5px" borderWidth='2px' borderColor='#ffffff' height='31px' width='31px' name={avatar.name} src={avatar.avi} />;
+                  {avatars.map((avatar, index) => {
+                    return <Avatar key={`ch-hd-${index}`} borderRadius="5px" borderWidth='2px' borderColor='#ffffff' height='31px' width='31px' name={avatar.name} src={avatar.avi} />;
                   })}
                 </AvatarGroup>
                 <Box as="span" fontWeight='medium' mr='8px' ml='5px'>{numberOfMembers}</Box>
@@ -86,7 +86,7 @@ const ChannelHeader = () => {
                 Announcements
               </Box>
             </Flex>
-            <Box as='span' fontsize='12px'  fontWeight='400' ml='2%' color='#ffffff'>{numberOfMembers} members</Box>
+            <Box as='span' fontSize='12px'  fontWeight='400' ml='2%' color='#ffffff'>{numberOfMembers} members</Box>
           </Flex> 
           <Spacer /> 
           <Flex p="4" align='center'>
