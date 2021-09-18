@@ -7,9 +7,6 @@ import {
   Text,
   Divider,
   Container,
-  Modal,
-  ModalContent,
-  ModalOverlay,
 } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
@@ -182,45 +179,126 @@ const OnClickUserProfile = ({ showProfile }) => {
                   UI/UX Designer
                 </Text>
 
-                <Text
-                  pl="2rem"
-                  alignSelf="left"
-                  fontSize="11px"
-                  pt="28px"
-                  color="#828282"
-                  fontWeight="700"
-                >
-                  Local Time
-                </Text>
-                <Text
-                  pl="2rem"
-                  alignSelf="left"
-                  fontWeight="700"
-                  fontSize="13px"
-                  color="black"
-                >
-                  08012345678
-                </Text>
+                <Box pos="relative" left="0.5rem" top="-15.5rem">
+                  <Box
+                    display="flex"
+                    transform="scale(0.8)"
+                    pos="absolute"
+                    top="19.8rem"
+                    left="3rem"
+                    flexDir="column"
+                  >
+                    <IconButton
+                      pos="relative"
+                      left={2}
+                      icon={<BiMessageRoundedDetail />}
+                      background="#F0FDF9"
+                      width="40px"
+                      height="40px"
+                      borderRadius="12px"
+                      _hover="none"
+                    />
+                    <Text pos="relative" left={2}>
+                      Message
+                    </Text>
+                  </Box>
 
-                <Text
-                  pl="2rem"
-                  alignSelf="left"
-                  fontSize="11px"
-                  pt="28px"
-                  color="#828282"
-                  fontWeight="700"
+                  <Box
+                    pos="absolute"
+                    transform="scale(0.8)"
+                    top="19.8rem"
+                    left="9rem"
+                    display="flex"
+                    flexDir="column"
+                  >
+                    <IconButton
+                      pos="relative"
+                      left={-7}
+                      icon={<FiPhoneCall />}
+                      background="#F0FDF9"
+                      width="40px"
+                      height="40px"
+                      borderRadius="12px"
+                      ml="24px"
+                      _hover="none"
+                    />
+                    <Text pos="relative" left={3}>
+                      Call
+                    </Text>
+                  </Box>
+
+                  <Box
+                    pos="absolute"
+                    justifyContent="center"
+                    transform="scale(0.8)"
+                    top="19.8rem"
+                    left="15rem"
+                    display="flex"
+                    flexDir="column"
+                  >
+                    <IconButton
+                      pos="relative"
+                      left={-10}
+                      icon={<CgMore />}
+                      background="#F0FDF9"
+                      width="40px"
+                      height="40px"
+                      borderRadius="12px"
+                      ml="24px"
+                      onClick={() => setShowMoreModal(true)}
+                    />
+                    <Text pos="relative" left={-2}>
+                      More
+                    </Text>
+                  </Box>
+                </Box>
+
+                <Box
+                  pos="absolute"
+                  left="-.99rem"
+                  top="24rem"
+                  transform="scale(0.84)"
                 >
-                  Email
-                </Text>
-                <Text
-                  pl="2rem"
-                  alignSelf="left"
-                  fontWeight="900"
-                  fontSize="13px"
-                  color="#1264A3"
-                >
-                  adeekoEmmanuel@gmail.com
-                </Text>
+                  <Text
+                    pl="2rem"
+                    alignSelf="left"
+                    fontSize="11px"
+                    pt="8px"
+                    color="#828282"
+                    fontWeight="700"
+                  >
+                    Display Name
+                  </Text>
+                  <Text
+                    pl="2rem"
+                    alignSelf="left"
+                    fontWeight="700"
+                    fontSize="13px"
+                    color="black"
+                  >
+                    UI/UX Designer
+                  </Text>
+
+                  <Text
+                    pl="2rem"
+                    alignSelf="left"
+                    fontSize="11px"
+                    pt="28px"
+                    color="#828282"
+                    fontWeight="700"
+                  >
+                    Email
+                  </Text>
+                  <Text
+                    pl="2rem"
+                    alignSelf="left"
+                    fontWeight="900"
+                    fontSize="13px"
+                    color="#1264A3"
+                  >
+                    adeekoEmmanuel@gmail.com
+                  </Text>
+                </Box>
               </Box>
             </Stack>
           </Box>

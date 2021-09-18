@@ -6,7 +6,7 @@ import {
   Image,
   Input,
   InputGroup,
-  InputRightElement,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import { BiSearch } from "react-icons/bi";
 import {BsPersonPlus}  from "react-icons/bs";
@@ -19,26 +19,22 @@ const OrganisationMembersList = () => {
             {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
             {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
             {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
-            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
-            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
-            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
-            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
-            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' }
+          
       ]
 
-      let MembersElements = MembersList.map( member => { 
+      let MembersElement = MembersList.map( member => { 
             return <Box>
                   {/* members list container */}
                         <Box display='flex'  pos='relative' left='-2.8em'>
                               {/* members list image avatar */}
                               <Image src={googleImage} 
-                                    borderRadius='50%' h='35px' w='36px' 
+                                    borderRadius='3px' h='29px' w='36px' 
                                     alignItems='flex-start'  alt='' />
                                     {/* members list active/non active indicator */}
-                              <Box borderRadius='50%' ml='-.8rem' mt='1.9rem' w='.7em' h='.7em' 
-                                    borderColor='white' borderWidth='.141rem' bg='gray'></Box>
+                              <Box borderRadius='50%' ml='-.5rem' mt='1.5rem' w='.7em' h='.7em' 
+                                    borderColor='white' borderWidth='.141rem' bg='#00B87C'></Box>
                                     {/* display name (first name and full name) */}
-                              <Text display='flex' position='relative' color='black' ml='16px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>{member.FirstName} |  
+                              <Text display='flex' position='relative' color='black' ml='16px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>{member.FirstName}   
                               <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>{member.FullName}</Text></Text>
                         </Box>
                         {/* members stack */}
@@ -48,6 +44,30 @@ const OrganisationMembersList = () => {
                         </Text>
                   </Box>
             
+      })
+
+
+      let ActiveMembersElement = MembersList.map (member => {
+            return <Box>
+                              {/* members list container */}
+                              <Box display='flex'  pos='relative' left='-2.8em'>
+                              {/* members list image avatar */}
+                              <Image src={googleImage} 
+                                    borderRadius='3px' h='29px' w='36px' 
+                                    alignItems='flex-start'  alt='' />
+                                    {/* members list active/non active indicator */}
+                              <Box borderRadius='50%' ml='-.5rem' mt='1.5rem' w='.7em' h='.7em' 
+                                    borderColor='white' borderWidth='.141rem' bg='gray'></Box>
+                                    {/* display name (first name and full name) */}
+                              <Text display='flex' position='relative' color='black' ml='16px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>{member.FirstName}   
+                              <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>{member.FullName}</Text></Text>
+                        </Box>
+                        {/* members stack */}
+                        <Text left='-2.9em' position='relative' 
+                              color='gray'  paddingLeft='40px'  top='-.98rem' ml='5.5px' mt='.1rem'
+                              fontWeight='normal' fontSize='.8rem'>{member.stack}
+                        </Text>
+                  </Box>
       })
       
 
@@ -63,10 +83,10 @@ const OrganisationMembersList = () => {
         color='black'  > 
         {/* input feild */}
         <InputGroup size="md" w='38rem' ml='27px' mt='14px'>
-                  <Input _focus='none'  pr="4.5rem"placeholder="Find Member"/>
-                  <InputRightElement width="4.5rem" bgColor='none'>
-                  <IconButton ml='2rem' background='none' _hover='none' icon={<BiSearch  />} />
-                  </InputRightElement>
+                  <Input _focus='none'  pr="4.5rem"placeholder="Find Members"/>
+                  <InputLeftElement width="4.5rem" bgColor='none'>
+                  <IconButton ml='-2rem' background='none' _hover='none' icon={<BiSearch  />} />
+                  </InputLeftElement>
       </InputGroup>
 
       {/* add member icon and text */}
@@ -76,16 +96,18 @@ const OrganisationMembersList = () => {
           pos="relative"
           direction={"row"}
           spacing="18px">
-              <IconButton bgColor='#00B87C' borderRadius='50%' _hover='none' color='white' background='white' icon={ <BsPersonPlus  color='white' />} />
-                <Text color="black" fontSize='.98rem' pos='relative' left='-.6rem' cursor='pointer' top='.32rem' ml="1px" mt="2rem" mb='0px' fontWeight="bold">
-                        Add Members
+              <IconButton bgColor='#E1FDF4' transform="scale(1)" borderRadius='4px' _hover='none'  icon={ <BsPersonPlus  color='#00B87C' />} />
+                <Text color="black" fontSize='1.2rem' pos='relative' left='-.6rem' cursor='pointer' top='.32rem' ml="1px" mt="2rem" mb='0px' fontWeight="bold">
+                        Add People
                   </Text>
       </Stack>
 
            {/* stack of members list  */}
             <Stack mt='1.5rem' ml='4.5rem' pos='relative'   direction={'column'}  spacing='18px'  >
             <Stack direction={'column'} spacing='0'>
-                        {MembersElements}
+                        {MembersElement}
+                        {ActiveMembersElement}
+                        {MembersElement}
             </Stack> 
             </Stack>
 
