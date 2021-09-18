@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const baseURL = "channels.zuri.chat/api/v1";
+const baseURL = "https://channels.zuri.chat/api/v1";
 
 const defaultConfig = {
   baseURL,
   timeout: 60000,
   headers: {
     "Content-type": "application/json",
-    "Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Origin": "*",
   },
 };
 
@@ -110,7 +110,7 @@ class APIServices {
   }
 
   async channelDetail(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}`);
+    return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
 }
 
