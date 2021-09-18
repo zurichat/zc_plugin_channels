@@ -12,7 +12,7 @@ from rest_framework import permissions
 schema_view = get_schema_view(
     openapi.Info(
         title="Zuri Chat Channel Plugin Endpoints",
-        default_version="v1",
+        default_version=f"{settings.BASE_URL}",
         description="Made By Team Coelho",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="team-coelho@zuri.chat"),
@@ -63,6 +63,7 @@ urlpatterns += [
     path("api/v1/", include("apps.channelmessages.urls")),
     path("api/v1/", include("apps.roles.urls")),
     path("api/v1/", include("apps.threads.urls")),
+    path("api/v1/", include("apps.centri.urls"))
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
@@ -72,6 +73,9 @@ urlpatterns += [
     re_path(r"^$", render_react),
     re_path(r"^(?:.*)/?$", render_react),
 ]
+
+handler500 = 'rest_framework.exceptions.server_error'
+handler400 = 'rest_framework.exceptions.bad_request'
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

@@ -1,35 +1,35 @@
 import { Avatar, Box } from "@chakra-ui/react";
 import { Flex, Input } from "@chakra-ui/react";
+import { HStack } from "@chakra-ui/layout";
 import React from "react";
 import { FiSettings } from "react-icons/fi";
+import { Icon } from "@chakra-ui/icon";
+import { AvatarBadge } from "@chakra-ui/avatar";
 
 const TopSearch = () => {
   return (
-    <Flex mb={4} justifyContent="space-between">
+    <HStack mb={4} justifyContent="space-between">
       <Input
         placeholder="Search here"
-        borderRadius="none"
+        borderRadius="md"
         borderColor="rgba(153, 153, 153, 0.2)"
-        border="1px"
         color="#999"
-        fontWeight="normal"
-        width="30rem"
+        size="md"
+        w="34%"
       />
 
-      <Flex
-        mr="11px"
-        width="3.5rem"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <FiSettings color="#2b2b2b" fontSize="1.2rem" />
+      <HStack spacing={4}>
+        {/* <Icon boxSize="1.3rem" color="#2b2b2b" as={FiSettings} /> */}
         <Avatar
-          src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
+          src="https://s3-alpha-sig.figma.com/img/e681/51b8/15187abf9e80c64eaabed22ad5ad502c?Expires=1632700800&Signature=FJ0lIAiKy7IWyArlymep5w3Xb6Vc7xeSL2L-JH~hp8c8uV~6hqzaKZID0iRTlZoyHHw9Q8nrsDRNCD869uuM1sOJGEX7~L-Id4oqcRb2jTCIbnkZl16lnQE0Puwu13-sjW9MkthKuk8gEHQCqaOKHcbFxSJY8MMh-9P5tV5B3Jsfki-iq1S3lH5twyIWFGO7pZkSkhA-3q9W3l9Mt7tNX1ExidZez3FAJoHNaufMx2lVh-LsMjaGbkFd6PIk8zIgRhXLJjGu5kFj~laxUawDPTz2dk39fCRToBQRn~BoVyh-e2IRqfcpj6pac80iB-T~IB-s2YMn6ms0gFDw2Mzd9A__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
           alt=""
-          boxSize="30px"
-        />
-      </Flex>
-    </Flex>
+          borderRadius="md"
+          size="sm"
+        >
+          <AvatarBadge boxSize="1em" bg="green.500" />
+        </Avatar>
+      </HStack>
+    </HStack>
   );
 };
 

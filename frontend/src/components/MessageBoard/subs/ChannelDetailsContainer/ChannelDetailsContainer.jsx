@@ -17,7 +17,7 @@ const avatars = [
 
 const ChannelDetailsContainer = () => {
   return (
-    <Box>
+    <Box width="100%" mt="5px">
       <Flex
         align="center"
         bgColor="#ffffff"

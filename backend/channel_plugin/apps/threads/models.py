@@ -8,9 +8,13 @@ from channel_plugin.utils.customrequest import Request
 @dataclass
 class Thread:
     user_id: str
+    channel_id: str
     channelmessage_id: str
-    content: str
+    content: str = ""
     emojis: list = field(default_factory=list)
+    # list of files
+    files: list = field(default_factory=list)
+    has_files: str = "no"
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
@@ -18,32 +22,16 @@ class Thread:
         payload = {
             "user_id": self.user_id,
             "channelmessage_id": self.channelmessage_id,
+            "channel_id": self.channel_id,
             "content": self.content,
+            "files": self.files,
+            "has_files": self.has_files,
             "emojis": self.emojis,
-            "edited": self.edited,
+            "edited": str(self.edited),
             "timestamp": self.timestamp,
         }
         response = Request.post(
             organization_id, self.__class__.__name__.lower(), payload
-        )
-        return response
-
-    """"
-    organization_id: str
-    kwargs: either filter (dict) or object_id (str)
-    """
-
-    def update(self, organization_id, object_id):
-        payload = {
-            "content": self.content,
-            "emojis": self.emojis,
-            "edited": True,
-        }
-        response = Request.put(
-            organization_id,
-            self.__class__.__name__.lower(),
-            payload,
-            object_id=object_id,
         )
         return response
 

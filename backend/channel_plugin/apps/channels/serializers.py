@@ -1,4 +1,3 @@
-from apps.roles.serializers import RoleSerializer
 from django.utils.text import slugify
 
 # from django.conf import settings
@@ -13,6 +12,7 @@ from .models import Channel
 class ChannelSerializer(serializers.Serializer):
 
     name = serializers.CharField(max_length=100, required=True)
+    owner = serializers.CharField(max_length=30, required=True)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(default=False)
 
@@ -22,14 +22,16 @@ class ChannelSerializer(serializers.Serializer):
         """
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
-        if response.json().get("status") != 404:
+        if isinstance(response, list):
             raise serializers.ValidationError({"error": "Name already exist"})
         return name
 
     def to_representation(self, instance):
         instance = dict(instance)
+        user_id = instance.get("owner")
         slug = slugify(instance.get("name"))
         channel = Channel(**instance, slug=slug)
+        channel.users = {user_id: {"_id": user_id, "is_admin": True}}
         data = {"channel": channel}
         return data
 
@@ -47,8 +49,9 @@ class ChannelGetSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100, required=False)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(required=False)
-    users = serializers.DictField(child=serializers.DictField(), required=False)
-    roles = RoleSerializer(many=True, required=False)
+    owner = serializers.CharField(required=False)
+    archived = serializers.BooleanField(required=False)
+    users = serializers.DictField(child=UserSerializer(many=True), required=False)
 
 
 class ChannelUpdateSerializer(serializers.Serializer):
@@ -57,8 +60,7 @@ class ChannelUpdateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100, required=False)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(required=False)
-    users = UserSerializer(required=False, many=True)
-    roles = RoleSerializer(required=False, many=True)
+    archived = serializers.BooleanField(required=False)
 
     def validate_name(self, name):
         """
@@ -66,14 +68,22 @@ class ChannelUpdateSerializer(serializers.Serializer):
         """
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
-        try:
+        if type(response) == list:
             if response[0]["_id"] != self.context.get("_id"):
                 raise serializers.ValidationError({"error": "Name already exist"})
-        except TypeError:
-            return name
-        except Exception as e:  # noqa
-            raise serializers.ValidationError({"error": "Name already exist"})
         return name
+
+    def validate_private(self, private):
+        
+        if private:
+            return "True"
+        return "False"
+    
+    def validate_archived(self, archived):
+        
+        if archived:
+            return "True"
+        return "False"
 
     def to_representation(self, instance):
         if instance:
@@ -99,4 +109,13 @@ class SearchMessageQuerySerializer(serializers.Serializer):
     value = serializers.CharField(max_length=100)
 
 
-# 6139b88359842c7444fb01fc
+class UserChannelGetSerializer(serializers.Serializer):
+
+    _id = serializers.ReadOnlyField()
+    name = serializers.CharField(max_length=100, required=False)
+    description = serializers.CharField(required=False)
+
+
+class SocketSerializer(serializers.Serializer):
+    socket_name = serializers.CharField(max_length=200, required=True) 
+    channel_id = serializers.CharField(max_length=30, required=True)
