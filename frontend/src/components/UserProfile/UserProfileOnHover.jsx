@@ -3,10 +3,11 @@ import { Box } from "@chakra-ui/layout";
 import {
   Text,
   Stack,
-  Image,  Button, Divider
+  Image, Link, Button, Divider
 } from "@chakra-ui/react";
 import smileEmoji from '../images/emoji-smile.png'
-// import OnClickUserProfile from "./OnClickUserProfile";
+
+
 
 
 
@@ -49,7 +50,7 @@ import smileEmoji from '../images/emoji-smile.png'
             <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='16.4rem' >{data.statusDetail}</Text>
 
             
-            <Button type='button' onClick={() => setShowProfile(true)} fontSize='.96rem'  fontStyle='Lato' color='#1264A3' pos='absolute' pl='.5rem' top='19rem' >{data.details} </Button>
+            <Link type='button' onClick={() => setShowProfile(true)} fontSize='.96rem'  fontStyle='Lato' color='#1264A3' pos='absolute' pl='.5rem' top='19rem' >{data.details} </Link>
 
             <Box  bgColor='red' w='12rem' shadow='2xl' h='6rem'borderRadius='3px' pos='absolute' left='80rem' top='29.5rem'>
                 <Text color='#3A3A3A' pos='absolute' fontSize='.8rem' pl='.8rem' top='.8rem' >Veiw Profile</Text>
@@ -67,9 +68,11 @@ import smileEmoji from '../images/emoji-smile.png'
             <Box display='flex' pos='absolute'   w='240px'  top='30.4rem'  >
 
                     <Button
-                      bg="#00B87C"
-                      color="white"
-                      _hover='none'
+                      color="#00B87C"
+                      _hover={{ bg: "#00B87C", 
+                                color: "white"      }}
+                      border='1px'
+                      borderColor='#00B87C'
                       m='10px'
                       h='32px'
                       borderRadius='3px'
@@ -77,7 +80,8 @@ import smileEmoji from '../images/emoji-smile.png'
                   
                     <Button
                       color="#00B87C"
-                      _hover='none'
+                      _hover={{ bg: "#00B87C", 
+                                color: "white"      }}
                       h='32px'
                       background='none'
                       borderRadius='3px'
