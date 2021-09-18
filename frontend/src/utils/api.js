@@ -7,7 +7,11 @@ const defaultConfig = {
   timeout: 60000,
   headers: {
     "Content-type": "application/json",
+<<<<<<< HEAD
     // "Access-Control-Allow-Origin": "*"
+=======
+    // "Access-Control-Allow-Origin": "*",
+>>>>>>> 790a3a1d74e343fce58c5dfaae703d6f16a7c1eb
   },
 };
 
@@ -120,6 +124,10 @@ class APIServices {
 
   async pinMessage(org_id, channel_id, message_id) {
     return api.put(`/${org_id}/channels/${channel_id}/messages/${message_id}/`, { pinned: true } )
+  }
+  
+  async channelDetail(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
 }
 

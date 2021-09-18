@@ -44,6 +44,7 @@ const _getUsers = (params) => async (dispatch) => {
 const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
   try {
     const res = await APIService.channelDetail(org_id, channel_id);
+    console.log(res.data);
 
     dispatch({ type: GET_CHANNEL_DETAILS, payload: res.data });
   } catch (error) {
