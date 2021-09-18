@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, IconButton, Image,  Stack, Text, Divider, Container,Flex,Spacer, Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import { Box, IconButton, Image,  Stack, Text, Divider, Container } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import { FiPhoneCall } from "react-icons/fi";
