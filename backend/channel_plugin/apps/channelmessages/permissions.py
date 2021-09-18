@@ -6,7 +6,6 @@ from channel_plugin.utils.customrequest import Request
 class IsMember(permissions.BasePermission):
 
     message = "Join channel to send message."
-
     def has_permission(self, request, view):
 
         org_id = request.parser_context.get("kwargs", {}).get("org_id")
@@ -14,7 +13,6 @@ class IsMember(permissions.BasePermission):
         channel_id = request.parser_context.get("kwargs", {}).get(
             "channel_id"
         ) or request.query_params.get("channel_id")
-
         response = Request.get(org_id, "channel", {"_id": channel_id}) or {}
         if response.get("users", {}).get(user_id):
             return True

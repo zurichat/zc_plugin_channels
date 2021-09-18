@@ -23,6 +23,7 @@ class ChannelMessageViewset(ViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
+
         permissions = super().get_permissions()
         if self.action in ["message", "message_delete", "message_update"]:
             permissions.append(IsMember())

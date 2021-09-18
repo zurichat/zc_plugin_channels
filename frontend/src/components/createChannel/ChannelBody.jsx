@@ -1,46 +1,81 @@
-import { Box, Flex, Link, Text, Button } from "@chakra-ui/react";
-import React from "react";
+import { Box, Flex, Link, Text } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
 import { BiUserPlus } from "react-icons/bi";
 import { useDisclosure } from "@chakra-ui/react";
 import AddPeopleModal from "./addPeopleModal";
 import { Circle, HStack } from "@chakra-ui/layout";
-import { Icon } from "@chakra-ui/icon";
+import { Icon } from "@chakra-ui/react";
+import { IconButton } from "@chakra-ui/react";
+import { FiHash } from "react-icons/fi";
+import { useBreakpointValue } from "@chakra-ui/media-query";
+import Members from "./Members";
+import { useSelector } from "react-redux";
+import UtilityService from "../../utils/utils";
 
 const ChannelBody = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const {
+    channelsReducer: { channelDetails },
+  } = useSelector((state) => state);
+
+  const isMobile = useBreakpointValue({
+    base: true,
+    md: true,
+    lg: false,
+    xl: false,
+  });
+
   return (
-    <Box width="80%" m="auto" height="sm" fontSize="16px">
+    <Box width="100%" m="auto" height="sm" fontSize="16px">
       <AddPeopleModal isOpen={isOpen} onClose={onClose} />
 
-      <Text color="black" mt="2rem">
-        This is the very beginning of the{" "}
-        <Link color="#0562ed" fontWeight="bold" mr="0.3rem">
-          #Announcement
-        </Link>
-        channel
-      </Text>
-      <Text color="grey">
-        <Link color="#0562ed" fontWeight="bold">
-          @Abibola
-        </Link>{" "}
-        created this channel on Aug 30th.
-      </Text>
+      <Flex mt="2rem" px={isMobile ? "24px" : "0"}>
+        {!isMobile && (
+          <IconButton
+            bg="#E7E7E7"
+            aria-label="Call Sage"
+            fontSize="20px"
+            icon={<FiHash color="black" />}
+            mx={5}
+          />
+        )}
 
-      <HStack mt="6">
-        <Circle
-          cursor="pointer"
-          bg="whatsapp.600"
-          color="white"
-          size="35px"
-          onClick={onOpen}
-        >
-          <Icon as={BiUserPlus} />
-        </Circle>
-        <Text cursor="pointer" onClick={onOpen}>
-          Add Members
-        </Text>
-      </HStack>
+        <Box mb="43px" fontSize="15px">
+          <Text color="black">
+            This is the very beginning of the{" "}
+            <Link color="#0562ed" fontWeight="bold" mr="0.3rem">
+              #{channelDetails.name}
+            </Link>
+            channel
+          </Text>
+          <Text color="grey">
+            <Link color="#0562ed" fontWeight="bold">
+              @{channelDetails.owner}
+            </Link>{" "}
+            created this channel on{" "}
+            {UtilityService.formatDate(channelDetails.created_on, "MMM Mo")}.
+          </Text>
+
+          <HStack mt="6">
+            <Circle
+              cursor="pointer"
+              bg="#00B87C"
+              color="white"
+              size="35px"
+              onClick={onOpen}
+            >
+              <Icon as={BiUserPlus} />
+            </Circle>
+            <Text cursor="pointer" onClick={onOpen}>
+              Add Members
+            </Text>
+          </HStack>
+        </Box>
+      </Flex>
+
+      <Members />
+      <Members />
     </Box>
   );
 };
