@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, HStack } from "@chakra-ui/layout";
 import { Flex, Spacer, Avatar, AvatarGroup, Button, Divider, IconButton, Image } from "@chakra-ui/react";
 import { BiChevronDown, BiChevronLeft } from "react-icons/bi";
@@ -6,9 +6,11 @@ import { Icon } from "@chakra-ui/icon";
 import { IoMdAdd } from "react-icons/io";
 import { FiHash, FiInfo } from "react-icons/fi";
 import { Link } from "react-router-dom";
-//import { SiPinboard } from "react-icons/si";
+import { TiPin } from 'react-icons/ti'
 import searchImage from "../../assets/search.png";
 import infoImage from "../../assets/info.png";
+import APIService from "../../utils/api";
+import appActions from "../../redux/actions/app"
 
 //avatar details(Just a placeholder)
 const avatars = [
@@ -19,9 +21,27 @@ const avatars = [
 
 const ChannelHeader = () => {
 
+  const [pinnedMessages, setPinnedMessages] = useState([]);
+
   const numberOfMembers = 30000;//just a placeholder
   //const numberOfPinnedMsgs = 3;
   const channelsName = 'Announcements';//just a placeholder
+
+  const getPinnedMessages = async () => {
+    const orgId = 1;
+    const channelId = "613f70bd6173056af01b4aba"; // Hardcoded value to for channelId in org with id 1
+    const res = await APIService.getPinnedMessages(orgId, channelId)
+    setPinnedMessages(res.data)
+  };
+
+  useEffect(() => {
+    try {
+      getPinnedMessages()
+    } catch (err) {
+      appActions._alert("error")
+    }
+  }, [])
+
   return (
     <Box width="100%" mt="5px">
       <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='1172px' w="100%" sx={{"@media screen and (max-width: 768.5px)": {display: "none",},}}>
@@ -50,11 +70,11 @@ const ChannelHeader = () => {
         </Link>
       </Flex>
       <Divider orientation="horizontal" sx={{"@media screen and (max-width: 768.5px)": { display: "none",},}} />
-      <Box width='100%' ml='3px' sx={{"@media screen and (max-width: 768.5px)": { display: "none",},}}>
-        <Flex align='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='31px' > 
-          {/* <Button height='23px' borderRadius='4px' bgColor='#BCF9E6' ml='3px'  mr='10px' leftIcon={<Icon as={SiPinboard} color='#000000'/>} fontWeight='normal' fontSize='12px'fontStyle='normal' >{numberOfPinnedMsgs} Pinned</Button>  */}
-          <Button height='23px' borderRadius='4px' bgColor='#BCF9E6' size='sm' leftIcon={<Icon as={IoMdAdd} color='#000000' />} fontWeight='normal' fontSize='12px' fontStyle='normal'>Add a Bookmark</Button>        
-        </Flex>
+      <Box sx={{"@media screen and (max-width: 768.5px)": { display: "none",},}}>
+        <HStack bg="#E1FDF4" px="1rem" py="5px" spacing="5px"> 
+          { pinnedMessages.length > 0 && <Button {...pinnedAndBookmarkButtonStyle} leftIcon={<TiPin size={16} transform="scale(-1, 1)" color="#1D1C1D" />}>{pinnedMessages.length} Pinned</Button> }
+          <Button {...pinnedAndBookmarkButtonStyle} leftIcon={<IoMdAdd size={16} color="#1D1C1D" />}>Add a bookmark</Button>        
+        </HStack>
       </Box>
       
       <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" sx={{"@media screen and (min-width: 768.5px)": {display: "none",}}}>
@@ -78,5 +98,23 @@ const ChannelHeader = () => {
     </Box> 
   );
 };
+
+const pinnedAndBookmarkButtonStyle = {
+  bg: "#BCF9E6",
+  px: "10px",
+  py: "4.5px",
+  borderRadius: "4px",
+  size: "sm",
+  fontWeight: "normal",
+  fontSize: "13px",
+  fontStyle: "normal",
+  _hover: {
+    bg: "#98FFDD"
+  },
+  _focus: {
+    outline: "none",
+    bg: "#98FFDD"
+  }
+}
 
 export default ChannelHeader; 
