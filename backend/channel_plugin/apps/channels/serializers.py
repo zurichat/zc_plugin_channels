@@ -116,3 +116,10 @@ class UserChannelGetSerializer(serializers.Serializer):
 class SocketSerializer(serializers.Serializer):
     socket_name = serializers.CharField(max_length=200, required=True) 
     channel_id = serializers.CharField(max_length=30, required=True)
+
+class NotificationsSettingSerializer(serializers.Serializer):
+
+    web = serializers.ChoiceField(choices=("all", "mentions", "nothing"))
+    mobile = serializers.ChoiceField(choices=("all", "mentions", "nothing"))
+    same_for_mobile = serializers.BooleanField(required=True)
+    mute = serializers.BooleanField(required=True)
