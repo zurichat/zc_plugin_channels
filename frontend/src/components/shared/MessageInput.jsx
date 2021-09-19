@@ -65,7 +65,7 @@ const MessageInput = () =>{
     }
     useEffect(()=>{
       loadData()
-    },[datas]);
+    },[]);
 
     return (
       <Box border="1px solid #EBEBEB" bg="white" borderRadius="3px" width="100%"
@@ -100,6 +100,7 @@ const MessageInput = () =>{
           flexDirection="row"
           alignItems="center"
           overflowX="auto"
+          p={1}
         >
           <Box
             width="10em"
@@ -122,7 +123,12 @@ const MessageInput = () =>{
             alignItems="center"
             width={{ base: "10em", sm: "8em", md: "10em" }}
             _hover={{ cursor: "pointer" }} marginLeft={['30px']}
-            minW="100px"
+            minW="120px"
+            css={{
+              '&::-webkit-scrollbar':{
+                display:'none'
+              }
+            }}
           >
             <FiAtSign />
             <ImAttachment/>
