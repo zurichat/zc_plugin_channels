@@ -43,7 +43,7 @@ const MessageInput = () =>{
     const {_sendMessage} = bindActionCreators(appActions,dispatch);
 
     const {sendMessages} = useSelector((state)=>state.appReducer)
-    console.log(sendMessages);
+    // console.log(sendMessages);
 
     const loadData=async ()=>{
       await _sendMessage('1','613f70bd6173056af01b4aba',datas)
@@ -54,6 +54,13 @@ const MessageInput = () =>{
       !toggle ? setActive(cmd) : setActive(" ");
       const trial=e.target.value
       
+      setToggle(!toggle)
+    }
+    const changeStyle=(e)=>{
+      const active=e.target
+      let cmd=active.dataset['command'];
+      !toggle ? setItalic(cmd) : setItalic(" ");
+  
       setToggle(!toggle)
     }
     useEffect(()=>{
@@ -84,6 +91,7 @@ const MessageInput = () =>{
           onInput={()=>setInput(true)}
           onMouseOut={()=>setInput(false)}
           fontWeight={active}
+          fontStyle={italic}
         />
           <Box
           maxW="100%"
@@ -103,7 +111,7 @@ const MessageInput = () =>{
             <IoFlashOutline/>
             <HSeparatorIcon/>
             <BsTypeBold  className="box" onClick={changeWeight} data-command="bold"/>
-            <FiItalic />
+            <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
             <BsLink45Deg />
             <AiOutlineBars />
           </Box>
@@ -137,7 +145,7 @@ const MessageInput = () =>{
           click ? 
           <Box display="flex" flexDir="column" justifyContent="space-between">
             <Flex justify="space-between" width="100%" minW="10em">
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} 
               onMouseOut={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
                 input ?<IoSendSharp color="black"/> : <Button size="xs" disabled><IoSendSharp /></Button>
@@ -147,8 +155,8 @@ const MessageInput = () =>{
               <IoFlashOutline/>
               <HSeparatorIcon/>
               <GrEmoji/>
-              <BsTypeBold/>
-              <FiItalic/>
+              <BsTypeBold className="box" onClick={changeWeight} data-command="bold"/>
+              <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
               <BsLink45Deg/>
               <AiOutlineBars/>
               <FiAtSign/>

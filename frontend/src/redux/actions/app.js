@@ -43,7 +43,7 @@ const _getUsers = (params) => async (dispatch) => {
 const _sendMessage=(org_id,channel_id,data)=>async(dispatch)=>{
   try{
     const res=await APIService.sendMessage(org_id,channel_id,data);
-    console.log(res.data)
+    // console.log(res.data)
     dispatch({type:SEND_MESSAGES,payload:res.data});
   }
   catch(err){
