@@ -1,5 +1,4 @@
 import json
-import re
 
 from apps.centri.helperfuncs import build_room_name
 from apps.channelmessages.serializers import ChannelMessageUpdateSerializer
@@ -673,17 +672,10 @@ class ChannelMemberViewset(ViewSet):
     def notification_retrieve(self, request, org_id, channel_id, member_id):
         """Retrieve a user's notification preferences for a particular channel.
         
-        If that user has not previously changed settings, the relevant field in
-        the database would be empty, but the default settings would be returned.
-        notifications = {
-            "web": "nothing",
-            "mobile": "mentions",
-            "same_for_mobile": False,
-            "mute": False
-        }
+        By default, users do not have a notifications field in the database,
+        so an empty {} will be returned.
 
-        If and when the user makes changes to any of the settings, changes made
-        would be written to the database.
+        A field is only appended to their records when changes have been made.
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
         if channel:
@@ -692,14 +684,16 @@ class ChannelMemberViewset(ViewSet):
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
 
-                DEFAULT_SETTINGS = {
-                    "web": "nothing",
-                    "mobile": "mentions",
-                    "same_for_mobile": False,
-                    "mute": False
-                }
+                # an empty field will be returned for users that have not
+                # changed their settings. 
+                # DEFAULT_SETTINGS = {
+                #     "web": "nothing",
+                #     "mobile": "mentions",
+                #     "same_for_mobile": False,
+                #     "mute": False
+                # }
 
-                settings = serializer.data.get('notifications', DEFAULT_SETTINGS)
+                settings = serializer.data.get('notifications', {})
                 return Response(settings, status=status.HTTP_200_OK)
 
             return Response({"error": "member not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -739,7 +733,8 @@ class ChannelMemberViewset(ViewSet):
                 # by default, users do not have a settings field
                 # whether or not this user has a settings field, 
                 # make an update with the new settings
-                user_data.setdefault("notifications", {}).update(dict(serializer.data))
+                notification_settings = dict(serializer.data)
+                user_data.setdefault("notifications", {}).update(notification_settings)
                 
                 # push the updated user details to the channel object
                 channel["users"].update({f"{member_id}": user_data})
@@ -754,7 +749,7 @@ class ChannelMemberViewset(ViewSet):
 
                 if result:
                     if isinstance(result, dict):
-                        data = user_data if not result.get("error") else result
+                        data = notification_settings if not result.get("error") else result
                         status_code = (
                             status.HTTP_201_CREATED
                             if not result.get("error")
