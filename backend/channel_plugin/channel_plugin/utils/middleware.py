@@ -34,7 +34,7 @@ class CorsMiddleware:
         return response
 
     def process_response(self, request, response):
-        if request.method in ["GET"]:
+        if request.method in ["GET", "POST"]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except:  # noqa
@@ -42,6 +42,5 @@ class CorsMiddleware:
             
         else:
             response.__dict__["_headers"]["access-control-allow-origin"] = ("Access-Control-Allow-Origin", "*")
-            response.__dict__["_headers"]["content-type"] = ("Content-Type", "text/plain")
             
         return response
