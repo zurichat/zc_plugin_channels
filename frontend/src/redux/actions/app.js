@@ -53,7 +53,7 @@ const _sendMessage=(org_id,channel_id,data)=>async(dispatch)=>{
 
 const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
   try {
-    const res = await APIService.channelDetail(org_id, channel_id);
+    const res = await APIService.getChannelDetails(org_id, channel_id);
     console.log(res.data);
 
     dispatch({ type: GET_CHANNEL_DETAILS, payload: res.data });
@@ -94,3 +94,4 @@ const _archiveChannel = (org_id, channel_id) => async (dispatch) => {
 // Export functions here
 const appActions = { _alert, _getUsers, _getChannelDetails, _getPinnedMessages, _pinMessage, _archiveChannel,_sendMessage };
 export default appActions;
+

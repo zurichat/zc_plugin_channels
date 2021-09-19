@@ -32,7 +32,7 @@ class APIServices {
     return api.post(`/channels/messages/${org_id}/${channel_id}/`, data);
   }
   async sendMessage(org_id, channel_id, data) {
-    return api.post(`/${org_id}/channels/${channel_id}/messages/`, data);
+    return api.post(`​/${org_id}​/channels​/${channel_id}​/messages​/`, data);
   }
 
   async getMessages(org_id, channel_id) {
@@ -122,7 +122,7 @@ class APIServices {
     return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`)
   }
   
-  async channelDetail(org_id, channel_id) {
+  async getChannelDetails(org_id, channel_id) {
     return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
 }
