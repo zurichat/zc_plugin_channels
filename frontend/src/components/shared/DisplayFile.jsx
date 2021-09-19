@@ -6,13 +6,13 @@ import { AiOutlineUpload } from 'react-icons/ai'
 import { BsGrid } from 'react-icons/bs'
 import { CgList } from 'react-icons/cg'
 import { IconButton } from '@chakra-ui/react'
-import {useState} from 'react'
+// import {useState} from 'react'
 
 
 export default function DisplayFile() {
 
 
-    const [click, setClick] = useState(false);
+    // const [click, setClick] = useState(false);
 
   const  handleGrid  = (e)=>{
       e.preventDefault();
@@ -199,6 +199,8 @@ console.log('list')
                     _hover={{ border: '2px', borderColor: 'green.300' }}
                   >
                     <Flex align='center'>
+
+
                       <Box>
                         <Image
                           m={3}
