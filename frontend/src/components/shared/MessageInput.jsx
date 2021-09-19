@@ -8,19 +8,8 @@ import { AiOutlineBars } from "react-icons/ai";
 import {GrEmoji } from "react-icons/gr";
 import {RiArrowDropDownLine} from 'react-icons/ri';
 import {ImAttachment} from 'react-icons/im';
-// import {
-//   FiAtSign,
-//   FiBold,
-//   FiItalic,
-//   FiLink,
-//   FiList,
-//   FiPaperclip,
-//   FiSend,
-//   FiZap,
-// } from "react-icons/fi";
 import { useRef } from "react";
 import { Textarea } from "@chakra-ui/textarea";
-import axios from "axios";
 import { useDispatch,useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
@@ -36,7 +25,7 @@ const MessageInput = () =>{
     const [italic,setItalic]=useState("")
     const datas={
       user_id:"thanos",
-      content:"First Trial"
+      content:data
     }
 
     const dispatch=useDispatch();
@@ -47,6 +36,7 @@ const MessageInput = () =>{
 
     const loadData=async ()=>{
       await _sendMessage('1','613f70bd6173056af01b4aba',datas)
+      setData('')
     }
     const changeWeight=(e)=>{
       const active=e.target
@@ -63,9 +53,9 @@ const MessageInput = () =>{
   
       setToggle(!toggle)
     }
-    useEffect(()=>{
-      loadData()
-    },[]);
+    // useEffect(()=>{
+    //   loadData()
+    // },[]);
 
     return (
       <Box border="1px solid #EBEBEB" bg="white" borderRadius="3px" width="100%"
@@ -135,10 +125,10 @@ const MessageInput = () =>{
             <GrEmoji/>
             {input ? (
               <Button bg="#00B87C" size="xs">
-                <IoSendSharp color="white" />
+                <IoSendSharp color="white"  onClick={loadData}/>
               </Button>
             ) : (
-              <Button size="xs" disabled><IoSendSharp /></Button>
+              <Button size="xs"><IoSendSharp onClick={loadData}/></Button>
             )}
             <HSeparatorIcon/>
             <RiArrowDropDownLine size="30px"/>
@@ -154,7 +144,7 @@ const MessageInput = () =>{
               <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} 
               onMouseOut={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
-                input ?<IoSendSharp color="black"/> : <Button size="xs" disabled><IoSendSharp /></Button>
+                input ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs"><IoSendSharp onClick={loadData}/></Button>
               }
             </Flex>
             <Flex width="10em" justify="space-between" mt={1}>
@@ -178,7 +168,7 @@ const MessageInput = () =>{
             }
           }}>
               <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
-              onMouseOver={()=>setOnclick(true)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+              onMouseDown={()=>setOnclick(true)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
             <Box>
               <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
               <AiOutlineBars/>
