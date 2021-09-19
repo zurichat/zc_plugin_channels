@@ -44,17 +44,22 @@ const ChannelBody = () => {
         <Box mb="43px" fontSize="15px">
           <Text color="black">
             This is the very beginning of the{" "}
-            <Link color="#0562ed" fontWeight="bold" mr="0.3rem">
+            <Link
+              color="#0562ed"
+              fontWeight="bold"
+              mr="0.3rem"
+              textTransform="capitalize"
+            >
               #{channelDetails.name}
             </Link>
             channel
           </Text>
           <Text color="grey">
-            <Link color="#0562ed" fontWeight="bold">
+            <Link color="#0562ed" fontWeight="bold" textTransform="capitalize">
               @{channelDetails.owner}
             </Link>{" "}
             created this channel on{" "}
-            {UtilityService.formatDate(channelDetails.created_on, "MMM Mo")}.
+            {UtilityService.formatDate(channelDetails.created_on, "MMM Do")}.
           </Text>
 
           <HStack mt="6">
