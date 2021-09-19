@@ -7,6 +7,7 @@ import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
 import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
+import APIService from "../../utils/api"
 
 const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -18,60 +19,74 @@ const replies = [
 
 const MessageCard = ({ name, time, message, icon, isThread }) => {
   const [showOptions, setShowOptions] = useState(false)
-    return (
-      <Box 
-        position="relative" 
-        _hover={{ bg: "#C4C4C41A" }} 
-        onMouseEnter={() => setShowOptions(true)}
-        onMouseLeave={() => setShowOptions(false)}
-      >
-        <HoverOptions show={showOptions} />
-        <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
-          <Box>
-            <Avatar name="Dan Abrahmov" src={icon} w="36px" h="36px" borderRadius="4px" />
-          </Box>
-          <Flex flexDir="column">
-            <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
-              <Text fontSize="16px" fontWeight="900">
-                {name}
-              </Text>
-              <Text fontSize="13px" color="#616061">
-                {time}
-              </Text>
-            </HStack>
-            <Box m="0px">
-              <Text pr="40px">{message}</Text>
-            </Box>
-            {isThread && (
-              <HStack spacing="5px" mt="5px">
-                {
-                  replies.slice(0, Math.min(4, replies.length))
-                  .map((reply, index) => {
-                    return (
-                      <Avatar
-                        key={`replies-avatar-${index}`}
-                        w="24px"
-                        h="24px"
-                        borderRadius="4px"
-                        name={reply.name}
-                        src={reply.profilePic}
-                      />
-                    );
-                  })
-                }
-                <HStack spacing="5px" alignItems="baseline">
-                  <Link fontSize={["8px", "14px"]} color="#1264A3">{replies.length} Replies</Link>
-                  <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
-                </HStack>
-              </HStack>
-            )}
-          </Flex>
-        </Flex>
-      </Box>
-    );
-  };
 
-const HoverOptions = ({ show }) => {
+  const pinMessage = async () => {
+    const orgId = 1 // Hardcoded value to for channelId in org with id 1
+    const messageId = "61413e736173056af01b4d31"
+    const userId = "cephas"
+    const channelId = "613f70bd6173056af01b4aba"
+    const res = await APIService.pinMessage(orgId, channelId, userId, messageId);
+    console.log(res)
+  }
+
+  const actions = {
+    pinMessage
+  }
+
+  return (
+    <Box 
+      position="relative" 
+      _hover={{ bg: "#C4C4C41A" }} 
+      onMouseEnter={() => setShowOptions(true)}
+      onMouseLeave={() => setShowOptions(false)}
+    >
+      <HoverOptions show={showOptions} actions={actions} />
+      <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
+        <Box>
+          <Avatar name="Dan Abrahmov" src={icon} w="36px" h="36px" borderRadius="4px" />
+        </Box>
+        <Flex flexDir="column">
+          <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
+            <Text fontSize="16px" fontWeight="900">
+              {name}
+            </Text>
+            <Text fontSize="13px" color="#616061">
+              {time}
+            </Text>
+          </HStack>
+          <Box m="0px">
+            <Text pr="40px">{message}</Text>
+          </Box>
+          {isThread && (
+            <HStack spacing="5px" mt="5px">
+              {
+                replies.slice(0, Math.min(4, replies.length))
+                .map((reply, index) => {
+                  return (
+                    <Avatar
+                      key={`replies-avatar-${index}`}
+                      w="24px"
+                      h="24px"
+                      borderRadius="4px"
+                      name={reply.name}
+                      src={reply.profilePic}
+                    />
+                  );
+                })
+              }
+              <HStack spacing="5px" alignItems="baseline">
+                <Link fontSize={["8px", "14px"]} color="#1264A3">{replies.length} Replies</Link>
+                <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
+              </HStack>
+            </HStack>
+          )}
+        </Flex>
+      </Flex>
+    </Box>
+  );
+};
+
+const HoverOptions = ({ show, actions }) => {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -83,7 +98,7 @@ const HoverOptions = ({ show }) => {
     { label: "Share message", command: "S" },
     { label: "Copy Link" },
     { divider: true },
-    { label: "Pin to channel", command: "P" },
+    { label: "Pin to channel", command: "P", onClick: actions.pinMessage },
     { label: "Edit Message", command: "E" }, 
   ], [])
   return (
