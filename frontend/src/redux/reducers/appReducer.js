@@ -18,7 +18,6 @@ const appReducer = (state = initialState, action) => {
         ...state,
         users: payload,
       };
-
     // Default state is returned
     default:
       return state;
