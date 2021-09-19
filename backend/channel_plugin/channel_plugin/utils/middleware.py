@@ -39,4 +39,10 @@ class CorsMiddleware:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except:  # noqa
                 pass
+            
+        if request.method in ["PUT", "DELETE"]:
+            try:
+                del response.__dict__["_headers"]["access-control-allow-origin"]
+            except:  # noqa
+                pass
         return response
