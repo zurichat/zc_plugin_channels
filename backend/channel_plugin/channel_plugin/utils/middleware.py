@@ -34,7 +34,7 @@ class CorsMiddleware:
 
     def process_response(self, request, response):
         try:
-            del response["_headers"]["access-control-allow-origin"]
+            del response.__dict__["_headers"]["access-control-allow-origin"]
         except:  # noqa
             pass
         return response
