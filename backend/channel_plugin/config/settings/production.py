@@ -63,18 +63,6 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://127.0.0.1:[\d+]{4}",
 ]
 
-CORS_ALLOW_HEADERS = (
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-)
-
 # STORAGES
 # ------------------------------------------------------------------------------
 # https://django-storages.readthedocs.io/en/latest/#installation
