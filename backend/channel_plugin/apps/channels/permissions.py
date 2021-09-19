@@ -24,6 +24,7 @@ class IsChannelMember(permissions.BasePermission):
 class IsOrganizationMember(permissions.BasePermission):
     def has_permission(self, request, view):
         # TODO: complete when organization users endpoint is ready
+        # response = 
         return True
 
 

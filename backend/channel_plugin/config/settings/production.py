@@ -2,8 +2,8 @@ from .base import *  # noqa
 from .base import env
 
 # GENERAL
-env.read_env(str(ROOT_DIR / ".env"))
 # ------------------------------------------------------------------------------
+env.read_env(str(ROOT_DIR / ".env"))  # noqa
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
@@ -48,6 +48,20 @@ SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
+
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW = True
+
+# CORS_ALLOWED_ORIGINS = [
+#    "http://localhost:3001",
+# ]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.zuri\.chat$",
+    r"^http://localhost:[\d+]{4}",
+    r"^http://127.0.0.1:[\d+]{4}",
+]
 
 # STORAGES
 # ------------------------------------------------------------------------------

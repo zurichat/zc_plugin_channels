@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Box, Divider, HStack, Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/button";
 import { IoMdClose } from "react-icons/io";
@@ -17,16 +17,35 @@ import {
   AccordionPanel,
 } from "@chakra-ui/accordion";
 import AddPeopleModal from "../../../createChannel/addPeopleModal";
+import { useDisclosure } from "@chakra-ui/hooks";
+import ArchiveChannelModal from "../ArchiveChannelModal/ArchiveChannelModal";
 
 const ChannelDetails = ({ channelName="Announcements" }) => {
-  const [ showAddPeopleModal, setShowAddPeopleModal ] = useState(false);
+  const { 
+    isOpen: isAddPeopleModalOpen, 
+    onClose: onCloseAddPeopleModal, 
+    onOpen: onOpenAddPeopleModal 
+  } = useDisclosure()
+
+  const { 
+    isOpen: isArchiveModalOpen, 
+    onClose: onCloseArchiveModal, 
+    onOpen: onOpenArchiveModal 
+  } = useDisclosure()
+
+  const actions = {
+    triggerArchiveChannel: onOpenArchiveModal,
+    triggerMakeChannelPrivate: () => {},
+    triggerDeleteChannel: () => {}
+  }
+
   const options = useMemo(
     () => [
       {
         title: "Add",
         icon: <FiUserPlus color="#333333" />,
         id: v4(),
-        onClick: () => {setShowAddPeopleModal(true)},
+        onClick: onOpenAddPeopleModal,
       },
       {
         title: "Find",
@@ -125,7 +144,7 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
           </Box>
         ))}
         <Box textAlign="center">
-          <MoreOption />
+          <MoreOption actions={actions} />
           <Text fontSize="xs" fontWeight="bold">
             More
           </Text>
@@ -202,7 +221,8 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
         </Text>
       </Box>
     </Box>
-    <AddPeopleModal isOpen={showAddPeopleModal} onClose={() => setShowAddPeopleModal(false)} />
+    <AddPeopleModal isOpen={isAddPeopleModalOpen} onClose={onCloseAddPeopleModal} />
+    <ArchiveChannelModal isOpen={isArchiveModalOpen} onClose={onCloseArchiveModal} />
     </>
   );
 };

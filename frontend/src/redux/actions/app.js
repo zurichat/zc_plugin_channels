@@ -1,6 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
-import { GET_USERS,SEND_MESSAGES } from "./types";
+import { GET_USERS, GET_CHANNEL_DETAILS,SEND_MESSAGES } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
 
@@ -51,6 +51,18 @@ const _sendMessage=(org_id,channel_id,data)=>async(dispatch)=>{
   }
 }
 
+const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.channelDetail(org_id, channel_id);
+    console.log(res.data);
+
+    dispatch({ type: GET_CHANNEL_DETAILS, payload: res.data });
+  } catch (error) {
+    console.log(error.message);
+  } finally {
+  }
+};
+
 // Export functions here
-const appActions = { _alert, _getUsers, _sendMessage };
+const appActions = { _alert, _getUsers, _getChannelDetails,_sendMessage };
 export default appActions;

@@ -123,6 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # "channel_plugin.utils.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -130,7 +131,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "channel_plugin.utils.middleware.AuthenticationMiddleware",
+    # "channel_plugin.utils.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -327,10 +328,25 @@ WRITE_URL = "https://api.zuri.chat/data/write"
 DELETE_URL = "https://api.zuri.chat/data/delete"
 
 try:
-    with open("centri.txt") as f:
+    with open("centri.txt", "r") as f:
         CENTRIFUGO_API_KEY = f.readline().strip("\n")
         f.close()
 except:  # noqa
     CENTRIFUGO_API_KEY = ""
 
 CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
+
+
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://\w+\.zuri\.chat$",
+#     r"^http://localhost:[\d+]{4}",
+#     r"^http://127.0.0.1:[\d+]{4}",
+# ]
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3001",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOW_CREDENTIALS = True

@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from channel_plugin.utils.customrequest import Request
-
 from .models import MESSAGE_TYPES, ChannelMessage
 
 
@@ -15,7 +13,7 @@ class ChannelMessageSerializer(serializers.Serializer):
     timestamp = serializers.DateTimeField(read_only=True)
 
     def validate(self, attrs):
-        if bool(attrs.get("content")) and bool(attrs.get("files")):
+        if attrs.get("content", None) is None and attrs.get("files", None) is None:
             raise serializers.ValidationError(
                 {"error": "Both content & files cannot be none"}
             )
@@ -56,3 +54,9 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
 
         data = {"message": instance}
         return data
+
+    def validate_pinned(self, pinned):
+
+        if pinned:
+            return "True"
+        return "False"
