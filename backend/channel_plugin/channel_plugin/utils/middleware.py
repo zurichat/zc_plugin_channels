@@ -28,8 +28,13 @@ class CorsMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
+        if response:
+            response = self.process_response(request, response)
         return response
 
     def process_response(self, request, response):
-        del response["Access-Control-Allow-Origin"]
+        try:
+            del response["_headers"]["access-control-allow-origin"]
+        except:  # noqa
+            pass
         return response
