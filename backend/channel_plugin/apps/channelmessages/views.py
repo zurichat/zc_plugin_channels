@@ -199,6 +199,15 @@ class ChannelMessageViewset(ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def retrieve_message_reactions(self, request, org_id, msg_id):
+        data = {"_id": msg_id}
+        data.update(dict(request.query_params))
+        result = Request.get(org_id, "channelmessage", data) or {}
+        reactions = result.get("emojis", [])
+        status_code = status.HTTP_404_NOT_FOUND
+        if result.__contains__("_id") or isinstance(result, dict):
+            status_code = status.HTTP_200_OK
+        return Response(reactions, status=status_code)
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
@@ -209,4 +218,10 @@ channelmessage_views = ChannelMessageViewset.as_view(
 
 channelmessage_views_group = ChannelMessageViewset.as_view(
     {"get": "message_retrieve", "put": "message_update", "delete": "message_delete"}
+)
+
+channelmessage_reactions = ChannelMessageViewset.as_view(
+    {
+        "get": "retrieve_message_reactions"
+    }
 )
