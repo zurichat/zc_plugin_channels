@@ -1,6 +1,14 @@
-import React from 'react'
-import { Box, Flex, Text, Link } from "@chakra-ui/layout";
-import { Avatar, AvatarBadge, AvatarGroup } from "@chakra-ui/react";
+import React, { useMemo, useState } from 'react'
+import { Box, Flex, Text, Link, HStack, Square } from "@chakra-ui/layout";
+import { Avatar, AvatarGroup } from "@chakra-ui/avatar";
+import { Menu, MenuItem, MenuButton, MenuList, MenuDivider } from "@chakra-ui/menu"
+import { IconButton } from "@chakra-ui/react"
+import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
+import { FaRegCommentDots } from "react-icons/fa"
+import { HiOutlineEmojiHappy } from "react-icons/hi"
+import { CgMoreVertical } from "react-icons/cg"
+
+import instance from '../../utils/utils';
 
 const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -10,60 +18,143 @@ const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ name, time, message, icon, isThread }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, isThread, edited }) => {
+  const [showOptions, setShowOptions] = useState(false)
+  const formattedTime = instance.formatDate(timestamp, 'LT')
     return (
-      <Box textAlign="left">
-        <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="15px">
+      <Box 
+        position="relative" 
+        _hover={{ bg: "#C4C4C41A" }} 
+        onMouseEnter={() => setShowOptions(true)}
+        onMouseLeave={() => setShowOptions(false)}
+      >
+        <HoverOptions show={showOptions} />
+        <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
-            <Avatar name="Dan Abrahmov" size="sm" borderRadius="4px" src={icon} />
+            <Avatar name={user_id} src={icon} w="36px" h="36px" borderRadius="4px" />
           </Box>
-          <Flex flexDir="column" gridGap="5px">
-            <Flex flexWrap="nowrap" fontSize={["12px", "15px"]} flexDir="row" gridGap="10px">
-              <Text fontSize="15px" fontWeight="bold">
-                {name}
+          <Flex flexDir="column">
+            <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
+              <Text fontSize="16px" fontWeight="900">
+                {user_id}
               </Text>
-              <Text fontSize="15px" fontWeight="400" color="#8B8B8B">
-                {time}
+              <Text fontSize="13px" color="#616061">
+                {formattedTime}
               </Text>
-            </Flex>
+            </HStack>
             <Box m="0px">
-              <Text pr="40px" fontSize={["12px", "15px"]}>{message}</Text>
+              <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
             </Box>
             {isThread && (
-              <Flex
-                p={["2px","15px"]}
-                flexDirection="row"
-                gridGap={["10px","15px"]}
-                alignItems="center"
-              >
-                <AvatarGroup gridGap="10px">
-                  {replies.map((reply) => {
+              <HStack spacing="5px" mt="5px">
+                {
+                  replies.slice(0, Math.min(4, replies.length))
+                  .map((reply, index) => {
                     return (
                       <Avatar
-                        size="xs"
-                        // width="20px"
-                        // height="20px"
+                        key={`replies-avatar-${index}`}
+                        w="24px"
+                        h="24px"
+                        borderRadius="4px"
                         name={reply.name}
                         src={reply.profilePic}
                         borderRadius="5px"
                       />
                     );
-                  })}
-                </AvatarGroup>
-                <Link fontSize={["8px", "16px"]} color="#0562ED">20 Replies</Link>
-                <Text 
-                css={{
-                    "@media (max-width: 400px)": {
-                        display: "none",
-                    }
-                }}
-                fontSize={["8px", "16px"]} color="#8B8B8B">Last reply 2 hours ago</Text>
-              </Flex>
+                  })
+                }
+                <HStack spacing="5px" alignItems="baseline">
+                  <Link fontSize={["8px", "14px"]} color="#1264A3">{replies.length} Replies</Link>
+                  <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
+                </HStack>
+              </HStack>
             )}
           </Flex>
         </Flex>
       </Box>
     );
   };
+
+const HoverOptions = ({ show }) => {
+  const [isMenuOpen, setMenuOpen] = useState(false)
+  const menuItemImpl = useMemo(() => [
+    { label: "Turn off notifications for replies" },
+    { divider: true },
+    { label: "Mark as Unread", command: "U" },
+    { label: "Remind me about this" },
+    { divider: true },
+    { label: "Send reply to this channel" },
+    { label: "Share message", command: "S" },
+    { label: "Copy Link" },
+    { divider: true },
+    { label: "Pin to channel", command: "P" },
+    { label: "Edit Message", command: "E" }, 
+  ], [])
+  return (
+    <HStack 
+      px="9px" py="7px" 
+      spacing="6px" 
+      position="absolute" 
+      top="-20px" right="10px" 
+      border="1px solid #EBEBEB" borderRadius="3px" 
+      bg="white"
+      display={show || isMenuOpen ? "flex" : "none"}
+    >
+      <Square {...commonOptionStyle}>
+        <HiOutlineEmojiHappy />
+      </Square>
+      <Square {...commonOptionStyle}>
+        <FaRegCommentDots />
+      </Square>
+      <Square {...commonOptionStyle}>
+        <FiCornerUpRight />
+      </Square>
+      <Square {...commonOptionStyle}>
+        <FiBookmark />
+      </Square>
+      <Square {...commonOptionStyle}>
+        <Menu placement="auto-end" isLazy lazyBehavior="unmount" onOpen={() => setMenuOpen(true)} onClose={() => setMenuOpen(false)}>
+          <MenuButton
+            as={IconButton}
+            aria-label="More"
+            icon={<CgMoreVertical />}
+            bg="transparent"
+            _hover={{ bg: "transparent" }}
+            _focus={{ outline: "none" }}
+            sx={{
+              "&[data-active]": {
+                background: "transparent"
+              }
+            }}
+          />
+          <MenuList border="0.5px solid #8B8B8B">
+            {
+              menuItemImpl.map(({ label, divider=false, ...rest }, index) => (
+                <React.Fragment key={`menu-item-${index}`}>
+                  { !divider ? <MenuItem {...rest} {...commonMoreOptionStyle}>{ label }</MenuItem> : <MenuDivider /> }
+                </React.Fragment>
+              ))
+            }
+            <MenuItem command="delete" {...deleteMoreOptionStyle}>Delete message</MenuItem>
+          </MenuList>
+        </Menu>
+      </Square>
+    </HStack>
+)}
+const commonOptionStyle = {
+  size: "24px" ,
+  cursor: "pointer",
+  borderRadius: "2px",
+  _hover: { bg: "#E7E7E7" }
+}
+const commonMoreOptionStyle = {
+  _hover: { bg: "#00B87C", color: "white" },
+  _focus: { bg: "#00B87C", color: "white" }
+}
+const deleteMoreOptionStyle = {
+  _hover: { bg: "#ED5564", color: "white" },
+  _focus: { bg: "#ED5564", color: "white" },
+  color: "#ED5564"
+}
 
 export default MessageCard;

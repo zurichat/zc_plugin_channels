@@ -49,6 +49,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
 
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+
 # STORAGES
 # ------------------------------------------------------------------------------
 # https://django-storages.readthedocs.io/en/latest/#installation
@@ -78,7 +81,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # MEDIA
 # ------------------------------------------------------------------------------
 DEFAULT_FILE_STORAGE = "channel_plugin.utils.storages.MediaRootS3Boto3Storage"
-MEDIA_URL = f"media/"
+MEDIA_URL = "media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -170,3 +173,4 @@ LOGGING = {
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+BASE_URL = "https://channels.zuri.chat"

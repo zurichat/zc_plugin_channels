@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Flex } from "@chakra-ui/layout";
 
-import ChannelDetailsContainer from "./subs/ChannelDetailsContainer/ChannelDetailsContainer";
+import ChannelHeader from "../shared/ChannelHeader";
 // import ChannelNameBanner from "../admin/subs/ChannelNameBanner/ChannelNameBanner";
 import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContainer";
 // import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
@@ -21,13 +21,16 @@ import {
   Button
 } from "@chakra-ui/react"
 
+
+
 const MessageBoardIndex = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  
   return (
     <Box bg="#F9F9F9" m="5px">
       <Flex>
         <Box width="95vw">
-        <ChannelDetailsContainer />
+        <ChannelHeader />
         <Box m="5px" bg="white" overflowY="scroll" height={["75vh","75vh", "80vh", "72vh"]}
         css={{
         "&::-webkit-scrollbar": {
