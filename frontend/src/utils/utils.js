@@ -36,6 +36,14 @@ class UtilityService {
   formatDate(date, type) {
     return moment(date).format(type);
   }
+
+  removeDuplicateObjectFromArray(array, key) {
+    return array.filter((obj, index, self) =>
+        index === self.findIndex((el) => (
+            el[key] === obj[key]
+        ))
+    )
+}
 }
 
 const instance = new UtilityService();
