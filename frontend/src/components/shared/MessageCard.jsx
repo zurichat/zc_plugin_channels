@@ -18,7 +18,7 @@ const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, isThread, edited }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
     return (
@@ -45,7 +45,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, isThread, edited }) =>
             <Box m="0px">
               <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
             </Box>
-            {isThread && (
+            {can_reply && (
               <HStack spacing="5px" mt="5px">
                 {
                   replies.slice(0, Math.min(4, replies.length))

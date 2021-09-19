@@ -53,6 +53,19 @@ const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
     console.log(error);
   }
 };
+const _getChannel_Thread_Messages = (org_id, channel_id) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.getMessages(org_id, channel_id);
+    console.log(res.data);
+    // Result is sent to the store via dispatch (Pass payload if needed)
+    dispatch({ type: GET_CHANNELMESSAGES, payload: res.data });
+  } catch (error) {
+    // Handle exceptions here
+    console.log(error);
+  }
+};
 
 const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
   try {
