@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Grid, Flex, Image, Text, Box, Spacer } from '@chakra-ui/react'
 import { FormControl, Select, SimpleGrid } from '@chakra-ui/react'
 import {FiDownloadCloud} from 'react-icons/fi'
@@ -7,7 +7,6 @@ import { BsGrid } from 'react-icons/bs'
 import { CgList } from 'react-icons/cg'
 import { IconButton } from '@chakra-ui/react'
 import {useState} from 'react'
-import axios from 'axios'
 
 
 export default function DisplayFile() {
@@ -45,9 +44,7 @@ console.log('list')
                     <Box display='column' w='60px' mr='40px'>
                       <Flex>
                         <IconButton icon={<CgList color='#a1a1a1' onClick={this.handleList} />} />
-                        {/* <CgList color='#a1a1a1' /> */}
-                        {/* <Spacer /> */}
-                        {/* <BsGrid color='#a1a1a1' /> */}
+                       
                         <IconButton
                           icon={<BsGrid color='#a1a1a1' onClick={this.handleGrid} />}
                         />
