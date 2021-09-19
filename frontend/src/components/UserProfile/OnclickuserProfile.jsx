@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, IconButton, Image,  Stack, Text, Divider, Container, Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import { Box, IconButton, Image,  Stack, Text, Divider, Container } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import { FiPhoneCall } from "react-icons/fi";
@@ -28,7 +28,7 @@ const OnClickUserProfile = ({showProfile }) => {
                 justifyContent="space-between" w='23rem' fontWeight="700" pl="14px" pr="10px">
             <Text color='white' pt='4px' > Profile </Text>
               <IconButton alignSelf='flex-end' colorScheme='white'
-              background='none'   _hover='none' icon={  <FaTimes />} />
+              background='none'   _hover='none' icon={   <FaTimes color='white' />} />
             </Box>
 
             <Box pos='relative' left='41.9rem' top='.8rem' h='41rem' w='21.8rem' bgColor='#ffffff'>
@@ -54,8 +54,9 @@ const OnClickUserProfile = ({showProfile }) => {
                 <Image src={smileEmoji}  pos='absolute' left='10rem'  top='17.8rem'  h='25px' w='25px' />
 
 
-                <Box pos='absolute' top='21rem'  alignSelf='center' display='flex' transform='scale(0.95)'>
-                    <IconButton
+                <Box pos='relative' left='0.5rem' top='-15.5rem' >
+                  <Box display='flex' transform='scale(0.8)' pos='absolute' top='19.8rem' left='3rem' flexDir='column'>
+                    <IconButton pos='relative' left={2}
                         icon={<BiMessageRoundedDetail />}
                         background="#F0FDF9"
                         width="40px"
@@ -63,7 +64,11 @@ const OnClickUserProfile = ({showProfile }) => {
                         borderRadius="12px"
                         _hover='none'
                       />
-                      <IconButton
+                          <Text pos='relative' left={2} >Message</Text>
+                     </Box>
+
+                     <Box  pos='absolute' transform='scale(0.8)' top='19.8rem' left='9rem' display='flex' flexDir='column'>
+                      <IconButton pos='relative' left={-7}
                         icon={<FiPhoneCall />}
                         background="#F0FDF9"
                         width="40px"
@@ -72,16 +77,22 @@ const OnClickUserProfile = ({showProfile }) => {
                         ml="24px"
                         _hover='none'
                       />
-                      <IconButton
+                          <Text pos='relative' left={3} >Call</Text>
+                          </Box>
+                      
+                    <Box pos='absolute' justifyContent='center' transform='scale(0.8)' top='19.8rem' left='15rem' display='flex' flexDir='column'>
+                      <IconButton pos='relative' left={-10}
                         icon={<CgMore />}
                         background="#F0FDF9"
                         width="40px"
                         height="40px"
                         borderRadius="12px"
                         ml="24px"
-                      
                         onClick={()=> setShowMoreModal(true)  }
-                      />
+                      /> 
+                          <Text pos='relative' left={-2}  >More</Text>
+                    </Box>
+                     
                 </Box>
                 <Box pos='absolute' left='-.99rem' top='24rem' transform='scale(0.84)' >
                     <Text pl='2rem' alignSelf='left' fontSize='11px' pt='8px' color='#828282' fontWeight='700' >Display Name</Text>
