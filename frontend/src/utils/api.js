@@ -1,6 +1,11 @@
 import axios from "axios";
 
+<<<<<<< HEAD
 const baseURL = "https://channels.zuri.chat/api/v1";
+=======
+// const baseURL = "https://channels.zuri.chat/api/v1";
+const baseURL = "http://127.0.0.1:8000/api/v1";
+>>>>>>> 90c9e06724d8c44477c0f8e5a8b8a83ce62b4797
 
 const defaultConfig = {
   baseURL,
@@ -115,6 +120,22 @@ class APIServices {
 
   async archiveChannel(org_id, channel_id) {
     return api.put(`/${org_id}/channels/${channel_id}?archived=True`)
+  }
+
+  async getPinnedMessages(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`)
+  }
+
+  async pinMessage(org_id, channel_id, user_id, message_id) {
+    return api.put(
+      `/${org_id}/messages/${message_id}/`,
+      { pinned: "True" },
+      { params:  { user_id, channel_id }}
+      )
+  }
+  
+  async channelDetail(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
 }
 
