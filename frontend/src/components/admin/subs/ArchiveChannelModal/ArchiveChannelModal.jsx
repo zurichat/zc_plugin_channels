@@ -25,16 +25,9 @@ const ArchiveChannelModal = ({ isOpen, onClose }) => {
         
         const orgId = 1
         const channelId = "613f70bd6173056af01b4aba"
-        const data = {
-            archived: true
-        }
         // code to archive the channel with Id from props
         try {
-            // code here ...
-            let response = await APIService.getChannels(orgId)
-            console.log({ response })
-            response = await APIService.archiveChannel(orgId, channelId)
-            console.log({ response })
+            await APIService.updateChannel(orgId, channelId, { archived: "True" })
             _alert("success", "Channel successfully archived")
         } catch (err) {
             _alert("error")

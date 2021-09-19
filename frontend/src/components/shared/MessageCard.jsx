@@ -25,7 +25,7 @@ const MessageCard = ({ name, time, message, icon, isThread }) => {
     const messageId = "61413e736173056af01b4d31"
     const userId = "cephas"
     const channelId = "613f70bd6173056af01b4aba"
-    const res = await APIService.pinMessage(orgId, channelId, userId, messageId);
+    const res = await APIService.updateMessage(orgId, channelId, userId, messageId, { pinned: "True" });
     console.log(res)
   }
 

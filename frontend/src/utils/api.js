@@ -48,11 +48,12 @@ class APIServices {
     );
   }
 
-  async updateMessage(org_id, msg_id, data) {
+  async updateMessage(org_id, channel_id, user_id, msg_id, data) {
     return api.put(
-      `/channels​/messages​/${org_id}​/${msg_id}​/update`,
-      data
-    );
+      `/${org_id}/messages/${msg_id}/`,
+      data,
+      { params:  { user_id, channel_id }}
+    )
   }
 
   async createRole(org_id, channel_id, data) {
@@ -111,23 +112,11 @@ class APIServices {
   }
 
   async updateChannel(org_id, channel_id, data) {
-    return api.put(`/${org_id}/channels/${channel_id}/update`, data);
-  }
-
-  async archiveChannel(org_id, channel_id) {
-    return api.put(`/${org_id}/channels/${channel_id}?archived=True`)
+    return api.put(`/${org_id}/channels/${channel_id}/`, data);
   }
 
   async getPinnedMessages(org_id, channel_id) {
     return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`)
-  }
-
-  async pinMessage(org_id, channel_id, user_id, message_id) {
-    return api.put(
-      `/${org_id}/messages/${message_id}/`,
-      { pinned: "True" },
-      { params:  { user_id, channel_id }}
-      )
   }
   
   async channelDetail(org_id, channel_id) {
