@@ -8,40 +8,25 @@ import { CgList } from 'react-icons/cg'
 import { IconButton } from '@chakra-ui/react'
 import {useState} from 'react'
 import axios from 'axios'
-// import fileDownload from 'js-file-download'
 
 
+export default function DisplayFile() {
 
-export default class DisplayAndDeleteFiles extends Component {
 
-    state ={
-        listView: true,
-        gridView: false
+    const [click, setClick] = useState(false);
 
-    }
+  const  handleGrid  = (e)=>{
+      e.preventDefault();
+console.log('grid')
 
-    handleGrid = ()=>{
-        this.setState({
-            listView:false,
-            gridView:true
-        })
-        console.log('grid')
-    }
+  const  handleList  = (e)=>{
+      e.preventDefault();
+console.log('list')
+  }
 
-    handleList = () =>{
-        this.setState({
-            listView:true,
-            gridView:false
-        })
-        console.log('list')
-    }
-
-   
-
-    render() {
-        return (
-          <>
-            <Box bg='#e5e5e5' h='100%'>
+  return (
+    <>
+       <Box bg='#e5e5e5' h='100%'>
               <Box>
                 <Box ml={3} p={3}>
                   <Flex>
@@ -388,29 +373,8 @@ export default class DisplayAndDeleteFiles extends Component {
                 </SimpleGrid>
               </Box>
             </Box>
-          </>
-        )
-    }
-}
-
-
-// export default 
-export function FilesModal() {
-
-
-    const [click, setClick] = useState(false);
-
-  const  handleGrid  = (e)=>{
-      e.preventDefault();
-console.log('grid')
-  }
-
-  return (
-    <>
-      
     </>
   )
 }
 
-
-// export  FilesModal;
+}
