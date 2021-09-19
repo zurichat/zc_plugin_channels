@@ -1,9 +1,10 @@
-import { GET_USERS } from "../actions/types";
+import { GET_USERS,SEND_MESSAGES } from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
   users: [],
+  sendMessages:{}
 };
 
 const appReducer = (state = initialState, action) => {
@@ -18,7 +19,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         users: payload,
       };
-
+      case SEND_MESSAGES:
+        return{
+          ...state,
+          sendMessages:payload
+        }
     // Default state is returned
     default:
       return state;

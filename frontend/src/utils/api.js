@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const baseURL = "channels.zuri.chat/api";
-
+const baseURL = "https://channels.zuri.chat/api";
+// const baseURL="https://localhost:3001/";
 const defaultConfig = {
   baseURL,
   timeout: 60000,
   headers: {
     "Content-type": "application/json",
-    "Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Origin": "*",
   },
 };
 
@@ -28,7 +28,10 @@ class APIServices {
   }
 
   async createMessage(org_id, channel_id, data) {
-    return api.post(`/channels/messages/${org_id}/${channel_id}`, data);
+    return api.post(`/channels/messages/${org_id}/${channel_id}/`, data);
+  }
+  async sendMessage(org_id, channel_id, data) {
+    return api.post(`/v1/${org_id}/channels/${channel_id}/messages/`, data);
   }
 
   async getMessages(org_id, channel_id) {
