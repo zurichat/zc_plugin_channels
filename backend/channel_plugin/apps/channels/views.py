@@ -1,4 +1,5 @@
 import json
+
 from apps.centri.helperfuncs import build_room_name
 from apps.channelmessages.serializers import ChannelMessageUpdateSerializer
 from apps.utils.serializers import ErrorSerializer
@@ -10,12 +11,8 @@ from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from django.http.response import JsonResponse
-
-# from rest_framework.filters
 
 from channel_plugin.utils.customrequest import Request
-
 from channel_plugin.utils.wrappers import FilterWrapper
 
 from .serializers import (  # SearchMessageQuerySerializer,
@@ -23,9 +20,12 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     SocketSerializer,
-    UserSerializer,
     UserChannelGetSerializer,
+    UserSerializer,
 )
+
+# from rest_framework.filters
+
 
 # Create your views here.
 
@@ -215,7 +215,7 @@ class ChannelViewset(ViewSet):
             status_code = status.HTTP_404_NOT_FOUND
 
         return Response(result, status=status_code)
-    
+
     @swagger_auto_schema(
         responses={200: openapi.Response("Response", SocketSerializer())},
         operation_id="get-channel's-socket-name",
@@ -229,11 +229,9 @@ class ChannelViewset(ViewSet):
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
         if channel:
-            name = build_room_name(org_id, channel["_id"])
-            
             data = {
-                'socket_name': build_room_name(org_id, channel["_id"]),
-                'channel_id': channel_id
+                "socket_name": build_room_name(org_id, channel["_id"]),
+                "channel_id": channel_id,
             }
 
             serializer = SocketSerializer(data=data)
@@ -243,7 +241,6 @@ class ChannelViewset(ViewSet):
             return JsonResponse(
                 {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
             )
-    
 
 
 channel_list_create_view = ChannelViewset.as_view(
@@ -269,9 +266,7 @@ user_channel_list = ChannelViewset.as_view(
     }
 )
 
-channel_socket_view = ChannelViewset.as_view(
-    {"get": "get_channel_socket_name"}
-)
+channel_socket_view = ChannelViewset.as_view({"get": "get_channel_socket_name"})
 
 
 class ChannelMemberViewset(ViewSet):
@@ -311,7 +306,7 @@ class ChannelMemberViewset(ViewSet):
         for key in self.request.query_params.keys():
             try:
                 params[key] = json.loads(params.get(key)[0])
-            except:
+            except:  # noqa
                 params[key] = params.get(key)[0]
 
             for chk in param_checkers:
@@ -320,7 +315,7 @@ class ChannelMemberViewset(ViewSet):
 
                     try:
                         params[p] = json.loads(params.get(key))
-                    except:
+                    except:  # noqa
                         params[p] = params.get(key)
                     params.pop(key)
         return params
@@ -403,7 +398,7 @@ class ChannelMemberViewset(ViewSet):
             )
 
             if isinstance(result, dict):
-                if not result.get("error"):                    
+                if not result.get("error"):
                     if isinstance(output, dict):
                         # when only one user is added
                         request_finished.send(
@@ -411,7 +406,7 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=output["_id"]
+                            user_id=output["_id"],
                         )
                     else:
                         # when output is a list multiple users where added
@@ -425,7 +420,9 @@ class ChannelMemberViewset(ViewSet):
                         )
                     return Response(output, status=status.HTTP_201_CREATED)
                 else:
-                    return Response(result.get("error"), status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        result.get("error"), status=status.HTTP_400_BAD_REQUEST
+                    )
             else:
                 return Response(result, status=result.status_code)
         return Response(
@@ -452,7 +449,7 @@ class ChannelMemberViewset(ViewSet):
         channel = self.retrieve_channel(request, org_id, channel_id)
 
         if channel:
-            if channel["allow_members_input"] == True:
+            if channel["allow_members_input"] is True:
                 can_input = True
                 return Response(can_input, status=status.HTTP_200_OK)
             else:
@@ -470,10 +467,10 @@ class ChannelMemberViewset(ViewSet):
                 else:
                     return Response(
                         {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
-                    )   
+                    )
         return Response(
             {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
-        )                                       
+        )
 
     @swagger_auto_schema(
         responses={
@@ -526,7 +523,7 @@ class ChannelMemberViewset(ViewSet):
         Method adds a user to a channel
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
-        
+
         if channel:
 
             # checks if the user is a member of the channel
@@ -660,7 +657,8 @@ class ChannelMemberViewset(ViewSet):
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
-channel_members_can_input_view =  ChannelMemberViewset.as_view(
+
+channel_members_can_input_view = ChannelMemberViewset.as_view(
     {
         "post": "can_input",
     }
@@ -677,27 +675,3 @@ channel_members_list_create_views = ChannelMemberViewset.as_view(
 channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
-
-
-
-# class SearchMessagesAPIView(APIView):
-#     def post(self, request):
-#         serializer = SearchMessageQuerySerializer(data=request.data)
-#         if serializer.is_valid():
-#             value = serializer.validated_data["value"]
-#             if value != "-":
-#                 data = find_item_in_data(messages_data, value, "value")
-#                 response = {"status": True, "message": "Query results", "data": data}
-#                 return Response(response, status=status.HTTP_200_OK)
-#             else:
-#                 data = messages_data
-#                 response = {"status": True, "message": "Query results", "data": data}
-#                 return Response(response, status=status.HTTP_200_OK)
-#         return Response(serializer.errors)
-#     def get(self, request):
-#         return Response(
-#             {
-#                 "status": True,
-#                 "message": "Endpoint to search messages, passing '-' will return all messages_data.",
-#             }
-#         )
