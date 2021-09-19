@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Box, HStack } from "@chakra-ui/layout";
 import { Flex, Spacer, Avatar, AvatarGroup, Button, Divider, IconButton, Image } from "@chakra-ui/react";
 import { BiChevronDown, BiChevronLeft } from "react-icons/bi";
 import { Icon } from "@chakra-ui/icon";
 import { IoMdAdd } from "react-icons/io";
-import { FiHash, FiInfo } from "react-icons/fi";
+import { FiHash } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { TiPin } from 'react-icons/ti'
 import searchImage from "../../assets/search.png";
 import infoImage from "../../assets/info.png";
-import APIService from "../../utils/api";
 import appActions from "../../redux/actions/app"
+import { useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
 
 //avatar details(Just a placeholder)
 const avatars = [
@@ -20,26 +21,18 @@ const avatars = [
 ];
 
 const ChannelHeader = () => {
-
-  const [pinnedMessages, setPinnedMessages] = useState([]);
+  const { pinnedMessages } = useSelector((state) => state.channelsReducer)
 
   const numberOfMembers = 30000;//just a placeholder
-  //const numberOfPinnedMsgs = 3;
   const channelsName = 'Announcements';//just a placeholder
 
-  const getPinnedMessages = async () => {
-    const orgId = 1;
-    const channelId = "613f70bd6173056af01b4aba"; // Hardcoded value to for channelId in org with id 1
-    const res = await APIService.getPinnedMessages(orgId, channelId)
-    setPinnedMessages(res.data)
-  };
+  const dispatch = useDispatch();
+  const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);
 
   useEffect(() => {
-    try {
-      getPinnedMessages()
-    } catch (err) {
-      appActions._alert("error")
-    }
+    const orgId = 1;
+    const channelId = "613f70bd6173056af01b4aba"; // Hardcoded value to for channelId in org with id 1
+    _getPinnedMessages(orgId, channelId); // get pinned messages
   }, [])
 
   return (

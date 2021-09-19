@@ -7,8 +7,9 @@ import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
 import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
-import APIService from "../../utils/api"
 import appActions from "../../redux/actions/app"
+import { useDispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -21,17 +22,15 @@ const replies = [
 const MessageCard = ({ name, time, message, icon, isThread }) => {
   const [showOptions, setShowOptions] = useState(false)
 
-  const pinMessage = async () => {
-    const { _alert } = appActions;
-    try {
-      const orgId = 1 // Hardcoded value to for channelId in org with id 1
-      const messageId = "61413e736173056af01b4d31"
-      const userId = "cephas"
-      const channelId = "613f70bd6173056af01b4aba"
-      await APIService.updateMessage(orgId, channelId, userId, messageId, { pinned: "True" });
-    } catch (err) {
-      _alert("error")
-    }
+  const dispatch = useDispatch();
+  const { _pinMessage } = bindActionCreators(appActions, dispatch);
+
+  const pinMessage = () => {
+    const orgId = 1 // Hardcoded value to for channelId in org with id 1
+    const messageId = "61413e736173056af01b4d31"
+    const userId = "cephas"
+    const channelId = "613f70bd6173056af01b4aba"
+    _pinMessage(orgId, channelId, userId, messageId)
   }
 
   const actions = {
