@@ -11,7 +11,7 @@ import OnClickUserProfile from "./OnClickUserProfile";
   return <Box h='100vh' bgColor='#E5E5E5'>
               
               <UserProfileOnHover setShowProfile={setShowProfile} />
-              <OnClickUserProfile showProfile={showProfile && setShowProfile} />
+              <OnClickUserProfile showProfile={showProfile} setShowProfile={setShowProfile} />
         </Box>;
 };
 

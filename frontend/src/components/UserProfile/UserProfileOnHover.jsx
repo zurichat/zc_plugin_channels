@@ -42,7 +42,7 @@ import smileEmoji from '../images/emoji-smile.png'
           shadow='md'
         >
           <Stack  spacing={20}>
-           <Image h='190px'w='100%' src={data.imageUrl}></Image>
+           <Image h='185px'w='100%' src={data.imageUrl}></Image>
             <Box  pos='absolute' left='11.2rem' border='1px' top='10.8rem' borderRadius='50%' h='9px' w='9px' />
             <Stack pt='1rem' pl='1rem'>
             <Text fontSize='1.3rem' fontWeight='1000' fontStyle='Lato' pos='absolute' pl='.5rem' top='15rem' >{data.name}</Text>
@@ -72,6 +72,7 @@ import smileEmoji from '../images/emoji-smile.png'
                       _hover={{ bg: "#00B87C", 
                                 color: "white"      }}
                       border='1px'
+                      colorScheme='none'
                       borderColor='#00B87C'
                       m='10px'
                       h='32px'
