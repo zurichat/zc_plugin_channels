@@ -19,7 +19,7 @@ class ChannelSerializer(serializers.Serializer):
         """
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
-        if isinstance(response, list)(response):
+        if isinstance(response, list):
             raise serializers.ValidationError({"error": "Name already exist"})
         return name
 
@@ -111,3 +111,8 @@ class UserChannelGetSerializer(serializers.Serializer):
     _id = serializers.ReadOnlyField()
     name = serializers.CharField(max_length=100, required=False)
     description = serializers.CharField(required=False)
+
+
+class SocketSerializer(serializers.Serializer):
+    socket_name = serializers.CharField(max_length=200, required=True) 
+    channel_id = serializers.CharField(max_length=30, required=True)
