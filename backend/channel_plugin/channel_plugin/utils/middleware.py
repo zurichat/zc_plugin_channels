@@ -41,6 +41,6 @@ class CorsMiddleware:
                 pass
             
         else:
-            response.__dict__["_headers"]["access-control-allow-origin"] = "*"
+            response.__dict__["_headers"]["access-control-allow-origin"] = ("*")
             
         return response
