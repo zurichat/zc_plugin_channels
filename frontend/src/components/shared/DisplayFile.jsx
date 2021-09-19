@@ -175,7 +175,7 @@ export default class DisplayAndDeleteFiles extends Component {
                           image.png
                         </Text>
                         <Text color='#717171' fontSize='12px'>
-                          Lorem, ipsum.
+                          Lorem, ipsum lorem ipsum.
                         </Text>
                       </Box>
                     </Flex>
