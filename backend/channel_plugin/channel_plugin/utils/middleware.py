@@ -1,9 +1,9 @@
-from django.conf import settings
-from django.http import JsonResponse
-from django import http
+# from django import http
+# from django.conf import settings
+# from django.http import JsonResponse
+
 
 class AuthenticationMiddleware:
-
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -11,9 +11,9 @@ class AuthenticationMiddleware:
         response = self.get_response(request)
         return response
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
+    def process_view(self, request, view_func, view_args, view_kwargs):  # noqa
         view_exceptions = ["render_react", "schemaview"]
-        user_token = request.GET.get("user_token")
+        # user_token = request.GET.get("user_token")
         if view_func.__name__.lower() in view_exceptions:
             return
         # print(user_token)
@@ -28,11 +28,8 @@ class CorsMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if (request.method == "OPTIONS"  and "HTTP_ACCESS_CONTROL_REQUEST_METHOD" in request.META):
-            response = http.HttpResponse()
-            response["Content-Length"] = "0"
-            response["Access-Control-Max-Age"] = 86400
-        response["Access-Control-Allow-Origin"] = request.headers.get("Origin") or "*"
-        response["Access-Control-Allow-Methods"] = "DELETE, GET, OPTIONS, PATCH, POST, PUT"
-        response["Access-Control-Allow-Headers"] = "accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with"
+        return response
+
+    def process_response(self, request, response):
+        del response["Access-Control-Allow-Origin"]
         return response
