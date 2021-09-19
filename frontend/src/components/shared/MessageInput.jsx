@@ -23,6 +23,9 @@ const MessageInput = () =>{
     const [toggle,setToggle]=useState(false);
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("")
+
+    const org_id = 1;//Test value for org id
+    const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id in org with id 1
     const datas={
       user_id:"thanos",
       content:data
@@ -31,12 +34,12 @@ const MessageInput = () =>{
     const dispatch=useDispatch();
     const {_sendMessage} = bindActionCreators(appActions,dispatch);
 
-    const {sendMessages} = useSelector((state)=>state.appReducer)
+    const {sendMessages} = useSelector((state)=>state.channelsReducer)
     // console.log(sendMessages);
 
     const loadData=async ()=>{
-      await _sendMessage('1','613f70bd6173056af01b4aba',datas)
-      setData('')
+      await _sendMessage(org_id,channel_id,datas)
+      setData('');
     }
     const changeWeight=(e)=>{
       const active=e.target
