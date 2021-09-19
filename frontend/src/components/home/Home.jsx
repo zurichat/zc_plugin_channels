@@ -10,6 +10,7 @@ import CreateChannelModal from "../createChannel/createChannelModal";
 import TopSearch from "../createChannel/TopSearch";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Icon } from "@chakra-ui/icon";
+import CreateChannel from "../createChannel";
 
 const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -32,38 +33,7 @@ const Home = () => {
   }, []);
 
   return (
-    <Box width="100%" height="100vh" bg="#E5E5E5" pt={4}>
-      <Box w="95%" mx="auto">
-        <TopSearch />
-      </Box>
-      <Box bg="white" w="95%" p={4} mx="auto" borderRadius="2px">
-        <HStack>
-          <Heading size="sm"># New Channel</Heading>
-          <Icon as={BiChevronDown} boxSize="20px" color="gray.500" />
-          <Spacer />
-          <Button
-            onClick={onOpen}
-            size="md"
-            colorScheme="green"
-            fontSize="14px"
-          >
-            Create New channel
-          </Button>
-          <CreateChannelModal isOpen={isOpen} onClose={onClose} />
-        </HStack>
-      </Box>
-      <Box
-        bg="white"
-        mt="20px"
-        w="95%"
-        p={4}
-        color="black"
-        ml="8"
-        borderRadius="2px"
-      >
-        {/* Mount your component here and unmount when done */}
-      </Box>
-    </Box>
+    <CreateChannel />
   );
 };
 
