@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://channels.zuri.chat/api";
+const baseURL = "https://channels.zuri.chat/api/v1";
 
 const defaultConfig = {
   baseURL,
@@ -8,7 +8,6 @@ const defaultConfig = {
   headers: {
     "Content-type": "application/json",
     // "Access-Control-Allow-Origin": "*",
-    // "Origin": "windows.location.origin"
   },
 };
 
@@ -22,6 +21,7 @@ api.interceptors.request.use(
   },
   (err) => Promise.reject(err)
 );
+
 class APIServices {
   // @desc End Point Example
   async getUsers(data) {
@@ -33,26 +33,19 @@ class APIServices {
   }
 
   async getMessages(org_id, channel_id) {
-    return api.get(`/v1/${org_id}/channels/${channel_id}/messages/`);
+    return api.get(`/${org_id}/channels/${channel_id}/messages/`);
   }
 
   async deleteMessage(org_id, msg_id) {
-    return api.delete(
-      `/channels​/messages​/${org_id}​/${msg_id}​/delete​`
-    );
+    return api.delete(`/channels​/messages​/${org_id}​/${msg_id}​/delete​`);
   }
 
   async retrieveMessage(org_id, msg_id) {
-    return api.get(
-      `/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`
-    );
+    return api.get(`/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`);
   }
 
   async updateMessage(org_id, msg_id, data) {
-    return api.put(
-      `/channels​/messages​/${org_id}​/${msg_id}​/update`,
-      data
-    );
+    return api.put(`/channels​/messages​/${org_id}​/${msg_id}​/update`, data);
   }
 
   async createRole(org_id, channel_id, data) {
@@ -84,7 +77,9 @@ class APIServices {
   }
 
   async deleteThread(org_id, channelmessage_id) {
-    return api.delete(`/channels/threads/${org_id}/${channelmessage_id}/delete`);
+    return api.delete(
+      `/channels/threads/${org_id}/${channelmessage_id}/delete`
+    );
   }
 
   async updateThread(org_id, channelmessage_id, data) {
@@ -112,6 +107,10 @@ class APIServices {
 
   async updateChannel(org_id, channel_id, data) {
     return api.put(`/channels/${org_id}/${channel_id}/update`, data);
+  }
+
+  async channelDetail(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
 }
 

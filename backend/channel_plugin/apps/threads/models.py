@@ -27,7 +27,7 @@ class Thread:
             "files": self.files,
             "has_files": self.has_files,
             "emojis": self.emojis,
-            "edited": self.edited,
+            "edited": str(self.edited),
             "timestamp": self.timestamp,
         }
         response = Request.post(

@@ -137,7 +137,7 @@ class GetInfoViewset(ViewSet):
                         list(
                             filter(
                                 lambda channel: user_id not in channel["users"].keys()
-                                and not channel.get("private"),
+                                and not bool(channel.get("private")),
                                 channels,
                             )
                         ),
