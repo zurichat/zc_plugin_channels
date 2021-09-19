@@ -1,6 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
-import { GET_USERS, GET_CHANNEL_DETAILS } from "./types";
+import { GET_USERS, GET_CHANNEL_DETAILS, GET_PINNED_MESSAGES, PIN_MESSAGE, ARCHIVE_CHANNEL } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
 
@@ -53,6 +53,34 @@ const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
   }
 };
 
+const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.getPinnedMessages(org_id, channel_id)
+    dispatch({ type: GET_PINNED_MESSAGES, payload: res.data })
+  } catch (err) {
+    _alert("error")
+  }
+};
+
+const _pinMessage = (org_id, channel_id, user_id, message_id) => async (dispatch) => {
+  try {
+    const res = await APIService.updateMessage(org_id, channel_id, user_id, message_id, { pinned: "True" });
+    dispatch({ type: PIN_MESSAGE, payload: res.data })
+  } catch (err) {
+    _alert("error")
+  }
+}
+
+const _archiveChannel = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.updateChannel(org_id, channel_id, { archived: "True" })
+    dispatch({ type: ARCHIVE_CHANNEL, payload: res.data })
+    _alert("success", "Channel successfully archived")
+  } catch (err) {
+      _alert("error")
+  }
+}
+
 // Export functions here
-const appActions = { _alert, _getUsers, _getChannelDetails };
+const appActions = { _alert, _getUsers, _getChannelDetails, _getPinnedMessages, _pinMessage, _archiveChannel };
 export default appActions;
