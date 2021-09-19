@@ -1,11 +1,7 @@
 import axios from "axios";
 
-<<<<<<< HEAD
-const baseURL = "https://channels.zuri.chat/api/v1";
-=======
 // const baseURL = "https://channels.zuri.chat/api/v1";
 const baseURL = "http://127.0.0.1:8000/api/v1";
->>>>>>> 90c9e06724d8c44477c0f8e5a8b8a83ce62b4797
 
 const defaultConfig = {
   baseURL,
