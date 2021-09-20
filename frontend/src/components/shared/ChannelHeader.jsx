@@ -107,6 +107,10 @@ const pinnedAndBookmarkButtonStyle = {
   _focus: {
     outline: "none",
     bg: "#98FFDD"
+  },
+  _active: {
+    outline: "none",
+    bg: "#29FFB9"
   }
 }
 
