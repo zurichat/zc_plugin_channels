@@ -1,26 +1,78 @@
-import React from "react";
-import { Box, Flex, HStack, Spacer, Square, Stack } from "@chakra-ui/layout";
-import {
-  FiAtSign,
-  FiBold,
-  FiItalic,
-  FiLink,
-  FiList,
-  FiPaperclip,
-  FiSend,
-  FiZap,
-} from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { Flex} from "@chakra-ui/layout";
+import { Box, Button} from "@chakra-ui/react";
+import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
+import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
+import { FiAtSign, FiItalic } from "react-icons/fi";
+import { AiOutlineBars } from "react-icons/ai";
+import {GrEmoji } from "react-icons/gr";
+import {RiArrowDropDownLine} from 'react-icons/ri';
+import {ImAttachment} from 'react-icons/im';
 import { useRef } from "react";
 import { Textarea } from "@chakra-ui/textarea";
+import { useDispatch,useSelector } from "react-redux";
+import appActions from "../../redux/actions/app";
+import { bindActionCreators } from "redux";
 
 
 const MessageInput = () =>{
     const textRef = useRef(null);
+    const [input, setInput] = useState(false);
+    const [data,setData]=useState('');
+    const [click,setOnclick]=useState(false);
+    const [toggle,setToggle]=useState(false);
+    const [active,setActive]=useState("");
+    const [italic,setItalic]=useState("")
+
+    const datas={
+      user_id:"thanos",
+      content:data
+    }
+
+    const dispatch=useDispatch();
+    const {_sendMessage} = bindActionCreators(appActions,dispatch);
+
+    const {sendMessages} = useSelector((state)=>state.channelsReducer)
+    // console.log(sendMessages);
+
+    const loadData=async ()=>{
+      const org_id = '1';//Test value for org id
+      const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id in org with id 1
+      await _sendMessage(org_id,channel_id,datas)
+      setData('');
+    }
+    const changeWeight=(e)=>{
+      const active=e.target
+      let cmd=active.dataset['command'];
+      !toggle ? setActive(cmd) : setActive(" ");
+      
+      setToggle(!toggle)
+      return cmd;
+    }
+    const changeStyle=(e)=>{
+      const active=e.target
+      let cmd=active.dataset['command'];
+      !toggle ? setItalic(cmd) : setItalic(" ");
+  
+      setToggle(!toggle)
+      return cmd;
+    }
+    // useEffect(()=>{
+    //   loadData()
+    // },[]);
 
     return (
-      <Box border="1px solid #EBEBEB" bg="white" borderRadius="3px" width="100%">
+      <Box border="1px solid #EBEBEB" bg="white" borderRadius="3px" width="100%"
+      css={{
+        '&::-webkit-scrollbar':{
+          display:'none'
+        },
+      }}>
+        <Box display={['none','block']}>
         <ResizableInput
           textareaRef={textRef}
+          value={data}
+          changeText={(e)=>setData(e.target.value)}
           height="58px"
           border="none"
           fontSize="15px"
@@ -30,40 +82,109 @@ const MessageInput = () =>{
           paddingBlock="18px"
           paddingInline="20px"
           _focus={{ border: "none" }}
+          onInput={()=>setInput(true)}
+          onMouseOut={()=>setInput(false)}
+          fontWeight={active}
+          fontStyle={italic}
         />
-        <Flex paddingTop="5px" paddingBottom="10px" paddingInline="20px">
-          <HStack spacing="5px">
-            <Square size="24px">
-              <FiZap />
-            </Square>
-            <HSeparatorIcon />
-            <Square size="24px">
-              <FiBold />
-            </Square>
-            <Square size="24px">
-              <FiItalic />
-            </Square>
-            <Square size="24px">
-              <FiLink />
-            </Square>
-            <Square size="24px">
-              <FiList />
-            </Square>
-          </HStack>
-          <Spacer />
-          <Stack direction="row-reverse" spacing="5px">
-            <Square size="24px">
-              <FiSend />
-            </Square>
-            <Square size="24px">
-              <FiPaperclip />
-            </Square>
-            <Square size="24px">
-              <FiAtSign />
-            </Square>
-          </Stack>
-        </Flex>
+          <Box
+          maxW="100%"
+          display="flex"
+          justifyContent="space-between"
+          flexDirection="row"
+          alignItems="center"
+          overflowX="auto"
+          p={1}
+        >
+          <Box
+            width="10em"
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            _hover={{ cursor: "pointer"}}
+          >
+            <IoFlashOutline/>
+            <HSeparatorIcon/>
+            <BsTypeBold  className="box" onClick={changeWeight} data-command="bold"/>
+            <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
+            <BsLink45Deg />
+            <AiOutlineBars />
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            width={{ base: "10em", sm: "8em", md: "10em" }}
+            _hover={{ cursor: "pointer" }} marginLeft={['30px']}
+            minW="120px"
+            css={{
+              '&::-webkit-scrollbar':{
+                display:'none'
+              }
+            }}
+          >
+            <FiAtSign />
+            <ImAttachment/>
+            <GrEmoji/>
+            {(input || data!== "") ? (
+              <Button bg="#00B87C" size="xs">
+                <IoSendSharp color="white"  onClick={loadData}/>
+              </Button>
+            ) : (
+              <Button size="xs" disabled><IoSendSharp /></Button>
+            )}
+            <HSeparatorIcon/>
+            <RiArrowDropDownLine size="30px"/>
+          </Box>
+        </Box>
       </Box>
+      <Box display={["flex","none"]} maxH="94px" flexDir="column" justifyContent="space-between" p={3}
+      overflowX="auto">
+        {
+          click ? 
+          <Box display="flex" flexDir="column" justifyContent="space-between">
+            <Flex justify="space-between" width="100%" minW="10em">
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} 
+              onMouseOut={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+              {
+                (input || data!== "") ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs" disabled><IoSendSharp /></Button>
+              }
+            </Flex>
+            <Flex width="10em" justify="space-between" mt={1}>
+              <IoFlashOutline/>
+              <HSeparatorIcon/>
+              <GrEmoji/>
+              <BsTypeBold className="box" onClick={changeWeight} data-command="bold"/>
+              <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
+              <BsLink45Deg/>
+              <AiOutlineBars/>
+              <FiAtSign/>
+              <ImAttachment/>
+            </Flex>
+          </Box>
+          :
+          <Box display={["flex","none"]} flexDirection="row" alignItems="center" overflowX="auto"
+          maxW="100%"
+          css={{
+            '&::-webkit-scrollbar':{
+              display:'none'
+            }
+          }}>
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
+              onMouseDown={()=>setOnclick(true)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+            <Box>
+              <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
+              <AiOutlineBars/>
+              <FiAtSign/>
+              <ImAttachment/>
+              </Box>
+            </Box>
+          </Box>
+        }
+      </Box>
+    </Box>
+
     );
   };
   
@@ -84,6 +205,7 @@ const MessageInput = () =>{
   
   const ResizableInput = ({
     textareaRef,
+    changeText,
     onKeyUp = null,
     onBlur = null,
     onFocus = null,
@@ -124,6 +246,7 @@ const MessageInput = () =>{
         onKeyUp={keyUpEventHandler}
         onFocus={focusEventHandler}
         onBlur={blurEventHandler}
+        onChange={changeText}
         resize="none"
         rows="1"
         overflowY="hidden"
