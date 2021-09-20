@@ -18,7 +18,7 @@ const OrganisationMembersList = () => {
             {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
             {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
             {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
-            {FirstName: 'Abibola', FullName: 'Ifunanyachi Abibola Oworu-Chima', stack: 'Frontend Dev', src:'./images/images.png' },
+           
           
       ]
 
@@ -32,7 +32,7 @@ const OrganisationMembersList = () => {
                                     alignItems='flex-start'  alt='' />
                                     {/* members list active/non active indicator */}
                               <Box borderRadius='50%' ml='-.5rem' mt='1.5rem' w='.7em' h='.7em' 
-                                    borderColor='white' borderWidth='.141rem' bg='#00B87C'></Box>
+                                    borderColor='white' borderWidth='.141rem' bg='#F2FFFB'></Box>
                                     {/* display name (first name and full name) */}
                               <Text display='flex' position='relative' color='black' ml='16px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>{member.FirstName}   
                               <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>{member.FullName}</Text></Text>
@@ -57,7 +57,7 @@ const OrganisationMembersList = () => {
                                     alignItems='flex-start'  alt='' />
                                     {/* members list active/non active indicator */}
                               <Box borderRadius='50%' ml='-.5rem' mt='1.5rem' w='.7em' h='.7em' 
-                                    borderColor='white' borderWidth='.141rem' bg='gray'></Box>
+                                    borderColor='white' borderWidth='.141rem' bg='#00B87C'></Box>
                                     {/* display name (first name and full name) */}
                               <Text display='flex' position='relative' color='black' ml='16px' top='-.1rem' mt='.5px' fontSize='1rem' fontWeight='bold'>{member.FirstName}   
                               <Text color='gray' ml='.3rem' fontWeight='normal' fontSize='1rem'>{member.FullName}</Text></Text>
@@ -73,19 +73,19 @@ const OrganisationMembersList = () => {
 
  return ( 
       //  members list container
-    <Box position='absolute'
-        left='0'
-        top= '12.8em'
+    <Box transform='scale(0.9)' position='absolute'
+        left='-1rem'
+        top= '11rem'
         w='430px'
         h='520px'
         alignContent='center'
         backgroundColor='white' 
         color='black'  > 
         {/* input feild */}
-        <InputGroup size="md" w='38rem' ml='27px' mt='14px'>
-                  <Input _focus='none'  pr="4.5rem"placeholder="Find Members"/>
+        <InputGroup size="md" w='32rem' ml='27px' mt='14px'>
+                  <Input _focus='none' _hover='none'  borderColor='#000000'  pr="4.5rem"  _placeholder={{ color: '#333333' }} placeholder="Find Members"/>
                   <InputLeftElement width="4.5rem" bgColor='none'>
-                  <IconButton ml='-2rem' background='none' _hover='none' icon={<BiSearch  />} />
+                  <IconButton ml='-2rem' background='none' _hover='none' icon={<BiSearch color='#333333' />} />
                   </InputLeftElement>
       </InputGroup>
 
@@ -108,6 +108,7 @@ const OrganisationMembersList = () => {
                         {MembersElement}
                         {ActiveMembersElement}
                         {MembersElement}
+                        {ActiveMembersElement}
             </Stack> 
             </Stack>
 
