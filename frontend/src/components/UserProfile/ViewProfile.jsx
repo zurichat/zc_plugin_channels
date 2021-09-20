@@ -134,6 +134,8 @@ const ViewProfile = ({showProfile ,setShowProfile }) => {
                         width="40px"
                         height="40px"
                         borderRadius="12px"
+                        _hover='none'
+                        onFocus='none'
                         ml="24px"
                         onClick={() => setToggle(!toggle)}
                       /> 

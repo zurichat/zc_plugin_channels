@@ -76,8 +76,7 @@ import ProfileImage from '../images/Rectangle 987.png'
                   
                     <Button pos='relative' left='-.7rem' top='-.2rem'
                       color="#00B87C"
-                      // _hover={{ bg: "#00B87C", 
-                      //           color: "white"      }}
+                      _hover="none"
                       h='32px'
                       background='none'
                       borderRadius='3px'
