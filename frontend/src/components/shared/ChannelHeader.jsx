@@ -27,7 +27,7 @@ const ChannelHeader = () => {
   //.......getting pinned messages...........//
   const { pinnedMessages } = useSelector((state) => state.channelsReducer)
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);
-  useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messagesyarn start
+  useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
   //-------getting channel details.........//
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
