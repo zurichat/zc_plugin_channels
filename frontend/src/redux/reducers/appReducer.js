@@ -1,9 +1,9 @@
-import { GET_USERS} from "../actions/types";
+import { GET_USERS, GET_CHANNELS } from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
-  users: []
+  users: [],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -19,6 +19,13 @@ const appReducer = (state = initialState, action) => {
         users: payload,
       };
     // Default state is returned
+
+    case GET_CHANNELS:
+      return {
+        ...state,
+        channels: payload,
+      };
+
     default:
       return state;
   }
