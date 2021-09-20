@@ -147,7 +147,7 @@ const MessageInput = () =>{
               }
             }}
           >
-            <FiAtSign onClick={addTag,()=>setInput(true)} className="tagged"/>
+            <FiAtSign onClick={addTag} className="tagged"/>
             <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
             <label for="contained-button-file"><ImAttachment/></label>
             <GrEmoji onClick={()=>setEmoji(!emoji)}/>
