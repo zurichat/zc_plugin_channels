@@ -25,19 +25,13 @@ const MessageInput = () =>{
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("");
     const [list,setList]=useState("");
-    const [emoji,setEmoji]=useState(false);
+    const [emoji,setEmoji]=useState(false)
 
     const datas={
       user_id:"thanos",
       content:data
     }
 
-    const onEmojiClick = (event, emojiObject) => {
-      const cursor = textRef.current.selectionStart;
-      const text =
-        data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor);
-      setData(text);
-    }
 
     const dispatch=useDispatch();
     const {_sendMessage} = bindActionCreators(appActions,dispatch);
@@ -70,9 +64,14 @@ const MessageInput = () =>{
     // }
     const addTag = () => {
       const cursor = textRef.current.selectionStart;
-      console.log(cursor)
       const text =
         data.slice(0, cursor) + '@' + data.slice(cursor);
+      setData(text);
+    }
+    const onEmojiClick = (event, emojiObject) => {
+      const cursor = textRef.current.selectionStart;
+      const text =
+        data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor);
       setData(text);
     }
     const changeStyle=(e)=>{
@@ -94,9 +93,6 @@ const MessageInput = () =>{
         <Box display={['none','block']}>
         <ResizableInput
           textareaRef={textRef}
-          value={data}
-          changeText={(e)=>setData(e.target.value)}
-          height="58px"
           border="none"
           fontSize="15px"
           color="neutral.500"
@@ -105,11 +101,12 @@ const MessageInput = () =>{
           paddingBlock="18px"
           paddingInline="20px"
           _focus={{ border: "none" }}
-          onClick={()=>setInput(true)}
-          onBlur={()=>setInput(false)}
+          onInput={()=>setInput(true)}
           fontWeight={active}
           fontStyle={italic}
           listStyleType={list}
+          value={data}
+          changeText={(e)=>setData(e.target.value)}
         />
           <Box
           maxW="100%"
@@ -152,7 +149,7 @@ const MessageInput = () =>{
             <FiAtSign onClick={addTag} className="tagged"/>
             <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
             <label for="contained-button-file"><ImAttachment/></label>
-            <GrEmoji onClick={()=>setEmoji(!emoji)} />
+            <GrEmoji onClick={()=>setEmoji(!emoji)}/>
             {(input || data!== "") ? (
               <Button bg="#00B87C" size="xs">
                 <IoSendSharp color="white"  onClick={loadData}/>
@@ -171,8 +168,9 @@ const MessageInput = () =>{
           click ? 
           <Box display="flex" flexDir="column" justifyContent="space-between">
             <Flex justify="space-between" width="100%" minW="10em">
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
-              onBlur={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} value={data}
+              fontWeight={active} fontStyle={italic}
+               onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
                 (input || data!== "") ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs" disabled><IoSendSharp /></Button>
               }
@@ -198,8 +196,8 @@ const MessageInput = () =>{
               display:'none'
             }
           }} onClick={()=>setOnclick(true)}>
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
-               onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} value={data}
+               onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)} fontWeight={active} fontStyle={italic}/>
             <Box>
               <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
               <AiOutlineBars data-command="insertUnorderedList"/>
