@@ -136,7 +136,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                       /> 
                           <Text pos='relative' left={-2}  >More</Text>
                     </Box> 
-                </Box>
+                {/* </Box> */}
                     <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Local Time</Text>
                     <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='13px' color='black' >08012345678</Text>
                     
