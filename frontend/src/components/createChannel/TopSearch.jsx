@@ -1,9 +1,7 @@
-import { Avatar, Box } from "@chakra-ui/react";
-import { Flex, Input } from "@chakra-ui/react";
+import { Avatar} from "@chakra-ui/react";
+import {  Input } from "@chakra-ui/react";
 import { HStack } from "@chakra-ui/layout";
 import React from "react";
-import { FiSettings } from "react-icons/fi";
-import { Icon } from "@chakra-ui/icon";
 import { AvatarBadge } from "@chakra-ui/avatar";
 
 const TopSearch = () => {

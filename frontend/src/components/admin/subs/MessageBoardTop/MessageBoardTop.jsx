@@ -1,7 +1,7 @@
 import React from "react";
 import { useMemo } from "react";
 import { Box } from "@chakra-ui/layout";
-import EachMessage from "./EachMessage";
+// import EachMessage from "./EachMessage";
 import { Button } from "@chakra-ui/button";
 import { FiChevronDown } from "react-icons/fi";
 import { v4 } from "uuid";

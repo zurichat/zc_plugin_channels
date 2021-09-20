@@ -1,13 +1,9 @@
 import React from "react";
 import {
   Box,
-  Flex,
-  Link,
   Text,
-  Button,
   Spacer,
   Avatar,
-  Stack,
   HStack,
 } from "@chakra-ui/react";
 import { Divider, Heading } from "@chakra-ui/react";

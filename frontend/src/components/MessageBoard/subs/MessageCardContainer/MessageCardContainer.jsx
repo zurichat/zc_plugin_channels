@@ -11,16 +11,6 @@ import appActions from '../../../../redux/actions/app';
 // import MessageCard from "../MessageCard/MessageCard";
 import MessageCard from '../../../shared/MessageCard';
 
-const messages = [
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus. xz ,nxc,mx c,mx c,mx c,m x,cm x,m ,mx c,mx c,mx  ,mznmxz bx,c x,cjkkjsc sjcxbn jxbnc kjxbc kjsxbc jkazb xçln lznm≈c zn∫≈ ckjzbdclkjn jzk cjz c bzkjbc zkjbçj sjhcdcbkxb kxb.", icon: "https://bit.ly/dan-abramov" ,index: 1, isThread: false},
-    {name: "Deyrin Cutting", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/code-beast" , index: 1, isThread: true},
-    {name: "Kelvin monument", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/ryan-florence" , index: 1, isThread: true},
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" , index: 1, isThread: false},
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" , index: 1, isThread: false},
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" , index: 1, isThread: false},
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" , index: 1, isThread: true},
-    {name: "Dan Abrahmov", time: "10:10pm",  message:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.", icon: "https://bit.ly/dan-abramov" , index: 1, isThread: false},
-]
 
 const MessageCardContainer = () =>{
 
@@ -39,7 +29,6 @@ const dispatch = useDispatch()
 
   let loadedMessages = channelMessages.splice(0, messageNumber)
   const [loadedMessagesArray, setLoadedMessages] = useState([])
-  const [loaded, setLoaded] = useState(false)
 
   useEffect(async () => {
   loadData()
@@ -54,9 +43,6 @@ const dispatch = useDispatch()
 
     // let renderedArray = loadedMessages
     
-    useEffect(()=>{
-      setLoaded(true)
-    }, [loadedMessages])
 
     return(
         <Box>
@@ -77,14 +63,14 @@ const dispatch = useDispatch()
             {
                 loadedMessages.map((message) => {
                     return(
-                      message == [] ? <Text textAlign="center">Loading...</Text> :
+                      message === [] ? <Text textAlign="center">Loading...</Text> :
                     <MessageCard {...message} key={message._id} />
                     )
                 })
             }
             {
               loadedMessages.length !== channelMessages.lenght ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{loaded? "Load more..." : "Loading..."}</Text> :
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>Load more...</Text> :
               null 
             }
             </Box>
