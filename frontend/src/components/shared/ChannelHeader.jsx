@@ -37,8 +37,8 @@ const ChannelHeader = () => {
   
   const isPrivate = channelDetails.private;// to check if channel is private or not
   return (
-    <Box width="100%" mt="5px">
-      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='1172px' w="100%" display={['none','flex']}>
+    <Box width="95vw" mt="5px">
+      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" sx={{"@media screen and (max-width: 768.5px)": {display: "none",},}}>
         <Link to="/channel-detail">  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
             {isPrivate == 'False' ? <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2}  />

@@ -1,15 +1,9 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
-import {
-  GET_USERS,
-  GET_CHANNEL_DETAILS,
-  GET_PINNED_MESSAGES,
-  PIN_MESSAGE,
-  ARCHIVE_CHANNEL,
-  SEND_MESSAGES,
-  GET_CHANNELS,
-  CREATE_CHANNELS,
-} from "./types";
+
+import { GET_CHANNELMESSAGES, GET_USERS, GET_CHANNEL_DETAILS, GET_PINNED_MESSAGES, PIN_MESSAGE, ARCHIVE_CHANNEL, SEND_MESSAGES,
+  GET_CHANNELS,  CREATE_CHANNELS, } from "./types";
+
 
 // Redux actions are called here with an underscore before the name (convention)
 
@@ -49,6 +43,32 @@ const _getUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
+const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.getMessages(org_id, channel_id);
+    console.log(res.data);
+    // Result is sent to the store via dispatch (Pass payload if needed)
+    dispatch({ type: GET_CHANNELMESSAGES, payload: res.data });
+  } catch (error) {
+    // Handle exceptions here
+    console.log(error);
+  }
+};
+const _getChannel_Thread_Messages = (org_id, channel_id) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.getMessages(org_id, channel_id);
+    console.log(res.data);
+    // Result is sent to the store via dispatch (Pass payload if needed)
+    dispatch({ type: GET_CHANNELMESSAGES, payload: res.data });
+  } catch (error) {
+    // Handle exceptions here
+    console.log(error);
+
+};
 const _sendMessage = (org_id, channel_id, data) => async (dispatch) => {
   try {
     const res = await APIService.sendMessage(org_id, channel_id, data);
@@ -57,7 +77,7 @@ const _sendMessage = (org_id, channel_id, data) => async (dispatch) => {
   } catch (err) {
     console.log("Oops something went wrong", err.message);
   }
-};
+}
 
 const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
   try {
@@ -131,6 +151,8 @@ const _createChannel = (org_id, data) => async (dispatch) => {
 const appActions = {
   _alert,
   _getUsers,
+  _getChannelMessages,
+  _getChannel_Thread_Messages,
   _getChannelDetails,
   _getPinnedMessages,
   _pinMessage,
@@ -139,4 +161,5 @@ const appActions = {
   _getChannels,
   _createChannel,
 };
+}
 export default appActions;

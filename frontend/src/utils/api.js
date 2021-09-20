@@ -36,7 +36,7 @@ class APIServices {
   }
 
   async getMessages(org_id, channel_id) {
-    return api.get(`​/channels​/message​s/${org_id}​/${channel_id}​/all​`);
+    return api.get(`/${org_id}/channels/${channel_id}/messages/`);
   }
 
   async deleteMessage(org_id, msg_id) {
