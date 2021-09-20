@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box } from "@chakra-ui/layout";
 import UserProfileOnHover from "./UserProfileOnHover";
-import OnClickUserProfile from "./OnClickUserProfile";
+// import OnClickUserProfile from "./OnClickUserProfile";
 
 const UserProfile = () => {
   const [showProfile, setShowProfile] = useState(false);
@@ -9,7 +9,7 @@ const UserProfile = () => {
   return (
     <Box h="100vh" bgColor="#E5E5E5">
       <UserProfileOnHover setShowProfile={setShowProfile} />
-      <OnClickUserProfile showProfile={showProfile && setShowProfile} />
+      {/* <OnClickUserProfile showProfile={showProfile && setShowProfile} /> */}
     </Box>
   );
 };
