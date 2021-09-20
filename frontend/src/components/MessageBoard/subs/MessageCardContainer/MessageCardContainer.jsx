@@ -27,17 +27,20 @@ const dispatch = useDispatch()
 
   let messageNumber = 50
 
-  let loadedMessages = channelMessages.splice(0, messageNumber)
+  // let loadedMessages = channelMessages.splice(0, messageNumber)
   const [loadedMessagesArray, setLoadedMessages] = useState([])
+
+  let loadedMessages = channelMessages.map((message, key) => {return key <= messageNumber})
 
   useEffect(async () => {
   loadData()
   }, []);
   
   const loadMore = () =>{
-    messageNumber += 10
-    loadedMessages = channelMessages.splice(0, messageNumber)
-    setLoadedMessages(loadedMessages)
+    if(channelMessages.lenght === 0){
+      messageNumber += 16
+    }
+    // loadedMessages = channelMessages.splice(0, messageNumber)
     console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber, loadedMessagesArray);
     }
 
