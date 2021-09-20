@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Box, Flex, Text, Link, HStack, Square } from "@chakra-ui/layout";
-import { Avatar, AvatarGroup } from "@chakra-ui/avatar";
+import { Avatar } from "@chakra-ui/avatar";
 import { Menu, MenuItem, MenuButton, MenuList, MenuDivider } from "@chakra-ui/menu"
 import { IconButton } from "@chakra-ui/react"
 import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
@@ -35,9 +35,9 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited, _id
     _pinMessage(orgId, channelId, userId, messageId)
   }
 
-  const actions = {
-    pinMessage
-  }
+  // const actions = {
+  //   pinMessage
+  // }
     return (
       <Box 
         position="relative" 
@@ -72,10 +72,9 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited, _id
                         key={`replies-avatar-${index}`}
                         w="24px"
                         h="24px"
-                        borderRadius="4px"
+                        borderRadius="5px"
                         name={reply.name}
                         src={reply.profilePic}
-                        borderRadius="5px"
                       />
                     );
                   })
@@ -93,10 +92,6 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited, _id
 };
 
 const HoverOptions = ({ show, actions }) => {
-    const orgId = 1 // Hardcoded value to for channelId in org with id 1
-    const messageId = "61413e736173056af01b4d31"
-    const userId = "cephas"
-    const channelId = "613f70bd6173056af01b4aba"
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },

@@ -1,4 +1,4 @@
-import { v4 } from "uuid";
+// import { v4 } from "uuid";
 import UtilityService from "../../utils/utils";
 import {
   ARCHIVE_CHANNEL,
@@ -6,7 +6,6 @@ import {
   GET_PINNED_MESSAGES,
   PIN_MESSAGE,
   SEND_MESSAGES,
-  GET_CHANNELS,
 } from "../actions/types";
 
 const initialState = {

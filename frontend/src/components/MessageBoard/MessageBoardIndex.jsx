@@ -6,16 +6,13 @@ import ChannelHeader from "../shared/ChannelHeader";
 import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContainer";
 // import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
 import MessageInput from "../shared/MessageInput";
-import Thread from "../thread/Thread";
+// import Thread from "../thread/Thread";
 //import MessageOptionsPopUpMenu from "./subs/MessageOptionsPopUpMenu/MessageOptionsPopUpMenu";
 
-import { useDisclosure } from "@chakra-ui/react"
 
 
 
-const MessageBoardIndex = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  
+const MessageBoardIndex = () => {  
   return (
     <Box bg="#F9F9F9" m="5px">
       <Flex>
