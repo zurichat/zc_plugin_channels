@@ -25,6 +25,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
     details: "View full profile",
     statusDetail: "Product Designer",
     time: "10:00AM",
+    email: "adeekoEmmanuel@gmail.com"
   };
 
   const [toggle, setToggle] = useState(false)
@@ -61,6 +62,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                 <Text alignSelf='center' fontSize='.96rem' pos='absolute' m='0'  top='15.4rem'  color='gray' >{data.statusDetail}</Text>
                 {/* Users' Image */}
                 <Image src={smileEmoji}  pos='absolute' left='10rem'  top='17.8rem'  h='25px' w='25px' />
+                
                 <Box pos="relative" left="0.5rem" top="-15.5rem">
                   <Box
                     display="flex"
@@ -85,14 +87,14 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                     </Text>
                   </Box>
 
-                  <Box
-                    pos="absolute"
-                    transform="scale(0.8)"
-                    top="19.8rem"
-                    left="9rem"
-                    display="flex"
-                    flexDir="column"
-                  >
+                    <Box
+                      pos="absolute"
+                        transform="scale(0.8)"
+                        top="19.8rem"
+                        left="9rem"
+                        display="flex"
+                        flexDir="column"
+                      >
                     <IconButton
                       pos="relative"
                       left={-7}
@@ -103,6 +105,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                       borderRadius="12px"
                       ml="24px"
                       _hover="none"
+                      
                     />
                     <Text pos="relative" left={3}>
                       Call
@@ -133,20 +136,22 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                       /> 
                       <Text pos='relative' left={-2}  >More</Text>
                     </Box> 
-                </Box>
-                <Box>
+                <Box pos='relative' left='-1.8rem' top='23rem' transform='scale(0.89)'>
+                    <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Display Name</Text>
+                    <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='15px' color='black' >{data.name}</Text>
+                   
                     <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Local Time</Text>
-                    <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='13px' color='black' >08012345678</Text>
+                    <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='15px' color='black' >{data.time}</Text>
                     
                     <Text pl='2rem'  alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Email</Text>
-                    <Text pl='2rem' alignSelf='left' fontWeight='900' fontSize='13px' color='#1264A3' >adeekoEmmanuel@gmail.com</Text>
+                    <Text pl='2rem' alignSelf='left' fontWeight='900' fontSize='15px' color='#1264A3' >{data.email}</Text>
                 </Box>
-              </Stack>
             </Box>
-          {toggle && MoreBtnOnHover()}         
-      </Container> 
-      }  
-  </>   
+            </Stack>
+           </Box> 
+           {toggle && MoreBtnOnHover()}
+      </Container> }  
+     </>
   ); 
 }
 export default OnClickUserProfile;
