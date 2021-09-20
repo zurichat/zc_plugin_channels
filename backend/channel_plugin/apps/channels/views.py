@@ -1,4 +1,5 @@
 import json
+
 from apps.centri.helperfuncs import build_room_name
 from apps.channelmessages.serializers import ChannelMessageUpdateSerializer
 from apps.utils.serializers import ErrorSerializer
@@ -10,12 +11,8 @@ from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from django.http.response import JsonResponse
-
-# from rest_framework.filters
 
 from channel_plugin.utils.customrequest import Request
-
 from channel_plugin.utils.wrappers import FilterWrapper
 
 from .serializers import (  # SearchMessageQuerySerializer,
@@ -23,9 +20,13 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     SocketSerializer,
-    UserSerializer,
     UserChannelGetSerializer,
+    UserSerializer,
+    NotificationsSettingSerializer,
 )
+
+# from rest_framework.filters
+
 
 # Create your views here.
 
@@ -215,7 +216,7 @@ class ChannelViewset(ViewSet):
             status_code = status.HTTP_404_NOT_FOUND
 
         return Response(result, status=status_code)
-    
+
     @swagger_auto_schema(
         responses={200: openapi.Response("Response", SocketSerializer())},
         operation_id="get-channel's-socket-name",
@@ -229,11 +230,9 @@ class ChannelViewset(ViewSet):
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
         if channel:
-            name = build_room_name(org_id, channel["_id"])
-            
             data = {
-                'socket_name': build_room_name(org_id, channel["_id"]),
-                'channel_id': channel_id
+                "socket_name": build_room_name(org_id, channel["_id"]),
+                "channel_id": channel_id,
             }
 
             serializer = SocketSerializer(data=data)
@@ -243,7 +242,6 @@ class ChannelViewset(ViewSet):
             return JsonResponse(
                 {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
             )
-    
 
 
 channel_list_create_view = ChannelViewset.as_view(
@@ -269,9 +267,7 @@ user_channel_list = ChannelViewset.as_view(
     }
 )
 
-channel_socket_view = ChannelViewset.as_view(
-    {"get": "get_channel_socket_name"}
-)
+channel_socket_view = ChannelViewset.as_view({"get": "get_channel_socket_name"})
 
 
 class ChannelMemberViewset(ViewSet):
@@ -311,7 +307,7 @@ class ChannelMemberViewset(ViewSet):
         for key in self.request.query_params.keys():
             try:
                 params[key] = json.loads(params.get(key)[0])
-            except:
+            except:  # noqa
                 params[key] = params.get(key)[0]
 
             for chk in param_checkers:
@@ -320,7 +316,7 @@ class ChannelMemberViewset(ViewSet):
 
                     try:
                         params[p] = json.loads(params.get(key))
-                    except:
+                    except:  # noqa
                         params[p] = params.get(key)
                     params.pop(key)
         return params
@@ -403,7 +399,7 @@ class ChannelMemberViewset(ViewSet):
             )
 
             if isinstance(result, dict):
-                if not result.get("error"):                    
+                if not result.get("error"):
                     if isinstance(output, dict):
                         # when only one user is added
                         request_finished.send(
@@ -411,7 +407,7 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=output["_id"]
+                            user_id=output["_id"],
                         )
                     else:
                         # when output is a list multiple users where added
@@ -425,9 +421,54 @@ class ChannelMemberViewset(ViewSet):
                         )
                     return Response(output, status=status.HTTP_201_CREATED)
                 else:
-                    return Response(result.get("error"), status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        result.get("error"), status=status.HTTP_400_BAD_REQUEST
+                    )
             else:
                 return Response(result, status=result.status_code)
+        return Response(
+            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    @swagger_auto_schema(
+        request_body=UserSerializer,
+        responses={
+            201: openapi.Response("Response", UserSerializer),
+            404: openapi.Response("Collection Not Found"),
+        },
+        operation_id="channel-member-can-input",
+    )
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    def can_input(self, request, org_id, channel_id):
+        """
+        Method checks if a user input should be disabled or enabled
+        """
+        # get the channel from zc-core
+        channel = self.retrieve_channel(request, org_id, channel_id)
+
+        if channel:
+            if channel["allow_members_input"] is True:
+                can_input = True
+                return Response(can_input, status=status.HTTP_200_OK)
+            else:
+                user_id = request.data.get("_id")
+                user_data = channel["users"].get(user_id)
+
+                if user_data:
+                    # Check if user is an admin
+                    if user_data.is_admin:
+                        can_input = True
+                        return Response(can_input, status=status.HTTP_200_OK)
+                    else:
+                        can_input = False
+                        return Response(can_input, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+                    )
         return Response(
             {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
@@ -483,7 +524,7 @@ class ChannelMemberViewset(ViewSet):
         Method adds a user to a channel
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
-        
+
         if channel:
 
             # checks if the user is a member of the channel
@@ -513,7 +554,7 @@ class ChannelMemberViewset(ViewSet):
     )
     def update_member(self, request, org_id, channel_id, member_id):
         """
-        Method updates a user's channel memberhip details
+        Method updates a user's channel membership details
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -617,6 +658,116 @@ class ChannelMemberViewset(ViewSet):
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Response", NotificationsSettingSerializer),
+            404: openapi.Response("Not Found")
+        },
+        operation_id="retrieve-user-notifications"
+    )
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def notification_retrieve(self, request, org_id, channel_id, member_id):
+        """Retrieve a user's notification preferences for a particular channel.
+        
+        By default, users do not have a notifications field in the database,
+        so an empty {} will be returned.
+
+        A field is only appended to their records when changes have been made.
+        """
+        channel = self.retrieve_channel(request, org_id, channel_id)
+        if channel:
+            user_data = channel["users"].get(member_id)
+            if user_data:
+                serializer = UserSerializer(data=user_data)
+                serializer.is_valid(raise_exception=True)
+
+                # an empty field will be returned for users that have not
+                # changed their settings. 
+                # DEFAULT_SETTINGS = {
+                #     "web": "nothing",
+                #     "mobile": "mentions",
+                #     "same_for_mobile": False,
+                #     "mute": False
+                # }
+
+                settings = serializer.data.get('notifications', {})
+                return Response(settings, status=status.HTTP_200_OK)
+
+            return Response({"error": "member not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    @swagger_auto_schema(
+        request_body=NotificationsSettingSerializer,
+        responses={
+            200: openapi.Response("Response", NotificationsSettingSerializer,)
+        },
+        operation_id="update-user-notifications"
+    )
+    @action(
+        methods=["PUT"],
+        detail=False,
+    )
+    def notification_update(self, request, org_id, channel_id, member_id):
+        """Update a user's notification preferences for a particular channel.
+
+        Example request body:
+        {
+            "web": "nothing",
+            "mobile": "mentions",
+            "same_for_mobile": False,
+            "mute": False
+        }
+        """
+
+        channel = self.retrieve_channel(request, org_id, channel_id)
+        if channel:
+            user_data = channel["users"].get(member_id)
+
+            if user_data:
+                serializer = NotificationsSettingSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+
+                # by default, users do not have a settings field
+                # whether or not this user has a settings field, 
+                # make an update with the new settings
+                notification_settings = dict(serializer.data)
+                user_data.setdefault("notifications", {}).update(notification_settings)
+                
+                # push the updated user details to the channel object
+                channel["users"].update({f"{member_id}": user_data})
+
+                # remove channel id to avoid changing it
+                channel.pop("_id", None)
+
+                payload = {"users": channel["users"]}
+                result = Request.put(
+                    org_id, "channel", payload=payload, object_id=channel_id
+                )
+
+                if result:
+                    if isinstance(result, dict):
+                        data = notification_settings if not result.get("error") else result
+                        status_code = (
+                            status.HTTP_201_CREATED
+                            if not result.get("error")
+                            else status.HTTP_400_BAD_REQUEST
+                        )
+
+                        return Response(data, status=status_code)
+                    else:
+                        return Response(result, status=result.status_code)
+
+            return Response({"error": "member not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND)
+
+channel_members_can_input_view = ChannelMemberViewset.as_view(
+    {
+        "post": "can_input",
+    }
+)
 
 
 channel_members_list_create_views = ChannelMemberViewset.as_view(
@@ -630,26 +781,9 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
 
-
-
-# class SearchMessagesAPIView(APIView):
-#     def post(self, request):
-#         serializer = SearchMessageQuerySerializer(data=request.data)
-#         if serializer.is_valid():
-#             value = serializer.validated_data["value"]
-#             if value != "-":
-#                 data = find_item_in_data(messages_data, value, "value")
-#                 response = {"status": True, "message": "Query results", "data": data}
-#                 return Response(response, status=status.HTTP_200_OK)
-#             else:
-#                 data = messages_data
-#                 response = {"status": True, "message": "Query results", "data": data}
-#                 return Response(response, status=status.HTTP_200_OK)
-#         return Response(serializer.errors)
-#     def get(self, request):
-#         return Response(
-#             {
-#                 "status": True,
-#                 "message": "Endpoint to search messages, passing '-' will return all messages_data.",
-#             }
-#         )
+notification_views = ChannelMemberViewset.as_view(
+    {
+        "get": "notification_retrieve",
+        "put": "notification_update"
+    }
+)
