@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/layout";
 import {
   Text,
   Stack,
-  Image, Link, Button, Divider
+  Image, Link, Button
 } from "@chakra-ui/react";
 import smileEmoji from '../images/emoji-smile.png'
 

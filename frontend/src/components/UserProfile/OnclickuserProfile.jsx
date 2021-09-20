@@ -1,11 +1,11 @@
-import React, { useState, useToggle } from "react";
-import { Box, IconButton, Image,  Stack, Text, Divider, Container, useDisclosure } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, IconButton, Image,  Stack, Text, Divider, Container } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import { FiPhoneCall } from "react-icons/fi";
 import { CgMore } from "react-icons/cg";
 import smileEmoji from '../images/emoji-smile.png'
-import UserProfileOnHover  from "./UserProfileOnHover";
+// import UserProfileOnHover  from "./UserProfileOnHover";
 
 const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
   const data = {
