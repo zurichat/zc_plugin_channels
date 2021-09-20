@@ -24,8 +24,6 @@ const MessageInput = () =>{
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("")
 
-    const org_id = 1;//Test value for org id
-    const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id in org with id 1
     const datas={
       user_id:"thanos",
       content:data
@@ -38,6 +36,8 @@ const MessageInput = () =>{
     // console.log(sendMessages);
 
     const loadData=async ()=>{
+      const org_id = '1';//Test value for org id
+      const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
       setData('');
     }
@@ -45,9 +45,9 @@ const MessageInput = () =>{
       const active=e.target
       let cmd=active.dataset['command'];
       !toggle ? setActive(cmd) : setActive(" ");
-      const trial=e.target.value
       
       setToggle(!toggle)
+      return cmd;
     }
     const changeStyle=(e)=>{
       const active=e.target
@@ -55,6 +55,7 @@ const MessageInput = () =>{
       !toggle ? setItalic(cmd) : setItalic(" ");
   
       setToggle(!toggle)
+      return cmd;
     }
     // useEffect(()=>{
     //   loadData()
@@ -126,12 +127,12 @@ const MessageInput = () =>{
             <FiAtSign />
             <ImAttachment/>
             <GrEmoji/>
-            {input ? (
+            {(input || data!== "") ? (
               <Button bg="#00B87C" size="xs">
                 <IoSendSharp color="white"  onClick={loadData}/>
               </Button>
             ) : (
-              <Button size="xs"><IoSendSharp onClick={loadData}/></Button>
+              <Button size="xs" disabled><IoSendSharp /></Button>
             )}
             <HSeparatorIcon/>
             <RiArrowDropDownLine size="30px"/>
@@ -147,7 +148,7 @@ const MessageInput = () =>{
               <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} 
               onMouseOut={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
-                input ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs"><IoSendSharp onClick={loadData}/></Button>
+                (input || data!== "") ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs" disabled><IoSendSharp /></Button>
               }
             </Flex>
             <Flex width="10em" justify="space-between" mt={1}>
