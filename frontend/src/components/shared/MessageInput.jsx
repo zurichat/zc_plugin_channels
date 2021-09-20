@@ -8,6 +8,7 @@ import { AiOutlineBars } from "react-icons/ai";
 import {GrEmoji } from "react-icons/gr";
 import {RiArrowDropDownLine} from 'react-icons/ri';
 import {ImAttachment} from 'react-icons/im';
+import Picker from "emoji-picker-react";
 import { useRef } from "react";
 import { Textarea } from "@chakra-ui/textarea";
 import { useDispatch,useSelector } from "react-redux";
@@ -23,11 +24,19 @@ const MessageInput = () =>{
     const [toggle,setToggle]=useState(false);
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("");
-    const [list,setList]=useState("")
+    const [list,setList]=useState("");
+    const [emoji,setEmoji]=useState(false);
 
     const datas={
       user_id:"thanos",
       content:data
+    }
+
+    const onEmojiClick = (event, emojiObject) => {
+      const cursor = textRef.current.selectionStart;
+      const text =
+        data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor);
+      setData(text);
     }
 
     const dispatch=useDispatch();
@@ -96,8 +105,8 @@ const MessageInput = () =>{
           paddingBlock="18px"
           paddingInline="20px"
           _focus={{ border: "none" }}
-          onInput={()=>setInput(true)}
-          onMouseOut={()=>setInput(false)}
+          onClick={()=>setInput(true)}
+          onBlur={()=>setInput(false)}
           fontWeight={active}
           fontStyle={italic}
           listStyleType={list}
@@ -110,6 +119,7 @@ const MessageInput = () =>{
           alignItems="center"
           overflowX="auto"
           p={1}
+          onClick={()=>setInput(true)}
         >
           <Box
             width="10em"
@@ -142,7 +152,7 @@ const MessageInput = () =>{
             <FiAtSign onClick={addTag} className="tagged"/>
             <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
             <label for="contained-button-file"><ImAttachment/></label>
-            <GrEmoji/>
+            <GrEmoji onClick={()=>setEmoji(!emoji)} />
             {(input || data!== "") ? (
               <Button bg="#00B87C" size="xs">
                 <IoSendSharp color="white"  onClick={loadData}/>
@@ -161,7 +171,7 @@ const MessageInput = () =>{
           click ? 
           <Box display="flex" flexDir="column" justifyContent="space-between">
             <Flex justify="space-between" width="100%" minW="10em">
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} 
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
               onBlur={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
                 (input || data!== "") ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs" disabled><IoSendSharp /></Button>
@@ -170,7 +180,7 @@ const MessageInput = () =>{
             <Flex width="10em" justify="space-between" mt={1}>
               <IoFlashOutline/>
               <HSeparatorIcon/>
-              <GrEmoji/>
+              <GrEmoji onClick={()=>setEmoji(!emoji)} />
               <BsTypeBold className="box" onClick={changeWeight} data-command="bold"/>
               <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
               <BsLink45Deg />
@@ -187,9 +197,9 @@ const MessageInput = () =>{
             '&::-webkit-scrollbar':{
               display:'none'
             }
-          }}>
+          }} onClick={()=>setOnclick(true)}>
               <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
-              onMouseDown={()=>setOnclick(true)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+               onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
             <Box>
               <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
               <AiOutlineBars data-command="insertUnorderedList"/>
@@ -201,6 +211,9 @@ const MessageInput = () =>{
           </Box>
         }
       </Box>
+      {
+        emoji && <Picker onEmojiClick={onEmojiClick}/>
+      }
     </Box>
 
     );
