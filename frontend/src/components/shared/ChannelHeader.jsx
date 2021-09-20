@@ -43,8 +43,8 @@ const ChannelHeader = () => {
       <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" display={['none','flex']}>
         <Link to="/channel-detail">  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
-            {isPrivate=='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
-            {isPrivate =='False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}            
+            {isPrivate === 'True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
+            {isPrivate === 'False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}            
             <Box as="span" letterSpacing='wide' lineHeight='32px' fontSize="17.5px" color="#ffffff" fontWeight="501" mr={1}>{channelDetails.name}</Box> 
             <Icon as={BiChevronDown} color="#ffffff" w={6} h={5} />
           </Button>
@@ -72,8 +72,8 @@ const ChannelHeader = () => {
         <Icon as={ BiChevronLeft } color="#ffffff" h={10} w={10} ml={2}  />
           <Link to='/channel-detail'><Flex ml={1}  alignContent='center' flexDir='column'>
             <Flex align='center' flexDir='row'>
-            {isPrivate=='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
-            {isPrivate =='False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}
+            {isPrivate==='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
+            {isPrivate === 'False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}
               <Box as="span" letterSpacing='wide'  fontSize="18px" color="#ffffff" fontWeight="501" mr={1} >
                 {channelDetails.name}
               </Box>
