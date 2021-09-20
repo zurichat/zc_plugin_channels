@@ -1,4 +1,4 @@
-import { GET_CHANNELMESSAGES, GET_USERS } from "../actions/types";
+import { GET_CHANNELMESSAGES, GET_USERS, GET_CHANNELS } from "../actions/types";
 
 const initialState = {
   // STEP TWO
@@ -26,6 +26,13 @@ const appReducer = (state = initialState, action) => {
       };  
 
     // Default state is returned
+
+    case GET_CHANNELS:
+      return {
+        ...state,
+        channels: payload,
+      };
+
     default:
       return state;
   }
