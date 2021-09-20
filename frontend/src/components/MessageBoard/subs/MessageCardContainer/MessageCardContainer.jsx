@@ -63,7 +63,7 @@ const dispatch = useDispatch()
             {
                 loadedMessages.map((message) => {
                     return(
-                      message == [] ? <Text textAlign="center">Loading...</Text> :
+                      message === [] ? <Text textAlign="center">Loading...</Text> :
                     <MessageCard {...message} key={message._id} />
                     )
                 })

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Stack, StackDivider, List, ListItem, Heading, Box, Text, Link } from '@chakra-ui/react';
+import React, { useState } from "react";
+import { Stack, StackDivider, List, ListItem, Heading, Box, Text} from '@chakra-ui/react';
 import LeaveChannel from './LeaveChannel';
 
 const About = () => {
