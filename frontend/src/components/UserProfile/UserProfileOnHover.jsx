@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/layout";
 import {
   Text,
   Stack,
-  Image, Link, Button, Divider
+  Image, Link, Button
 } from "@chakra-ui/react";
 import smileEmoji from '../images/emoji-smile.png'
 
@@ -29,7 +29,7 @@ import smileEmoji from '../images/emoji-smile.png'
         <Box
           maxW="58rem"
           w='19rem'
-          h='35rem'
+          h='34rem'
           top='4rem'
           pos='absolute'
           left='20rem'
@@ -42,43 +42,38 @@ import smileEmoji from '../images/emoji-smile.png'
           shadow='md'
         >
           <Stack  spacing={20}>
-           <Image h='190px'w='100%' src={data.imageUrl}></Image>
-            <Box  pos='absolute' left='11.2rem' border='1px' top='10.8rem' borderRadius='50%' h='9px' w='9px' />
+           <Image h='185px'w='100%' src={data.imageUrl}></Image>
+            <Box  pos='absolute' left='11.2rem' border='1px' top='9.8rem' borderRadius='50%' h='9px' w='9px' />
             <Stack pt='1rem' pl='1rem'>
-            <Text fontSize='1.3rem' fontWeight='1000' fontStyle='Lato' pos='absolute' pl='.5rem' top='15rem' >{data.name}</Text>
+            <Text fontSize='1.3rem' fontWeight='1000' fontStyle='Lato' pos='absolute' pl='.5rem' top='14rem' >{data.name}</Text>
         
-            <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='16.4rem' >{data.statusDetail}</Text>
+            <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='15.4rem' >{data.statusDetail}</Text>
 
             
-            <Link type='button' onClick={() => setShowProfile(true)} fontSize='.96rem'  fontStyle='Lato' color='#1264A3' pos='absolute' pl='.5rem' top='19rem' >{data.details} </Link>
+            <Link type='button' onClick={() => setShowProfile(true)} fontSize='.96rem'  fontStyle='Lato' color='#1264A3' pos='absolute' pl='.5rem' top='18rem' >{data.details} </Link>
 
-            <Box  bgColor='red' w='12rem' shadow='2xl' h='6rem'borderRadius='3px' pos='absolute' left='80rem' top='29.5rem'>
-                <Text color='#3A3A3A' pos='absolute' fontSize='.8rem' pl='.8rem' top='.8rem' >Veiw Profile</Text>
-                <Divider mt='2.5rem' w='12rem'></Divider>
-                <Text color='#3A3A3A' fontSize='.8rem' pt='.3rem' pl='.8rem'>Copy member ID</Text>
-                <Text color='#3A3A3A' fontSize='.6rem' mt='.3rem' pl='.8rem'>UHGSUTHYS123456</Text>
-            </Box>
 
 
                     
-            <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='21rem' >Status</Text>
-            <Image src={smileEmoji}  pos='absolute' left='2rem'  top='23rem'  h='25px' w='25px' />
-            <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='26rem' >Local Time</Text>
-            <Text fontSize='.96rem' fontStyle='Lato' fontWeight='bold' color='black'  pos='absolute' pl='.5rem' top='27.8rem' >{data.time}</Text>
+            <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='20rem' >Status</Text>
+            <Image src={smileEmoji}  pos='absolute' left='2rem'  top='22rem'  h='25px' w='25px' />
+            <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='25rem' >Local Time</Text>
+            <Text fontSize='.96rem' fontStyle='Lato' fontWeight='bold' color='black'  pos='absolute' pl='.5rem' top='26.8rem' >{data.time}</Text>
             <Box display='flex' pos='absolute'   w='240px'  top='30.4rem'  >
 
-                    <Button
+                    <Button pos='relative' top='-1.8rem'
                       color="#00B87C"
                       _hover={{ bg: "#00B87C", 
                                 color: "white"      }}
                       border='1px'
+                      colorScheme='none'
                       borderColor='#00B87C'
                       m='10px'
                       h='32px'
                       borderRadius='3px'
                       w="270px"> Message </Button>
                   
-                    <Button
+                    <Button pos='relative' top='-1.8rem'
                       color="#00B87C"
                       _hover={{ bg: "#00B87C", 
                                 color: "white"      }}

@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const baseURL = "https://channels.zuri.chat/api/v1";
+// const baseURL = "http://127.0.0.1:8000/api/v1";
 
 const defaultConfig = {
   baseURL,
@@ -21,7 +22,6 @@ api.interceptors.request.use(
   },
   (err) => Promise.reject(err)
 );
-
 class APIServices {
   // @desc End Point Example
   async getUsers(data) {
@@ -29,11 +29,14 @@ class APIServices {
   }
 
   async createMessage(org_id, channel_id, data) {
-    return api.post(`/channels/messages/${org_id}/${channel_id}`, data);
+    return api.post(`/channels/messages/${org_id}/${channel_id}/`, data);
+  }
+  async sendMessage(org_id, channel_id, data) {
+    return api.post(`/${org_id}/channels/${channel_id}/messages/`, data);
   }
 
   async getMessages(org_id, channel_id) {
-    return api.get(`​/channels​/message​s/${org_id}​/${channel_id}​/all​`);
+    return api.get(`/${org_id}/channels/${channel_id}/messages/`);
   }
 
   async deleteMessage(org_id, msg_id) {
@@ -44,8 +47,10 @@ class APIServices {
     return api.get(`/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`);
   }
 
-  async updateMessage(org_id, msg_id, data) {
-    return api.put(`/channels​/messages​/${org_id}​/${msg_id}​/update`, data);
+  async updateMessage(org_id, channel_id, user_id, msg_id, data) {
+    return api.put(`/${org_id}/messages/${msg_id}/`, data, {
+      params: { user_id, channel_id },
+    });
   }
 
   async createRole(org_id, channel_id, data) {
@@ -90,11 +95,12 @@ class APIServices {
   }
 
   async createChannel(org_id, data) {
-    return api.post(`/channels​/${org_id}​`, data);
+    // return api.post(`/v1​/${org_id}​/channels​/​`, data);
+    return axios.post(`${baseURL}/${org_id}/channels/`, data);
   }
 
   async getChannels(org_id) {
-    return api.get(`/channels/${org_id}/all`);
+    return api.get(`/${org_id}/channels/`);
   }
 
   async deleteChannel(org_id, channel_id) {
@@ -106,10 +112,14 @@ class APIServices {
   }
 
   async updateChannel(org_id, channel_id, data) {
-    return api.put(`/channels/${org_id}/${channel_id}/update`, data);
+    return api.put(`/${org_id}/channels/${channel_id}/`, data);
   }
 
-  async channelDetail(org_id, channel_id) {
+  async getPinnedMessages(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`);
+  }
+
+  async getChannelDetails(org_id, channel_id) {
     return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
 }
