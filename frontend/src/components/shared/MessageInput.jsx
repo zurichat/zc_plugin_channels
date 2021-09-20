@@ -88,8 +88,11 @@ const MessageInput = () =>{
       css={{
         '&::-webkit-scrollbar':{
           display:'none'
-        },
+        }
       }}>
+          {
+            emoji && <Picker onEmojiClick={onEmojiClick}/>
+          }
         <Box display={['none','block']}>
         <ResizableInput
           textareaRef={textRef}
@@ -145,6 +148,7 @@ const MessageInput = () =>{
               '&::-webkit-scrollbar':{
                 display:'none'
               }
+
             }}
           >
             <FiAtSign onClick={addTag} className="tagged"/>
@@ -210,9 +214,6 @@ const MessageInput = () =>{
           </Box>
         }
       </Box>
-      {
-        emoji && <Picker onEmojiClick={onEmojiClick}/>
-      }
     </Box>
 
     );
