@@ -32,7 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "CI=false && react-scripts build",
-    "relocate": "react-scripts build && rm -rf ../backend/channel_plugin/channel_plugin/build && mv -f build ../backend/channel_plugin/channel_plugin",
+    "relocate": "CI=false && react-scripts build && rm -rf ../backend/channel_plugin/channel_plugin/build && mv -f build ../backend/channel_plugin/channel_plugin",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
