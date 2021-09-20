@@ -14,8 +14,10 @@ import {
     Checkbox
 } from "@chakra-ui/react"
 
+
 function LeaveChannel() {
     const { isOpen, onOpen, onClose } = useDisclosure()
+  
     return (
         <>
             <Button onClick={onOpen}>Leave Channel</Button>
@@ -25,8 +27,8 @@ function LeaveChannel() {
                 <Container p='30px'>
                 <ModalContent bg='white' p='50px' maxW="604px"  m="auto" >
                     <ModalHeader display='flex' alignItems='center' justifyContent='space-between'>
-                        <Text m='0px' p='0px' fontSize='34px' fontWeight='700'>Leave #Announcement</Text>
-                        <ModalCloseButton cursor='pointer' p='3px' bg='none' w='22.5px' h='22.5px' fontSize='14px' border='none'/>
+                        <Text  m='0px' p='0px' fontSize='34px' fontWeight='700'>Leave #Announcement</Text>
+                        <ModalCloseButton   cursor='pointer' p='3px' bg='none' w='22.5px' h='22.5px' fontSize='14px' border='none'/>
                     </ModalHeader>
 
                     <ModalBody>
