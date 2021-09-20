@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
-import Picker from 'emoji-picker-react';
+import React, { useState, useRef } from "react";
+import Picker from "emoji-picker-react";
+import { Input } from "@chakra-ui/react"
 
-function Emojis() {
 
-  const [chosenEmoji, setChosenEmoji] = useState(null);
-
+export default function App() {
+  const [message, setMessageForm] = useState("");
+  const ref = useRef(null);
   const onEmojiClick = (event, emojiObject) => {
-    setChosenEmoji(emojiObject);
+    const cursor = ref.current.selectionStart;
+    const text =
+      message.slice(0, cursor) + emojiObject.emoji + message.slice(cursor);
+    setMessageForm(text);
   };
 
   return (
-    <div style={{position: 'absolute', marginTop: -300}}>
-      {chosenEmoji ? (
-        <span>{chosenEmoji.emoji}</span>
-      ) : (
-        <span>Pick an Emoji</span>
-      )}
+    <div>
+      
       <Picker onEmojiClick={onEmojiClick} />
+      <Input
+        id="text"
+        ref={ref}
+        type="text"
+        placeholder="Type your message"
+        value={message}
+        onKeyPress={e => {
+          if (e.key !== "Enter") return;
+          console.log(message);
+        }}
+        onChange={e => setMessageForm(e.target.value)}
+      />
     </div>
   );
-};
-
-export default Emojis
-
+}
