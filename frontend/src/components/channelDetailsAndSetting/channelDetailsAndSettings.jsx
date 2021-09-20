@@ -48,7 +48,7 @@ const ChannelDetails = () => {
       >
         <ModalOverlay />
         <ModalContent p={0} mt="8rem" maxW="824px" height="834px">
-          <Tabs colorScheme="green" color="#fff">
+          <Tabs colorScheme="" borderBottomColor="green" color="#fff">
             <ModalHeader
               pt={3}
               pb={2}
@@ -98,7 +98,7 @@ const ChannelDetails = () => {
                       <Box mr={2} mt={1}>
                         <FaRegBell color="#000" mr={6} />
                       </Box>
-                      <Text color='#ffffff'>Get Notifications for @ mentions</Text>
+                      <Text color='#000'>Get Notifications for @ mentions</Text>
                       <Box ml={2} mt={1}>
                         <FaChevronDown color="#000" mt={4} ml={5} />
                       </Box>
@@ -112,7 +112,7 @@ const ChannelDetails = () => {
                       <Box mr={2} mt={1}>
                         <FaVideo color="#000" w={2} />
                       </Box>
-                      <Text color='#ffffff'>Start Meeting</Text>
+                      <Text color='#000'>Start Meeting</Text>
                     </Button>
                   </Box>
                 </Stack>
