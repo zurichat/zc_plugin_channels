@@ -1,22 +1,12 @@
-import Icon from "@chakra-ui/icon";
 import { AddIcon } from "@chakra-ui/icons";
-import { GiPlainCircle } from "react-icons/gi";
 import {
-  Box,
-  Flex,
-  Heading,
-  StackDivider,
-  Text,
-  VStack,
+  Box
 } from "@chakra-ui/layout";
-import { HStack } from "@chakra-ui/layout";
 import React, { useEffect } from "react";
-import { FiHash } from "react-icons/fi";
 import ChannelBrowserHeader from "./ChannelBrowserHeader";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@chakra-ui/button";
+import { useDispatch } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
 

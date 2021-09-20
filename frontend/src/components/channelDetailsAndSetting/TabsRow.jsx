@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tabs, Text, Spacer, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
+import { TabList, Tab } from "@chakra-ui/react"
 
 export default function TabsRows({colors}) {
  

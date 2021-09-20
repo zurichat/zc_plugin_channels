@@ -1,5 +1,5 @@
 import { Box, Flex, Link, Text } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BiUserPlus } from "react-icons/bi";
 import { useDisclosure } from "@chakra-ui/react";
 import AddPeopleModal from "./addPeopleModal";

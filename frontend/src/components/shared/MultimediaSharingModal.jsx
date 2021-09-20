@@ -1,62 +1,81 @@
 import React from 'react'
-import { FaPaperclip, FaGoogleDrive, FaTv, FaRegPaperPlane } from 'react-icons/fa'
+import { FaGoogleDrive, FaTv } from 'react-icons/fa'
 import {
-    Modal, ModalOverlay, ModalContent, ModalBody,
-    Flex, Box, Image, Heading, Stack, StackDivider,
+    Modal, ModalOverlay, ModalContent,
+    Flex, Box, Image, Heading, Stack,
     Divider, HStack, Text, Link,
-    List, ListItem, ListIcon, OrderedList, UnorderedList
+    List, ListItem
 } from "@chakra-ui/react"
 import { useDisclosure } from "@chakra-ui/hooks"
-import { IconButton } from "@chakra-ui/react";
+import { FiPaperclip } from 'react-icons/fi';
 
-
-const MultimediaSharingModal = () =>  {
+const MultimediaSharingModal = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     return (
         <>
-            <IconButton tabIndex={-1} aria-label="Search database" icon={<FaPaperclip />} variant="ghost"
-                color='grey' colorScheme='green' fontSize='20px' onClick={onOpen} />
-            <Modal isOpen={isOpen} onClose={onClose} pb={0}>
+            <FiPaperclip
+                variant="ghost"
+
+                _focus='none'
+                fontSize='20px' size={20}
+                onClick={onOpen} />
+            <Modal isOpen={isOpen} onClose={onClose} size='xs' isCentered='true' pb={0}>
                 <ModalOverlay />
-                <ModalContent maxW='24rem' borderWidth={1} borderColor='#dbdbdb' borderStyle='solid'>
-                    <ModalBody>
-                        <Flex direction="column" pb={2}>
-                            <Stack direction="column">
-                                <Box pt={2} pb={2}>
-                                    <Heading as='h3' size='lg' color='#8b8b8b' fontSize='1.4rem' textAlign='left'>
-                                        Your recent files
-                                    </Heading>
-                                </Box>
-                                <FileList />
-                            </Stack>
-                            <Text pt={3} fontSize='small'>
-                                <Link fontWeight='semibold' color="green.300" href="#">
+                <ModalContent
+                    bottom='-5.6rem' left='3.6rem'
+                    maxW='20rem'
+                >
+
+                    <Flex direction="column">
+                        <Stack direction="column" p={4} pb={0}>
+                            <Box pt={2} pb={2}>
+                                <Heading
+                                    as='h3'
+                                    size='md'
+                                    color='#8b8b8b'
+                                    fontSize='1.2rem'
+                                    textAlign='left'>
+                                    Your recent files
+                                </Heading>
+                            </Box>
+                            <FileList />
+                            <Text
+                                pt={3}
+                                fontSize='xs'>
+                                <Link
+                                    fontWeight='semibold' _focus='none' color="green.300" href="#">
                                     View all your files
                                 </Link>
                             </Text>
-                            <Divider orientation="horizontal" pt={4} />
-                            <Stack direction='column'>
-                                <Box pt={4} pb={2}>
-                                    <Heading as='h3' size='lg' color='#8b8b8b' fontSize='1.4rem' textAlign='left'>
-                                        Add files from
-                                    </Heading>
-                                </Box>
-                                <HStack color='#c4c4c4' spacing={4}>
-                                    <FaGoogleDrive size='1.4rem' />
-                                    <Link _hover={{ textDecoration: 'none' }}>
-                                        <Text fontSize='md' fontWeight='normal'>Google drive</Text>
-                                    </Link>
-                                </HStack>
-                                <HStack color='#c4c4c4' spacing={4}>
-                                    <FaTv size='1.4rem' />
-                                    <Link _hover={{ textDecoration: 'none' }}>
-                                        <Text fontSize='md' fontWeight='normal'>Upload from your computer</Text>
-                                    </Link>
-                                </HStack>
-                            </Stack>
-                        </Flex>
+                        </Stack>
 
-                    </ModalBody>
+                        <Divider
+                            orientation="horizontal"
+                            pt={4} />
+                        <Stack
+                            direction='column'
+                            p={4} pt={0}>
+                            <Box pt={4} pb={2}>
+                                <Heading as='h3' size='md' color='#8b8b8b' fontSize='1.2rem' textAlign='left'>
+                                    Add files from
+                                </Heading>
+                            </Box>
+                            {/* <HStack color='#c4c4c4' spacing={4}>
+                                <FaGoogleDrive size='1.2rem' />
+                                <Link _hover={{ textDecoration: 'none' }}>
+                                    <Text fontSize='sm' fontWeight='normal'>Google drive</Text>
+                                </Link>
+                            </HStack> */}
+                            <HStack color='#c4c4c4' spacing={4}>
+                                <FaTv size='1.2rem' />
+                                <Link _hover={{ textDecoration: 'none' }}>
+                                    <Text fontSize='sm' fontWeight='normal'>Upload from your computer</Text>
+                                </Link>
+                            </HStack>
+                        </Stack>
+                    </Flex>
+
+
                 </ModalContent>
             </Modal>
         </>
@@ -65,7 +84,7 @@ const MultimediaSharingModal = () =>  {
 
 export default MultimediaSharingModal;
 
-const FileList = () =>{
+const FileList = () => {
     const fileInfo = [
         {
             imageUrl: 'https://bit.ly/sage-adebayo',
@@ -92,7 +111,7 @@ const FileList = () =>{
     return (
         <Stack>
             <List spacing={4}>
-                {fileInfo.map((file) => {
+                {fileInfo.slice(0, 2).map((file) => {
                     return (
 
                         <ListItem>
@@ -125,17 +144,17 @@ const File = props => {
             />
             <Stack spacing={0}>
                 <Link _hover={{ textDecoration: 'none' }}>
-                    <Text fontSize="small" fontWeight='semibold' color='#565656'>
+                    <Text fontSize="xs" fontWeight='semibold' color='#565656'>
                         {props.fileName}
                     </Text>
                 </Link>
                 <HStack>
                     <Link _hover={{ textDecoration: 'none' }}>
-                        <Text fontSize="x-small" fontWeight='semibold'>
+                        <Text fontSize="xx-small" fontWeight='semibold'>
                             {props.fileAuthor}
                         </Text>
                     </Link>
-                    <Text fontSize='x-small'>
+                    <Text fontSize='xx-small'>
                         {props.fileUploadDate} at {props.fileUploadTime}
                     </Text>
                 </HStack>
@@ -143,6 +162,3 @@ const File = props => {
         </HStack>
     )
 }
-
-
-

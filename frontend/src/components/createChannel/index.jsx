@@ -3,12 +3,12 @@ import { Box } from "@chakra-ui/layout";
 import MessageInput from "../shared/MessageInput";
 import { TobBarMobile, TopBar } from "./TopBar";
 import ChannelBody from "./ChannelBody";
-import TopSearch from "./TopSearch";
+// import TopSearch from "./TopSearch";
 import { useBreakpointValue } from "@chakra-ui/media-query";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from "../../redux/actions/app";
-import { v4 } from "uuid";
+// import { v4 } from "uuid";
 
 const CreateChannel = () => {
   const isMobile = useBreakpointValue({

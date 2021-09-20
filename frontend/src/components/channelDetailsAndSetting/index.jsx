@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@chakra-ui/layout";
+// import { Box } from "@chakra-ui/layout";
 import ChannelDetails from "./channelDetailsAndSettings";
 
 const ChannelDetailsAndSetting = () => {

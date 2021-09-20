@@ -1,7 +1,6 @@
 import {
   FormControl,
   FormLabel,
-  Heading,
   Input,
   ModalBody,
   ModalCloseButton,
@@ -17,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 import { HStack, Text } from "@chakra-ui/layout";
 import React, { useRef } from "react";
-import { Link } from "react-router-dom";
 import { FormHelperText } from "@chakra-ui/form-control";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
