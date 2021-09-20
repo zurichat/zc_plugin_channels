@@ -11,14 +11,17 @@ import Thread from "../thread/Thread";
 
 import { useDisclosure } from "@chakra-ui/react"
 
+
+
 const MessageBoardIndex = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  
   return (
     <Box bg="#F9F9F9" m="5px">
       <Flex>
-        <Box width="85vw">
+        <Box width="95vw">
         <ChannelHeader />
-        <Box m="5px" bg="white" overflowY="scroll" height={["75vh","75vh", "80vh", "72vh"]}
+        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "68vh", "68vh"]}
         css={{
         "&::-webkit-scrollbar": {
           width: "0",
@@ -31,9 +34,9 @@ const MessageBoardIndex = () => {
         </Box>
         <MessageInput />
         </Box>
-        <Box>
+        {/* <Box>
           <Thread/>
-        </Box>
+        </Box> */}
       </Flex>
     </Box>
   );
