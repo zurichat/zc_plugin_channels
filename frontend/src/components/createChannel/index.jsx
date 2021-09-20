@@ -33,7 +33,7 @@ const CreateChannel = () => {
   return (
     <Box width="100%" height="100vh" bg="#FFFFFF">
       <Box p={isMobile ? 0 : 6} mb={6}>
-        {!isMobile && <TopSearch />}
+        {/* {!isMobile && <TopSearch />} */}
         {isMobile ? <TobBarMobile /> : <TopBar />}
         <ChannelBody />
         <MessageInput />

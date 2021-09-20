@@ -88,14 +88,14 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                     </Text>
                   </Box>
 
-                  <Box
-                    pos="absolute"
-                    transform="scale(0.8)"
-                    top="19.8rem"
-                    left="9rem"
-                    display="flex"
-                    flexDir="column"
-                  >
+                    <Box
+                      pos="absolute"
+                        transform="scale(0.8)"
+                        top="19.8rem"
+                        left="9rem"
+                        display="flex"
+                        flexDir="column"
+                      >
                     <IconButton
                       pos="relative"
                       left={-7}
@@ -106,6 +106,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                       borderRadius="12px"
                       ml="24px"
                       _hover="none"
+                      
                     />
                     <Text pos="relative" left={3}>
                       Call
@@ -136,7 +137,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                       /> 
                           <Text pos='relative' left={-2}  >More</Text>
                     </Box> 
-                </Box>
+                {/* </Box> */}
                     <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Local Time</Text>
                     <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='13px' color='black' >08012345678</Text>
                     
