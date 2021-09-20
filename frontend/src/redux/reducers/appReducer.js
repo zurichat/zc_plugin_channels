@@ -1,9 +1,9 @@
-import { GET_USERS } from "../actions/types";
+import { GET_USERS} from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
-  users: [],
+  users: []
 };
 
 const appReducer = (state = initialState, action) => {
@@ -18,7 +18,6 @@ const appReducer = (state = initialState, action) => {
         ...state,
         users: payload,
       };
-
     // Default state is returned
     default:
       return state;
