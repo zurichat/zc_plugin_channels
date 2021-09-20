@@ -15,7 +15,7 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-  ModalOverlay, Divider
+  ModalOverlay
 } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/layout";
 import TabsRows from "./TabsRow";

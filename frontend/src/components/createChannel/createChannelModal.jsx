@@ -1,7 +1,6 @@
 import {
   FormControl,
   FormLabel,
-  Heading,
   Input,
   ModalBody,
   ModalCloseButton,
@@ -17,11 +16,40 @@ import {
 } from "@chakra-ui/react";
 import { HStack, Text } from "@chakra-ui/layout";
 import React, { useRef } from "react";
-import { Link } from "react-router-dom";
 import { FormHelperText } from "@chakra-ui/form-control";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import appActions from "../../redux/actions/app";
+import { bindActionCreators } from "redux";
+import { useHistory } from "react-router-dom";
 
 const CreateChannelModal = ({ onClose, isOpen }) => {
   const initialRef = useRef();
+  const history = useHistory();
+
+  const dispatch = useDispatch();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [priva, setPriva] = useState(true);
+  const [owner, setOwner] = useState("61468abd1a5607b13c00bd4f");
+  const data = {
+    name: name,
+    owner: owner,
+    description: description,
+    private: priva
+  }
+  const { _createChannel } = bindActionCreators(appActions, dispatch);
+  const newChannel = async () => {
+    await _createChannel(1, data);
+  };
+
+  const handleSubmit = () => {
+    console.log(data);
+    newChannel();
+    onClose();
+    history.push('/create-channel')
+
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
@@ -34,11 +62,12 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
             Channels are where your team communicates. They’re best when
             organized around a topic — #marketing, for example.
           </Text>
-
+        
           <FormControl mb="1rem">
             <FormLabel fontWeight="bold">Name</FormLabel>
             <Input
               ref={initialRef}
+              onChange={(e) => setName(e.target.value)}
               borderRadius="2px"
               focusBorderColor="green.200"
             />
@@ -51,7 +80,7 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
                 <FormHelperText>(optional)</FormHelperText>
               </HStack>
             </FormLabel>
-            <Input borderRadius="2px" focusBorderColor="green.200" />
+            <Input borderRadius="2px" focusBorderColor="green.200" onChange={(e) => setDescription(e.target.value)} />
             <FormHelperText> What is this channel about?</FormHelperText>
           </FormControl>
 
@@ -63,22 +92,22 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
               When a channel is set to private, <br />
               it can only be viewed or joined by invitation.
             </Text>
-            <Switch colorScheme="whatsapp" focusBorderColor="green.400" />
+            <Switch colorScheme="whatsapp" focusBorderColor="green.400" checked="false" onChange={(e) => setPriva(e.target.checked)}/>
           </HStack>
         </ModalBody>
 
         <ModalFooter>
-          <Link to="/create-channel">
+          {/* <Link to="/create-channel"> */}
             <Button
               px="2rem"
               py="1.2rem"
               colorScheme="whatsapp"
               borderRadius="md"
-              onClick={onClose}
+              onClick={handleSubmit}
             >
               Create
             </Button>
-          </Link>
+          {/* </Link> */}
         </ModalFooter>
       </ModalContent>
     </Modal>
