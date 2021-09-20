@@ -22,6 +22,7 @@ jobs:
          
       - name: install Dependencies
         run: |
+          cd frontend
           yarn install
           yarn relocate
 
