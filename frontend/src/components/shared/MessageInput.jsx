@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Flex} from "@chakra-ui/layout";
-import { Box, Button} from "@chakra-ui/react";
+import { Box, Button,Input} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
 import { FiAtSign, FiItalic } from "react-icons/fi";
@@ -8,6 +8,7 @@ import { AiOutlineBars } from "react-icons/ai";
 import {GrEmoji } from "react-icons/gr";
 import {RiArrowDropDownLine} from 'react-icons/ri';
 import {ImAttachment} from 'react-icons/im';
+import Picker from "emoji-picker-react";
 import { useRef } from "react";
 import { Textarea } from "@chakra-ui/textarea";
 import { useDispatch,useSelector } from "react-redux";
@@ -22,12 +23,15 @@ const MessageInput = () =>{
     const [click,setOnclick]=useState(false);
     const [toggle,setToggle]=useState(false);
     const [active,setActive]=useState("");
-    const [italic,setItalic]=useState("")
+    const [italic,setItalic]=useState("");
+    const [list,setList]=useState("");
+    const [emoji,setEmoji]=useState(false)
 
     const datas={
       user_id:"thanos",
       content:data
     }
+
 
     const dispatch=useDispatch();
     const {_sendMessage} = bindActionCreators(appActions,dispatch);
@@ -43,11 +47,32 @@ const MessageInput = () =>{
     }
     const changeWeight=(e)=>{
       const active=e.target
+      // let cmd=active.dataset['command'];
+      // const trial=document.execCommand(cmd,false,null);
       let cmd=active.dataset['command'];
       !toggle ? setActive(cmd) : setActive(" ");
-      
+
       setToggle(!toggle)
       return cmd;
+    }
+    // const insertList=(e)=>{
+    //   const active=e.target
+    //   let cmd=active.dataset['command'];
+    //   !toggle ? setList(cmd) : setList(" ");
+    //   setToggle(!toggle);
+    //   return cmd
+    // }
+    const addTag = () => {
+      const cursor = textRef.current.selectionStart;
+      const text =
+        data.slice(0, cursor) + '@' + data.slice(cursor);
+      setData(text);
+    }
+    const onEmojiClick = (event, emojiObject) => {
+      const cursor = textRef.current.selectionStart;
+      const text =
+        data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor);
+      setData(text);
     }
     const changeStyle=(e)=>{
       const active=e.target
@@ -57,9 +82,6 @@ const MessageInput = () =>{
       setToggle(!toggle)
       return cmd;
     }
-    // useEffect(()=>{
-    //   loadData()
-    // },[]);
 
     return (
       <Box border="1px solid #EBEBEB" bg="white" borderRadius="3px" width="100%"
@@ -71,9 +93,6 @@ const MessageInput = () =>{
         <Box display={['none','block']}>
         <ResizableInput
           textareaRef={textRef}
-          value={data}
-          changeText={(e)=>setData(e.target.value)}
-          height="58px"
           border="none"
           fontSize="15px"
           color="neutral.500"
@@ -83,9 +102,11 @@ const MessageInput = () =>{
           paddingInline="20px"
           _focus={{ border: "none" }}
           onInput={()=>setInput(true)}
-          onMouseOut={()=>setInput(false)}
           fontWeight={active}
           fontStyle={italic}
+          listStyleType={list}
+          value={data}
+          changeText={(e)=>setData(e.target.value)}
         />
           <Box
           maxW="100%"
@@ -95,6 +116,7 @@ const MessageInput = () =>{
           alignItems="center"
           overflowX="auto"
           p={1}
+          onClick={()=>setInput(true)}
         >
           <Box
             width="10em"
@@ -108,7 +130,7 @@ const MessageInput = () =>{
             <BsTypeBold  className="box" onClick={changeWeight} data-command="bold"/>
             <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
             <BsLink45Deg />
-            <AiOutlineBars />
+            <AiOutlineBars data-command="insertUnorderedList"/>
           </Box>
           <Box
             display="flex"
@@ -124,9 +146,10 @@ const MessageInput = () =>{
               }
             }}
           >
-            <FiAtSign />
-            <ImAttachment/>
-            <GrEmoji/>
+            <FiAtSign onClick={addTag} className="tagged"/>
+            <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
+            <label for="contained-button-file"><ImAttachment/></label>
+            <GrEmoji onClick={()=>setEmoji(!emoji)}/>
             {(input || data!== "") ? (
               <Button bg="#00B87C" size="xs">
                 <IoSendSharp color="white"  onClick={loadData}/>
@@ -145,8 +168,9 @@ const MessageInput = () =>{
           click ? 
           <Box display="flex" flexDir="column" justifyContent="space-between">
             <Flex justify="space-between" width="100%" minW="10em">
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} 
-              onMouseOut={()=>setOnclick(false)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} value={data}
+              fontWeight={active} fontStyle={italic}
+               onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
                 (input || data!== "") ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs" disabled><IoSendSharp /></Button>
               }
@@ -154,13 +178,14 @@ const MessageInput = () =>{
             <Flex width="10em" justify="space-between" mt={1}>
               <IoFlashOutline/>
               <HSeparatorIcon/>
-              <GrEmoji/>
+              <GrEmoji onClick={()=>setEmoji(!emoji)} />
               <BsTypeBold className="box" onClick={changeWeight} data-command="bold"/>
               <FiItalic className="box" onClick={changeStyle} data-command="italic"/>
-              <BsLink45Deg/>
-              <AiOutlineBars/>
-              <FiAtSign/>
-              <ImAttachment/>
+              <BsLink45Deg />
+              <AiOutlineBars data-command="insertUnorderedList"/>
+              <FiAtSign onClick={addTag} className="tagged"/>
+              <label for="contained-button-file"><ImAttachment/></label>
+              <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
             </Flex>
           </Box>
           :
@@ -170,19 +195,23 @@ const MessageInput = () =>{
             '&::-webkit-scrollbar':{
               display:'none'
             }
-          }}>
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef}
-              onMouseDown={()=>setOnclick(true)} onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
+          }} onClick={()=>setOnclick(true)}>
+              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} value={data}
+               onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)} fontWeight={active} fontStyle={italic}/>
             <Box>
               <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
-              <AiOutlineBars/>
-              <FiAtSign/>
-              <ImAttachment/>
+              <AiOutlineBars data-command="insertUnorderedList"/>
+              <FiAtSign onClick={addTag} className="tagged"/>
+              <label for="contained-button-file"><ImAttachment/></label>
+              <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
               </Box>
             </Box>
           </Box>
         }
       </Box>
+      {
+        emoji && <Picker onEmojiClick={onEmojiClick}/>
+      }
     </Box>
 
     );
