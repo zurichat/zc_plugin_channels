@@ -40,7 +40,7 @@ const ChannelHeader = () => {
   
   return (
     <Box width="95vw" mt="5px">
-      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" display={['none', 'none','flex']}>
+      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" display={['none','flex']}>
         <Link to="/channel-detail">  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
             {isPrivate=='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
@@ -61,14 +61,14 @@ const ChannelHeader = () => {
           </Button>
           </Flex></Link>
       </Flex>
-      <Box ml='1px'  display={['none', 'none','flex']}>
+      <Box ml='1px'  display={['none','flex']}>
         <Flex w='95vw' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
           { pinnedMessages.length > 0 && <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button> }
           <Button {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={addImage}/>}>Add a bookmark</Button>        
         </Flex>
       </Box> 
       {/*Mobile responsive version */}
-      <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex', 'flex','none']}>
+      <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex','none']}>
         <Icon as={ BiChevronLeft } color="#ffffff" h={10} w={10} ml={2}  />
           <Link to='/channel-detail'><Flex ml={1}  alignContent='center' flexDir='column'>
             <Flex align='center' flexDir='row'>
