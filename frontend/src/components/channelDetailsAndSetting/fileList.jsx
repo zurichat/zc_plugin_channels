@@ -41,7 +41,7 @@ const FileList = () => {
 
   return (
     <Box>
-      <Flex flexDirection="column">
+      <Flex flexDirection="column" backgroundColor="#fff">
         <Text fontWeight="bold" fontSize="12px" color="#333333" mb="2">
           Files
         </Text>

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Heading, Box, Text, Stack, StackDivider } from "@chakra-ui/layout";
 import { Input, Textarea } from "@chakra-ui/react";
 import Editable from "./editable";
+import LeaveChannel from "./LeaveChannel";
 
 function About() {
   const name = "Fikun";
@@ -33,7 +34,7 @@ function About() {
           fontWeight="bold"
           fontSize={12}
           lineHeight="130%"
-          color="black.300"
+          color="#000"
         >
           Topic
         </Heading>
@@ -41,9 +42,9 @@ function About() {
           text={topic}
           childRef={inputRef}
           placeholder="Add a topic"
-          type="input"
+          type="textarea"
         >
-          <Input
+          <Textarea
             type="text"
             name="topic"
             ref={inputRef}
@@ -61,14 +62,14 @@ function About() {
         className="feature-info"
         p="0.4rem 1rem 0.6rem"
         direction="column"
-        color="black.800"
+        color="#000"
       >
         <Heading
           mb=".32rem"
           fontWeight="bold"
           fontSize={12}
           lineHeight="130%"
-          color="black.300"
+          color="#000"
         >
           Description
         </Heading>
@@ -99,7 +100,7 @@ function About() {
           fontWeight="bold"
           fontSize={12}
           lineHeight="130%"
-          color="black.300"
+          color="#000"
         >
           Created by
         </Heading>
@@ -108,9 +109,10 @@ function About() {
         </Text>
       </Box>
       <Box className="feature-info" p="0.4rem 1rem 0.6rem">
-        <Text as="a" href="#" color="#f44336" fontWeight="600" pt="0.6rem">
+        {/* <Text as="a" href="#" color="#f44336" fontWeight="600" pt="0.6rem">
           Leave Channel Now
-        </Text>
+        </Text> */}
+        <LeaveChannel />
       </Box>
     </Stack>
   );
