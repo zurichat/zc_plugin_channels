@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box } from "@chakra-ui/layout";
-
 import UserProfileOnHover from './UserProfileOnHover';
-import OnclickuserProfile from "./OnclickuserProfile";
+import OnClickUserProfile from "./OnclickuserProfile";
 
-const UserProfile = () => {
+
+  const UserProfile = () => {
+    const [showProfile, setShowProfile] = useState(false);
+
   return <Box h='100vh' bgColor='#E5E5E5'>
-              
-              <UserProfileOnHover />
-              <OnclickuserProfile />
+              <UserProfileOnHover setShowProfile={setShowProfile} />
+              <OnClickUserProfile showProfile={showProfile} setShowProfile={setShowProfile} />
         </Box>;
 };
 

@@ -7,19 +7,9 @@ import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContain
 // import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
 import MessageInput from "../shared/MessageInput";
 import Thread from "../thread/Thread";
+//import MessageOptionsPopUpMenu from "./subs/MessageOptionsPopUpMenu/MessageOptionsPopUpMenu";
 
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Lorem,
-  Button
-} from "@chakra-ui/react"
+import { useDisclosure } from "@chakra-ui/react"
 
 const MessageBoardIndex = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
