@@ -56,7 +56,7 @@ const dispatch = useDispatch()
         borderRadius='15px'
         size='xs'
         mb='10px'
-        rightIcon={<FaCaretDown />}
+        rightIcon={<FaCaretDown /  >}
       >
         Today
       </Button>
