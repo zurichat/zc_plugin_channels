@@ -23,7 +23,6 @@ class AuthenticationMiddleware:
 
 
 class CorsMiddleware:
-    
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -34,10 +33,20 @@ class CorsMiddleware:
         return response
 
     def process_response(self, request, response):
-        if request.method in ["GET", "PUT"]:
+        if request.method.upper() in ["GET", "POST"]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except:  # noqa
                 pass
-            
+
+        else:
+            response.__dict__["_headers"]["access-control-allow-origin"] = (
+                "Access-Control-Allow-Origin",
+                "*",
+            )
+            response.__dict__["_headers"]["content-type"] = (
+                "Content-Type",
+                "text/plain",
+            )
+
         return response
