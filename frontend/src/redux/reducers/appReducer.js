@@ -1,9 +1,9 @@
-import { GET_USERS } from "../actions/types";
+import { GET_USERS} from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
-  users: [],
+  users: []
 };
 
 const appReducer = (state = initialState, action) => {

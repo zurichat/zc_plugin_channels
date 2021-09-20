@@ -1,6 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
-import { GET_USERS, GET_CHANNEL_DETAILS, GET_PINNED_MESSAGES, PIN_MESSAGE, ARCHIVE_CHANNEL } from "./types";
+import { GET_USERS, GET_CHANNEL_DETAILS, GET_PINNED_MESSAGES, PIN_MESSAGE, ARCHIVE_CHANNEL,SEND_MESSAGES } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
 
@@ -40,6 +40,16 @@ const _getUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
+const _sendMessage=(org_id,channel_id,data)=>async(dispatch)=>{
+  try{
+    const res=await APIService.sendMessage(org_id,channel_id,data);
+    // console.log(res.data)
+    dispatch({type:SEND_MESSAGES,payload:res.data});
+  }
+  catch(err){
+    console.log("Oops something went wrong",err.message)
+  }
+}
 
 const _getChannelDetails = (org_id, channel_id) => async (dispatch) => {
   try {
@@ -82,6 +92,6 @@ const _archiveChannel = (org_id, channel_id) => async (dispatch) => {
 }
 
 // Export functions here
-const appActions = { _alert, _getUsers, _getChannelDetails, _getPinnedMessages, _pinMessage, _archiveChannel };
+const appActions = { _alert, _getUsers, _getChannelDetails, _getPinnedMessages, _pinMessage, _archiveChannel,_sendMessage };
 export default appActions;
 
