@@ -27,7 +27,7 @@ const ChannelHeader = () => {
   //.......getting pinned messages...........//
   const { pinnedMessages } = useSelector((state) => state.channelsReducer)
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);
-  useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
+  useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messagesyarn start
   //-------getting channel details.........//
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
@@ -36,13 +36,15 @@ const ChannelHeader = () => {
   useEffect(() => { loadChannelDetails(); }, []);
   
   const isPrivate = channelDetails.private;// to check if channel is private or not
+  
+  
   return (
     <Box width="95vw" mt="5px">
-      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" sx={{"@media screen and (max-width: 768.5px)": {display: "none",},}}>
+      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" display={['none', 'none','flex']}>
         <Link to="/channel-detail">  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
-            {isPrivate == 'False' ? <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2}  />
-            :<Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2} />}
+            {isPrivate=='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
+            {isPrivate =='False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}            
             <Box as="span" letterSpacing='wide' lineHeight='32px' fontSize="17.5px" color="#ffffff" fontWeight="501" mr={1}>{channelDetails.name}</Box> 
             <Icon as={BiChevronDown} color="#ffffff" w={6} h={5} />
           </Button>
@@ -59,23 +61,24 @@ const ChannelHeader = () => {
           </Button>
           </Flex></Link>
       </Flex>
-      <Box ml='1px' maxWidth='1172px' display={['none','block']}>
-        <Flex alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
+      <Box ml='1px'  display={['none', 'none','flex']}>
+        <Flex w='95vw' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
           { pinnedMessages.length > 0 && <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button> }
           <Button {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={addImage}/>}>Add a bookmark</Button>        
         </Flex>
       </Box> 
       {/*Mobile responsive version */}
-      <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex','none']}>
+      <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex', 'flex','none']}>
         <Icon as={ BiChevronLeft } color="#ffffff" h={10} w={10} ml={2}  />
-          <Link to='/channel-detail'><Flex ml={2}  alignContent='center' flexDir='column'>
+          <Link to='/channel-detail'><Flex ml={1}  alignContent='center' flexDir='column'>
             <Flex align='center' flexDir='row'>
-              {isPrivate=='False'?<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={1}  />:<Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={1} />}
+            {isPrivate=='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
+            {isPrivate =='False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}
               <Box as="span" letterSpacing='wide'  fontSize="18px" color="#ffffff" fontWeight="501" mr={1} >
                 {channelDetails.name}
               </Box>
             </Flex>
-            <Box as='span' fontSize='12px' fontWeight='400' ml='2%' color='#ffffff'>{channelDetails.members} members</Box>
+            <Box as='span' fontSize='12px' fontWeight='500' ml='2%' color='#ffffff'>{channelDetails.members} members</Box>
           </Flex></Link> 
           <Spacer /> 
           <Flex p="4" align='center'>
