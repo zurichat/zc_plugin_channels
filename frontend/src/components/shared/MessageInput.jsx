@@ -96,7 +96,7 @@ const MessageInput = () =>{
           border="none"
           fontSize="15px"
           color="neutral.500"
-          placeholder="Send a message to John"
+          placeholder="Message #announcement"
           _placeholder={{ color: "neutral.500" }}
           paddingBlock="18px"
           paddingInline="20px"
@@ -106,6 +106,7 @@ const MessageInput = () =>{
           fontStyle={italic}
           listStyleType={list}
           value={data}
+          height="58px"
           changeText={(e)=>setData(e.target.value)}
         />
           <Box
@@ -146,7 +147,7 @@ const MessageInput = () =>{
               }
             }}
           >
-            <FiAtSign onClick={addTag} className="tagged"/>
+            <FiAtSign onClick={addTag,()=>setInput(true)} className="tagged"/>
             <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
             <label for="contained-button-file"><ImAttachment/></label>
             <GrEmoji onClick={()=>setEmoji(!emoji)}/>
@@ -168,14 +169,14 @@ const MessageInput = () =>{
           click ? 
           <Box display="flex" flexDir="column" justifyContent="space-between">
             <Flex justify="space-between" width="100%" minW="10em">
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} value={data}
+              <ResizableInput variant="unstyled" placeholder="Message #announcement" textareaRef={textRef} value={data}
               fontWeight={active} fontStyle={italic}
                onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)}/>
               {
                 (input || data!== "") ?<IoSendSharp color="black" onClick={loadData}/> : <Button size="xs" disabled><IoSendSharp /></Button>
               }
             </Flex>
-            <Flex width="10em" justify="space-between" mt={1}>
+            <Flex minW="10em" justify="space-between" mt={1}>
               <IoFlashOutline/>
               <HSeparatorIcon/>
               <GrEmoji onClick={()=>setEmoji(!emoji)} />
@@ -196,10 +197,10 @@ const MessageInput = () =>{
               display:'none'
             }
           }} onClick={()=>setOnclick(true)}>
-              <ResizableInput variant="unstyled" placeholder="Send a Message" textareaRef={textRef} value={data}
+              <ResizableInput variant="unstyled" placeholder="Message #announcement" textareaRef={textRef} value={data}
                onInput={()=>setInput(true)} changeText={(e)=>setData(e.target.value)} fontWeight={active} fontStyle={italic}/>
             <Box>
-              <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" width="80px">
+              <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" minW="80px">
               <AiOutlineBars data-command="insertUnorderedList"/>
               <FiAtSign onClick={addTag} className="tagged"/>
               <label for="contained-button-file"><ImAttachment/></label>
