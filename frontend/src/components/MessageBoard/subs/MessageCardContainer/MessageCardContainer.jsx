@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
@@ -35,9 +35,28 @@ const dispatch = useDispatch()
     await _getChannelMessages(1, "613f70bd6173056af01b4aba")
   }
 
+  let messageNumber = 50
+
+  let loadedMessages = channelMessages.splice(0, messageNumber)
+  const [loadedMessagesArray, setLoadedMessages] = useState([])
+  const [loaded, setLoaded] = useState(false)
+
   useEffect(async () => {
-    loadData()
+  loadData()
   }, []);
+  
+  const loadMore = () =>{
+    messageNumber += 10
+    loadedMessages = channelMessages.splice(0, messageNumber)
+    setLoadedMessages(loadedMessages)
+    console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber, loadedMessagesArray);
+    }
+
+    // let renderedArray = loadedMessages
+    
+    useEffect(()=>{
+      setLoaded(true)
+    }, [loadedMessages])
 
     return(
         <Box>
@@ -56,11 +75,17 @@ const dispatch = useDispatch()
             
             <Box>
             {
-                channelMessages.map((message) => {
+                loadedMessages.map((message) => {
                     return(
+                      message == [] ? <Text textAlign="center">Loading...</Text> :
                     <MessageCard {...message} key={message._id} />
                     )
                 })
+            }
+            {
+              loadedMessages.length !== channelMessages.lenght ? 
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{loaded? "Load more..." : "Loading..."}</Text> :
+              null 
             }
             </Box>
         </Box>    

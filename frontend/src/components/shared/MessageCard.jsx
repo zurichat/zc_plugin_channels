@@ -7,6 +7,9 @@ import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
 import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
+import appActions from "../../redux/actions/app"
+import { useDispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import instance from '../../utils/utils';
 
@@ -18,9 +21,23 @@ const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited, _id }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
+  const dispatch = useDispatch();
+  const { _pinMessage } = bindActionCreators(appActions, dispatch);
+
+  const pinMessage = () => {
+    const orgId = 1 // Hardcoded value to for channelId in org with id 1
+    const messageId = "61413e736173056af01b4d31"
+    const userId = "cephas"
+    const channelId = "613f70bd6173056af01b4aba"
+    _pinMessage(orgId, channelId, userId, messageId)
+  }
+
+  const actions = {
+    pinMessage
+  }
     return (
       <Box 
         position="relative" 
@@ -28,7 +45,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) =
         onMouseEnter={() => setShowOptions(true)}
         onMouseLeave={() => setShowOptions(false)}
       >
-        <HoverOptions show={showOptions} />
+        <HoverOptions show={showOptions} actions={pinMessage} />
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
             <Avatar name={user_id} src={icon} w="36px" h="36px" borderRadius="4px" />
@@ -39,7 +56,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) =
                 {user_id}
               </Text>
               <Text fontSize="13px" color="#616061">
-                {formattedTime}
+                {formattedTime} {_id}
               </Text>
             </HStack>
             <Box m="0px">
@@ -68,14 +85,18 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) =
                   <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
                 </HStack>
               </HStack>
-            )}
-          </Flex>
+          )}
         </Flex>
-      </Box>
-    );
-  };
+      </Flex>
+    </Box>
+  );
+};
 
-const HoverOptions = ({ show }) => {
+const HoverOptions = ({ show, actions }) => {
+    const orgId = 1 // Hardcoded value to for channelId in org with id 1
+    const messageId = "61413e736173056af01b4d31"
+    const userId = "cephas"
+    const channelId = "613f70bd6173056af01b4aba"
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -87,7 +108,7 @@ const HoverOptions = ({ show }) => {
     { label: "Share message", command: "S" },
     { label: "Copy Link" },
     { divider: true },
-    { label: "Pin to channel", command: "P" },
+    { label: "Pin to channel", command: "P", onClick: actions },
     { label: "Edit Message", command: "E" }, 
   ], [])
   return (

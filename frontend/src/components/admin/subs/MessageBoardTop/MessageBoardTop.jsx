@@ -106,8 +106,9 @@ function MessageBoardTop() {
         Yesterday
       </Button>
       <Box>
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <MessageCard 
+            key={`msg-card-${index}`}
             name={message.userName}
             time={message.time}
             icon={message.avatar}
