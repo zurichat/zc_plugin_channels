@@ -1,119 +1,116 @@
-import React, { useState, useRef } from "react";
-import { Heading, Box, Text, Stack, StackDivider } from "@chakra-ui/layout";
-import { Input, Textarea } from "@chakra-ui/react";
-import Editable from "./editable";
+import React, { useState } from "react";
+import { Stack, StackDivider, List, ListItem, Heading, Box, Text} from '@chakra-ui/react';
+import LeaveChannel from './LeaveChannel';
 
-function About() {
+const About = () => {
+
   const name = "Fikun";
   const channelCreationDate = "August 28, 2021";
+
+
+  const infos = [
+    {
+      id: 1,
+      title: 'Topic',
+      placeholder: 'Add a topic'
+    },
+    {
+      id: 2,
+      title: 'Description',
+      placeholder: 'Add a channel description'
+    },
+    {
+      id: 3,
+      title: 'Created by',
+      placeholder: `${name} on ${channelCreationDate}`
+    },
+  ];
+
+
+  const [info, setInfo] = useState(infos);
   const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
-  const inputRef = useRef();
+  const [modalValue, setModalValue] = useState({})
+  const [isOpen, setIsOpen] = useState(false);
+  // const aboutInfo = [];
+  function clickHandler(topic, description) {
+    setIsOpen(true)
+    setModalValue(topic, description)
+    console.log(topic, description)
+  }
 
-  const topicHandler = (event) => setTopic(event.target.value);
-  const descriptionHandler = (event) => setDescription(event.target.value);
   return (
-    <Stack
-      direction="column"
-      alignSelf="center"
-      justify="center"
-      m="1.2rem 3.1rem"
-      bg="white.700"
-      border="1px"
-      borderColor="gray.200"
-      borderRadius="3px"
-      boxSizing="border-box"
-      fontSize={12}
-      lineHeight="130%"
-      divider={<StackDivider borderColor="gray.200" />}
-    >
-      <Box p="0.4rem 1rem 0.6rem" direction="column" className="feature-info">
-        <Heading
-          mb=".32rem"
-          fontWeight="bold"
-          fontSize={12}
-          lineHeight="130%"
-          color="black.300"
-        >
-          Topic
-        </Heading>
-        <Editable
-          text={topic}
-          childRef={inputRef}
-          placeholder="Add a topic"
-          type="input"
-        >
-          <Input
-            type="text"
-            name="topic"
-            ref={inputRef}
-            variant="unstyled"
-            size="xs"
-            placeholder="Add a topic"
-            className="editable"
-            value={topic}
-            onChange={topicHandler}
-          />
-        </Editable>
-      </Box>
 
-      <Box
-        className="feature-info"
-        p="0.4rem 1rem 0.6rem"
-        direction="column"
-        color="black.800"
+
+    <List >
+      <Stack
+        direction='column'
+        m="1.2rem 3.1rem"
+        py={3}
+        bg="white.700"
+        border="1px"
+        borderColor="gray.200"
+        borderRadius="3px"
+        divider={<StackDivider borderColor="gray.200" />}
       >
-        <Heading
-          mb=".32rem"
-          fontWeight="bold"
-          fontSize={12}
-          lineHeight="130%"
-          color="black.300"
-        >
-          Description
-        </Heading>
-        <Editable
-          text={description}
-          placeholder="Add channel description"
-          type="textarea"
-          childRef={inputRef}
-        >
-          <Textarea
-            name="description"
-            ref={inputRef}
-            placeholder="Add channel description"
-            className="editable"
-            resize="none"
-            size="xs"
-            height="auto"
-            focusBorderColor="green.200"
-            value={description}
-            onChange={descriptionHandler}
-          />
-        </Editable>
-      </Box>
+        {infos.map((info) => {
+          return (
 
-      <Box p="0.4rem 1rem 0.6rem" direction="column" className="feature-info">
-        <Heading
-          mb=".32rem"
-          fontWeight="bold"
-          fontSize={12}
-          lineHeight="130%"
-          color="black.300"
-        >
-          Created by
-        </Heading>
-        <Text>
-          {name} on {channelCreationDate}
-        </Text>
-      </Box>
-      <Box className="feature-info" p="0.4rem 1rem 0.6rem">
-        <Text as="a" href="#" color="#f44336" fontWeight="600" pt="0.6rem">
-          Leave Channel Now
-        </Text>
-      </Box>
-    </Stack>
+            <ListItem key={info.id} info={info}>
+              <>
+                <Box
+                  px='1rem'
+                  py='0.2rem'
+                  color="black.800"
+                >
+                  <Heading
+                    mb=".32rem"
+                    fontWeight="bold"
+                    fontSize='sm'
+                    color="black.300"
+                  >
+                    {info.title}
+                  </Heading>
+                  <Text
+                    fontSize="sm"
+                    height="auto"
+                    onClick={() => clickHandler(topic, description)}
+                  >{info.placeholder}
+                  </Text>
+                </Box>
+              </>
+            </ListItem>
+
+          )
+        })}
+        {/* <Text>
+                    
+                </Text> */}
+
+        <Box
+          px='1rem'
+          py='0.2rem'
+          pt={2} >
+
+          {/* <Link
+            href='/'
+            // as={ReachLink}
+            // to="/home"
+            color="#f44336"
+            _hover={{ textDecoration: 'none' }}
+            fontWeight="600"
+            fontSize='sm'>
+            Leave Channel Now
+          </Link> */}
+          <LeaveChannel />
+        </Box>
+      </Stack>
+    </List >
+
+
+
   );
 }
+
 
 export default About;

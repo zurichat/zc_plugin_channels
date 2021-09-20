@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, Box, Text, HStack } from "@chakra-ui/layout";
+import { VStack, Text, HStack } from "@chakra-ui/layout";
 import { Avatar } from "@chakra-ui/avatar";
 
 function EachMessage({ userName, src, messageTime, messageContent }) {

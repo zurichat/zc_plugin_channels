@@ -3,12 +3,7 @@ import { Box, HStack } from "@chakra-ui/layout";
 import {
   Flex,
   Spacer,
-  Avatar,
-  AvatarGroup,
   Button,
-  Divider,
-  IconButton,
-  Image,
 } from "@chakra-ui/react";
 import CreateChannelModal from "../createChannel/createChannelModal";
 import { useDisclosure } from "@chakra-ui/hooks";

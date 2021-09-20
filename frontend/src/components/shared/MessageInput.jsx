@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Flex} from "@chakra-ui/layout";
 import { Box, Button,Input} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
@@ -24,7 +24,7 @@ const MessageInput = () =>{
     const [toggle,setToggle]=useState(false);
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("");
-    const [list,setList]=useState("");
+    const [list, setList]=useState("");
     const [emoji,setEmoji]=useState(false)
 
     const datas={
