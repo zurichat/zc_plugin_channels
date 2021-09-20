@@ -1,7 +1,9 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
+
 import { GET_CHANNELMESSAGES, GET_USERS, GET_CHANNEL_DETAILS, GET_PINNED_MESSAGES, PIN_MESSAGE, ARCHIVE_CHANNEL, SEND_MESSAGES,
-  GET_CHANNELS, } from "./types";
+  GET_CHANNELS,  CREATE_CHANNELS, } from "./types";
+
 
 // Redux actions are called here with an underscore before the name (convention)
 
@@ -135,6 +137,16 @@ const _archiveChannel = (org_id, channel_id) => async (dispatch) => {
   }
 };
 
+const _createChannel = (org_id, data) => async (dispatch) => {
+  try {
+    const res = await APIService.createChannel(org_id, data);
+    dispatch({ type: CREATE_CHANNELS, payload: res.data });
+    _alert("success", "Channel successfully created");
+  } catch (error) {
+    _alert("error");
+  }
+};
+
 // Export functions here
 const appActions = {
   _alert,
@@ -147,6 +159,7 @@ const appActions = {
   _archiveChannel,
   _sendMessage,
   _getChannels,
+  _createChannel,
 };
 }
 export default appActions;
