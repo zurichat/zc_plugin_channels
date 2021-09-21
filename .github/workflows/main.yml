@@ -46,8 +46,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
-          localPath: './frontend/build/'
-          remotePath: '/var/www/zc_plugin_channels/fronend/build'
+          localPath: './backend/channel_plugin/channel_plugin/build'
+          remotePath: '/var/www/zc_plugin_channels/backend/channel_plugin/channel_plugin/build'
 
       - name: Exec remote commands via SSH
         uses: appleboy/ssh-action@master
