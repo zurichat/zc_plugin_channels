@@ -404,11 +404,14 @@ import DisplayFile from './DisplayFile'
 
 export default function  DisplayAndDeleteFiles() {
 
+
+    
+
     
 return (
-    <div>
-
-    </div>
+    <>
+        <DisplayFile />   
+  </>
 )
 }
 
