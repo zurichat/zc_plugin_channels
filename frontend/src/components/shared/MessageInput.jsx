@@ -149,7 +149,7 @@ const MessageInput = () =>{
           >
             <FiAtSign onClick={addTag} className="tagged"/>
             <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
-            <label for="contained-button-file"><ImAttachment/></label>
+            <label htmlFor="contained-button-file"><ImAttachment/></label>
             <GrEmoji onClick={()=>setEmoji(!emoji)}/>
             {(input || data!== "") ? (
               <Button bg="#00B87C" size="xs">
@@ -185,7 +185,7 @@ const MessageInput = () =>{
               <BsLink45Deg />
               <AiOutlineBars data-command="insertUnorderedList"/>
               <FiAtSign onClick={addTag} className="tagged"/>
-              <label for="contained-button-file"><ImAttachment/></label>
+              <label htmlFor="contained-button-file"><ImAttachment/></label>
               <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
             </Flex>
           </Box>
@@ -203,7 +203,7 @@ const MessageInput = () =>{
               <Box display="flex" flexDir="row" alignItems="center" justifyContent="space-between" minW="80px">
               <AiOutlineBars data-command="insertUnorderedList"/>
               <FiAtSign onClick={addTag} className="tagged"/>
-              <label for="contained-button-file"><ImAttachment/></label>
+              <label htmlFor="contained-button-file"><ImAttachment/></label>
               <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
               </Box>
             </Box>
