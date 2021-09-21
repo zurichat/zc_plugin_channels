@@ -160,7 +160,7 @@ const _createChannel = (org_id, data) => async (dispatch) => {
 
 const _getFiles = (org_id, channel_id) => async (dispatch) => {
   try {
-    const res = await APIService.createChannel(org_id, channel_id);
+    const res = await APIService.getChannelFiles(org_id, channel_id);
     dispatch({ type: GET_FILES, payload: res.data });
     // _alert("success", "Channel successfully created");
   } catch (error) {
