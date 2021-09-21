@@ -25,9 +25,9 @@ export default function  DisplayFiles() {
   const { channelsFiles } = useSelector((state) => state.appReducer);
   console.log(channelsFiles);
   
-  
+
   const org_id = 1; //Test value for org id
-  const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id 
+  const channel_id = "613f70bd6173056af01b4aba"; // Test  value to for channel_id 
 
   // STEP SIX
   const loadData = async () => {
