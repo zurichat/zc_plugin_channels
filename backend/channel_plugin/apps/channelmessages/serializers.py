@@ -30,15 +30,18 @@ class ChannelMessageSerializer(serializers.Serializer):
         data = {"channelmessage": message}
         return data
 
+
 class ChannelMessageReactionSerializer(serializers.Serializer):
 
     title = serializers.CharField(read_only=True)
     count = serializers.IntegerField(read_only=True)
     users = serializers.ListField(read_only=True)
 
+
 class ChannelMessageReactionsUpdateSerializer(serializers.Serializer):
     title = serializers.CharField(required=True)
     member_id = serializers.CharField()
+
 
 class ChannelMessageUpdateSerializer(serializers.Serializer):
 
@@ -50,7 +53,8 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
     edited = serializers.BooleanField(read_only=True)
     files = serializers.ListField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
-    has_files = serializers.ChoiceField(choices=["yes", "no"], read_only=True)
+    replies = serializers.IntegerField(read_only=True)
+    has_files = serializers.BooleanField(read_only=True)
 
     pinned = serializers.BooleanField(required=False)
     content = serializers.CharField(required=False)
@@ -63,9 +67,3 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
 
         data = {"message": instance}
         return data
-
-    def validate_pinned(self, pinned):
-
-        if pinned:
-            return "True"
-        return "False"
