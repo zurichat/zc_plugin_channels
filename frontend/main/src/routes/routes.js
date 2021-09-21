@@ -12,7 +12,7 @@ const routes = () => {
   return (
     <Switch>
       <Route exact path="/">
-        <Home />
+        <CreateChannel />
       </Route>
       <Route path="/create-channel">
         <CreateChannel />
