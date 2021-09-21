@@ -50,7 +50,7 @@ class ThreadUpdateSerializer(serializers.Serializer):
     files = serializers.ListField(
         child=serializers.URLField(), allow_empty=True, read_only=True
     )
-    has_files = serializers.ChoiceField(choices=["yes", "no"], read_only=True)
+    has_files = serializers.BooleanField(read_only=True)
     emojis = serializers.ListField(
         serializers.CharField(), allow_empty=True, required=False
     )

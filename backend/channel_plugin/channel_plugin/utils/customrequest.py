@@ -30,7 +30,9 @@ class Request:
             tmp = []
             for k, v in params.items():
                 if isinstance(v, list):
-                    params.update({k: v[0]})
+                    v = v[0]
+                    if v.lower() in ["true", "false"]:
+                        v = True if v.lower() == "true" else False
                 tmp.append({k: {"$eq": v}})
             _filter.update({"$and": tmp})
 
@@ -41,7 +43,6 @@ class Request:
                     "filter": _filter,
                 }
             )
-            # import pdb; pdb.set_trace()
             response = requests.post(read, json.dumps(data))
 
         else:
