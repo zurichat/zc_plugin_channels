@@ -30,6 +30,15 @@ class ChannelMessageSerializer(serializers.Serializer):
         data = {"channelmessage": message}
         return data
 
+class ChannelMessageReactionSerializer(serializers.Serializer):
+
+    title = serializers.CharField(read_only=True)
+    count = serializers.IntegerField(read_only=True)
+    users = serializers.ListField(read_only=True)
+
+class ChannelMessageReactionsUpdateSerializer(serializers.Serializer):
+    title = serializers.CharField(required=True)
+    member_id = serializers.CharField()
 
 class ChannelMessageUpdateSerializer(serializers.Serializer):
 
