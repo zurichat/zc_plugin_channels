@@ -147,8 +147,8 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     str(APPS_DIR / "static"),
     str(APPS_DIR / "build" / "static"),
-    str(ROOT_DIR / 'frontend/main/dist'),
-    str(ROOT_DIR / 'frontend/root/dist'),
+    #str(ROOT_DIR / 'frontend/main/dist'),
+    #str(ROOT_DIR / 'frontend/root/dist'),
 ]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
