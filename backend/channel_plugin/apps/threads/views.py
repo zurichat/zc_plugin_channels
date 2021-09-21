@@ -69,6 +69,15 @@ class ThreadViewset(ViewSet):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             status_code = status.HTTP_201_CREATED
+            replies = Request.get(
+                org_id, "channelmessage", {"_id": channelmessage_id}
+            ).get("replies", 0)
+            Request.put(
+                org_id,
+                "channelmessage",
+                {"replies": replies + 1},
+                object_id=channelmessage_id,
+            )
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
@@ -151,7 +160,18 @@ class ThreadViewset(ViewSet):
         detail=False,
     )
     def thread_message_delete(self, request, org_id, thread_id):
+        thread = Request.get(org_id, "thread", {"_id": thread_id})
+        message = Request.get(
+            org_id, "channelmessage", {"_id": thread.get("channelmessage_id")}
+        )
+        replies = message.get("replies", 1)
         Request.delete(org_id, "thread", object_id=thread_id)
+        Request.put(
+            org_id,
+            "channelmessage",
+            {"replies": replies - 1},
+            object_id=message.get("_id"),
+        )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

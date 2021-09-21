@@ -23,6 +23,7 @@ class ChannelMessage:
     has_files: bool = False
     pinned: bool = False
     edited: bool = False
+    replies: int = 0
     can_reply: bool = True
     type: str = DEFAULT_MESSAGE_TYPE
     timestamp: str = timezone.now().isoformat()

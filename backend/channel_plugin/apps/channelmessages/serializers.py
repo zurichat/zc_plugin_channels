@@ -41,6 +41,7 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
     edited = serializers.BooleanField(read_only=True)
     files = serializers.ListField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
+    replies = serializers.IntegerField(read_only=True)
     has_files = serializers.ChoiceField(choices=["yes", "no"], read_only=True)
 
     pinned = serializers.BooleanField(required=False)
