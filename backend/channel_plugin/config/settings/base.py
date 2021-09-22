@@ -73,7 +73,7 @@ THIRD_PARTY_APPS = [
     # "django_celery_beat",
     "rest_framework",
     # "rest_framework.authtoken",
-    #"corsheaders",
+    # "corsheaders",
     "drf_yasg",
 ]
 
@@ -125,7 +125,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # "channel_plugin.utils.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    #"corsheaders.middleware.CorsMiddleware",
+    # "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -146,9 +146,7 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
     str(APPS_DIR / "static"),
-    str(APPS_DIR / "build" / "static"),
-    str(ROOT_DIR / 'frontend/main/dist'),
-    str(ROOT_DIR / 'frontend/root/dist'),
+    str(APPS_DIR / "build"),
 ]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
