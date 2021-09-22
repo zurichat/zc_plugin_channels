@@ -353,7 +353,7 @@
 //                 <Box p='6'>
 //                   <Box
 //                     mt='1'
-//                     fontWeight='semibold'
+//                      fontWeight='semibold'
 //                     as='h4'
 //                     lineHeight='tight'
 //                     isTruncated

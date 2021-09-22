@@ -11,3 +11,4 @@ export const ARCHIVE_CHANNEL = "ARCHIVE_CHANNEL";
 export const GET_CHANNELS = "GET_CHANNELS";
 export const CREATE_CHANNELS = "CREATE_CHANNELS";
 export const GET_FILES = 'GET_FILES';
+export const DELETE_CHANNEL = 'DELETE_CHANNEL';
