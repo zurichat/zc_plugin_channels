@@ -29,21 +29,17 @@ def JoinedChannelSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
     
     if uid == "JoinedChannelSignal":
+        print("SIGNAL LOADED")
         org_id = kwargs.get("org_id")
         channel_id = kwargs.get("channel_id")
-        user_id = kwargs.get("user_id")
         user = kwargs.get("user")
 
         room_name = build_room_name(org_id, channel_id)
         
-        try:
-            CLIENT.subscribe(user_id, room_name)
-        except CentException:
-            print("client sunscription failed because channel is not active")
-
         data = {
-            'user_id': user_id,
-            'content': ''
+            "user_id": user.get("_id"),
+            "content": "event",
+            "files": []
         }
 
         event = {
@@ -62,27 +58,13 @@ def JoinedChannelSignal(sender, **kwargs):
         # required
         channelmessage.type = "event"
         channelmessage.event = event
+        channelmessage.can_reply = False
 
         try:
             result = channelmessage.create(org_id)
+            CLIENT.publish(room_name, result)
         except:
-            print("Failed to persist to DB")
             pass
-        # send notification to channel that user has joined
-        # payload = {
-        #     "type": "event",
-        #     "action": "JOIN",
-        #     "data": {
-        #         "carrier": kwargs.get("added_by", user_id),
-        #         "recipients": kwargs.get("added", [user_id]),
-        #         "timestamp": timezone.now().isoformat()
-        #     }
-        # }
-
-        try:
-            CLIENT.publish(room_name, channelmessage)
-        except CentException:
-            print("publish failed because channel is not active")
 
 
 @receiver(request_finished, sender=ChannelMemberViewset)

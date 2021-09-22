@@ -6,11 +6,12 @@ from .models import MESSAGE_TYPES, ChannelMessage
 
 class EventSerializer(serializers.Serializer):
     CHOICES = ("JOIN", "LEAVE")
-    action = serializers.CharField(choices=CHOICES, required=True)
+    action = serializers.CharField(max_length=20, required=True)
 
     recipients = serializers.ListField(
-        child=UserSerializer(Many=True),
-        required=False
+        child=UserSerializer(many=True),
+        required=False,
+        allow_empty=False
     )
 
 class ChannelMessageSerializer(serializers.Serializer):
