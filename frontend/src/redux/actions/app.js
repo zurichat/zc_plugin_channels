@@ -195,5 +195,6 @@ const appActions = {
   _getChannels,
   _createChannel,
   _getFiles,
+  _deleteChannel,
 };
 export default appActions;
