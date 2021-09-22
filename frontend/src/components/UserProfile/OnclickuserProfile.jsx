@@ -32,27 +32,30 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
 
   return (
     <>
-      {showProfile &&  <Container>
+      {showProfile &&  <Container    >
             <Box  pos='relative'  left='41.9rem' top='3rem' zIndex='2' 
               bgColor='#00B87C' display="flex" borderRadius='1px'
-              justifyContent="space-between" w='23rem' fontWeight="700" pl="14px" pr="10px">
-              <Text color='white' pt='4px' > Profile </Text>
+                justifyContent="space-between" w='23rem' fontWeight="700" pl="14px" pr="10px">
+            <Text color='white' pt='4px' > Profile </Text>
               <IconButton alignSelf='flex-end' colorScheme='white'
-                background='none' onClick={() =>setShowProfile(false)}  _hover='none' icon={   <FaTimes  color='white' />} />
+              background='none' onClick={() =>setShowProfile(false)}  _hover='none' icon={   <FaTimes  color='white' />} />
             </Box>
+
             <Box pos='relative' left='41.9rem' top='.8rem' h='41rem' w='21.8rem' bgColor='#ffffff'>
-              <Image
-                src={data.imageUrl}
-                alt={data.imageAlt}
-                h='13rem'
-                w='17rem'
-                border='none'
-                borderRadius='3px'
-                pt='20px'
-                ml="auto"
-                mr="auto"
-                mt="30px"
-              />
+              
+                <Image
+                  src={data.imageUrl}
+                  alt={data.imageAlt}
+                  h='13rem'
+                  w='17rem'
+                  border='none'
+                  borderRadius='3px'
+                  pt='20px'
+                  ml="auto"
+                  mr="auto"
+                  mt="30px"
+                />
+
               <Stack spacing={2}>
                 {/* Users' Name */}
                 <Text alignSelf='center' fontSize='1.3rem' pt='10px' color='black' fontWeight='700' >{data.name}</Text>
@@ -111,18 +114,18 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                       Call
                     </Text>
                   </Box>
-                  <Box  pos='absolute' transform='scale(0.8)' top='19.8rem' left='9rem' display='flex' flexDir='column'>
-                    <IconButton pos='relative' left={-7}
-                      icon={<FiPhoneCall />}
-                      background="#F0FDF9"
-                      width="40px"
-                      height="40px"
-                      borderRadius="12px"
-                      ml="24px"
-                      _hover='none'
-                    />
-                    <Text pos='relative' left={3} >Call</Text>
-                  </Box>
+                     <Box  pos='absolute' transform='scale(0.8)' top='19.8rem' left='9rem' display='flex' flexDir='column'>
+                      <IconButton pos='relative' left={-7}
+                        icon={<FiPhoneCall />}
+                        background="#F0FDF9"
+                        width="40px"
+                        height="40px"
+                        borderRadius="12px"
+                        ml="24px"
+                        _hover='none'
+                      />
+                          <Text pos='relative' left={3} >Call</Text>
+                          </Box>
                       
                     <Box pos='absolute' justifyContent='center' transform='scale(0.8)' top='19.8rem' left='15rem' display='flex' flexDir='column'>
                       <IconButton pos='relative' left={-10}
@@ -134,7 +137,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                         ml="24px"
                         onClick={() => setToggle(!toggle)}
                       /> 
-                      <Text pos='relative' left={-2}  >More</Text>
+                          <Text pos='relative' left={-2}  >More</Text>
                     </Box> 
                 <Box pos='relative' left='-1.8rem' top='23rem' transform='scale(0.89)'>
                     <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Display Name</Text>
