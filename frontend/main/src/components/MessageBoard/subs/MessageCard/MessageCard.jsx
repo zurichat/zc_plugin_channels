@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Flex, Text, Link } from "@chakra-ui/layout";
 import { Avatar, AvatarBadge, AvatarGroup } from "@chakra-ui/react";
-import UserProfile from "../../../UserProfile/UserProfile";
 
 const replies = [
   { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -12,15 +11,13 @@ const replies = [
 ];
 
 // const isThread = false;
-const [toggleAvatar, setToggleAvatar] = useState(false)
 
 const MessageCard = ({ name, time, message, icon, isThread }) => {
   return (
     <Box>
       <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="15px">
         <Box>
-          <Avatar name="Dan Abrahmov" onClick={() => setToggleAvatar(!toggleAvatar)} src={icon} />
-           {toggleAvatar && <UserProfile />}
+          <Avatar name="Dan Abrahmov" src={icon} />
         </Box>
         <Flex flexDir="column" gridGap="5px">
           <Flex flexWrap="nowrap" flexDir="row" gridGap="10px">

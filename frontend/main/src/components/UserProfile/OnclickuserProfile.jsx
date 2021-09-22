@@ -13,13 +13,13 @@ import { BiMessageRoundedDetail } from "react-icons/bi";
 import { FiPhoneCall } from "react-icons/fi";
 import { CgMore } from "react-icons/cg";
 import smileEmoji from '../images/emoji-smile.png'
-import ProfileImage from '../images/Rectangle 987.png'
 // import UserProfileOnHover  from "./UserProfileOnHover";
 
-const ViewProfile = ({showProfile ,setShowProfile }) => {
+const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
 
   const data = {
-    imageUrl:ProfileImage,
+    imageUrl:
+      "https://s3-alpha-sig.figma.com/img/d4a3/e257/f13a3cdb05ca74c9abf2933974335778?Expires=1631491200&Signature=JtDbDf-1BE7WkG0QO5i2-h-UhB8HF69Fr~QoJ0-wxPGvakH45P3R4xWFvrKRkpdqzcZWLl~aoWehGnocI-VTbns~3GT2rGw69rNnbWEOEdOlPf2RHkgceFJwzC6jma00vO1ROq3MMThgHdL0oVCLLmQV7XVgcq7RDUULJxrlrSqBffyTBjk-nuic0ONndBtT~nitN0WBUH8lKAoljTdErKZw0ucFGKC4xyfVdWGmT8w0~NRHvR6zy-3e48uxcvJ-8jIMFNJVlQ4jjnY1rXlnSWIataD0t6bJwmCGgGK7t-nADuJJtv9Vk9v31athvVG7z95o~naOyVOJabkpZoGIZw__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
     imageAlt: "profile-image",
     name: "Deryin Cutting",
     details: "View full profile",
@@ -33,21 +33,21 @@ const ViewProfile = ({showProfile ,setShowProfile }) => {
   return (
     <>
       {showProfile &&  <Container    >
-            <Box  pos='relative'  left='43rem' top='3rem' zIndex='2' 
+            <Box  pos='relative'  left='41.9rem' top='3rem' zIndex='2' 
               bgColor='#00B87C' display="flex" borderRadius='1px'
-                justifyContent="space-between" w='22rem' fontWeight="700" pl="14px" pr="10px">
+                justifyContent="space-between" w='23rem' fontWeight="700" pl="14px" pr="10px">
             <Text color='white' pt='4px' > Profile </Text>
               <IconButton alignSelf='flex-end' colorScheme='white'
-              background='none' onClick={() =>setShowProfile(false)}   _hover='none' icon={   <FaTimes color='white' />} />
+              background='none' onClick={() =>setShowProfile(false)}  _hover='none' icon={   <FaTimes  color='white' />} />
             </Box>
 
-            <Box pos='relative' left='43rem' top='.8rem' h='41rem' w='20.3rem' bgColor='#ffffff'>
+            <Box pos='relative' left='41.9rem' top='.8rem' h='41rem' w='21.8rem' bgColor='#ffffff'>
               
                 <Image
                   src={data.imageUrl}
                   alt={data.imageAlt}
                   h='13rem'
-                  w='13.7rem'
+                  w='17rem'
                   border='none'
                   borderRadius='3px'
                   pt='20px'
@@ -134,21 +134,19 @@ const ViewProfile = ({showProfile ,setShowProfile }) => {
                         width="40px"
                         height="40px"
                         borderRadius="12px"
-                        _hover='none'
-                        onFocus='none'
                         ml="24px"
                         onClick={() => setToggle(!toggle)}
                       /> 
                           <Text pos='relative' left={-2}  >More</Text>
                     </Box> 
                 <Box pos='relative' left='-1.8rem' top='23rem' transform='scale(0.89)'>
-                    <Text pl='2rem' alignSelf='left' fontSize='12px' pt='28px' color='#828282' fontWeight='700' >Display Name</Text>
+                    <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Display Name</Text>
                     <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='15px' color='black' >{data.name}</Text>
                    
-                    <Text pl='2rem' alignSelf='left' fontSize='12px' pt='28px' color='#828282' fontWeight='700' >Local Time</Text>
+                    <Text pl='2rem' alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Local Time</Text>
                     <Text pl='2rem' alignSelf='left' fontWeight='700' fontSize='15px' color='black' >{data.time}</Text>
                     
-                    <Text pl='2rem'  alignSelf='left' fontSize='12px' pt='28px' color='#828282' fontWeight='700' >Email</Text>
+                    <Text pl='2rem'  alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Email</Text>
                     <Text pl='2rem' alignSelf='left' fontWeight='900' fontSize='15px' color='#1264A3' >{data.email}</Text>
                 </Box>
             </Box>
@@ -159,7 +157,7 @@ const ViewProfile = ({showProfile ,setShowProfile }) => {
      </>
   ); 
 }
-export default ViewProfile;
+export default OnClickUserProfile;
 
 function MoreBtnOnHover() {
   return (
