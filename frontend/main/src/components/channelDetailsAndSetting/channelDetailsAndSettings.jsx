@@ -28,7 +28,6 @@ import { FaHashtag } from "react-icons/fa";
 import OrganisationMembersList from "./organisationMembersList";
 import About from "./about";
 import FileList from "./fileList";
-import files from "./files";
 
 import React from "react";
 
