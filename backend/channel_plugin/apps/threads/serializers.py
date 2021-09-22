@@ -8,7 +8,7 @@ class ThreadSerializer(serializers.Serializer):
     user_id = serializers.CharField(max_length=30, required=True)
     content = serializers.CharField(required=False)
     files = serializers.ListField(
-        child=serializers.URLField(), allow_empty=True, required=True
+        child=serializers.URLField(), allow_empty=True, required=False
     )
     timestamp = serializers.DateTimeField(read_only=True)
 

@@ -39,6 +39,7 @@ class ChannelMessage:
             "pinned": self.pinned,
             "edited": self.edited,
             "type": self.type,
+            "replies": self.replies,
             "can_reply": self.can_reply,
             "timestamp": self.timestamp,
         }
