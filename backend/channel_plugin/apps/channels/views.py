@@ -193,9 +193,7 @@ class ChannelViewset(ViewSet):
     def user_channel_retrieve(self, request, org_id, user_id):
 
         """
-
         This gets a list of all channels that a user belongs to
-
         """
         data = {}
         data.update(dict(request.query_params))
@@ -673,10 +671,8 @@ class ChannelMemberViewset(ViewSet):
     )
     def notification_retrieve(self, request, org_id, channel_id, member_id):
         """Retrieve a user's notification preferences for a particular channel.
-
         By default, users do not have a notifications field in the database,
         so an empty {} will be returned.
-
         A field is only appended to their records when changes have been made.
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -721,7 +717,6 @@ class ChannelMemberViewset(ViewSet):
     )
     def notification_update(self, request, org_id, channel_id, member_id):
         """Update a user's notification preferences for a particular channel.
-
         Example request body:
         {
             "web": "nothing",
