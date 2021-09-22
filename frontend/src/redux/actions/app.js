@@ -11,6 +11,8 @@ import {
   SEND_MESSAGES,
   GET_CHANNELS,
   CREATE_CHANNELS,
+  GET_FILES,
+  DELETE_CHANNEL,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -146,6 +148,18 @@ const _archiveChannel = (org_id, channel_id) => async (dispatch) => {
   }
 };
 
+const _deleteChannel = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.deleteChannel(org_id, channel_id, {
+      delete: "True",
+    });
+    dispatch({ type: DELETE_CHANNEL, payload: res.data });
+    _alert("success", "Channel successfully deleted");
+  } catch (err) {
+    _alert("error");
+  }
+};
+
 const _createChannel = (org_id, data) => async (dispatch) => {
   try {
     const res = await APIService.createChannel(org_id, data);
@@ -153,6 +167,17 @@ const _createChannel = (org_id, data) => async (dispatch) => {
     _alert("success", "Channel successfully created");
   } catch (error) {
     _alert("error");
+  }
+};
+
+
+const _getFiles = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.getChannelFiles(org_id, channel_id);
+    dispatch({ type: GET_FILES, payload: res.data });
+    // _alert("success", "Channel successfully created");
+  } catch (error) {
+    _alert("slow connection");
   }
 };
 
@@ -169,5 +194,7 @@ const appActions = {
   _sendMessage,
   _getChannels,
   _createChannel,
+  _getFiles,
+  _deleteChannel,
 };
 export default appActions;

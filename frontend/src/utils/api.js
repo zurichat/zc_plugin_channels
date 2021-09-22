@@ -122,6 +122,10 @@ class APIServices {
   async getChannelDetails(org_id, channel_id) {
     return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
   }
+
+  async getChannelFiles(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/media/?format=json`);
+  }
 }
 
 const instance = new APIServices();
