@@ -8,7 +8,7 @@ class ThreadSerializer(serializers.Serializer):
     user_id = serializers.CharField(max_length=30, required=True)
     content = serializers.CharField(required=False)
     files = serializers.ListField(
-        child=serializers.URLField(), allow_empty=True, required=True
+        child=serializers.URLField(), allow_empty=True, required=False
     )
     timestamp = serializers.DateTimeField(read_only=True)
 
@@ -50,7 +50,7 @@ class ThreadUpdateSerializer(serializers.Serializer):
     files = serializers.ListField(
         child=serializers.URLField(), allow_empty=True, read_only=True
     )
-    has_files = serializers.ChoiceField(choices=["yes", "no"], read_only=True)
+    has_files = serializers.BooleanField(read_only=True)
     emojis = serializers.ListField(
         serializers.CharField(), allow_empty=True, required=False
     )
