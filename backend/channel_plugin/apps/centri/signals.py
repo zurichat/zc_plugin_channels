@@ -60,11 +60,11 @@ def JoinedChannelSignal(sender, **kwargs):
         channelmessage.event = event
         channelmessage.can_reply = False
 
-        try:
-            result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
-        except:
-            pass
+        # try:
+        result = channelmessage.create(org_id)
+        # CLIENT.publish(room_name, result)
+        # except:
+        #     pass
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def LeftChannelSignal(sender, **kwargs):

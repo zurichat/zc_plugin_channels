@@ -56,6 +56,7 @@ class Request:
                 )
             response = requests.post(read, json.dumps(data))
         else:
+            print("PASSING")
             response = requests.get(url)
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
