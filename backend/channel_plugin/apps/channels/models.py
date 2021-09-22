@@ -21,6 +21,8 @@ class Channel:
     archived: bool = False
     # when channel was created
     created_on: str = timezone.now().isoformat()
+    # allow all members input/post messages
+    allow_members_input: bool = True
 
     def create(self, organization_id):
         payload = {
@@ -28,10 +30,11 @@ class Channel:
             "slug": self.slug,
             "owner": self.owner,
             "description": self.description,
-            "private": str(self.private),
-            "archived": str(self.archived),
+            "private": self.private,
+            "archived": self.archived,
             "users": self.users,
             "created_on": self.created_on,
+            "allow_members_input": self.allow_members_input,
         }
         response = Request.post(
             organization_id, self.__class__.__name__.lower(), payload

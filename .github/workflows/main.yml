@@ -15,6 +15,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Use cached node_modules
+        uses: c-hive/gha-yarn-cache@v2
+        with:
+         directory: frontend
+         
+      - name: install Dependencies
+        run: |
+          cd frontend/main
+          git init
+          yarn install
+          yarn relocate_main
+          cd ../root
+          git init
+          yarn install
+          yarn relocate_root
+
       - name: Exec remote commands via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -26,9 +42,28 @@ jobs:
             git checkout dev
             git stash
             git pull origin dev
-            cd frontend
+            cd frontend/main 
             yarn install
-            yarn relocate
+            cd ../root
+            yarn install
+            
+
+      - name: Copy Client dist folder to server
+        uses: Creepios/sftp-action@v1.0.1
+        with:
+          password: ${{ secrets.PASSWORD }}
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USERNAME }}
+          localPath: './backend/channel_plugin/channel_plugin/build'
+          remotePath: '/var/www/zc_plugin_channels/backend/channel_plugin/channel_plugin/build'
+
+      - name: Exec remote commands via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
             cd /var/www/zc_plugin_channels/backend/channel_plugin/
             source .venv/bin/activate
             pip3 install -r requirements/production.txt

@@ -14,9 +14,9 @@ const TopBar = () => {
   } = useSelector((state) => state);
 
   return (
-    <Box bg="#00B87C" p={4} borderRadius="2px">
+    <Box bg="#00B87C" p={4} py={2} borderRadius="2px">
       <HStack alignItems="center">
-        <Heading as="h5" size="sm" color="#FFFFFF">
+        <Heading as="h5" size="sm" color="#FFFFFF" textTransform="capitalize">
           # {channelDetails.name}
         </Heading>
 

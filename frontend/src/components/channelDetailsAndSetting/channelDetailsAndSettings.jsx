@@ -15,7 +15,7 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-  ModalOverlay,
+  ModalOverlay
 } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/layout";
 import TabsRows from "./TabsRow";
@@ -56,23 +56,24 @@ const ChannelDetails = () => {
               color="#fff"
               height="178px"
             >
+              
               <Box px={6}>
                 <Flex>
                   <Box pe={2} pt={1.5}>
                     <FaHashtag
-                      color="#fff"
+                      color="#ffffff"
                       fontSize="1.2em"
                       width="18px"
                       height="32"
                       display="inline-block"
                     />
                   </Box>
-                  <Text fontSize="20px" pb={2} mb={2} color="#fff">
+                  <Text fontSize="20px" pb={2} mb={2} color="#ffffff">
                     Announcement
                   </Text>
                   <Box ps={2} pt={1.5}>
                     <FaRegStar
-                      color="#fff"
+                      color="#ffffff"
                       fontSize="1.2em"
                       width="18px"
                       height="32.4px"
@@ -81,37 +82,35 @@ const ChannelDetails = () => {
                   </Box>
                   <Spacer />
                   <ModalCloseButton
-                    color="#fff"
-                    border="1px"
-                    borderColor="#fff"
+                    color="#ffffff"
                   />
                 </Flex>
                 <Stack direction="row" my={1} py={2}>
                   <Box>
                     <Button
-                      color="#fff"
+                      color="#ffffff"
                       colorScheme="whiteAlpha"
                       variant="outline"
                       mr={2}
                     >
                       <Box mr={2} mt={1}>
-                        <FaRegBell color="#fff" mr={6} />
+                        <FaRegBell color="#ffffff" mr={6} />
                       </Box>
-                      <Text>Get Notifications for @ mentions</Text>
+                      <Text color='#ffffff'>Get Notifications for @ mentions</Text>
                       <Box ml={2} mt={1}>
-                        <FaChevronDown color="#fff" mt={4} ml={5} />
+                        <FaChevronDown color="#ffffff" mt={4} ml={5} />
                       </Box>
                     </Button>
                     <Button
-                      color="#fff"
+                      color="#ffffff"
                       colorScheme="whiteAlpha"
                       variant="outline"
                       ml={2}
                     >
                       <Box mr={2} mt={1}>
-                        <FaVideo color="#fff" w={2} />
+                        <FaVideo color="#ffffff" w={2} />
                       </Box>
-                      <Text>Start Meeting</Text>
+                      <Text color='#ffffff'>Start Meeting</Text>
                     </Button>
                   </Box>
                 </Stack>
@@ -126,11 +125,11 @@ const ChannelDetails = () => {
               <Box px={6}>
                 <TabPanels>
                   <TabPanel>
-                    <OrganisationMembersList />
+                  <About  />
+                  <FileList />
                   </TabPanel>
                   <TabPanel>
-                    <About />
-                    <FileList />
+                  <OrganisationMembersList />
                   </TabPanel>
                   <TabPanel>
                   </TabPanel>

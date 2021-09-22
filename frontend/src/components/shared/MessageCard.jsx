@@ -1,12 +1,17 @@
 import React, { useMemo, useState } from 'react'
 import { Box, Flex, Text, Link, HStack, Square } from "@chakra-ui/layout";
-import { Avatar, AvatarGroup } from "@chakra-ui/avatar";
+import { Avatar } from "@chakra-ui/avatar";
 import { Menu, MenuItem, MenuButton, MenuList, MenuDivider } from "@chakra-ui/menu"
 import { IconButton } from "@chakra-ui/react"
 import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
 import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
+import appActions from "../../redux/actions/app"
+import { useDispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import instance from '../../utils/utils';
 
 const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -16,8 +21,23 @@ const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ name, time, message, icon, isThread }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) => {
   const [showOptions, setShowOptions] = useState(false)
+  const formattedTime = instance.formatDate(timestamp, 'LT')
+  const dispatch = useDispatch();
+  const { _pinMessage } = bindActionCreators(appActions, dispatch);
+
+  const pinMessage = () => {
+    const orgId = 1 // Hardcoded value to for channelId in org with id 1
+    const messageId = "61413e736173056af01b4d31"
+    const userId = "cephas"
+    const channelId = "613f70bd6173056af01b4aba"
+    _pinMessage(orgId, channelId, userId, messageId)
+  }
+
+  // const actions = {
+  //   pinMessage
+  // }
     return (
       <Box 
         position="relative" 
@@ -25,24 +45,24 @@ const MessageCard = ({ name, time, message, icon, isThread }) => {
         onMouseEnter={() => setShowOptions(true)}
         onMouseLeave={() => setShowOptions(false)}
       >
-        <HoverOptions show={showOptions} />
+        <HoverOptions show={showOptions} actions={pinMessage} />
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
-            <Avatar name="Dan Abrahmov" src={icon} w="36px" h="36px" borderRadius="4px" />
+            <Avatar name={user_id} src={icon} w="36px" h="36px" borderRadius="4px" />
           </Box>
           <Flex flexDir="column">
             <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
               <Text fontSize="16px" fontWeight="900">
-                {name}
+                {user_id}
               </Text>
               <Text fontSize="13px" color="#616061">
-                {time}
+                {formattedTime} 
               </Text>
             </HStack>
             <Box m="0px">
-              <Text pr="40px">{message}</Text>
+              <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
             </Box>
-            {isThread && (
+            {can_reply && (
               <HStack spacing="5px" mt="5px">
                 {
                   replies.slice(0, Math.min(4, replies.length))
@@ -52,7 +72,7 @@ const MessageCard = ({ name, time, message, icon, isThread }) => {
                         key={`replies-avatar-${index}`}
                         w="24px"
                         h="24px"
-                        borderRadius="4px"
+                        borderRadius="5px"
                         name={reply.name}
                         src={reply.profilePic}
                       />
@@ -64,14 +84,14 @@ const MessageCard = ({ name, time, message, icon, isThread }) => {
                   <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
                 </HStack>
               </HStack>
-            )}
-          </Flex>
+          )}
         </Flex>
-      </Box>
-    );
-  };
+      </Flex>
+    </Box>
+  );
+};
 
-const HoverOptions = ({ show }) => {
+const HoverOptions = ({ show, actions }) => {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -83,7 +103,7 @@ const HoverOptions = ({ show }) => {
     { label: "Share message", command: "S" },
     { label: "Copy Link" },
     { divider: true },
-    { label: "Pin to channel", command: "P" },
+    { label: "Pin to channel", command: "P", onClick: actions },
     { label: "Edit Message", command: "E" }, 
   ], [])
   return (
