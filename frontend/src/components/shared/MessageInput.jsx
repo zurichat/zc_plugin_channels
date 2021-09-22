@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Flex } from "@chakra-ui/layout";
-import { Box, Input, Button} from "@chakra-ui/react";
+import { Box, Input, Button,Modal,ModalContent,ModalOverlay,Stack,Heading} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
 import { FiAtSign, FiItalic } from "react-icons/fi";
@@ -14,6 +14,8 @@ import Picker from "emoji-picker-react";
 import { useDispatch,useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
+import MultimediaSharingModal from "./MultimediaSharingModal";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 
 const MessageInput = () =>{
@@ -25,6 +27,8 @@ const MessageInput = () =>{
     const [toggle,setToggle]=useState(false)
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("");
+    // const [modal,setModal]=useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const datas={
       user_id:"thanos",
@@ -96,8 +100,6 @@ const MessageInput = () =>{
         range.deleteContents();
         range.insertNode(formatElement);
       }
-      console.log(formatElement)
-      console.log(range)
     }
     
     // you can use the function like
@@ -110,6 +112,14 @@ const MessageInput = () =>{
           display:'none'
         }
       }}>
+        <Modal isOpen={isOpen} onClose={onClose} size='xs' isCentered='true' pb={0}>
+          <ModalOverlay />
+          <ModalContent
+            bottom='-5.6rem' left='3.6rem'
+            maxW='20rem'>
+            <MultimediaSharingModal />
+          </ModalContent>
+        </Modal>
         {
           emoji && <Picker onEmojiClick={onEmojiClick}/>
         }
@@ -144,10 +154,9 @@ const MessageInput = () =>{
                 <AiOutlineBars data-command="insertUnorderedList"/>
               </Box>
               <Box display="flex" _hover={{cursor:'pointer'}} alignItems="center" minW="80px"
-              width='8em' justifyContent="space-between">
+              width='10em' justifyContent="space-between">
                 <FiAtSign className="tagged" onClick={addTag}/>
-                <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
-                <label htmlFor="contained-button-file"><ImAttachment/></label>
+                <ImAttachment onClick={onOpen}/>
                 <GrEmoji onClick={()=>setEmoji(!emoji)}/>
                 {
                 (input || data!== "") ? <IoSendSharp color="black" onClick={loadData}/>: <Button size="xs" disabled><IoSendSharp /></Button>
@@ -203,8 +212,7 @@ const MessageInput = () =>{
                   <BsLink45Deg/>
                   <AiOutlineBars/>
                   <FiAtSign onClick={addTag}/>
-                  <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
-                  <label htmlFor="contained-button-file"><ImAttachment/></label>
+                  <ImAttachment onClick={onOpen}/>
                   </Flex>
               </label>
             </Box>
@@ -227,8 +235,7 @@ const MessageInput = () =>{
               <Flex minW="6em" justifyContent="space-around" alignItems="center">
                 <AiOutlineBars data-command="insertUnorderedList"/>
                 <FiAtSign className="tagged" onClick={addTag}/>
-                <Input type="file" style={{display:'none'}} id="contained-button-file" name="contained-button-file"/>
-                <label htmlFor="contained-button-file"><ImAttachment/></label>
+                <ImAttachment onClick={onOpen}/>
               </Flex>
             </Box>
           }
