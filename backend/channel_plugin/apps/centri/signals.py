@@ -66,7 +66,6 @@ def JoinedChannelSignal(sender, **kwargs):
         except:
             pass
 
-
 @receiver(request_finished, sender=ChannelMemberViewset)
 def LeftChannelSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
@@ -101,7 +100,6 @@ def LeftChannelSignal(sender, **kwargs):
         except CentException:
             print("publish failed because channel is not active")
     # should also store event notification as message in DB
-
 
 # >>>>>>>>>>> channelmessages signals <<<<<<<<<<<<<<<<<< 
 @receiver(request_finished, sender=ChannelMessageViewset)

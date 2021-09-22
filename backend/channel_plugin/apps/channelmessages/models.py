@@ -43,6 +43,7 @@ class ChannelMessage:
             "edited": self.edited,
             "type": self.type,
             "event": self.event,
+            "replies": self.replies,
             "can_reply": self.can_reply,
             "timestamp": self.timestamp,
         }

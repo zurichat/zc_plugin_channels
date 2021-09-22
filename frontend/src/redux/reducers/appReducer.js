@@ -3,6 +3,8 @@ import {
   GET_USERS,
   GET_CHANNELS,
   CREATE_CHANNELS,
+  GET_FILES,
+
 } from "../actions/types";
 
 const initialState = {
@@ -10,6 +12,8 @@ const initialState = {
   // Default State
   users: [],
   channelMessages: [],
+
+  channelsFiles:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -28,6 +32,12 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         channelMessages: payload,
+      };
+
+    case GET_FILES:
+      return {
+        ...state,
+        channelsFiles: payload,
       };
 
     // Default state is returned
