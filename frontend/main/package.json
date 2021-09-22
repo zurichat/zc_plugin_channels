@@ -13,7 +13,7 @@
     "watch-tests": "cross-env BABEL_ENV=test jest --watch",
     "prepare": "husky install",
     "coverage": "cross-env BABEL_ENV=test jest --coverage",
-    "relocate_main": "CI=false && yarn build && rm -rf ../backend/channel_plugin/channel_plugin/build/static/main && mv -f dist ../backend/channel_plugin/channel_plugin/build/static/main"
+    "relocate_main": "CI=false && yarn build && rm -rf ../../backend/channel_plugin/channel_plugin/build/main/dist && mv -f dist ../../backend/channel_plugin/channel_plugin/build/main"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
