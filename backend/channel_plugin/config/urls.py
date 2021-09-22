@@ -25,7 +25,7 @@ schema_view = get_schema_view(
 
 
 def render_react(request):
-    return render(request, "index.html")
+    return render(request, "static/root/dist/index.html")
 
 
 urlpatterns = [
@@ -74,8 +74,8 @@ urlpatterns += [
     re_path(r"^(?:.*)/?$", render_react),
 ]
 
-handler500 = 'rest_framework.exceptions.server_error'
-handler400 = 'rest_framework.exceptions.bad_request'
+handler500 = "rest_framework.exceptions.server_error"
+handler400 = "rest_framework.exceptions.bad_request"
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
