@@ -9,7 +9,7 @@
     "prepare": "husky install",
     "build": "concurrently yarn:build:*",
     "build:webpack": "webpack --mode=production",
-    "relocate_root": "CI=false && yarn build && rm -rf ../backend/channel_plugin/channel_plugin/build/static/root && mv -f dist ../backend/channel_plugin/channel_plugin/build/static/root"
+    "relocate_root": "CI=false && yarn build && rm -rf ../../backend/channel_plugin/channel_plugin/build/root/dist && mv -f dist ../../backend/channel_plugin/channel_plugin/build/root"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
