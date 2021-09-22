@@ -18,7 +18,7 @@ function LeaveChannel() {
 
             <Modal isOpen={isOpen} onClose={onClose} colorScheme="none">
                 <ModalOverlay bg='#00000060' />
-                <ModalContent bg='white' maxW="639px" maxH="234px" m="auto">
+                <ModalContent bg='white' p='50px' maxW="639px" maxH="234px" m="auto">
                     <ModalHeader  pt={2}
                         pb={2}
                         backgroundColor="#fff"
@@ -50,8 +50,8 @@ function LeaveChannel() {
                         <Text color='#616061' fontSize='18px' maxW='528px' mb='0.5'> Channel members won’t be notified that you’ve left. You can rejoin anytime</Text>
                     </ModalBody>
 
-                    <ModalFooter>
-                        <Flex>
+                    <ModalFooter >
+                        <Flex display='flex' flexWrap='wrap' justifyContent='space-between'>
                             <Box display="flex">
                                 <Checkbox w='18px' height='18px' border='3px solid #1D1C1D' borderRadius='3px' isInvalid></Checkbox>
                                 <Text m='0' ml='13px' fontSize='18px' color='#8B8B8B'>Don’t show this again</Text>
