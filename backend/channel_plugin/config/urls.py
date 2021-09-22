@@ -25,7 +25,7 @@ schema_view = get_schema_view(
 
 
 def render_react(request):
-    return render(request, "static/root/dist/index.html")
+    return render(request, "root/dist/index.html")
 
 
 urlpatterns = [
