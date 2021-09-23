@@ -16,6 +16,8 @@ class Channel:
     users: dict = field(default_factory=dict)
     # description of channel
     description: str = ""
+    # NewlyAdded: a channels  topic 
+    topic: str = ""
     # private / public
     private: bool = False
     archived: bool = False
@@ -30,6 +32,7 @@ class Channel:
             "slug": self.slug,
             "owner": self.owner,
             "description": self.description,
+            "topic": self.topic,
             "private": self.private,
             "archived": self.archived,
             "users": self.users,
