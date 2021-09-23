@@ -409,7 +409,7 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=output["_id"],
+                            user=output,
                         )
                     else:
                         # when output is a list multiple users where added
