@@ -58,7 +58,7 @@ const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
     const res = await APIService.getMessages(org_id, channel_id);
     console.log(res.data);
     // Result is sent to the store via dispatch (Pass payload if needed)
-    dispatch({ type: GET_CHANNELMESSAGES, payload: res.data });
+    dispatch({ type: GET_CHANNELMESSAGES, payload: res.data.data });
   } catch (error) {
     // Handle exceptions here
     console.log(error);
@@ -112,7 +112,8 @@ const _getChannels = (org_id) => async (dispatch) => {
 const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
   try {
     const res = await APIService.getPinnedMessages(org_id, channel_id);
-    dispatch({ type: GET_PINNED_MESSAGES, payload: res.data });
+    const { data } = res.data
+    dispatch({ type: GET_PINNED_MESSAGES, payload: data });
   } catch (err) {
     _alert("error");
   }
