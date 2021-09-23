@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Flex } from "@chakra-ui/layout";
-import { Box, Input, Button} from "@chakra-ui/react";
+import { Box, Input, Button, Modal, ModalOverlay, ModalContent} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
 import { FiAtSign, FiItalic } from "react-icons/fi";
