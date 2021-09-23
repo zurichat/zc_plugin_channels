@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Flex } from "@chakra-ui/layout";
-import { Box, Input, Button} from "@chakra-ui/react";
+import { Box, Button,Modal,ModalContent,ModalOverlay} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
 import { FiAtSign, FiItalic } from "react-icons/fi";
@@ -14,7 +14,7 @@ import Picker from "emoji-picker-react";
 import { useDispatch,useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-import MultimediaSharingModal from './MultimediaSharingModal';
+import MultimediaSharingModal from "./MultimediaSharingModal";
 import { useDisclosure } from "@chakra-ui/hooks";
 
 
@@ -27,6 +27,7 @@ const MessageInput = () =>{
     const [toggle,setToggle]=useState(false)
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("");
+    // const [modal,setModal]=useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const datas={
@@ -73,6 +74,7 @@ const MessageInput = () =>{
     }
     const changeWeight=(e)=>{
       const active=e.target
+      const value=e.target.value
       let cmd=active.dataset['command'];
       !toggle ? setActive(cmd) : setActive(" ");
       setToggle(!toggle)
@@ -98,8 +100,6 @@ const MessageInput = () =>{
         range.deleteContents();
         range.insertNode(formatElement);
       }
-      console.log(formatElement)
-      console.log(range)
     }
     
     // you can use the function like
