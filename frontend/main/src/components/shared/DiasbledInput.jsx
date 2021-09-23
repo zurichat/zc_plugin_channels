@@ -1,6 +1,4 @@
-import { Box, Flex, Text, Link, Input, HStack } from '@chakra-ui/react';
-import { IoChevronDownOutline } from 'react-icons/io5';
-import { GrEmoji } from 'react-icons/gr';
+import { Box, Flex, Text, Link, HStack } from '@chakra-ui/react';
 
 const DisabledInput = () => {
   return (
