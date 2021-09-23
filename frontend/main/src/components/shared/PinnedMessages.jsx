@@ -26,14 +26,8 @@ const PinnedMessages = (props) => {
                 { props.children }
             </PopoverTrigger>
             <PopoverContent>
-                <PopoverBody 
-                    p="1rem"
-                    spacing="6px"
-                    border="1px solid #EBEBEB"
-                    borderRadius="3px" 
-                    bg="white"
-                >
-                    <VStack spacing="10px" alignItems="flex-start">
+                <PopoverBody p="0" border="1px solid #EBEBEB" borderRadius="3px" bg="white">
+                    <VStack p="1rem" spacing="10px" alignItems="flex-start" height="350px" maxH="calc(70vh - 40px)" overflowY="scroll">
                         {
                             pinnedMessages.map((message, i) => <PinMessageCard key={`pin-message-${i}`} msgRef={i === 1 ? initialRef : null} {...message} />)
                         }
