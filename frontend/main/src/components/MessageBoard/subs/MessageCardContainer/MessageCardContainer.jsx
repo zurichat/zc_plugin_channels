@@ -30,7 +30,7 @@ const dispatch = useDispatch()
   // let loadedMessages = channelMessages.splice(0, messageNumber)
   const [loadedMessagesArray, setLoadedMessages] = useState([])
 
-  let loadedMessages = channelMessages.map((message, key) => {return key <= messageNumber})
+  let loadedMessages = channelMessages.slice(0, messageNumber)
 
   useEffect(async () => {
   loadData()
