@@ -21,7 +21,7 @@ const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited, _id }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited, _id
                 {user_id}
               </Text>
               <Text fontSize="13px" color="#616061">
-                {formattedTime} {_id}
+                {formattedTime}
               </Text>
             </HStack>
             <Box m="0px">

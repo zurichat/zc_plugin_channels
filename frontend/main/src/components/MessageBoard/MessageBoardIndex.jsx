@@ -16,7 +16,7 @@ const MessageBoardIndex = () => {
   return (
     <Box bg="#F9F9F9" m="5px">
       <Flex>
-        <Box width="95vw">
+        <Box width="80vw">
         <ChannelHeader />
         <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "68vh", "68vh"]}
         css={{

@@ -43,9 +43,9 @@ const dispatch = useDispatch()
       if(channelMessages !== []){
         messageNumber += 1
       }
+      loadedMessages = channelMessages.splice(0, messageNumber)
       setAllChannelMessage(loadedMessages)
       setMoreMessages(true)
-      loadedMessages = channelMessages.splice(0, messageNumber)
       console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber);
     }
 
