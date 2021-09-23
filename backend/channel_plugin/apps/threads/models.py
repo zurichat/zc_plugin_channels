@@ -14,7 +14,7 @@ class Thread:
     emojis: list = field(default_factory=list)
     # list of files
     files: list = field(default_factory=list)
-    has_files: str = "no"
+    has_files: bool = False
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
