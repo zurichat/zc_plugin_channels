@@ -1,5 +1,5 @@
 import json
-from django.http.response import JsonResponse
+from django.http.response import Http404, JsonResponse
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from drf_yasg import openapi
@@ -19,8 +19,8 @@ from .serializers import (
 )
 
 import requests
-from django.http import StreamingHttpResponse
 from django.conf import settings
+from urllib.parse import urlencode
 
 
 
@@ -95,13 +95,15 @@ class ChannelMessageViewset(ViewSet):
             if result.get("error"):
                 if result["error"].get("status") == 500:
                     data = ""
+
                     for chunk in self._stream_message_all(request, org_id, channel_id):
                         data += chunk
+                    
                     try:
                         result = json.loads(data)
                         status_code = status.HTTP_200_OK
                     except:
-                        pass
+                        result = []
 
         if isinstance(result, list):
             status_code = status.HTTP_200_OK
@@ -112,15 +114,19 @@ class ChannelMessageViewset(ViewSet):
             This method reads the response to a
             zc-core request in streams
         """
+        #TODO: Removed when zc-core implements pagination
         data = {"plugin_id": settings.PLUGIN_ID}
         read = settings.READ_URL
 
-        url = f"{read}/{settings.PLUGIN_ID}/channelmessage/{org_id}"
-        r = requests.get(url, stream=True, timeout=10000)
-        r.raise_for_status()
+        collection_name = "channelmessage"
+        max_chunk_size = 500000
 
-        if int(r.headers.get('Content-Length', 10000)) > 1000000000:
-            print(r.headers.get('Content-Length'))
+        url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
+        url += urlencode(request.query_params)
+        
+        r = requests.get(url, stream=True, timeout=10000)         
+
+        if int(r.headers.get('Content-Length', 10000)) > max_chunk_size:
             raise ValueError('response too large')
 
         size = 0
@@ -128,9 +134,10 @@ class ChannelMessageViewset(ViewSet):
         for chunk in r.iter_content(None, True):
 
             size += len(chunk)
-            if size > 1000000000:
+            if size > max_chunk_size:
                 raise ValueError('response too large')
             yield chunk
+
 
     @swagger_auto_schema(
         responses={
