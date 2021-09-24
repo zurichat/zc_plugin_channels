@@ -8,7 +8,10 @@ from cent import CentException
 from .centwrapper import CentClient
 from apps.channels.views import ChannelMemberViewset
 from apps.channelmessages.views import ChannelMessageViewset
+from apps.channelmessages.serializers import ChannelMessageSerializer
 from .helperfuncs import build_room_name
+
+
 
 CLIENT = CentClient(
     address = settings.CENTRIFUGO_URL,
@@ -26,32 +29,42 @@ def JoinedChannelSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
     
     if uid == "JoinedChannelSignal":
+        print("SIGNAL LOADED")
         org_id = kwargs.get("org_id")
         channel_id = kwargs.get("channel_id")
-        user_id = kwargs.get("user_id")
-        
+        user = kwargs.get("user")
+
         room_name = build_room_name(org_id, channel_id)
         
-        try:
-            CLIENT.subscribe(user_id, room_name)
-        except CentException:
-            print("client sunscription failed because channel is not active")
-
-        # send notification to channel that user has joined
-        payload = {
-            "type": "event",
-            "action": "JOIN",
-            "data": {
-                "carrier": kwargs.get("added_by", user_id),
-                "recipients": kwargs.get("added", [user_id]),
-                "timestamp": timezone.now().isoformat()
-            }
+        data = {
+            "user_id": user.get("_id"),
+            "content": "event",
+            "files": []
         }
 
-        try:
-            CLIENT.publish(room_name, payload)
-        except CentException:
-            print("publish failed because channel is not active")
+        event = {
+            "action": "JOIN",
+            "recipients": kwargs.get("added", [user])
+        }
+
+        serializer = ChannelMessageSerializer(
+            data=data, 
+            context={"channel_id": channel_id, "org_id": org_id}
+        )
+
+        serializer.is_valid(raise_exception=True)
+        channelmessage = serializer.data.get("channelmessage")
+        
+        # required
+        channelmessage.type = "event"
+        channelmessage.event = event
+        channelmessage.can_reply = False
+
+        # try:
+        result = channelmessage.create(org_id)
+        # CLIENT.publish(room_name, result)
+        # except:
+        #     pass
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def LeftChannelSignal(sender, **kwargs):
@@ -87,7 +100,6 @@ def LeftChannelSignal(sender, **kwargs):
         except CentException:
             print("publish failed because channel is not active")
     # should also store event notification as message in DB
-
 
 # >>>>>>>>>>> channelmessages signals <<<<<<<<<<<<<<<<<< 
 @receiver(request_finished, sender=ChannelMessageViewset)

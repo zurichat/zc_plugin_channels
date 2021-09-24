@@ -1,6 +1,7 @@
 # from django import http
 # from django.conf import settings
 # from django.http import JsonResponse
+import logging
 
 
 class AuthenticationMiddleware:
@@ -30,23 +31,24 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             response = self.process_response(request, response)
+            logging.error(f"Response (production) - {response.__dict__['_headers']}")
         return response
 
     def process_response(self, request, response):
-        if request.method.upper() in ["GET", "POST"]:
+        if request.method.upper() in ["GET", "POST", "PUT", "DELETE "]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except:  # noqa
                 pass
 
-        else:
-            response.__dict__["_headers"]["access-control-allow-origin"] = (
-                "Access-Control-Allow-Origin",
-                "*",
-            )
-            response.__dict__["_headers"]["content-type"] = (
-                "Content-Type",
-                "text/plain",
-            )
+        # else:
+        #     response.__dict__["_headers"]["access-control-allow-origin"] = (
+        #         "Access-Control-Allow-Origin",
+        #         "*",
+        #     )
+        #     response.__dict__["_headers"]["content-type"] = (
+        #         "Content-Type",
+        #         "text/plain",
+        #     )
 
         return response
