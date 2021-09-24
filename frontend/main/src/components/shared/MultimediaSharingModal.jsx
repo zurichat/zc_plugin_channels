@@ -3,76 +3,74 @@ import { FaGoogleDrive, FaTv } from 'react-icons/fa'
 import {
     Flex, Box, Image, Heading, Stack,
     Divider, HStack, Text, Link,
-    List, ListItem, FormLabel
+    List, ListItem, FormLabel,
 } from "@chakra-ui/react"
 
 
 const MultimediaSharingModal = () => {
 
     return (
-        <>
-            <Flex direction="column">
-                <Stack direction="column" px={4}>
-                    <Box pt={2} pb={2}>
-                        <Heading
-                            as='h3'
-                            size='lg'
-                            color='#8b8b8b'
-                            fontSize='1.4rem'
-                            textAlign='left'>
-                            Your recent files
-                        </Heading>
-                    </Box>
-                    <FileList />
-                    <Text
-                        pt={3}
-                        fontSize='small'>
-                        <Link
-                            fontWeight='semibold'
-                            _focus='none'
-                            color="green.300"
-                            href="#">
-                            View all your files
-                        </Link>
-                    </Text>
-                </Stack>
+        <Flex direction="column">
+            <Stack direction="column" px={4}>
+                <Box pt={2} pb={2}>
+                    <Heading
+                        as='h3'
+                        size='lg'
+                        color='#8b8b8b'
+                        fontSize='1.4rem'
+                        textAlign='left'>
+                        Your recent files
+                    </Heading>
+                </Box>
+                <FileList />
+                <Text
+                    pt={3}
+                    fontSize='small'>
+                    <Link
+                        fontWeight='semibold'
+                        _focus='none'
+                        color="green.300"
+                        href="#">
+                        View all your files
+                    </Link>
+                </Text>
+            </Stack>
 
-                <Divider
-                    orientation="horizontal"
-                    pt={4} />
-                <Stack
-                    direction='column'
-                    px={4}>
-                    <Box pt={4} pb={2}>
-                        <Heading
-                            as='h3'
-                            size='lg'
-                            color='#8b8b8b'
-                            fontSize='1.4rem'
-                            textAlign='left'>
-                            Add files from
-                        </Heading>
-                    </Box>
-                    {/* <HStack color='#c4c4c4' spacing={4}>
+            <Divider
+                orientation="horizontal"
+                pt={4} />
+            <Stack
+                direction='column'
+                px={4}>
+                <Box pt={4} pb={2}>
+                    <Heading
+                        as='h3'
+                        size='lg'
+                        color='#8b8b8b'
+                        fontSize='1.4rem'
+                        textAlign='left'>
+                        Add files from
+                    </Heading>
+                </Box>
+                {/* <HStack color='#c4c4c4' spacing={4}>
                                 <FaGoogleDrive size='1.2rem' />
                                 <Link _hover={{ textDecoration: 'none' }}>
                                     <Text fontSize='sm' fontWeight='normal'>Google drive</Text>
                                 </Link>
                             </HStack> */}
-                    <HStack
-                        color='#c4c4c4'
-                        spacing={4}>
-                        <FaTv size='1.4rem' />
-                        <Text fontSize='md' fontWeight='normal' cursor='pointer'>
-                            <FormLabel for="upload-option-file">
-                                <Link _hover={{ textDecoration: 'none' }} pt='12px'>Upload from your computer</Link>
-                            </FormLabel>
-                            <Input type="file" style={{ display: 'none' }} id="upload-option-file" name="upload-option-file" />
-                        </Text>
-                    </HStack>
-                </Stack>
-            </Flex>
-        </>
+                <HStack
+                    color='#c4c4c4'
+                    spacing={4}>
+                    <FaTv size='1.4rem' />
+                    <Text fontSize='md' fontWeight='normal' cursor='pointer'>
+                        <FormLabel for="upload-option-file">
+                            <Link _hover={{ textDecoration: 'none' }} pt='12px'>Upload from your computer</Link>
+                        </FormLabel>
+                        <Input type="file" style={{ display: 'none' }} id="upload-option-file" name="upload-option-file" />
+                    </Text>
+                </HStack>
+            </Stack>
+        </Flex>
     )
 }
 
