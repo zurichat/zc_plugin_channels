@@ -1,6 +1,7 @@
 # from django import http
 # from django.conf import settings
 # from django.http import JsonResponse
+import logging
 
 
 class AuthenticationMiddleware:
@@ -31,6 +32,7 @@ class CorsMiddleware:
         if response:
             response = self.process_response(request, response)
         print(response.__dict__["_headers"])
+        logging.info(response.__dict__["_headers"])
         return response
 
     def process_response(self, request, response):
