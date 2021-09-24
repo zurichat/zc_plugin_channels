@@ -98,7 +98,8 @@ class GetInfoViewset(ViewSet):
                     map(
                         lambda channel: {
                             "id": channel.get("_id"),
-                            "url": f"https://channels.zuri.chat/channels/message-board/{channel.get('_id')}",
+                            "sidebar_item_name": channel.get("slug"),
+                            "url": f"/channels/message-board/{channel.get('_id')}",
                             "title": channel.get("name"),
                             "members": channel.get(
                                 "members", len(channel["users"].keys())
