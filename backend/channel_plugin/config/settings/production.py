@@ -1,12 +1,20 @@
+import logging
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from .base import *  # noqa
 from .base import env
 
+# All of this is already happening by default!
+sentry_logging = LoggingIntegration(
+    level=logging.INFO,  # Capture info and above as breadcrumbs
+    event_level=logging.ERROR,  # Send errors as events
+)
 sentry_sdk.init(
     dsn="https://134b2852b51c479db3fe6aa4de6c9ce1@o1010351.ingest.sentry.io/5974834",
-    integrations=[DjangoIntegration()],
+    integrations=[DjangoIntegration(), sentry_logging],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production.
