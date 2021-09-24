@@ -58,7 +58,7 @@ const dispatch = useDispatch()
     await _getSocket(1, channelId)
   }
 
-  centrifuge.subscribe(sockets.channel_id, function(messageCtx) {
+  centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
     console.log(messageCtx);
   })
 
