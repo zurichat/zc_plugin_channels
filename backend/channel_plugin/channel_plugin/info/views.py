@@ -1,4 +1,5 @@
 import random
+
 import requests
 from django.conf import settings
 from django.utils import timezone
@@ -11,20 +12,18 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
 
-description = ("The Channel Plugin is a feature\
+description = "The Channel Plugin is a feature\
     that helps users create spaces for\
     conversation and communication on zuri.chat."
-)
 
 icons = [
-    "shovel", 
-    "cdn.cloudflare.com/445345453345/hello.jpeg", 
+    "shovel",
+    "cdn.cloudflare.com/445345453345/hello.jpeg",
     "spear",
 ]
 
 
 class GetInfoViewset(ViewSet):
-
     @action(
         methods=["GET"],
         detail=False,
@@ -38,23 +37,20 @@ class GetInfoViewset(ViewSet):
     )
     def info(self, request):
         data = {
-            "message":"Plugin Information Retrieved",
-            "data":{
-                "type":"Plugin Information",
-                "plugin_info":{
-                    "name":"Channels Plugin",
-                    "description":[
-                        "Zuri.chat plugin",
-                        description
-                    ]
+            "message": "Plugin Information Retrieved",
+            "data": {
+                "type": "Plugin Information",
+                "plugin_info": {
+                    "name": "Channels Plugin",
+                    "description": ["Zuri.chat plugin", description],
                 },
-                "scaffold_structure":"Monolith",
-                "team":"HNG 8.0/Team Coelho",
-                "sidebar_url":"https://channels.zuri.chat/api/v1/sidebar/",
-                "ping_url":"https://channels.zuri.chat/api/v1/ping/",
-                "homepage_url":"https://channels.zuri.chat/"
+                "scaffold_structure": "Monolith",
+                "team": "HNG 8.0/Team Coelho",
+                "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar/",
+                "ping_url": "https://channels.zuri.chat/api/v1/ping/",
+                "homepage_url": "https://channels.zuri.chat/",
             },
-            "success":True
+            "success": True,
         }
         return Response(data, status=status.HTTP_200_OK)
 
@@ -87,7 +83,7 @@ class GetInfoViewset(ViewSet):
     def info_sidebar(self, request):
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
-        token = request.query_params.get("token")
+        # token = request.query_params.get("token")
         data = {
             "name": "Channels Plugin",
             "description": description,
@@ -102,6 +98,7 @@ class GetInfoViewset(ViewSet):
                     map(
                         lambda channel: {
                             "id": channel.get("_id"),
+                            "url": f"https://channels.zuri.chat/channels/message-board/{channel.get('_id')}",
                             "title": channel.get("name"),
                             "members": channel.get(
                                 "members", len(channel["users"].keys())
@@ -124,6 +121,7 @@ class GetInfoViewset(ViewSet):
                     map(
                         lambda channel: {
                             "id": channel.get("_id"),
+                            "url": f"https://channels.zuri.chat/channels/message-board/{channel.get('_id')}",
                             "title": channel.get("name"),
                             "members": channel.get(
                                 "members", len(channel["users"].keys())
@@ -174,10 +172,22 @@ class GetInfoViewset(ViewSet):
 
     @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
     def collections(self, request, plugin_id):
-        response = requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}").json() or {}
+        response = (
+            requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}").json()
+            or {}
+        )
         return Response(response, status=status.HTTP_200_OK)
 
-    @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)/organizations/(?P<org_id>[^/.]+)")
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_path="collections/(?P<plugin_id>[^/.]+)/organizations/(?P<org_id>[^/.]+)",
+    )
     def collections_by_organization(self, request, org_id, plugin_id):
-        response = requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}").json() or {}
+        response = (
+            requests.get(
+                f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
+            ).json()
+            or {}
+        )
         return Response(response, status=status.HTTP_200_OK)
