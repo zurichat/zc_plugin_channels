@@ -3,6 +3,7 @@ import {
   GET_USERS,
   GET_CHANNELS,
   CREATE_CHANNELS,
+  GET_SOCKETS,
 } from "../actions/types";
 
 const initialState = {
@@ -10,6 +11,7 @@ const initialState = {
   // Default State
   users: [],
   channelMessages: [],
+  sockets: []
 };
 
 const appReducer = (state = initialState, action) => {
@@ -41,6 +43,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         newChannel: payload,
+      };
+    case GET_SOCKETS:
+      return {
+        ...state,
+        sockets: payload,
       };
 
     default:
