@@ -1,5 +1,4 @@
 import json
-from django.http.response import JsonResponse
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from drf_yasg import openapi
@@ -86,25 +85,25 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_all(self, request, org_id, channel_id):
-        data = {"channel_id": channel_id}
-        data.update(dict(request.query_params))
+        # data = {"channel_id": channel_id}
+        # data.update(dict(request.query_params))
 
-        result = Request.get(org_id, "channelmessage", data) or []
+        # result = Request.get(org_id, "channelmessage", data) or []
+        
+        """TODO: removo this  block when zc-core implemnents pagination"""
+        data = ""
         status_code = status.HTTP_404_NOT_FOUND
 
-        if isinstance(result, dict):
-            if result.get("error"):
-                if result["error"].get("status") == 500:
-                    data = ""
+        for chunk in self._stream_message_all(request, org_id, channel_id):
+            data += chunk
+        
+        try:
+            result = json.loads(data)
+            status_code = status.HTTP_200_OK
+        except:
+            result = []
 
-                    for chunk in self._stream_message_all(request, org_id, channel_id):
-                        data += chunk
-                    
-                    try:
-                        result = json.loads(data)
-                        status_code = status.HTTP_200_OK
-                    except:
-                        result = []
+        """<<<<<<"""
 
         if isinstance(result, list):
             status_code = status.HTTP_200_OK
@@ -115,16 +114,18 @@ class ChannelMessageViewset(ViewSet):
             This method reads the response to a
             zc-core request in streams
         """
-        #TODO: Removed when zc-core implements pagination
-        data = {"plugin_id": settings.PLUGIN_ID}
+        #TODO: Remove this method when zc-core implements pagination
+        data = {"channel_id": channel_id}
+        data.update(self.request.query_params)
+
         read = settings.READ_URL
 
         collection_name = "channelmessage"
         max_chunk_size = 500000
 
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
-        url += urlencode(request.query_params)
-        
+        url += "?" + urlencode(data)
+
         r = requests.get(url, stream=True, timeout=10000)         
 
         if int(r.headers.get('Content-Length', 10000)) > max_chunk_size:
