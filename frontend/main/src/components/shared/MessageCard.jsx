@@ -56,7 +56,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) =
                 {user_id}
               </Text>
               <Text fontSize="13px" color="#616061">
-                {formattedTime} 
+                {formattedTime}
               </Text>
             </HStack>
             <Box m="0px">

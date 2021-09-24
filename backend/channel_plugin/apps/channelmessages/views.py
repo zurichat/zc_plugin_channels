@@ -1,5 +1,5 @@
 import json
-from django.http.response import Http404, JsonResponse
+from django.http.response import JsonResponse
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from drf_yasg import openapi
@@ -21,6 +21,7 @@ from .serializers import (
 import requests
 from django.conf import settings
 from urllib.parse import urlencode
+from django.conf import settings
 
 
 
