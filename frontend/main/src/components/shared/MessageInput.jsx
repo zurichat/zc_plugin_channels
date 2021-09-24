@@ -47,7 +47,7 @@ const MessageInput = () =>{
     const loadData= async ()=>{
       const org_id = '1';//Test value for org id
       const channel_id = channelId; // Hardcoded value to for channel_id in org with id 1
-      // await _sendMessage(org_id,channel_id,datas)
+      await _sendMessage(org_id,channel_id,datas)
       console.log(data)
       setData('');
     }

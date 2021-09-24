@@ -11,6 +11,7 @@ import appActions from '../../../../redux/actions/app';
 
 // import MessageCard from "../MessageCard/MessageCard";
 import MessageCard from '../../../shared/MessageCard';
+import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
 
 
 const MessageCardContainer = () =>{
@@ -54,6 +55,7 @@ const dispatch = useDispatch()
 
     return(
       <>
+      <EmptyStateComponent />
      { channelMessages && channelMessages.length > 0 &&
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
@@ -71,6 +73,7 @@ const dispatch = useDispatch()
             
             <Box>
             
+            
             { channelMessages && channelMessages.length > 0 &&
                 renderedMessages.map((message) => {
                     return(
@@ -80,8 +83,8 @@ const dispatch = useDispatch()
                 })
             }
             {
-              channelMessages !== [] ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{allChannelMessage == [] ? "Loading..." : "Load More..."}</Text> :
+              channelMessages.length > 0 ? 
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length !== 0  ? "Load More..." : " "}</Text> :
               null 
             }
             </Box>
