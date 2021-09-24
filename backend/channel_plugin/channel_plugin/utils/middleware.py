@@ -35,11 +35,11 @@ class CorsMiddleware:
         return response
 
     def process_response(self, request, response):
-        # if request.method.upper() in ["GET", "POST"]:
-        #     try:
-        #         del response.__dict__["_headers"]["access-control-allow-origin"]
-        #     except:  # noqa
-        #         pass
+        if request.method.upper() in ["GET", "POST", "PUT", "DELETE "]:
+            try:
+                del response.__dict__["_headers"]["access-control-allow-origin"]
+            except:  # noqa
+                pass
 
         # else:
         #     response.__dict__["_headers"]["access-control-allow-origin"] = (
