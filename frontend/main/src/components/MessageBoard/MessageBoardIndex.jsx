@@ -20,7 +20,7 @@ const MessageBoardIndex = () => {
       <Flex>
         <Box width="100%">
         <ChannelHeader />
-        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "68vh", "68vh"]}
+        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "65vh", "65vh"]}
         css={{
         "&::-webkit-scrollbar": {
           width: "0",

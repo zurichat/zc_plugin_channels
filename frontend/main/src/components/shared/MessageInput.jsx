@@ -16,6 +16,7 @@ import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import MultimediaSharingModal from "./MultimediaSharingModal";
 import { useDisclosure } from "@chakra-ui/hooks";
+import { useParams } from "react-router";
 
 
 const MessageInput = () =>{
@@ -30,6 +31,8 @@ const MessageInput = () =>{
     // const [modal,setModal]=useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure()
 
+    const { channelId } = useParams()
+
     const datas={
       user_id:"thanos",
       content:data
@@ -39,11 +42,13 @@ const MessageInput = () =>{
     const {_sendMessage} = bindActionCreators(appActions,dispatch);
 
     const {sendMessages} = useSelector((state)=>state.channelsReducer)
+    console.log(sendMessages);
 
-    const loadData=async ()=>{
+    const loadData= async ()=>{
       const org_id = '1';//Test value for org id
-      const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id in org with id 1
+      const channel_id = channelId; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
+      console.log(data)
       setData('');
     }
 

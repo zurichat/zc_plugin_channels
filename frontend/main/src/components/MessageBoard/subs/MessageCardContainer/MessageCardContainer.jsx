@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
@@ -11,6 +11,7 @@ import appActions from '../../../../redux/actions/app';
 
 // import MessageCard from "../MessageCard/MessageCard";
 import MessageCard from '../../../shared/MessageCard';
+import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
 
 
 const MessageCardContainer = () =>{
@@ -30,7 +31,7 @@ const dispatch = useDispatch()
   let messageNumber = 10
   let loadedMessages
 
-  loadedMessages = channelMessages.splice(0, messageNumber)
+  loadedMessages = channelMessages && channelMessages.slice(0, messageNumber)
   
   const [ allChannelMessage, setAllChannelMessage ] = useState(loadedMessages) 
   const [moreMessages, setMoreMessages] = useState(false)
@@ -46,7 +47,7 @@ const dispatch = useDispatch()
       if(channelMessages !== []){
         messageNumber += 1
       }
-      loadedMessages = channelMessages.splice(0, messageNumber)
+      loadedMessages = channelMessages.slice(0, messageNumber)
       setAllChannelMessage(loadedMessages)
       setMoreMessages(true)
       console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber);
@@ -54,6 +55,8 @@ const dispatch = useDispatch()
 
     return(
       <>
+      <EmptyStateComponent />
+     { channelMessages && channelMessages.length > 0 &&
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
             <Button
@@ -70,7 +73,8 @@ const dispatch = useDispatch()
             
             <Box>
             
-            {
+            
+            { channelMessages && channelMessages.length > 0 &&
                 renderedMessages.map((message) => {
                     return(
                       message === [] ? <Text textAlign="center">Loading...</Text> :
@@ -79,12 +83,12 @@ const dispatch = useDispatch()
                 })
             }
             {
-              channelMessages !== [] ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{allChannelMessage == [] ? "Loading..." : "Load More..."}</Text> :
+              channelMessages.length > 0 ? 
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length !== 0  ? "Load More..." : " "}</Text> :
               null 
             }
             </Box>
-        </Box> 
+        </Box> }
         </>  
     )
 }
