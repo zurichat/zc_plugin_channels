@@ -98,7 +98,6 @@ class Request:
             data.update({"object_id": object_id})
 
         response = requests.put(write, data=json.dumps(data))
-        print(response)
         if response.status_code >= 200 and response.status_code < 300:
             if not bulk_write:
                 tmp = {"_id": object_id}
