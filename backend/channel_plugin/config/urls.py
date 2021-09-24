@@ -12,7 +12,7 @@ from rest_framework import permissions
 schema_view = get_schema_view(
     openapi.Info(
         title="Zuri Chat Channel Plugin Endpoints",
-        default_version="v1",
+        default_version=f"{settings.BASE_URL}",
         description="Made By Team Coelho",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="team-coelho@zuri.chat"),
@@ -25,7 +25,7 @@ schema_view = get_schema_view(
 
 
 def render_react(request):
-    return render(request, "index.html")
+    return render(request, "root/dist/index.html")
 
 
 urlpatterns = [
@@ -40,7 +40,9 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     re_path(
-        r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
+        r"^docs/v1/$",
+        schema_view.with_ui("redoc", cache_timeout=0),
+        name="schema-redoc",
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
@@ -49,14 +51,19 @@ urlpatterns = [
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
-    # Static file serving when using Gunicorn + Uvicorn for local web socket development
+    # Static file serving when using Gunicorn +
+    #  Uvicorn for local web socket development
     urlpatterns += staticfiles_urlpatterns()
 
 # API URLS
 urlpatterns += [
     # API base url
-    # path("api/", include("config.api_router")),
-    path("api/", include("channel_plugin.info.urls")),
+    path("api/v1/", include("channel_plugin.info.urls")),
+    path("api/v1/", include("apps.channels.urls")),
+    path("api/v1/", include("apps.channelmessages.urls")),
+    path("api/v1/", include("apps.roles.urls")),
+    path("api/v1/", include("apps.threads.urls")),
+    path("api/v1/", include("apps.centri.urls"))
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]
@@ -66,6 +73,9 @@ urlpatterns += [
     re_path(r"^$", render_react),
     re_path(r"^(?:.*)/?$", render_react),
 ]
+
+handler500 = "rest_framework.exceptions.server_error"
+handler400 = "rest_framework.exceptions.bad_request"
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
