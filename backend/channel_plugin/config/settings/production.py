@@ -64,7 +64,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_ALLOW = True
 
@@ -72,11 +72,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 #    "http://localhost:3001",
 # ]
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.zuri\.chat$",
-    r"^http://localhost:[\d+]{4}",
-    r"^http://127.0.0.1:[\d+]{4}",
-]
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://\w+\.zuri\.chat$",
+#     r"^http://localhost:[\d+]{4}",
+#     r"^http://127.0.0.1:[\d+]{4}",
+# ]
 
 # STORAGES
 # ------------------------------------------------------------------------------
