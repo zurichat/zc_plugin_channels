@@ -1,18 +1,7 @@
 import React, { useRef } from 'react'
-import {
-    Box,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverBody,
-    Text
-  } from "@chakra-ui/react"
-import {
-    HStack, VStack
-} from "@chakra-ui/layout"
-import {
-    Avatar
-} from "@chakra-ui/avatar"
+import { Box, Popover, PopoverTrigger, PopoverContent, PopoverBody, Text } from "@chakra-ui/react"
+import { HStack, VStack } from "@chakra-ui/layout"
+import { Avatar } from "@chakra-ui/avatar"
 import { useSelector } from 'react-redux'
 import instance from '../../utils/utils'
 
