@@ -1,3 +1,5 @@
+import json
+from django.http.response import JsonResponse
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from drf_yasg import openapi
@@ -15,6 +17,11 @@ from .serializers import (
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
+
+import requests
+from django.http import StreamingHttpResponse
+from django.conf import settings
+
 
 
 class ChannelMessageViewset(ViewSet):
@@ -80,11 +87,50 @@ class ChannelMessageViewset(ViewSet):
     def message_all(self, request, org_id, channel_id):
         data = {"channel_id": channel_id}
         data.update(dict(request.query_params))
+
         result = Request.get(org_id, "channelmessage", data) or []
         status_code = status.HTTP_404_NOT_FOUND
+
+        if isinstance(result, dict):
+            if result.get("error"):
+                if result["error"].get("status") == 500:
+                    data = ""
+                    for chunk in self._stream_message_all(request, org_id, channel_id):
+                        data += chunk
+                    try:
+                        result = json.loads(data)
+                        status_code = status.HTTP_200_OK
+                    except:
+                        pass
+
         if isinstance(result, list):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
+
+    def _stream_message_all(self, request, org_id, channel_id):
+        """
+            This method reads the response to a
+            zc-core request in streams
+        """
+        data = {"plugin_id": settings.PLUGIN_ID}
+        read = settings.READ_URL
+
+        url = f"{read}/{settings.PLUGIN_ID}/channelmessage/{org_id}"
+        r = requests.get(url, stream=True, timeout=10000)
+        r.raise_for_status()
+
+        if int(r.headers.get('Content-Length', 10000)) > 1000000000:
+            print(r.headers.get('Content-Length'))
+            raise ValueError('response too large')
+
+        size = 0
+
+        for chunk in r.iter_content(None, True):
+
+            size += len(chunk)
+            if size > 1000000000:
+                raise ValueError('response too large')
+            yield chunk
 
     @swagger_auto_schema(
         responses={

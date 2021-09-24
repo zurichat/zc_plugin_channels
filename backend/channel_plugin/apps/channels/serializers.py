@@ -12,6 +12,7 @@ class ChannelSerializer(serializers.Serializer):
     owner = serializers.CharField(max_length=30, required=True)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(default=False)
+    topic = serializers.CharField(max_length=100, required=False)
 
     def validate_name(self, name):
         """
@@ -49,6 +50,7 @@ class ChannelGetSerializer(serializers.Serializer):
     private = serializers.BooleanField(required=False)
     owner = serializers.CharField(required=False)
     archived = serializers.BooleanField(required=False)
+    topic = serializers.CharField(max_length=100, required=False)
     users = serializers.DictField(child=UserSerializer(many=True), required=False)
 
 
@@ -59,6 +61,7 @@ class ChannelUpdateSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(required=False)
     archived = serializers.BooleanField(required=False)
+    topic = serializers.CharField(max_length=100, required=False)
 
     def validate_name(self, name):
         """

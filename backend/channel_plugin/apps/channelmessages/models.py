@@ -28,6 +28,9 @@ class ChannelMessage:
     type: str = DEFAULT_MESSAGE_TYPE
     timestamp: str = timezone.now().isoformat()
 
+    #NewlyAdded: 
+    event: dict = field(default_factory=dict)
+
     def create(self, organization_id):
         payload = {
             "user_id": self.user_id,
@@ -39,6 +42,8 @@ class ChannelMessage:
             "pinned": self.pinned,
             "edited": self.edited,
             "type": self.type,
+            "event": self.event,
+            "replies": self.replies,
             "can_reply": self.can_reply,
             "timestamp": self.timestamp,
         }
