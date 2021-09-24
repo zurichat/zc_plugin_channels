@@ -169,7 +169,7 @@ def DeleteMessageSignal(sender, **kwargs):
 
         # send notification to channel that user has joined
         payload = kwargs.get("data", {})
-
+        payload["can_reply"] = False
         payload.update("event", {
             "action": "delete:message"
         })
