@@ -6,6 +6,7 @@ import {
   GET_PINNED_MESSAGES,
   PIN_MESSAGE,
   SEND_MESSAGES,
+  DELETE_CHANNEL,
 } from "../actions/types";
 
 const initialState = {
@@ -51,6 +52,14 @@ const channelsReducer = (state = initialState, action) => {
         channelDetails: { ...payload },
       };
     }
+
+    case DELETE_CHANNEL: {
+      return {
+        ...state,
+        channelDetails: {  },
+      };
+    }
+    
     default:
       return state;
   }

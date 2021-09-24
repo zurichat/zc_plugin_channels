@@ -47,7 +47,7 @@ const About = () => {
         direction='column'
         m="1.2rem 3.1rem"
         py={3}
-        bg="white.700"
+        bg="#fff"
         border="1px"
         borderColor="gray.200"
         borderRadius="3px"
@@ -61,7 +61,7 @@ const About = () => {
                 <Box
                   px='1rem'
                   py='0.2rem'
-                  color="black.800"
+                  color="#000"
                 >
                   <Heading
                     mb=".32rem"

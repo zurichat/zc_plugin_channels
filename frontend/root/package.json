@@ -8,7 +8,8 @@
     "check-format": "prettier --check .",
     "prepare": "husky install",
     "build": "concurrently yarn:build:*",
-    "build:webpack": "webpack --mode=production"
+    "build:webpack": "webpack --mode=production",
+    "relocate_root": "CI=false && yarn build && rm -rf ../../backend/channel_plugin/channel_plugin/build/root/dist && mv -f dist ../../backend/channel_plugin/channel_plugin/build/root"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

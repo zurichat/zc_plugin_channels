@@ -23,10 +23,6 @@
             }
             const centrifuge = new Centrifuge(socketUrl);
             
-            if (window.location.hostname == "127.0.0.1")
-            {
-              centrifuge.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2MzE5NTU4NjJ9.KCN9FTQV3B_xlAjq4eBlVCTRH-lrQo7M1KO5FnJUFJc");
-            }
 
             centrifuge.on('connect', function(ctx) {
               console.log("connected", ctx);
