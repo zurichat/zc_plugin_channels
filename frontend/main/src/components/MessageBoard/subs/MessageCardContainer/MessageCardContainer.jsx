@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
+import { useParams } from 'react-router';
 
 //redux
 import { useDispatch, useSelector } from "react-redux";
@@ -20,34 +21,39 @@ const dispatch = useDispatch()
   const { channelMessages } = useSelector((state) => state.appReducer)
   console.log(channelMessages);
 
+  const { channelId } = useParams()
 
   const loadData = async () => {
-    await _getChannelMessages(1, "613f70bd6173056af01b4aba")
+    await _getChannelMessages(1, channelId)
   }
 
-  let messageNumber = 50
+  let messageNumber = 10
+  let loadedMessages
 
-  // let loadedMessages = channelMessages.splice(0, messageNumber)
-  const [loadedMessagesArray, setLoadedMessages] = useState([])
+  loadedMessages = channelMessages.splice(0, messageNumber)
+  
+  const [ allChannelMessage, setAllChannelMessage ] = useState(loadedMessages) 
+  const [moreMessages, setMoreMessages] = useState(false)
 
-  let loadedMessages = channelMessages.map((message, key) => {return key <= messageNumber})
 
   useEffect(async () => {
-  loadData()
+   loadData()
   }, []);
-  
-  const loadMore = () =>{
-    if(channelMessages.lenght === 0){
-      messageNumber += 16
-    }
-    // loadedMessages = channelMessages.splice(0, messageNumber)
-    console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber, loadedMessagesArray);
-    }
 
-    // let renderedArray = loadedMessages
+  let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
     
+    const loadMore = () => {
+      if(channelMessages !== []){
+        messageNumber += 1
+      }
+      loadedMessages = channelMessages.splice(0, messageNumber)
+      setAllChannelMessage(loadedMessages)
+      setMoreMessages(true)
+      console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber);
+    }
 
     return(
+      <>
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
             <Button
@@ -63,8 +69,9 @@ const dispatch = useDispatch()
             </Flex>
             
             <Box>
+            
             {
-                loadedMessages.map((message) => {
+                renderedMessages.map((message) => {
                     return(
                       message === [] ? <Text textAlign="center">Loading...</Text> :
                     <MessageCard {...message} key={message._id} />
@@ -72,12 +79,13 @@ const dispatch = useDispatch()
                 })
             }
             {
-              loadedMessages.length !== channelMessages.lenght ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>Load more...</Text> :
+              channelMessages !== [] ? 
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{allChannelMessage == [] ? "Loading..." : "Load More..."}</Text> :
               null 
             }
             </Box>
-        </Box>    
+        </Box> 
+        </>  
     )
 }
 
