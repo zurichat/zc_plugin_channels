@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
@@ -30,7 +30,7 @@ const dispatch = useDispatch()
   let messageNumber = 10
   let loadedMessages
 
-  loadedMessages = channelMessages.splice(0, messageNumber)
+  loadedMessages = channelMessages && channelMessages.slice(0, messageNumber)
   
   const [ allChannelMessage, setAllChannelMessage ] = useState(loadedMessages) 
   const [moreMessages, setMoreMessages] = useState(false)
@@ -46,7 +46,7 @@ const dispatch = useDispatch()
       if(channelMessages !== []){
         messageNumber += 1
       }
-      loadedMessages = channelMessages.splice(0, messageNumber)
+      loadedMessages = channelMessages.slice(0, messageNumber)
       setAllChannelMessage(loadedMessages)
       setMoreMessages(true)
       console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber);
@@ -54,6 +54,7 @@ const dispatch = useDispatch()
 
     return(
       <>
+     { channelMessages && channelMessages.length > 0 &&
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
             <Button
@@ -70,7 +71,7 @@ const dispatch = useDispatch()
             
             <Box>
             
-            {
+            { channelMessages && channelMessages.length > 0 &&
                 renderedMessages.map((message) => {
                     return(
                       message === [] ? <Text textAlign="center">Loading...</Text> :
@@ -84,7 +85,7 @@ const dispatch = useDispatch()
               null 
             }
             </Box>
-        </Box> 
+        </Box> }
         </>  
     )
 }
