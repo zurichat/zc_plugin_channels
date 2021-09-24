@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Flex } from "@chakra-ui/layout";
 import { Box, Button,Modal,ModalContent,ModalOverlay} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
@@ -34,7 +34,7 @@ const MessageInput = () =>{
       user_id:"thanos",
       content:data
     }
-//For Post Request
+    //For Post Request
     const dispatch=useDispatch();
     const {_sendMessage} = bindActionCreators(appActions,dispatch);
 
