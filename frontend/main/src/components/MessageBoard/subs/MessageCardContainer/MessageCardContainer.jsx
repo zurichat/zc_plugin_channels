@@ -19,29 +19,29 @@ import Centrifuge from 'centrifuge'
 
 const MessageCardContainer = () =>{
 
-  let socketUrl = "";
+  // let socketUrl = "";
             
-  if (window.location.hostname == "127.0.0.1")
-  {
-    socketUrl = "ws://localhost:8000/connection/websocket";
-  } else {
-    socketUrl = "wss://realtime.zuri.chat/connection/websocket";
-  }
+  // if (window.location.hostname == "127.0.0.1")
+  // {
+  //   socketUrl = "ws://localhost:8000/connection/websocket";
+  // } else {
+  //   socketUrl = "wss://realtime.zuri.chat/connection/websocket";
+  // }
 
-  const centrifuge = new Centrifuge(socketUrl);
-  centrifuge.connect();
+  // const centrifuge = new Centrifuge(socketUrl);
+  // centrifuge.connect();
 
-  centrifuge.on('connect', function(ctx) {
-    console.log("connected", ctx);
-  });
+  // centrifuge.on('connect', function(ctx) {
+  //   console.log("connected", ctx);
+  // });
 
-  centrifuge.on('disconnect', function(ctx) {
-    console.log("disconnected", ctx);
-  });
+  // centrifuge.on('disconnect', function(ctx) {
+  //   console.log("disconnected", ctx);
+  // });
 
-  centrifuge.on('publish', (ctx) => {
-    console.log("A publication has been detected");
-  });
+  // centrifuge.on('publish', (ctx) => {
+  //   console.log("A publication has been detected");
+  // });
 
   
 
@@ -55,12 +55,12 @@ const dispatch = useDispatch()
 
   const loadData = async () => {
     await _getChannelMessages(1, channelId)
-    await _getSocket(1, channelId)
+    // await _getSocket(1, channelId)
   }
 
-  centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    console.log(messageCtx);
-  })
+  // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
+  //   console.log(messageCtx);
+  // })
 
   let messageNumber = 10
   let loadedMessages
