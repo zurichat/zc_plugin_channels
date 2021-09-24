@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
+import { useParams } from 'react-router';
 
 //redux
 import { useDispatch, useSelector } from "react-redux";
@@ -20,21 +21,23 @@ const dispatch = useDispatch()
   const { channelMessages } = useSelector((state) => state.appReducer)
   console.log(channelMessages);
 
+  const { channelId } = useParams()
 
   const loadData = async () => {
-    await _getChannelMessages(1, "613f70bd6173056af01b4aba")
+    await _getChannelMessages(1, channelId)
   }
 
   let messageNumber = 10
+  let loadedMessages
 
-  let loadedMessages = channelMessages.splice(0, messageNumber)
-
+  loadedMessages = channelMessages.splice(0, messageNumber)
+  
   const [ allChannelMessage, setAllChannelMessage ] = useState(loadedMessages) 
   const [moreMessages, setMoreMessages] = useState(false)
 
 
   useEffect(async () => {
-  loadData()
+   loadData()
   }, []);
 
   let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
@@ -50,6 +53,7 @@ const dispatch = useDispatch()
     }
 
     return(
+      <>
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
             <Button
@@ -65,6 +69,7 @@ const dispatch = useDispatch()
             </Flex>
             
             <Box>
+            
             {
                 renderedMessages.map((message) => {
                     return(
@@ -79,7 +84,8 @@ const dispatch = useDispatch()
               null 
             }
             </Box>
-        </Box>    
+        </Box> 
+        </>  
     )
 }
 
