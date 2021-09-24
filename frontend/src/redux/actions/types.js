@@ -12,3 +12,5 @@ export const GET_CHANNELS = "GET_CHANNELS";
 export const CREATE_CHANNELS = "CREATE_CHANNELS";
 export const GET_FILES = 'GET_FILES';
 export const DELETE_CHANNEL = 'DELETE_CHANNEL';
+export const EDIT_MESSAGE = 'EDIT_MESSAGE';
+export const DELETE_MESSAGE = 'DELETE_MESSAGE';

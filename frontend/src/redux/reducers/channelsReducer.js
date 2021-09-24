@@ -7,12 +7,16 @@ import {
   PIN_MESSAGE,
   SEND_MESSAGES,
   DELETE_CHANNEL,
+  EDIT_MESSAGE,
+  DELETE_MESSAGE,
 } from "../actions/types";
 
 const initialState = {
   channelDetails: {},
   pinnedMessages: [],
   sendMessages: {},
+  editMessage: {},
+  deleteMessage: {},
 };
 
 const channelsReducer = (state = initialState, action) => {
@@ -59,6 +63,15 @@ const channelsReducer = (state = initialState, action) => {
         channelDetails: {  },
       };
     }
+
+    case EDIT_MESSAGE:
+      return {
+        ...state,
+        editMessage: { ...payload },
+    };
+
+    case DELETE_MESSAGE:
+      return state.filter((msg) => msg.msg_id !== action.payload);
     
     default:
       return state;
