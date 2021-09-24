@@ -14,6 +14,8 @@ import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import PinnedMessages from "./PinnedMessages";
 
+import { useParams } from "react-router";
+
 //avatar details(Just a placeholder)
 const avatars = [
   { name: "Kent Dodds", avi: "https://bit.ly/kent-c-dodds", index: 1 },
@@ -22,12 +24,13 @@ const avatars = [
 ];
 
 const ChannelHeader = () => {
+  const { channelId } = useParams()
   const org_id = 1;//Test value for org id
-  const channel_id = "613f70bd6173056af01b4aba"; // Hardcoded value to for channel_id in org with id 1
+  const channel_id = channelId; // Hardcoded value to for channel_id in org with id 1
   const dispatch = useDispatch();
   //.......getting pinned messages...........//
-  const { pinnedMessages } = useSelector((state) => state.channelsReducer)
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);
+  const { pinnedMessages } = useSelector((state) => state.channelsReducer)
   useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
   //-------getting channel details.........//
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
@@ -37,11 +40,12 @@ const ChannelHeader = () => {
   useEffect(() => { loadChannelDetails(); }, []);
   
   const isPrivate = channelDetails.private;// to check if channel is private or not
+  console.log(pinnedMessages)
   
   
   return (
-    <Box width="95vw" mt="5px">
-      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" display={['none','flex']}>
+    <Box width="99.9%">
+      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100%' w="100%" display={['none','flex']}>
         <Link to="/channel-detail">  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
             {isPrivate === 'True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
@@ -63,8 +67,8 @@ const ChannelHeader = () => {
           </Flex></Link>
       </Flex>
       <Box ml='1px'  display={['none','flex']}>
-        <Flex w='95vw' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
-          {pinnedMessages.length > 0 && (
+        <Flex w='100%' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
+          {pinnedMessages && (
               <PinnedMessages>
                 <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button>
               </PinnedMessages>
