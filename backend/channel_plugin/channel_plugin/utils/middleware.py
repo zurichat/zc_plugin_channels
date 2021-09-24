@@ -31,8 +31,7 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             response = self.process_response(request, response)
-        print(response.__dict__["_headers"])
-        logging.info(response.__dict__["_headers"])
+            logging.error(f"Response (production) - {response.__dict__['_headers']}")
         return response
 
     def process_response(self, request, response):
