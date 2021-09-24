@@ -34,7 +34,7 @@ const MessageInput = () =>{
     const { channelId } = useParams()
 
     const datas={
-      user_id:"thanos",
+      user_id:"214846",
       content:data
     }
 //For Post Request
