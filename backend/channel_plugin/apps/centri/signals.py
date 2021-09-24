@@ -89,7 +89,7 @@ def LeftChannelSignal(sender, **kwargs):
         }
 
         event = {
-            "action": "LEAVE",
+            "action": "leave:channel",
             "recipients": kwargs.get("removed", [user])
         }
 
