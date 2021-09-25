@@ -13,20 +13,54 @@ import appActions from '../../../../redux/actions/app';
 import MessageCard from '../../../shared/MessageCard';
 import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
 
+//centrifuge
+import Centrifuge from 'centrifuge'
+
 
 const MessageCardContainer = () =>{
 
-const dispatch = useDispatch()
-  const { _getChannelMessages } = bindActionCreators(appActions, dispatch)
+  // let socketUrl = "";
+            
+  // if (window.location.hostname == "127.0.0.1")
+  // {
+  //   socketUrl = "ws://localhost:8000/connection/websocket";
+  // } else {
+  //   socketUrl = "wss://realtime.zuri.chat/connection/websocket";
+  // }
 
-  const { channelMessages } = useSelector((state) => state.appReducer)
-  console.log(channelMessages);
+  // const centrifuge = new Centrifuge(socketUrl);
+  // centrifuge.connect();
+
+  // centrifuge.on('connect', function(ctx) {
+  //   console.log("connected", ctx);
+  // });
+
+  // centrifuge.on('disconnect', function(ctx) {
+  //   console.log("disconnected", ctx);
+  // });
+
+  // centrifuge.on('publish', (ctx) => {
+  //   console.log("A publication has been detected");
+  // });
+
+  
+
+const dispatch = useDispatch()
+  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
+
+  const { channelMessages, sockets } = useSelector((state) => state.appReducer)
+  console.log(channelMessages, sockets);
 
   const { channelId } = useParams()
 
   const loadData = async () => {
     await _getChannelMessages(1, channelId)
+    // await _getSocket(1, channelId)
   }
+
+  // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
+  //   console.log(messageCtx);
+  // })
 
   let messageNumber = 10
   let loadedMessages
@@ -84,7 +118,7 @@ const dispatch = useDispatch()
             }
             {
               channelMessages.length > 0 ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length !== 0  ? "Load More..." : " "}</Text> :
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageNumber  ? "Load More..." : " "}</Text> :
               null 
             }
             </Box>

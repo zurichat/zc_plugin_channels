@@ -11,6 +11,7 @@ import MessageInput from "../shared/MessageInput";
 
 import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
+import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
 
 const MessageBoardIndex = () => {
@@ -37,6 +38,7 @@ const MessageBoardIndex = () => {
           <Thread/>
         </Box> */}
       </Flex>
+    <CentrifugoComponent />
     </Box>
   );
 };
