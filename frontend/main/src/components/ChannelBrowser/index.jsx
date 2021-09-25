@@ -18,8 +18,6 @@ const ChannelBrowser = () => {
   const dispatch = useDispatch();
   const { _getChannels } = bindActionCreators(appActions, dispatch);
 
-  console.log("We did it", users.email);
-
   const loadChannels = async () => {
     await _getChannels(1);
   };
