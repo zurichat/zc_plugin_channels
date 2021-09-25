@@ -387,8 +387,23 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def add_member(self, request, org_id, channel_id):
-        """
-        Method adds a user to a channel identified by id
+        """Add a user to channel
+
+        ```bash
+        curl -X POST "http://localhost:8000/api/v1/1/channels/stuff/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{\"_id\": \"string\",  
+            \"role_id\": \"string\",  
+            \"is_admin\": false,  
+            \"notifications\": {   
+                 \"web\": \"nothing\",    
+                 \"mobile\": \"mentions\",    
+                 \"same_for_mobile\": true,
+                 \"mute\": false
+                }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -514,20 +529,22 @@ class ChannelMemberViewset(ViewSet):
         )
 
     @swagger_auto_schema(
+        operation_id="list-channel-members",
         responses={
             200: openapi.Response("Response", UserSerializer(many=True)),
             404: openapi.Response("Not Found"),
-        },
-        operation_id="list-channel-members",
+        }
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def list_members(self, request, org_id, channel_id):
-        """
-        This method gets all members for a
-        channel identified
+        """Get all members in a channel
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
+        ```
         """
 
         # get the channel from zc-core

@@ -54,10 +54,24 @@ class ChannelSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.Serializer):
 
-    _id = serializers.CharField(max_length=30, required=True)
-    role_id = serializers.CharField(max_length=30, required=False)
-    is_admin = serializers.BooleanField(default=False)
-    notifications = serializers.DictField(required=False)
+    _id = serializers.CharField(
+        max_length=30,
+        required=True,
+        help_text="User ID"
+    )
+    role_id = serializers.CharField(
+        max_length=30,
+        required=False,
+        help_text="Role ID"
+    )
+    is_admin = serializers.BooleanField(
+        default=False,
+        help_text="Default: false. True if the member is an admin"
+    )
+    notifications = serializers.DictField(
+        required=False,
+        help_text="User's notification preferences"
+    )
 
 
 class ChannelGetSerializer(serializers.Serializer):
