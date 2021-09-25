@@ -9,25 +9,19 @@ import { bindActionCreators } from "redux";
 import { useDispatch } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
-import { GetUserInfo } from "@zuri/control";
 
 import { useSelector } from "react-redux";
 
 
 const ChannelBrowser = () => {
 
-  GetUserInfo.then((res) => {return res})
-
   const dispatch = useDispatch();
-  const { _getChannels, _getUsers } = bindActionCreators(appActions, dispatch);
-
-  const { users } = useSelector((state) => state.appReducer)
+  const { _getChannels } = bindActionCreators(appActions, dispatch);
 
   console.log("We did it", users.email);
 
   const loadChannels = async () => {
     await _getChannels(1);
-    await _getUsers()
   };
 
   useEffect(() => {

@@ -44,10 +44,13 @@ const _getUsers = (params) => async (dispatch) => {
   try {
     // Result comes from the endpoint
     // Let's assume an array of objects is returned from the endpoint
-    const res = await GetUserInfo();
+    // const res = await GetUserInfo();
+
+    GetUserInfo().then((res) => {
+      dispatch({ type: GET_USERS, payload: res });
+    })
 
     // Result is sent to the store via dispatch (Pass payload if needed)
-    dispatch({ type: GET_USERS, payload: res.data });
   } catch (error) {
     // Handle exceptions here
     console.log(error);
