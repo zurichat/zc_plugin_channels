@@ -231,9 +231,9 @@ class ChannelViewset(ViewSet):
 
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id") or isinstance(channel, dict):
             data = {
-                "socket_name": build_room_name(org_id, channel["_id"]),
+                "socket_name": build_room_name(org_id, channel_id),
                 "channel_id": channel_id,
             }
 

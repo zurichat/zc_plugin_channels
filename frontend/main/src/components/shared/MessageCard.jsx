@@ -13,7 +13,7 @@ import { bindActionCreators } from 'redux';
 
 import instance from '../../utils/utils';
 
-const replies = [
+const threadReply = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
     { name: "Dan Abramov", profilePic: "https://bit.ly/code-beast", index: 2 },
     { name: "Dan Abramov", profilePic: "https://bit.ly/ryan-florence", index: 3 },
@@ -21,7 +21,7 @@ const replies = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
@@ -62,10 +62,10 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) =
             <Box m="0px">
               <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
             </Box>
-            {can_reply && (
+            {replies !== 0 && (
               <HStack spacing="5px" mt="5px">
                 {
-                  replies.slice(0, Math.min(4, replies.length))
+                  threadReply.slice(0, Math.min(4, threadReply.length))
                   .map((reply, index) => {
                     return (
                       <Avatar
@@ -80,7 +80,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, can_reply, edited }) =
                   })
                 }
                 <HStack spacing="5px" alignItems="baseline">
-                  <Link fontSize={["8px", "14px"]} color="#1264A3">{replies.length} Replies</Link>
+                  <Link fontSize={["8px", "14px"]} color="#1264A3">{threadReply.length} Replies</Link>
                   <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
                 </HStack>
               </HStack>

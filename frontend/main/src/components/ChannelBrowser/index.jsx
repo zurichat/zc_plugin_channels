@@ -10,6 +10,9 @@ import { useDispatch } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
 
+import { useSelector } from "react-redux";
+
+
 const ChannelBrowser = () => {
 
   const dispatch = useDispatch();

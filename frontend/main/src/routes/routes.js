@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import Home from "../components/home/Home";
 import Admin from "../components/admin/index";
@@ -7,8 +8,27 @@ import ChannelDetailsAndSetting from "../components/channelDetailsAndSetting/ind
 import UserProfile from "../components/UserProfile/UserProfile";
 import Thread from "../components/thread/Thread";
 import ChannelBrowser from "../components/ChannelBrowser";
+import MessageBoardEmpty from "../components/MessageBoard/subs/EmptyMessageBoard/MessageBoardEmpty";
+
+import { useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+import appActions from "../redux/actions/app";
+
 
 const routes = () => {
+
+  const dispatch = useDispatch();
+  const { _getUsers } = bindActionCreators(appActions, dispatch);
+
+  const loadData = async () => {
+    await _getUsers();
+  };
+
+  useEffect( async () => {
+    loadData()
+  }, [])
+
+
   return (
     <Switch>
       <Route exact path="/">
@@ -20,7 +40,10 @@ const routes = () => {
       <Route path="/admin">
         <Admin />
       </Route>
-      <Route path="/message-board">
+      <Route exact path="/message-board/">
+        <MessageBoardEmpty />
+      </Route>
+      <Route exact path="/message-board/:channelId">
         <MessageBoardIndex />
       </Route>
       <Route path="/channel-detail">

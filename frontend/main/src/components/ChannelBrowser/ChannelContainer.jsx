@@ -4,6 +4,7 @@ import { GiPlainCircle } from 'react-icons/gi'
 import { Box, Flex, Heading, HStack, Text} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import Icon from '@chakra-ui/icon'
+import { Link } from 'react-router-dom'
 
 const ChannelContainer = (props) => {
     const [open, setOpen] = useState(false)
@@ -37,7 +38,7 @@ const ChannelContainer = (props) => {
                   <Box bgColor="unset" border="0" boxShadow="none"  sx={{ position: "relative", top: 0 }} >
                     <HStack p={2}>
                       <Button width="147px" bgColor="unset" border="1px solid #00B87C" color="#00B87C" borderRadius="0" _hover={{ bg: "#ebedf0" }}>
-                        View
+                       <Link to={"/message-board/"+props.chan._id}> View</Link>
                       </Button>
                       <Button width="147px" bgColor="#00B87C" color="white" borderRadius="0"  _hover={{ bg: "#007A5A" }}>
                         Join
