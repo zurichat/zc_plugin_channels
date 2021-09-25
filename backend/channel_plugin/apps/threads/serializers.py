@@ -61,3 +61,8 @@ class ThreadUpdateSerializer(serializers.Serializer):
         instance = dict(instance)
         data = {"thread": instance}
         return data
+
+class ThreadEmojiUpdateSerializer(serializers.Serializer):
+
+    title = serializers.CharField(max_length=100)
+    member_id = serializers.CharField()

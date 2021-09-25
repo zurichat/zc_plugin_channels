@@ -11,7 +11,7 @@ from rest_framework.viewsets import ViewSet
 from channel_plugin.utils.customrequest import Request
 
 from .permissions import IsMember, IsOwner
-from .serializers import ChannelMessageReactionsUpdateSerializer, ChannelMessageSerializer, ChannelMessageUpdateSerializer
+from .serializers import ChannelMessageSerializer, ChannelMessageUpdateSerializer,MessageEmojiUpdateSerializer
 
 
 class ChannelMessageViewset(ViewSet):
@@ -199,6 +199,11 @@ class ChannelMessageViewset(ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+
     def retrieve_message_reactions(self, request, org_id, msg_id):
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
@@ -208,7 +213,38 @@ class ChannelMessageViewset(ViewSet):
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
         return Response(reactions, status=status_code)
-    
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        request_body = MessageEmojiUpdateSerializer,
+         responses={
+            200: openapi.Response("Response", MessageEmojiUpdateSerializer),
+            404: openapi.Response("Not Found"),
+        },
+        operation_id="retrieve-message-reactions",
+    )
+
+
+    @action(
+        methods=["PUT"],
+        detail=False,
+    )
     def update_message_reactions(self, request, org_id, msg_id):
 
         # get referenced message
@@ -219,7 +255,7 @@ class ChannelMessageViewset(ViewSet):
         if message:
             message_reactions = message.get("emojis", [])
 
-            serializer = ChannelMessageReactionsUpdateSerializer(data=request.data)
+            serializer = ChannelMessageUpdateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
 
             # todo: refactor code to use dict instead of list

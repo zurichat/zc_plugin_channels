@@ -9,7 +9,7 @@ from rest_framework.viewsets import ViewSet
 from channel_plugin.utils.customrequest import Request
 
 from .permissions import CanReply, IsMember, IsOwner
-from .serializers import ThreadSerializer, ThreadUpdateSerializer
+from .serializers import ThreadSerializer, ThreadUpdateSerializer, ThreadEmojiUpdateSerializer
 
 
 class ThreadViewset(ViewSet):
@@ -26,6 +26,8 @@ class ThreadViewset(ViewSet):
             "thread_message",
             "thread_message_update",
             "thread_message_delete",
+            # "retrieve_thread_reactions",
+            # "update_thread_reactions",
         ]:
             permissions.append(IsMember())
             if self.action in ["thread_message_delete", "thread_message_update"]:
@@ -121,7 +123,7 @@ class ThreadViewset(ViewSet):
         serializer = ThreadUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("thread")
-        payload.update({"edited": str(True)})
+        payload.update({"edited": True})
         result = Request.put(org_id, "thread", payload, object_id=thread_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
@@ -153,11 +155,12 @@ class ThreadViewset(ViewSet):
     def thread_message_delete(self, request, org_id, thread_id):
         Request.delete(org_id, "thread", object_id=thread_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
     @action(
         methods=["GET"],
         detail=False,
     )
+
     def retrieve_thread_reactions(self, request, org_id, thread_id):
         data = {"_id": thread_id}
         data.update(dict(request.query_params))
@@ -167,26 +170,33 @@ class ThreadViewset(ViewSet):
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
         return Response(reactions, status=status_code)
-
-        
+    
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
-                "title",
+                "user_id",
                 openapi.IN_QUERY,
                 description="User ID (owner of message)",
                 required=True,
                 type=openapi.TYPE_STRING,
+
             ),
             openapi.Parameter(
-                "count",
+                "channel_id",
                 openapi.IN_QUERY,
                 description="Channel ID (ID of channel message was posted)",
                 required=True,
                 type=openapi.TYPE_STRING,
             ),
-        ]
+        ],
+        request_body = ThreadEmojiUpdateSerializer,
+         responses={
+            200: openapi.Response("Response", ThreadEmojiUpdateSerializer),
+            404: openapi.Response("Not Found"),
+        },
+        operation_id="update-thread-reactions",
     )
+
     @action(
         methods=["PUT"],
         detail=False,
@@ -201,7 +211,7 @@ class ThreadViewset(ViewSet):
         if message:
             message_reactions = message.get("emojis", [])
 
-            serializer = ThreadUpdateSerializer(data=request.data)
+            serializer = ThreadEmojiUpdateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
 
             # todo: refactor code to use dict instead of list
@@ -241,7 +251,8 @@ class ThreadViewset(ViewSet):
         
         status_code = status.HTTP_404_NOT_FOUND
         return Response({"error": "message not found"}, status=status_code)
-    
+
+
 
 thread_views = ThreadViewset.as_view(
     {
@@ -252,6 +263,6 @@ thread_views = ThreadViewset.as_view(
 thread_views_group = ThreadViewset.as_view(
     {"put": "thread_message_update", "delete": "thread_message_delete"}
 )
-threadreaction_update = ThreadViewset.as_view(
+thread_reactions = ThreadViewset.as_view(
     {"get": "retrieve_thread_reactions", "put": "update_thread_reactions"}
 )

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from channel_plugin.utils.customrequest import Request
+
 from .models import MESSAGE_TYPES, ChannelMessage
 
 
@@ -13,7 +15,7 @@ class ChannelMessageSerializer(serializers.Serializer):
     timestamp = serializers.DateTimeField(read_only=True)
 
     def validate(self, attrs):
-        if attrs.get("content", None) is None and attrs.get("files", None) is None:
+        if bool(attrs.get("content")) and bool(attrs.get("files")):
             raise serializers.ValidationError(
                 {"error": "Both content & files cannot be none"}
             )
@@ -30,15 +32,6 @@ class ChannelMessageSerializer(serializers.Serializer):
         data = {"channelmessage": message}
         return data
 
-class ChannelMessageReactionSerializer(serializers.Serializer):
-
-    title = serializers.CharField(read_only=True)
-    count = serializers.IntegerField(read_only=True)
-    users = serializers.ListField(read_only=True)
-
-class ChannelMessageReactionsUpdateSerializer(serializers.Serializer):
-    title = serializers.CharField(required=True)
-    member_id = serializers.CharField()
 
 class ChannelMessageUpdateSerializer(serializers.Serializer):
 
@@ -64,8 +57,6 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
         data = {"message": instance}
         return data
 
-    def validate_pinned(self, pinned):
-
-        if pinned:
-            return "True"
-        return "False"
+class MessageEmojiUpdateSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=50)
+    member_id = serializers.CharField()
