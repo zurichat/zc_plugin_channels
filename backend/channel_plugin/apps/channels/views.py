@@ -221,19 +221,20 @@ class ChannelViewset(ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @swagger_auto_schema(
+        operation_id="retrieve-user-channels",
         responses={
             200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
-            204: openapi.Response("User Does Not Belong To Any Channels"),
-            404: openapi.Response("Error Response", ErrorSerializer),
+            204: openapi.Response("User does not belong to any channel"),
+            404: openapi.Response("Not found", ErrorSerializer),
         }
     )
     @action(methods=["GET"], detail=False)
     def user_channel_retrieve(self, request, org_id, user_id):
+        """Retrieve list of channels a user belongs to
 
-        """
-
-        This gets a list of all channels that a user belongs to
-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/users/{{user_id}}/" -H  "accept: application/json"
+        ```
         """
         data = {}
         data.update(dict(request.query_params))

@@ -173,10 +173,16 @@ class SearchMessageQuerySerializer(serializers.Serializer):
 
 class UserChannelGetSerializer(serializers.Serializer):
 
-    _id = serializers.ReadOnlyField()
-    name = serializers.CharField(max_length=100, required=False)
-    description = serializers.CharField(required=False)
-    notifications = serializers.DictField(required=False)
+    _id = serializers.ReadOnlyField(help_text="Channel ID")
+    name = serializers.CharField(
+        max_length=100,
+        required=False,
+        help_text="Channel name"
+    )
+    description = serializers.CharField(
+        required=False,
+        help_text="Channel description"
+    )
 
 
 class SocketSerializer(serializers.Serializer):
