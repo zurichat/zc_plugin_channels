@@ -126,17 +126,23 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="retrieve-channel-details",
         responses={
             200: openapi.Response("Response", ChannelGetSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="message read one channel",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def channel_retrieve(self, request, org_id, channel_id):
+        """Get channel details
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
+        ```
+        """
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
@@ -147,6 +153,7 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="update-channel-details",
         request_body=ChannelUpdateSerializer,
         responses={
             200: openapi.Response("Response", ChannelGetSerializer),
@@ -158,6 +165,15 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def channel_update(self, request, org_id, channel_id):
+        """Update channel details
+
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\"}"
+        ```
+        """
         serializer = ChannelUpdateSerializer(
             data=request.data, context={"org_id": org_id, "_id": channel_id}
         )
@@ -171,11 +187,26 @@ class ChannelViewset(ViewSet):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
+    @swagger_auto_schema(
+        operation_id="delete-channel",
+        responses={
+            204: openapi.Response("Channel deleted successfully"),
+            404: openapi.Response("Not found")
+        }
+    )
     @action(
         methods=["DELETE"],
         detail=False,
     )
     def channel_delete(self, request, org_id, channel_id):
+        """Delete a channel
+
+        This endpoint deletes a channel and its related objects: messages, roles and threads
+
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
+        ```
+        """
         result = Request.delete(org_id, "channel", object_id=channel_id)
 
         # delete relationships
