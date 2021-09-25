@@ -40,7 +40,9 @@ const CentrifugoComponent = () => {
 
   const { channelMessages, sockets } = useSelector((state) => state.appReducer)
   const { channelDetails } = useSelector((state) => state.channelsReducer)
-  console.log(channelMessages, sockets, channelDetails);
+  
+  console.log("ChannelMessages: ", channelMessages);
+  console.log("Sockets: ", sockets);
 
   const { channelId } = useParams()
 
