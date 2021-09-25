@@ -33,6 +33,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
 
 class ChannelViewset(ViewSet):
     @swagger_auto_schema(
+        operation_id="create-channel",
         request_body=ChannelSerializer,
         responses={
             201: openapi.Response("Response", ChannelUpdateSerializer),
@@ -44,12 +45,16 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def channels(self, request, org_id):
-
+        """Create a new channel in the organization
+        
+        ```bash
+        curl -X POST "{baseUrl}/v1/{org_id}/channels/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\",  \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
+        ```
         """
-        This creates a channel for a
-        particular organization identified by ID
-        """
-
+        
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
@@ -61,6 +66,7 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="retrieve-channels",
         responses={
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
@@ -68,10 +74,11 @@ class ChannelViewset(ViewSet):
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
+        """Get all channels in the organization
 
-        """
-        This gets all channels for a
-        particular organization identified by ID
+        ```bash
+        curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
+        ```
         """
         data = {}
         data.update(dict(request.query_params))

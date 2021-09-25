@@ -8,11 +8,29 @@ from .models import Channel
 
 class ChannelSerializer(serializers.Serializer):
 
-    name = serializers.CharField(max_length=100, required=True)
-    owner = serializers.CharField(max_length=30, required=True)
-    description = serializers.CharField(required=False)
-    private = serializers.BooleanField(default=False)
-    topic = serializers.CharField(max_length=100, required=False)
+    name = serializers.CharField(
+        max_length=100,
+        required=True,
+        help_text="Channel name"
+    )
+    owner = serializers.CharField(
+        max_length=30,
+        required=True,
+        help_text="Owner (member_id) of the channel"
+    )
+    description = serializers.CharField(
+        required=False,
+        help_text="Channel description"
+    )
+    private = serializers.BooleanField(
+        default=False,
+        help_text="Default: false. True if this channel is set to private."
+    )
+    topic = serializers.CharField(
+        max_length=100,
+        required=False,
+        help_text="Channel topic"
+    )
 
     def validate_name(self, name):
         """
@@ -44,24 +62,65 @@ class UserSerializer(serializers.Serializer):
 
 class ChannelGetSerializer(serializers.Serializer):
 
-    _id = serializers.ReadOnlyField()
-    name = serializers.CharField(max_length=100, required=False)
-    description = serializers.CharField(required=False)
-    private = serializers.BooleanField(required=False)
-    owner = serializers.CharField(required=False)
-    archived = serializers.BooleanField(required=False)
-    topic = serializers.CharField(max_length=100, required=False)
-    users = serializers.DictField(child=UserSerializer(many=True), required=False)
+    _id = serializers.ReadOnlyField(help_text="Channel ID")
+    name = serializers.CharField(
+        max_length=100,
+        required=False,
+        help_text="Channel name"
+    )
+    description = serializers.CharField(
+        required=False,
+        help_text="Channel description"
+    )
+    private = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this channel has been set to private."
+    )
+    owner = serializers.CharField(
+        required=False,
+        help_text="Owner (member_id) of the channel"
+    )
+    archived = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this channel has been archived."
+    )
+    topic = serializers.CharField(
+        max_length=100,
+        required=False,
+        help_text="Channel topic"
+    )
+    users = serializers.DictField(
+        child=UserSerializer(many=True),
+        required=False,
+        help_text="List of users in the channel"
+    )
 
 
 class ChannelUpdateSerializer(serializers.Serializer):
 
-    _id = serializers.ReadOnlyField()
-    name = serializers.CharField(max_length=100, required=False)
-    description = serializers.CharField(required=False)
-    private = serializers.BooleanField(required=False)
-    archived = serializers.BooleanField(required=False)
-    topic = serializers.CharField(max_length=100, required=False)
+    _id = serializers.ReadOnlyField(help_text="Channel ID")
+    name = serializers.CharField(
+        max_length=100,
+        required=False,
+        help_text="Channel name"
+    )
+    description = serializers.CharField(
+        required=False,
+        help_text="Channel description"
+    )
+    private = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this channel has been set to private."
+    )
+    archived = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this channel has been archived."
+    )
+    topic = serializers.CharField(
+        max_length=100,
+        required=False,
+        help_text="Channel topic"
+    )
 
     def validate_name(self, name):
         """
