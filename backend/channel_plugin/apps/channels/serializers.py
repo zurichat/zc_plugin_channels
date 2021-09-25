@@ -194,5 +194,11 @@ class NotificationsSettingSerializer(serializers.Serializer):
 
     web = serializers.ChoiceField(choices=("all", "mentions", "nothing"))
     mobile = serializers.ChoiceField(choices=("all", "mentions", "nothing"))
-    same_for_mobile = serializers.BooleanField(required=True)
-    mute = serializers.BooleanField(required=True)
+    same_for_mobile = serializers.BooleanField(
+        required=True,
+        help_text="Default: true. False if user has set web client notifications preferences to be different for mobile."
+    )
+    mute = serializers.BooleanField(
+        required=True,
+        help_text="Default: true. False if user has muted this channel."
+    )

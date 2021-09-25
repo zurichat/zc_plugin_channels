@@ -762,12 +762,11 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def notification_retrieve(self, request, org_id, channel_id, member_id):
-        """Retrieve a user's notification preferences for a particular channel.
+        """Retrieve user notification preferences for channel
 
-        By default, users do not have a notifications field in the database,
-        so an empty {} will be returned.
-
-        A field is only appended to their records when changes have been made.
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
+        ```    
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
         if channel:
@@ -810,15 +809,19 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def notification_update(self, request, org_id, channel_id, member_id):
-        """Update a user's notification preferences for a particular channel.
+        """Update user notification preferences for a channel
 
-        Example request body:
-        {
-            "web": "nothing",
-            "mobile": "mentions",
-            "same_for_mobile": False,
-            "mute": False
-        }
+        ```bash
+        curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"web\": \"all\", 
+                \"mobile\": \"all\", 
+                \"same_for_mobile\": true,  
+                \"mute\": true
+            }"
+        ```
         """
 
         channel = self.retrieve_channel(request, org_id, channel_id)
