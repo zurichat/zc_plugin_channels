@@ -10,10 +10,12 @@ import { useDispatch } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
 // import { GetUserInfo } from "https://zuri.chat/zuri-control.js";
-
+// import { GetUserInfo } from "@zuri/control";
+// import { GetUserInfo } from "../../utils/getUser";
 
 const ChannelBrowser = () => {
   // GetUserInfo();
+
 
   const dispatch = useDispatch();
   const { _getChannels } = bindActionCreators(appActions, dispatch);
