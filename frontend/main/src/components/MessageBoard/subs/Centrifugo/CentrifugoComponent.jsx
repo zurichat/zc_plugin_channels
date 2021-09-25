@@ -32,7 +32,7 @@ const CentrifugoComponent = () => {
   });
 
   centrifuge.on('publish', (ctx) => {
-    console.log(ctx);
+    console.log("Publishing: ", ctx);
   });
 
   const dispatch = useDispatch()
