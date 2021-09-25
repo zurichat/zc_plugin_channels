@@ -47,7 +47,7 @@ class ChannelViewset(ViewSet):
 
         """
         This creates a channel for a
-        particular organization identified by ID
+        particular organization identified by ID and creates corresponding Centrifugo room
         """
 
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
@@ -228,7 +228,9 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def get_channel_socket_name(self, request, org_id, channel_id):
-
+        """
+        Returns Centrifugo channel name based on organisation and channel IDs
+        """
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
         if channel:
@@ -350,7 +352,7 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-        Method adds a user to a channel identified by id
+        Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -489,7 +491,7 @@ class ChannelMemberViewset(ViewSet):
     def list_members(self, request, org_id, channel_id):
         """
         This method gets all members for a
-        channel identified
+        channel identified by ID
         """
 
         # get the channel from zc-core
