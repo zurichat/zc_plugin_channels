@@ -1,5 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
+import { GetUserInfo } from "@zuri/control";
 
 import {
   GET_CHANNELMESSAGES,
@@ -13,6 +14,7 @@ import {
   SEND_MESSAGES,
   GET_CHANNELS,
   CREATE_CHANNELS,
+  GET_SOCKETS,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -44,10 +46,13 @@ const _getUsers = (params) => async (dispatch) => {
   try {
     // Result comes from the endpoint
     // Let's assume an array of objects is returned from the endpoint
-    const res = await APIService.getUsers();
+    // const res = await GetUserInfo();
+
+    GetUserInfo().then((res) => {
+      dispatch({ type: GET_USERS, payload: res });
+    })
 
     // Result is sent to the store via dispatch (Pass payload if needed)
-    dispatch({ type: GET_USERS, payload: res.data });
   } catch (error) {
     // Handle exceptions here
     console.log(error);
@@ -61,6 +66,19 @@ const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
     console.log(res.data);
     // Result is sent to the store via dispatch (Pass payload if needed)
     dispatch({ type: GET_CHANNELMESSAGES, payload: res.data.data });
+  } catch (error) {
+    // Handle exceptions here
+    console.log(error);
+  }
+};
+const _getSocket = (org_id, channel_id) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.getSockets(org_id, channel_id);
+    console.log(res.data);
+    // Result is sent to the store via dispatch (Pass payload if needed)
+    dispatch({ type: GET_SOCKETS, payload: res.data });
   } catch (error) {
     // Handle exceptions here
     console.log(error);
@@ -196,5 +214,6 @@ const appActions = {
   _createChannel,
   _deleteChannel,
   _privateChannel,
+  _getSocket,
 };
 export default appActions;

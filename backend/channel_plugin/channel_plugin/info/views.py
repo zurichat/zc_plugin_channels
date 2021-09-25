@@ -97,18 +97,19 @@ class GetInfoViewset(ViewSet):
                 joined_rooms = list(
                     map(
                         lambda channel: {
-                            "id": channel.get("_id"),
-                            "sidebar_item_name": channel.get("slug"),
-                            "url": f"/channels/message-board/{channel.get('_id')}",
-                            "title": channel.get("name"),
-                            "members": channel.get(
-                                "members", len(channel["users"].keys())
-                            ),
-                            "unread": channel.get("unread", random.randint(0, 50)),
-                            "icon": channel.get(
-                                "icon", icons[random.randint(0, len(icons) - 1)]
-                            ),
-                            "action": "open",
+                            # "id": channel.get("_id"),
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                            # "title": channel.get("name"),
+                            # "members": channel.get(
+                            #     "members", len(channel["users"].keys())
+                            # ),
+                            # "unread": channel.get("unread", random.randint(0, 50)),
+                            # "icon": channel.get(
+                            #     "icon", icons[random.randint(0, len(icons) - 1)]
+                            # ),
+                            # "action": "open",
                         },
                         list(
                             filter(
@@ -121,18 +122,19 @@ class GetInfoViewset(ViewSet):
                 public_rooms = list(
                     map(
                         lambda channel: {
-                            "id": channel.get("_id"),
-                            "sidebar_item_name": channel.get("slug"),
-                            "url": f"/channels/message-board/{channel.get('_id')}",
-                            "title": channel.get("name"),
-                            "members": channel.get(
-                                "members", len(channel["users"].keys())
-                            ),
-                            "unread": channel.get("unread", random.randint(0, 50)),
-                            "icon": channel.get(
-                                "icon", icons[random.randint(0, len(icons) - 1)]
-                            ),
-                            "action": "open",
+                            # "id": channel.get("_id"),
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                            # "title": channel.get("name"),
+                            # "members": channel.get(
+                            #     "members", len(channel["users"].keys())
+                            # ),
+                            # "unread": channel.get("unread", random.randint(0, 50)),
+                            # "icon": channel.get(
+                            #     "icon", icons[random.randint(0, len(icons) - 1)]
+                            # ),
+                            # "action": "open",
                         },
                         list(
                             filter(
@@ -148,7 +150,7 @@ class GetInfoViewset(ViewSet):
                 {
                     "organisation_id": org_id,
                     "user_id": user_id,
-                    "group_name": "Zuri",
+                    "group_name": "Channel",
                     "show_group": False,
                     "joined_rooms": joined_rooms,
                     "public_rooms": public_rooms,
