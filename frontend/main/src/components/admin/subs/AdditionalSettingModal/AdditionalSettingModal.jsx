@@ -13,18 +13,36 @@ import {
     Text,
     Flex,
 } from "@chakra-ui/react";
+import appActions from "../../../../redux/actions/app";
+import { bindActionCreators } from "redux";
+import { useDispatch } from "react-redux";
+
 
 const AdditionalSettingModal = ({ actions, isOpen, onClose }) => {
     const [archiveChannel, setArchiveChannel] = useState(false);
     const [makePrivate, setPrivate] = useState(false);
+    const [deleteChannel, setDeleteChannel] = useState(false);
+
+     const dispatch = useDispatch();
+    const { _privateChannel } = bindActionCreators(appActions, dispatch);
 
     const finishSettings = () => {
         onClose()
+         const orgId = 1
+        const channelId = "613f70bd6173056af01b4aba"
+        //make channel private
         if (makePrivate) {
-            // code to make channel private
-        }
-        if (archiveChannel)
+           _privateChannel(orgId, channelId);
+           setPrivate(false) //reset indicator
+        } //archive channel
+        if (archiveChannel) {
             actions.triggerArchiveChannel()
+            setArchiveChannel(false)
+        } //delete channel
+        if (deleteChannel) {
+             actions.triggerDeleteChannel()
+             setDeleteChannel(false)
+        }
     }
     
     return(
@@ -60,7 +78,7 @@ const AdditionalSettingModal = ({ actions, isOpen, onClose }) => {
                         <Text flex="1" fontSize="16px" width="319px" color="#8B8B8B"fontWeight="normal" fontFamily="Lato">
                             Deleting a channel will permanently remove all of its messages. This cannot be undone.
                         </Text>
-                        <Button bg="#00B87C" fontSize="15px" width="140px" ml="3.75rem" borderRadius="3px" border="none" color="#FFFFFF" outline="none" py="0.75rem" px="1.125rem">
+                        <Button bg="#00B87C" fontSize="15px" width="140px" ml="3.75rem" borderRadius="3px" border="none" color="#FFFFFF" outline="none" py="0.75rem" px="1.125rem" onClick={()=>setDeleteChannel(true)}>
                             Delete Channel
                         </Button>
                     </HStack>

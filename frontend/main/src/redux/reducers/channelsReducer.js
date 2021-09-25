@@ -2,11 +2,13 @@
 import UtilityService from "../../utils/utils";
 import {
   ARCHIVE_CHANNEL,
+  DELETE_CHANNEL,
+  PRIVATE_CHANNEL,
   GET_CHANNEL_DETAILS,
   GET_PINNED_MESSAGES,
   PIN_MESSAGE,
   SEND_MESSAGES,
-} from "../actions/types";
+} from "../actions/types"; 
 
 const initialState = {
   channelDetails: {},
@@ -46,10 +48,22 @@ const channelsReducer = (state = initialState, action) => {
       };
     }
     case ARCHIVE_CHANNEL: {
-      return {
+      return { 
         ...state,
         channelDetails: { ...payload },
       };
+    }
+    case DELETE_CHANNEL: {
+      return {
+        ...state,
+        channelDetails: { ...payload },
+      }
+    }
+    case PRIVATE_CHANNEL: {
+      return {
+        ...state,
+        channelDetails: { ...payload }
+      }
     }
     default:
       return state;

@@ -19,6 +19,7 @@ import {
 import AddPeopleModal from "../../../createChannel/addPeopleModal";
 import { useDisclosure } from "@chakra-ui/hooks";
 import ArchiveChannelModal from "../ArchiveChannelModal/ArchiveChannelModal";
+import DeleteChannel from "../../../shared/DeleteChannel";
 
 const ChannelDetails = ({ channelName="Announcements" }) => {
   const { 
@@ -33,10 +34,16 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
     onOpen: onOpenArchiveModal 
   } = useDisclosure()
 
+  const {
+    isOpen: isDeleteModalOpen,
+    onClose: onCloseDeleteModal,
+    onOpen: onOpenDeleteModal
+  } = useDisclosure()
+
   const actions = {
     triggerArchiveChannel: onOpenArchiveModal,
     triggerMakeChannelPrivate: () => {},
-    triggerDeleteChannel: () => {}
+    triggerDeleteChannel: onOpenDeleteModal
   }
 
   const options = useMemo(
@@ -223,6 +230,7 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
     </Box>
     <AddPeopleModal isOpen={isAddPeopleModalOpen} onClose={onCloseAddPeopleModal} />
     <ArchiveChannelModal isOpen={isArchiveModalOpen} onClose={onCloseArchiveModal} />
+    <DeleteChannel isOpen={isDeleteModalOpen} onClose={onCloseDeleteModal} />
     </>
   );
 };
