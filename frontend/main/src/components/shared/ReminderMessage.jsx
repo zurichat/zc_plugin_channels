@@ -94,8 +94,6 @@ export default function ReminderMessage() {
                   focusBorderColor="green.500"
                   border="1px solid #8C8C8C"
                   type="date"
-                  textIndent="10px"
-                  _calendarPickerIndicator={{ display: "none" }}
                 />
                 <InputRightElement children={<ChevronDownIcon />} />
               </InputGroup>
