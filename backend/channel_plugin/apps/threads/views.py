@@ -71,6 +71,15 @@ class ThreadViewset(ViewSet):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             status_code = status.HTTP_201_CREATED
+            replies = Request.get(
+                org_id, "channelmessage", {"_id": channelmessage_id}
+            ).get("replies", 0)
+            Request.put(
+                org_id,
+                "channelmessage",
+                {"replies": replies + 1},
+                object_id=channelmessage_id,
+            )
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
@@ -153,9 +162,20 @@ class ThreadViewset(ViewSet):
         detail=False,
     )
     def thread_message_delete(self, request, org_id, thread_id):
+        thread = Request.get(org_id, "thread", {"_id": thread_id})
+        message = Request.get(
+            org_id, "channelmessage", {"_id": thread.get("channelmessage_id")}
+        )
+        replies = message.get("replies", 1)
         Request.delete(org_id, "thread", object_id=thread_id)
+        Request.put(
+            org_id,
+            "channelmessage",
+            {"replies": replies - 1},
+            object_id=message.get("_id"),
+        )
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     @action(
         methods=["GET"],
         detail=False,
@@ -170,7 +190,7 @@ class ThreadViewset(ViewSet):
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
         return Response(reactions, status=status_code)
-    
+
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
@@ -207,7 +227,7 @@ class ThreadViewset(ViewSet):
         data = {"_id": thread_id}
         data.update(dict(request.query_params))
         message = Request.get(org_id, "thread", data)
-        
+
         if message:
             message_reactions = message.get("emojis", [])
 
@@ -232,13 +252,13 @@ class ThreadViewset(ViewSet):
                     else:
                         message_reaction["count"] += 1
                         message_reaction["users"].append(new_message_reaction["member_id"])
-            
+
             if message_reaction_index:
                 message_reactions.pop(message_reaction_index)
                 message_reactions.insert(message_reaction_index, message_reaction)
             else:
                 message_reactions.append(message_reaction)
-            
+
             payload = {
                 "emojis": message_reactions
             }
@@ -248,7 +268,7 @@ class ThreadViewset(ViewSet):
                 return Response(message_reactions, status=status.HTTP_200_OK)
 
             return Response({"error": "failed to update reaction"}, status=status_code)
-        
+
         status_code = status.HTTP_404_NOT_FOUND
         return Response({"error": "message not found"}, status=status_code)
 

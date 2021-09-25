@@ -19,10 +19,10 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelGetSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
+    NotificationsSettingSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
-    NotificationsSettingSerializer,
 )
 
 # from rest_framework.filters
@@ -100,17 +100,19 @@ class ChannelViewset(ViewSet):
         particular organization identified by ID
         splitted into channelmessage and thread objects.
         """
-        data = {"channel_id": channel_id, "has_files": str(True)}
+        data = {"channel_id": channel_id, "has_files": True}
         data.update(dict(request.query_params))
         result = {}
         result_message = Request.get(org_id, "channelmessage", data) or []
-        result_thread = Request.get(org_id, "thread", data) or []
+        result_thread = Request.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result_message, list) or isinstance(result_thread, list):
             result.update(
                 {
-                    "channelmessage": result_message,
-                    "thread": result_thread,
+                    "channelmessage": result_message
+                    if isinstance(result_message, list)
+                    else [],
+                    "thread": result_thread if isinstance(result_thread, list) else [],
                 }
             )
             status_code = status.HTTP_200_OK
@@ -229,9 +231,9 @@ class ChannelViewset(ViewSet):
 
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id") or isinstance(channel, dict):
             data = {
-                "socket_name": build_room_name(org_id, channel["_id"]),
+                "socket_name": build_room_name(org_id, channel_id),
                 "channel_id": channel_id,
             }
 
@@ -407,7 +409,7 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=output["_id"],
+                            user=output,
                         )
                     else:
                         # when output is a list multiple users where added
@@ -661,9 +663,9 @@ class ChannelMemberViewset(ViewSet):
     @swagger_auto_schema(
         responses={
             200: openapi.Response("Response", NotificationsSettingSerializer),
-            404: openapi.Response("Not Found")
+            404: openapi.Response("Not Found"),
         },
-        operation_id="retrieve-user-notifications"
+        operation_id="retrieve-user-notifications",
     )
     @action(
         methods=["GET"],
@@ -671,7 +673,7 @@ class ChannelMemberViewset(ViewSet):
     )
     def notification_retrieve(self, request, org_id, channel_id, member_id):
         """Retrieve a user's notification preferences for a particular channel.
-        
+
         By default, users do not have a notifications field in the database,
         so an empty {} will be returned.
 
@@ -685,7 +687,7 @@ class ChannelMemberViewset(ViewSet):
                 serializer.is_valid(raise_exception=True)
 
                 # an empty field will be returned for users that have not
-                # changed their settings. 
+                # changed their settings.
                 # DEFAULT_SETTINGS = {
                 #     "web": "nothing",
                 #     "mobile": "mentions",
@@ -693,18 +695,25 @@ class ChannelMemberViewset(ViewSet):
                 #     "mute": False
                 # }
 
-                settings = serializer.data.get('notifications', {})
+                settings = serializer.data.get("notifications", {})
                 return Response(settings, status=status.HTTP_200_OK)
 
-            return Response({"error": "member not found"}, status=status.HTTP_404_NOT_FOUND)
-        return Response({"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+            return Response(
+                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        return Response(
+            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
     @swagger_auto_schema(
         request_body=NotificationsSettingSerializer,
         responses={
-            200: openapi.Response("Response", NotificationsSettingSerializer,)
+            200: openapi.Response(
+                "Response",
+                NotificationsSettingSerializer,
+            )
         },
-        operation_id="update-user-notifications"
+        operation_id="update-user-notifications",
     )
     @action(
         methods=["PUT"],
@@ -731,11 +740,11 @@ class ChannelMemberViewset(ViewSet):
                 serializer.is_valid(raise_exception=True)
 
                 # by default, users do not have a settings field
-                # whether or not this user has a settings field, 
+                # whether or not this user has a settings field,
                 # make an update with the new settings
                 notification_settings = dict(serializer.data)
                 user_data.setdefault("notifications", {}).update(notification_settings)
-                
+
                 # push the updated user details to the channel object
                 channel["users"].update({f"{member_id}": user_data})
 
@@ -749,7 +758,9 @@ class ChannelMemberViewset(ViewSet):
 
                 if result:
                     if isinstance(result, dict):
-                        data = notification_settings if not result.get("error") else result
+                        data = (
+                            notification_settings if not result.get("error") else result
+                        )
                         status_code = (
                             status.HTTP_201_CREATED
                             if not result.get("error")
@@ -760,8 +771,13 @@ class ChannelMemberViewset(ViewSet):
                     else:
                         return Response(result, status=result.status_code)
 
-            return Response({"error": "member not found"}, status=status.HTTP_404_NOT_FOUND)
-        return Response({"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        return Response(
+            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
 
 channel_members_can_input_view = ChannelMemberViewset.as_view(
     {
@@ -782,8 +798,5 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 )
 
 notification_views = ChannelMemberViewset.as_view(
-    {
-        "get": "notification_retrieve",
-        "put": "notification_update"
-    }
+    {"get": "notification_retrieve", "put": "notification_update"}
 )

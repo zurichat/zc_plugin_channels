@@ -12,6 +12,7 @@ class ChannelSerializer(serializers.Serializer):
     owner = serializers.CharField(max_length=30, required=True)
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(default=False)
+    topic = serializers.CharField(max_length=100, required=False)
 
     def validate_name(self, name):
         """
@@ -49,6 +50,7 @@ class ChannelGetSerializer(serializers.Serializer):
     private = serializers.BooleanField(required=False)
     owner = serializers.CharField(required=False)
     archived = serializers.BooleanField(required=False)
+    topic = serializers.CharField(max_length=100, required=False)
     users = serializers.DictField(child=UserSerializer(many=True), required=False)
 
 
@@ -59,6 +61,7 @@ class ChannelUpdateSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
     private = serializers.BooleanField(required=False)
     archived = serializers.BooleanField(required=False)
+    topic = serializers.CharField(max_length=100, required=False)
 
     def validate_name(self, name):
         """
@@ -66,22 +69,10 @@ class ChannelUpdateSerializer(serializers.Serializer):
         """
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
-        if type(response) == list:
+        if isinstance(response, list):
             if response[0]["_id"] != self.context.get("_id"):
                 raise serializers.ValidationError({"error": "Name already exist"})
         return name
-
-    def validate_private(self, private):
-        
-        if private:
-            return "True"
-        return "False"
-    
-    def validate_archived(self, archived):
-        
-        if archived:
-            return "True"
-        return "False"
 
     def to_representation(self, instance):
         if instance:
@@ -116,8 +107,9 @@ class UserChannelGetSerializer(serializers.Serializer):
 
 
 class SocketSerializer(serializers.Serializer):
-    socket_name = serializers.CharField(max_length=200, required=True) 
+    socket_name = serializers.CharField(max_length=200, required=True)
     channel_id = serializers.CharField(max_length=30, required=True)
+
 
 class NotificationsSettingSerializer(serializers.Serializer):
 

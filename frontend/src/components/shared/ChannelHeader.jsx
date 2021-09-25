@@ -12,6 +12,7 @@ import infoImage from "../../assets/info.png";
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
+import PinnedMessages from "./PinnedMessages";
 
 //avatar details(Just a placeholder)
 const avatars = [
@@ -36,13 +37,15 @@ const ChannelHeader = () => {
   useEffect(() => { loadChannelDetails(); }, []);
   
   const isPrivate = channelDetails.private;// to check if channel is private or not
+  
+  
   return (
-    <Box width="100%" mt="5px">
-      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='1172px' w="100%" display={['none','flex']}>
+    <Box width="95vw" mt="5px">
+      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="44px" boxShadow="xs" maxWidth='100vw' w="95vw" display={['none','flex']}>
         <Link to="/channel-detail">  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
-            {isPrivate == 'False' ? <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2}  />
-            :<Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2} />}
+            {isPrivate === 'True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
+            {isPrivate === 'False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}            
             <Box as="span" letterSpacing='wide' lineHeight='32px' fontSize="17.5px" color="#ffffff" fontWeight="501" mr={1}>{channelDetails.name}</Box> 
             <Icon as={BiChevronDown} color="#ffffff" w={6} h={5} />
           </Button>
@@ -59,23 +62,28 @@ const ChannelHeader = () => {
           </Button>
           </Flex></Link>
       </Flex>
-      <Box ml='1px' maxWidth='1172px' display={['none','block']}>
-        <Flex alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
-          { pinnedMessages.length > 0 && <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button> }
+      <Box ml='1px'  display={['none','flex']}>
+        <Flex w='95vw' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
+          { pinnedMessages.length > 0 && (
+            <PinnedMessages>
+              <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button>
+            </PinnedMessages>
+          ) }
           <Button {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={addImage}/>}>Add a bookmark</Button>        
         </Flex>
       </Box> 
       {/*Mobile responsive version */}
       <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex','none']}>
         <Icon as={ BiChevronLeft } color="#ffffff" h={10} w={10} ml={2}  />
-          <Link to='/channel-detail'><Flex ml={2}  alignContent='center' flexDir='column'>
+          <Link to='/channel-detail'><Flex ml={1}  alignContent='center' flexDir='column'>
             <Flex align='center' flexDir='row'>
-              {isPrivate=='False'?<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={1}  />:<Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={1} />}
+            {isPrivate==='True' && <Icon as={ BiLockAlt} color="#ffffff" h={5} w={5} mr={2}  />}
+            {isPrivate === 'False' &&  <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />}
               <Box as="span" letterSpacing='wide'  fontSize="18px" color="#ffffff" fontWeight="501" mr={1} >
                 {channelDetails.name}
               </Box>
             </Flex>
-            <Box as='span' fontSize='12px' fontWeight='400' ml='2%' color='#ffffff'>{channelDetails.members} members</Box>
+            <Box as='span' fontSize='12px' fontWeight='500' ml='2%' color='#ffffff'>{channelDetails.members} members</Box>
           </Flex></Link> 
           <Spacer /> 
           <Flex p="4" align='center'>
@@ -103,6 +111,10 @@ const pinnedAndBookmarkButtonStyle = {
   _focus: {
     outline: "none",
     bg: "#98FFDD"
+  },
+  _active: {
+    outline: "none",
+    bg: "#29FFB9"
   }
 }
 

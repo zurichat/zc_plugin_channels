@@ -1,3 +1,4 @@
+from apps.channels.serializers import UserSerializer
 from rest_framework import serializers
 
 from channel_plugin.utils.customrequest import Request
@@ -5,12 +6,26 @@ from channel_plugin.utils.customrequest import Request
 from .models import MESSAGE_TYPES, ChannelMessage
 
 
+class EventSerializer(serializers.Serializer):
+    CHOICES = ("JOIN", "LEAVE")
+    action = serializers.CharField(max_length=20, required=True)
+
+    recipients = serializers.ListField(
+        child=UserSerializer(many=True),
+        required=False,
+        allow_empty=False
+    )
+
 class ChannelMessageSerializer(serializers.Serializer):
 
     user_id = serializers.CharField(max_length=30, required=True)
     content = serializers.CharField(required=False)
+
     files = serializers.ListField(
         child=serializers.URLField(), allow_empty=True, required=False
+    )
+    event = serializers.DictField(
+        child=EventSerializer(many=False),allow_empty=True, required=False
     )
     timestamp = serializers.DateTimeField(read_only=True)
 
@@ -33,6 +48,18 @@ class ChannelMessageSerializer(serializers.Serializer):
         return data
 
 
+class ChannelMessageReactionSerializer(serializers.Serializer):
+
+    title = serializers.CharField(read_only=True)
+    count = serializers.IntegerField(read_only=True)
+    users = serializers.ListField(read_only=True)
+
+
+class ChannelMessageReactionsUpdateSerializer(serializers.Serializer):
+    title = serializers.CharField(required=True)
+    member_id = serializers.CharField()
+
+
 class ChannelMessageUpdateSerializer(serializers.Serializer):
 
     _id = serializers.ReadOnlyField()
@@ -43,13 +70,17 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
     edited = serializers.BooleanField(read_only=True)
     files = serializers.ListField(read_only=True)
     timestamp = serializers.DateTimeField(read_only=True)
-    has_files = serializers.ChoiceField(choices=["yes", "no"], read_only=True)
+    replies = serializers.IntegerField(read_only=True)
+    has_files = serializers.BooleanField(read_only=True)
 
     pinned = serializers.BooleanField(required=False)
     content = serializers.CharField(required=False)
+
     emojis = serializers.ListField(
         serializers.CharField(), allow_empty=True, required=False
     )
+
+    event = serializers.DictField(read_only=True)
 
     def to_representation(self, instance):
         instance = dict(instance)

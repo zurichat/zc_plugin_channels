@@ -29,31 +29,28 @@ class APIServices {
   }
 
   async createMessage(org_id, channel_id, data) {
-    return api.post(`​/${org_id}​/channels​/${channel_id}​/messages​/`, data);
+    return api.post(`/channels/messages/${org_id}/${channel_id}/`, data);
+  }
+  async sendMessage(org_id, channel_id, data) {
+    return api.post(`/${org_id}/channels/${channel_id}/messages/`, data);
   }
 
   async getMessages(org_id, channel_id) {
-    return api.get(`​/channels​/message​s/${org_id}​/${channel_id}​/all​`);
+    return api.get(`/${org_id}/channels/${channel_id}/messages/`);
   }
 
   async deleteMessage(org_id, msg_id) {
-    return api.delete(
-      `/channels​/messages​/${org_id}​/${msg_id}​/delete​`
-    );
+    return api.delete(`/channels​/messages​/${org_id}​/${msg_id}​/delete​`);
   }
 
   async retrieveMessage(org_id, msg_id) {
-    return api.get(
-      `/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`
-    );
+    return api.get(`/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`);
   }
 
   async updateMessage(org_id, channel_id, user_id, msg_id, data) {
-    return api.put(
-      `/${org_id}/messages/${msg_id}/`,
-      data,
-      { params:  { user_id, channel_id }}
-    )
+    return api.put(`/${org_id}/messages/${msg_id}/`, data, {
+      params: { user_id, channel_id },
+    });
   }
 
   async createRole(org_id, channel_id, data) {
@@ -85,7 +82,9 @@ class APIServices {
   }
 
   async deleteThread(org_id, channelmessage_id) {
-    return api.delete(`/channels/threads/${org_id}/${channelmessage_id}/delete`);
+    return api.delete(
+      `/channels/threads/${org_id}/${channelmessage_id}/delete`
+    );
   }
 
   async updateThread(org_id, channelmessage_id, data) {
@@ -96,7 +95,8 @@ class APIServices {
   }
 
   async createChannel(org_id, data) {
-    return api.post(`/channels​/${org_id}​`, data);
+    // return api.post(`/v1​/${org_id}​/channels​/​`, data);
+    return axios.post(`${baseURL}/${org_id}/channels/`, data);
   }
 
   async getChannels(org_id) {
@@ -116,11 +116,15 @@ class APIServices {
   }
 
   async getPinnedMessages(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`)
+    return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`);
   }
-  
+
   async getChannelDetails(org_id, channel_id) {
     return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
+  }
+
+  async getChannelFiles(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/media/?format=json`);
   }
 }
 

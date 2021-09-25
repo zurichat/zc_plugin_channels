@@ -9,7 +9,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -325,7 +324,6 @@ tags
 
 ### Project template
 
-hio/hio/media/
 
 .pytest_cache/
 

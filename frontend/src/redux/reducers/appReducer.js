@@ -1,9 +1,19 @@
-import { GET_USERS } from "../actions/types";
+import {
+  GET_CHANNELMESSAGES,
+  GET_USERS,
+  GET_CHANNELS,
+  CREATE_CHANNELS,
+  GET_FILES,
+
+} from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
   users: [],
+  channelMessages: [],
+
+  channelsFiles:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -18,7 +28,31 @@ const appReducer = (state = initialState, action) => {
         ...state,
         users: payload,
       };
+    case GET_CHANNELMESSAGES:
+      return {
+        ...state,
+        channelMessages: payload,
+      };
+
+    case GET_FILES:
+      return {
+        ...state,
+        channelsFiles: payload,
+      };
+
     // Default state is returned
+
+    case GET_CHANNELS:
+      return {
+        ...state,
+        channels: payload,
+      };
+    case CREATE_CHANNELS:
+      return {
+        ...state,
+        newChannel: payload,
+      };
+
     default:
       return state;
   }
