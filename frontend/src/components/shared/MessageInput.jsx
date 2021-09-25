@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Flex } from "@chakra-ui/layout";
+import { Divider, Flex } from "@chakra-ui/layout";
 import { Box, Button,Modal,ModalContent,ModalOverlay} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
@@ -27,7 +27,6 @@ const MessageInput = () =>{
     const [toggle,setToggle]=useState(false)
     const [active,setActive]=useState("");
     const [italic,setItalic]=useState("");
-    // const [modal,setModal]=useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const datas={
@@ -106,12 +105,7 @@ const MessageInput = () =>{
     formatSelection("b") // for bold
     formatSelection("strike") // for strike through
     return(
-      <Box border="1px solid #EBEBEB" marginBottom="10px" onMouseLeave={togglingDisplay}        
-      css={{
-        '&::-webkit-scrollbar':{
-          display:'none'
-        }
-      }}>
+      <Box border="1px solid #EBEBEB" marginBottom="10px" onMouseLeave={togglingDisplay}>
         <Modal isOpen={isOpen} onClose={onClose} size='xs' isCentered='true' pb={0}>
           <ModalOverlay />
           <ModalContent
@@ -143,40 +137,33 @@ const MessageInput = () =>{
             onMouseDown={formatSelection}
             onBlur={()=>setOnInput(false)}
           />
-          <label htmlFor="input">
-            <Box display="flex" justifyContent="space-between" alignItems="center" m={3}>
-              <Box display="flex" _hover={{cursor:'pointer'}} minW="80px" width='7em' justifyContent="space-between">
-                <IoFlashOutline/>
-                <HSeparatorIcon/>
-                <BsTypeBold  className="box" data-command="bold" onClick={changeWeight}/>
-                <FiItalic className="box" data-command="italic" onClick={changeStyle}/>
-                <BsLink45Deg />
-                <AiOutlineBars data-command="insertUnorderedList"/>
-              </Box>
-              <Box display="flex" _hover={{cursor:'pointer'}} alignItems="center" minW="80px"
-              width='10em' justifyContent="space-between">
-                <FiAtSign className="tagged" onClick={addTag}/>
-                <ImAttachment onClick={onOpen}/>
-                <GrEmoji onClick={()=>setEmoji(!emoji)}/>
-                {
-                (input || data!== "") ? <IoSendSharp color="black" onClick={loadData}/>: <Button size="xs" disabled><IoSendSharp /></Button>
-                }
-                <HSeparatorIcon/>
-                <RiArrowDropDownLine size="30px"/>
-              </Box>
+          <Box display="flex" justifyContent="space-between" alignItems="center" m={3}>
+            <Box display="flex" _hover={{cursor:'pointer'}} minW="80px" width='7em' justifyContent="space-between">
+              <IoFlashOutline/>
+              <Divider orientation="vertical" height="20px" color="gray.500"/>
+              <BsTypeBold  className="box" data-command="bold" onClick={changeWeight}/>
+              <FiItalic className="box" data-command="italic" onClick={changeStyle}/>
+              <BsLink45Deg />
+              <AiOutlineBars data-command="insertUnorderedList"/>
             </Box>
-          </label>
+            <Box display="flex" _hover={{cursor:'pointer'}} alignItems="center" minW="80px"
+            width='10em' justifyContent="space-between">
+              <FiAtSign className="tagged" onClick={addTag}/>
+              <ImAttachment onClick={onOpen}/>
+              <GrEmoji onClick={()=>setEmoji(!emoji)}/>
+              {
+              (input || data!== "") ? <IoSendSharp color="black" onClick={loadData}/>: <Button size="xs" disabled><IoSendSharp /></Button>
+              }
+              <Divider orientation="vertical" height="20px" color="gray.500"/>
+              <RiArrowDropDownLine size="30px"/>
+            </Box>
+          </Box>
         </Box>
-        <Box display={['flex','none']} overflowX="auto" alignItems="center"
-              css={{
-                '&::-webkit-scrollbar':{
-                  display:'none'
-                }
-              }}>
+        <Box display={['flex','none']} overflowX="auto" alignItems="center">
           {
             click ? 
             <Box  display="flex" flexDir="column" width="100%" mx={2}>
-              <Flex width="100%" dir="row" justify="space-between" alignItems="center" minW="10em">
+              <Flex width="100%" dir="row" justify="space-between" alignItems="center" minW="12em">
                 <ResizableInput
                     textareaRef={textRef}
                     border="none"
@@ -203,18 +190,16 @@ const MessageInput = () =>{
                     <Button size="xs" disabled><IoSendSharp /></Button>
                   )}
               </Flex>
-              <label htmlFor="input">
-                <Flex justifyContent="space-between" width="10em" m="10px" _hover={{cursor:'pointer'}}>
-                  <IoFlashOutline/>
-                  <GrEmoji onClick={()=>setEmoji(!emoji)} />
-                  <BsTypeBold data-command="bold"  className="box" onClick={changeWeight}/>
-                  <FiItalic data-command="italic" className="box" onClick={changeStyle}/>
-                  <BsLink45Deg/>
-                  <AiOutlineBars/>
-                  <FiAtSign onClick={addTag}/>
-                  <ImAttachment onClick={onOpen}/>
-                  </Flex>
-              </label>
+              <Flex justifyContent="space-between" width="12em" m="10px" _hover={{cursor:'pointer'}}>
+                <IoFlashOutline/>
+                <GrEmoji onClick={()=>setEmoji(!emoji)} />
+                <BsTypeBold data-command="bold"  className="box" onClick={changeWeight}/>
+                <FiItalic data-command="italic" className="box" onClick={changeStyle}/>
+                <BsLink45Deg/>
+                <AiOutlineBars/>
+                <FiAtSign onClick={addTag}/>
+                <ImAttachment onClick={onOpen}/> 
+              </Flex>
             </Box>
             :
             <Box  display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" width="100%"
@@ -246,18 +231,6 @@ const MessageInput = () =>{
   
   const MAX_HEIGHT = 200;
   const MIN_HEIGHT = 58;
-  
-  const HSeparatorIcon = () => (
-    <svg
-      width="2"
-      height="18"
-      viewBox="0 0 2 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M1 1V17" stroke="#EBEBEB" strokeLinecap="round" />
-    </svg>
-  );
   
   const ResizableInput = ({
     textareaRef,

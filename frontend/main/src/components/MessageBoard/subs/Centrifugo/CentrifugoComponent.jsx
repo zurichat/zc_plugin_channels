@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from '../../../../redux/actions/app';
+import { GET_CHANNELMESSAGES } from '../../../../redux/actions/types';
 
 import { useParams } from 'react-router';
 
@@ -32,7 +33,7 @@ const CentrifugoComponent = () => {
   });
 
   centrifuge.on('publish', (ctx) => {
-    console.log(ctx);
+    console.log("Publishing: ", ctx);
   });
 
   const dispatch = useDispatch()
@@ -40,7 +41,9 @@ const CentrifugoComponent = () => {
 
   const { channelMessages, sockets } = useSelector((state) => state.appReducer)
   const { channelDetails } = useSelector((state) => state.channelsReducer)
-  console.log(channelMessages, sockets, channelDetails);
+
+  console.log("ChannelMessages: ", channelMessages);
+  console.log("Sockets: ", sockets);
 
   const { channelId } = useParams()
 
@@ -52,12 +55,13 @@ const CentrifugoComponent = () => {
   
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    // console.log(messageCtx);
+    console.log(messageCtx);
+
     let eventType = messageCtx.data.event.action
     let eventNumber = messageCtx.data.event.recipients
     switch (eventType) {
-        case "JOIN":
-            channelDetails.members + eventNumber.length
+        case "join:channel":
+          channelMessages.push(messageCtx.data)
             break;
     
         default:
