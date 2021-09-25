@@ -42,17 +42,24 @@ class ChannelMessageViewset(ViewSet):
         return permissions
 
     @swagger_auto_schema(
+        operation_id="create-channel-message",
         request_body=ChannelMessageSerializer,
         responses={
             201: openapi.Response("Response", ChannelMessageUpdateSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
-        },
+        }
     )
     @action(
         methods=["POST"],
         detail=False,
     )
     def message(self, request, org_id, channel_id):
+        """Create a channel message
+        
+        #### Sample request
+        `curl -X POST "{baseUrl}/v1/{org_id}/channels/{channel_id}/messages/" -H  "accept: application/json"`
+
+        """
         serializer = ChannelMessageSerializer(
             data=request.data, context={"channel_id": channel_id, "org_id": org_id}
         )
@@ -73,18 +80,24 @@ class ChannelMessageViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="retrieve-channel-messages",
         responses={
             200: openapi.Response(
                 "Response", ChannelMessageUpdateSerializer(many=True)
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
-        }
+        },
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def message_all(self, request, org_id, channel_id):
+        """Get all the messages sent in a channel.
+
+        `curl -X GET "{baseUrl}/v1/{org_id}/channels/{channel_id}/messages/" -H  "accept: application/json"`
+
+        """
         # data = {"channel_id": channel_id}
         # data.update(dict(request.query_params))
 
@@ -331,7 +344,7 @@ class ChannelMessageViewset(ViewSet):
 
 
 
-a.append
+# a.append
 channelmessage_views = ChannelMessageViewset.as_view(
     {
         "get": "message_all",
