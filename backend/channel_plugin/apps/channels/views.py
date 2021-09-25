@@ -567,18 +567,21 @@ class ChannelMemberViewset(ViewSet):
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", ChannelUpdateSerializer),
+            200: openapi.Response("Response", UserSerializer),
             404: openapi.Response("Not Found"),
         },
-        operation_id="retrieve-member-detail",
+        operation_id="retrieve-member-details",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def get_member(self, request, org_id, channel_id, member_id):
-        """
-        Method adds a user to a channel
+        """Get details of a channel member
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
+        ```
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
 
@@ -602,16 +605,34 @@ class ChannelMemberViewset(ViewSet):
 
     @swagger_auto_schema(
         request_body=UserSerializer,
-        responses={200: openapi.Response("Response", UserSerializer)},
-        operation_id="upadte-member-details",
+        responses={
+            200: openapi.Response("Response", UserSerializer),
+            404: openapi.Response("Not found")
+        },
+        operation_id="update-member-details",
     )
     @action(
         methods=["PUT"],
         detail=False,
     )
     def update_member(self, request, org_id, channel_id, member_id):
-        """
-        Method updates a user's channel membership details
+        """Update channel member details
+
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{\"_id\": \"string\",  
+            \"role_id\": \"string\",  
+            \"is_admin\": false,  
+            \"notifications\": {   
+                 \"web\": \"nothing\",    
+                 \"mobile\": \"mentions\",    
+                 \"same_for_mobile\": true,
+                 \"mute\": false
+                }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -663,11 +684,24 @@ class ChannelMemberViewset(ViewSet):
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
+    @swagger_auto_schema(
+        responses={
+            204: openapi.Response("User removed successfully"),
+            404: openapi.Response("Not found")
+        },
+        operation_id="delete-member-details",
+    )
     @action(
         methods=["DELETE"],
         detail=False,
     )
     def remove_member(self, request, org_id, channel_id, member_id):
+        """Remove member from a channel
+        
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
+        ```
+        """
         channel = self.retrieve_channel(request, org_id, channel_id)
 
         if channel:
