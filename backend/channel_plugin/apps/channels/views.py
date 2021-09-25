@@ -390,7 +390,7 @@ class ChannelMemberViewset(ViewSet):
         """Add a user to channel
 
         ```bash
-        curl -X POST "http://localhost:8000/api/v1/1/channels/stuff/members/"
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{\"_id\": \"string\",  
