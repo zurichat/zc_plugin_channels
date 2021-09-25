@@ -57,7 +57,7 @@ class ChannelMessageViewset(ViewSet):
         """Create a channel message
         
         ```bash
-        curl -X POST "{baseUrl}/v1/{org_id}/channels/{channel_id}/messages/" -H  "accept: application/json"
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
         ```
         """
         serializer = ChannelMessageSerializer(
@@ -96,7 +96,7 @@ class ChannelMessageViewset(ViewSet):
         """Get all the messages sent in a channel.
 
         ```bash
-        curl -X GET "{baseUrl}/v1/{org_id}/channels/{channel_id}/messages/" -H  "accept: application/json"
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
         ```
         """
         # data = {"channel_id": channel_id}
