@@ -11,6 +11,7 @@ import MessageInput from "../shared/MessageInput";
 
 import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
+import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
 
 const MessageBoardIndex = () => {
@@ -20,7 +21,7 @@ const MessageBoardIndex = () => {
       <Flex>
         <Box width="100%">
         <ChannelHeader />
-        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "68vh", "68vh"]}
+        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "65vh", "65vh"]}
         css={{
         "&::-webkit-scrollbar": {
           width: "0",
@@ -37,6 +38,7 @@ const MessageBoardIndex = () => {
           <Thread/>
         </Box> */}
       </Flex>
+    <CentrifugoComponent />
     </Box>
   );
 };
