@@ -8,7 +8,6 @@ import {
 import CreateChannelModal from "../createChannel/createChannelModal";
 import { useDisclosure } from "@chakra-ui/hooks";
 
-
 const ChannelBrowserHeader = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
