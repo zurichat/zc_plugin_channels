@@ -13,6 +13,10 @@ import {
   GET_CHANNELS,
   CREATE_CHANNELS,
   GET_SOCKETS,
+  EDIT_MESSAGE,
+  DELETE_MESSAGE,
+  UPDATE_MESSAGE,
+  isEditMode,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -175,6 +179,35 @@ const _createChannel = (org_id, data) => async (dispatch) => {
   }
 };
 
+const _deleteMessage = (org_id, msg_id) => async (dispatch) => {
+  try {
+      await APIService.deleteMessage(org_id, msg_id, {
+      delete: "True",
+    });
+    dispatch({ type: DELETE_MESSAGE, payload: msg_id });
+    _alert("success", "Message successfully deleted");
+  } catch (err) {
+    _alert("error");
+  }
+};
+
+const _editMessage = (data) => async (dispatch) => {
+  dispatch({ type:EDIT_MESSAGE, payload: data});
+  dispatch({ type: isEditMode, payload: true});
+};
+
+const _updateMessage = (org_id, channel_id, user_id, msg_id, data) => async (dispatch) => {
+  try {
+    const res = await APIService.updateMessage(org_id, channel_id, user_id, msg_id, data);
+    dispatch({ type: UPDATE_MESSAGE, payload : res.data})
+    dispatch({ type: isEditMode, payload: false});
+    dispatch({ type: EDIT_MESSAGE, payload: {}});
+  } catch (error) {
+    _alert("error");
+  }
+}
+
+
 // Export functions here
 const appActions = {
   _alert,
@@ -189,5 +222,8 @@ const appActions = {
   _getChannels,
   _createChannel,
   _getSocket,
+  _editMessage,
+  _deleteMessage,
+  _updateMessage
 };
 export default appActions;

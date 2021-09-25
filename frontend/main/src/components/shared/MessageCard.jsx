@@ -7,7 +7,7 @@ import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
 import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
-import appActions from "../../redux/actions/app"
+import appActions, {_deleteMessage} from "../../redux/actions/app";
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -151,7 +151,7 @@ const HoverOptions = ({ show, actions }) => {
                 </React.Fragment>
               ))
             }
-            <MenuItem command="delete" {...deleteMoreOptionStyle}>Delete message</MenuItem>
+            <MenuItem command="delete" {...deleteMoreOptionStyle} onClick={_deleteMessage}>Delete message</MenuItem>
           </MenuList>
         </Menu>
       </Square>

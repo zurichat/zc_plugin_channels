@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Flex } from "@chakra-ui/layout";
+import React, { useState } from "react";
+import { Divider, Flex } from "@chakra-ui/layout";
 import { Box, Button,Modal,ModalContent,ModalOverlay} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
 import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
