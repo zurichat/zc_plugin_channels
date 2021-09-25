@@ -40,7 +40,7 @@ const CentrifugoComponent = () => {
 
   const { channelMessages, sockets } = useSelector((state) => state.appReducer)
   const { channelDetails } = useSelector((state) => state.channelsReducer)
-  
+
   console.log("ChannelMessages: ", channelMessages);
   console.log("Sockets: ", sockets);
 
@@ -54,7 +54,7 @@ const CentrifugoComponent = () => {
   
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    // console.log(messageCtx);
+    console.log(messageCtx);
     let eventType = messageCtx.data.event.action
     let eventNumber = messageCtx.data.event.recipients
     switch (eventType) {
