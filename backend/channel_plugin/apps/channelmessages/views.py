@@ -331,7 +331,6 @@ class ChannelMessageViewset(ViewSet):
 
 
 
-a.append
 channelmessage_views = ChannelMessageViewset.as_view(
     {
         "get": "message_all",

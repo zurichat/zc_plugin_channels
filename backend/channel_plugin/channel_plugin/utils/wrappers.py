@@ -1,12 +1,6 @@
 from dataclasses import dataclass
 
 
-
-class OrderingWrapper:
-    pass
-
-
-
 class FilterWrapper:
     
     """
