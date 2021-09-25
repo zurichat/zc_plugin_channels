@@ -1,3 +1,4 @@
+import json
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from drf_yasg import openapi
@@ -15,6 +16,12 @@ from .serializers import (
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
+
+import requests
+from django.conf import settings
+from urllib.parse import urlencode
+from django.conf import settings
+
 
 
 class ChannelMessageViewset(ViewSet):
@@ -78,13 +85,61 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_all(self, request, org_id, channel_id):
-        data = {"channel_id": channel_id}
-        data.update(dict(request.query_params))
-        result = Request.get(org_id, "channelmessage", data) or []
+        # data = {"channel_id": channel_id}
+        # data.update(dict(request.query_params))
+
+        # result = Request.get(org_id, "channelmessage", data) or []
+        
+        """TODO: removo this  block when zc-core implemnents pagination"""
+        data = ""
         status_code = status.HTTP_404_NOT_FOUND
+
+        for chunk in self._stream_message_all(request, org_id, channel_id):
+            data += chunk
+        
+        try:
+            result = json.loads(data)
+            status_code = status.HTTP_200_OK
+        except:
+            result = []
+
+        """<<<<<<"""
+
         if isinstance(result, list):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
+
+    def _stream_message_all(self, request, org_id, channel_id):
+        """
+            This method reads the response to a
+            zc-core request in streams
+        """
+        #TODO: Remove this method when zc-core implements pagination
+        data = {"channel_id": channel_id}
+        data.update(self.request.query_params)
+
+        read = settings.READ_URL
+
+        collection_name = "channelmessage"
+        max_chunk_size = 500000
+
+        url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
+        url += "?" + urlencode(data)
+
+        r = requests.get(url, stream=True, timeout=10000)         
+
+        if int(r.headers.get('Content-Length', 10000)) > max_chunk_size:
+            raise ValueError('response too large')
+
+        size = 0
+
+        for chunk in r.iter_content(None, True):
+
+            size += len(chunk)
+            if size > max_chunk_size:
+                raise ValueError('response too large')
+            yield chunk
+
 
     @swagger_auto_schema(
         responses={
@@ -257,13 +312,23 @@ class ChannelMessageViewset(ViewSet):
             payload = {"emojis": message_reactions}
             result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
             status_code = status.HTTP_400_BAD_REQUEST
+            
             if result:
+                request_finished.send(
+                    sender=self.__class__,
+                    dispatch_uid="EditMessageSignal",
+                    org_id=org_id,
+                    channel_id=result.get("channel_id"),
+                    data=result,
+                )
+
                 return Response(message_reactions, status=status.HTTP_200_OK)
 
             return Response({"error": "failed to update reaction"}, status=status_code)
 
         status_code = status.HTTP_404_NOT_FOUND
         return Response({"error": "message not found"}, status=status_code)
+
 
 
 channelmessage_views = ChannelMessageViewset.as_view(

@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
+import { useParams } from 'react-router';
 
 //redux
 import { useDispatch, useSelector } from "react-redux";
@@ -10,44 +11,86 @@ import appActions from '../../../../redux/actions/app';
 
 // import MessageCard from "../MessageCard/MessageCard";
 import MessageCard from '../../../shared/MessageCard';
+import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
+
+//centrifuge
+import Centrifuge from 'centrifuge'
 
 
 const MessageCardContainer = () =>{
 
+  // let socketUrl = "";
+            
+  // if (window.location.hostname == "127.0.0.1")
+  // {
+  //   socketUrl = "ws://localhost:8000/connection/websocket";
+  // } else {
+  //   socketUrl = "wss://realtime.zuri.chat/connection/websocket";
+  // }
+
+  // const centrifuge = new Centrifuge(socketUrl);
+  // centrifuge.connect();
+
+  // centrifuge.on('connect', function(ctx) {
+  //   console.log("connected", ctx);
+  // });
+
+  // centrifuge.on('disconnect', function(ctx) {
+  //   console.log("disconnected", ctx);
+  // });
+
+  // centrifuge.on('publish', (ctx) => {
+  //   console.log("A publication has been detected");
+  // });
+
+  
+
 const dispatch = useDispatch()
-  const { _getChannelMessages } = bindActionCreators(appActions, dispatch)
+  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
 
-  const { channelMessages } = useSelector((state) => state.appReducer)
-  console.log(channelMessages);
+  const { channelMessages, sockets } = useSelector((state) => state.appReducer)
+  console.log(channelMessages, sockets);
 
+  const { channelId } = useParams()
 
   const loadData = async () => {
-    await _getChannelMessages(1, "613f70bd6173056af01b4aba")
+    await _getChannelMessages(1, channelId)
+    // await _getSocket(1, channelId)
   }
 
-  let messageNumber = 50
+  // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
+  //   console.log(messageCtx);
+  // })
 
-  // let loadedMessages = channelMessages.splice(0, messageNumber)
-  const [loadedMessagesArray, setLoadedMessages] = useState([])
+  let messageNumber = 10
+  let loadedMessages
 
-  let loadedMessages = channelMessages.map((message, key) => {return key <= messageNumber})
+  loadedMessages = channelMessages && channelMessages.slice(0, messageNumber)
+  
+  const [ allChannelMessage, setAllChannelMessage ] = useState(loadedMessages) 
+  const [moreMessages, setMoreMessages] = useState(false)
+
 
   useEffect(async () => {
-  loadData()
+   loadData()
   }, []);
-  
-  const loadMore = () =>{
-    if(channelMessages.lenght === 0){
-      messageNumber += 16
-    }
-    // loadedMessages = channelMessages.splice(0, messageNumber)
-    console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber, loadedMessagesArray);
-    }
 
-    // let renderedArray = loadedMessages
+  let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
     
+    const loadMore = () => {
+      if(channelMessages !== []){
+        messageNumber += 1
+      }
+      loadedMessages = channelMessages.slice(0, messageNumber)
+      setAllChannelMessage(loadedMessages)
+      setMoreMessages(true)
+      console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber);
+    }
 
     return(
+      <>
+      <EmptyStateComponent />
+     { channelMessages && channelMessages.length > 0 &&
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
             <Button
@@ -63,8 +106,10 @@ const dispatch = useDispatch()
             </Flex>
             
             <Box>
-            {
-                loadedMessages.map((message) => {
+            
+            
+            { channelMessages && channelMessages.length > 0 &&
+                renderedMessages.map((message) => {
                     return(
                       message === [] ? <Text textAlign="center">Loading...</Text> :
                     <MessageCard {...message} key={message._id} />
@@ -72,12 +117,13 @@ const dispatch = useDispatch()
                 })
             }
             {
-              loadedMessages.length !== channelMessages.lenght ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>Load more...</Text> :
+              channelMessages.length > 0 ? 
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageNumber  ? "Load More..." : " "}</Text> :
               null 
             }
             </Box>
-        </Box>    
+        </Box> }
+        </>  
     )
 }
 

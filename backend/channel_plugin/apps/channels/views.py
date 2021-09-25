@@ -231,9 +231,9 @@ class ChannelViewset(ViewSet):
 
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id") or isinstance(channel, dict):
             data = {
-                "socket_name": build_room_name(org_id, channel["_id"]),
+                "socket_name": build_room_name(org_id, channel_id),
                 "channel_id": channel_id,
             }
 
@@ -409,7 +409,7 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=output["_id"],
+                            user=output,
                         )
                     else:
                         # when output is a list multiple users where added
