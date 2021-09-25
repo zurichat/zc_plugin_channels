@@ -1,5 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
+import { GetUserInfo } from "@zuri/control";
 
 import {
   GET_CHANNELMESSAGES,
@@ -43,10 +44,13 @@ const _getUsers = (params) => async (dispatch) => {
   try {
     // Result comes from the endpoint
     // Let's assume an array of objects is returned from the endpoint
-    const res = await APIService.getUsers();
+    // const res = await GetUserInfo();
+
+    GetUserInfo().then((res) => {
+      dispatch({ type: GET_USERS, payload: res });
+    })
 
     // Result is sent to the store via dispatch (Pass payload if needed)
-    dispatch({ type: GET_USERS, payload: res.data });
   } catch (error) {
     // Handle exceptions here
     console.log(error);
