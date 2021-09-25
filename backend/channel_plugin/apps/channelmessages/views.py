@@ -53,6 +53,9 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message(self, request, org_id, channel_id):
+        """
+        Creates messages and automatically publishes to Centrifugo
+        """
         serializer = ChannelMessageSerializer(
             data=request.data, context={"channel_id": channel_id, "org_id": org_id}
         )
@@ -85,12 +88,15 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_all(self, request, org_id, channel_id):
+        """
+        Return all messages of a channel in an organisation
+        """
         # data = {"channel_id": channel_id}
         # data.update(dict(request.query_params))
 
         # result = Request.get(org_id, "channelmessage", data) or []
         
-        """TODO: removo this  block when zc-core implemnents pagination"""
+        # TODO: removo this  block when zc-core implemnents pagination"""
         data = ""
         status_code = status.HTTP_404_NOT_FOUND
 
@@ -153,6 +159,9 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_retrieve(self, request, org_id, msg_id):
+        """
+        Retrieves particular message based on ID
+        """
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data) or {}
@@ -189,6 +198,9 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_update(self, request, org_id, msg_id):
+        """
+        Updates message based on ID
+        """
         serializer = ChannelMessageUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("message")
@@ -232,6 +244,9 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_delete(self, request, org_id, msg_id):
+        """
+        Deletes a message based on ID, and organisation 
+        """
 
         result = Request.delete(org_id, "channelmessage", object_id=msg_id)
 
