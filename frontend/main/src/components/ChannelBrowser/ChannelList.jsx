@@ -20,7 +20,7 @@ const ChannelList = () => {
 
          {/* Channels List Element */}
          {channels && channels.map((chan) => (
-           <ChannelContainer chan={chan} />
+           <ChannelContainer key={chan._id} chan={chan} />
  
          ))}
         </VStack>
