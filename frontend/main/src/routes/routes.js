@@ -7,6 +7,7 @@ import ChannelDetailsAndSetting from "../components/channelDetailsAndSetting/ind
 import UserProfile from "../components/UserProfile/UserProfile";
 import Thread from "../components/thread/Thread";
 import ChannelBrowser from "../components/ChannelBrowser";
+import MessageBoardEmpty from "../components/MessageBoard/subs/EmptyMessageBoard/MessageBoardEmpty";
 
 const routes = () => {
   return (
@@ -20,7 +21,10 @@ const routes = () => {
       <Route path="/admin">
         <Admin />
       </Route>
-      <Route path="/message-board">
+      <Route exact path="/message-board/">
+        <MessageBoardEmpty />
+      </Route>
+      <Route exact path="/message-board/:channelId">
         <MessageBoardIndex />
       </Route>
       <Route path="/channel-detail">
