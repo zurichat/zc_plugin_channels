@@ -9,7 +9,12 @@ import {
 } from "../actions/types";
 
 const initialState = {
-  channelDetails: {},
+  channelDetails: {
+    name : 'General',
+    members:  '1',
+    private: false,
+    archived : false,
+  },
   pinnedMessages: [],
   sendMessages: {},
 };
