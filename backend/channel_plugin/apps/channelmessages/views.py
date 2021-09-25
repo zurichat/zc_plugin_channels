@@ -312,16 +312,7 @@ class ChannelMessageViewset(ViewSet):
             payload = {"emojis": message_reactions}
             result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
             status_code = status.HTTP_400_BAD_REQUEST
-            
             if result:
-                request_finished.send(
-                    sender=self.__class__,
-                    dispatch_uid="EditMessageSignal",
-                    org_id=org_id,
-                    channel_id=result.get("channel_id"),
-                    data=result,
-                )
-
                 return Response(message_reactions, status=status.HTTP_200_OK)
 
             return Response({"error": "failed to update reaction"}, status=status_code)
@@ -330,8 +321,6 @@ class ChannelMessageViewset(ViewSet):
         return Response({"error": "message not found"}, status=status_code)
 
 
-
-a.append
 channelmessage_views = ChannelMessageViewset.as_view(
     {
         "get": "message_all",
