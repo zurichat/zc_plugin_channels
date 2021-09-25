@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Picker from "emoji-picker-react";
-import { Container, Box } from "@chakra-ui/react"
+import { Stack, Container, Box } from "@chakra-ui/react"
 
 
 export default function App() {
@@ -14,7 +14,7 @@ export default function App() {
   const [count, setCount] = useState(null);
 
   return (
-    <div>
+    <Stack>
       
       <Picker onEmojiClick={onEmojiClick} />
       <Box cursor="pointer" alignItems="center" onClick={() => setCount(count + 1)} display="flex">
@@ -23,6 +23,6 @@ export default function App() {
         onChange={e => setMessageForm(e.target.value)}
       >{message}</Container><h4>{count + 1}</h4>
       </Box>
-    </div>
+    </Stack>
   );
 }
