@@ -13,7 +13,10 @@ import { GetUserInfo } from "@zuri/control";
 
 
 const ChannelBrowser = () => {
-  GetUserInfo();
+
+  GetUserInfo().then((res) => console.log("User email ", res.email))
+
+  console.log(userInfo.email);
 
   const dispatch = useDispatch();
   const { _getChannels } = bindActionCreators(appActions, dispatch);
