@@ -15,6 +15,7 @@ import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
 
 //centrifuge
 import Centrifuge from 'centrifuge'
+import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
 const MessageCardContainer = () =>{
@@ -48,45 +49,61 @@ const MessageCardContainer = () =>{
 const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
 
-  const { channelMessages, sockets } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
   console.log(channelMessages, sockets);
 
   const { channelId } = useParams()
 
-  const loadData = async () => {
-    await _getChannelMessages(1, channelId)
-    // await _getSocket(1, channelId)
-  }
+
+
+  
 
   // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
   //   console.log(messageCtx);
   // })
 
-  let messageNumber = 10
-  let loadedMessages
-
-  loadedMessages = channelMessages && channelMessages.slice(0, messageNumber)
   
-  const [ allChannelMessage, setAllChannelMessage ] = useState(loadedMessages) 
+
+  
+
+    // dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
+
+
+  
+  const [ allChannelMessage, setAllChannelMessage ] = useState() 
   const [moreMessages, setMoreMessages] = useState(false)
 
+  let messageStartingIndex = channelMessages.length > 10 ? channelMessages.length - 10 : 0 
+  let loadedMessages
 
-  useEffect(async () => {
-   loadData()
-  }, []);
 
-  let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
+  // const loadData = async () => {
+  //   await _getChannelMessages(1, channelId)
+  //   dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
+  // }
+
+  useEffect( () => {
+      const loadData = async ()=> {
+        await _getChannelMessages(1, channelId)
+        loadedMessages = channelMessages && channelMessages.slice(messageStartingIndex, channelMessages.length)
+        dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
+    }
+  loadData()
+}, []);
+
+  // let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
     
     const loadMore = () => {
       if(channelMessages !== []){
-        messageNumber += 1
+        messageStartingIndex += 1
       }
-      loadedMessages = channelMessages.slice(0, messageNumber)
+      loadedMessages = channelMessages.slice(messageStartingIndex, channelMessages.length)
       setAllChannelMessage(loadedMessages)
       setMoreMessages(true)
-      console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageNumber);
+      console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageStartingIndex);
     }
-
+    console.log("LOADEDMESSAGES: \n\n\n", loadedMessages, "DESTRUCTURED: ", channelMessages);
+      // dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
     return(
       <>
       <EmptyStateComponent />
@@ -118,7 +135,7 @@ const dispatch = useDispatch()
             }
             {
               channelMessages.length > 0 ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageNumber  ? "Load More..." : " "}</Text> :
+              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageStartingIndex  ? "Load More..." : " "}</Text> :
               null 
             }
             </Box>
