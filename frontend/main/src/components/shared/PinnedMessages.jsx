@@ -20,11 +20,6 @@ const PinnedMessages = (props) => {
                         {
                             pinnedMessages.map((message, i) => <PinMessageCard key={`pin-message-${i}`} msgRef={i === 1 ? initialRef : null} {...message} />)
                         }
-                        <PinMessageCard 
-                            user_id="Joshuuua" 
-                            timestamp={Date.now()} 
-                            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit."    
-                        />
                     </VStack>
                 </PopoverBody>
             </PopoverContent>
