@@ -1,28 +1,48 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Fragment } from "react";
 import Picker from "emoji-picker-react";
-import { Stack, Container, Box } from "@chakra-ui/react"
+import DisplayEmojiReaction from "./DisplayEmojiReaction";
 
 
 export default function App() {
-  const [message, setMessageForm] = useState("");
+  const [emojis, setEmojis] = useState([]);
   const ref = useRef(null);
+
+
+  const addEmojis = (text) => {
+    const _emojis = [...emojis];
+    const updatedEmojis = getUpdatedEmojis(text, _emojis);
+    setEmojis(updatedEmojis);
+  }
+
   const onEmojiClick = (event, emojiObject) => {
-    const cursor = ref.current.selectionStart;
     const text = emojiObject.emoji;
-    setMessageForm(text);
+    addEmojis(text)
   };
-  const [count, setCount] = useState(null);
+
+  const getUpdatedEmojis = (text, emojiStore) => {
+    // check if  emoji exist in the array
+    let newEmoji = {};
+    const emoji = emojiStore.find((item) => item.emoji === text);
+    const emojiIndex = emojiStore.findIndex((item) => item.emoji === text);
+    if (emojiIndex && emojiIndex < 0) {
+      newEmoji.emoji = text;
+      newEmoji.count = 0;
+      emojiStore.push(newEmoji);
+      return emojiStore;
+    }
+    emoji.count = emoji.count + 1;
+    emojiStore[emojiIndex] = emoji;
+    return emojiStore;
+
+  }
+
+
 
   return (
-    <Stack>
-      
+    <div>
+
       <Picker onEmojiClick={onEmojiClick} />
-      <Box cursor="pointer" alignItems="center" onClick={() => setCount(count + 1)} display="flex">
-      <Container
-        ref={ref}
-        onChange={e => setMessageForm(e.target.value)}
-      >{message}</Container><h4>{count + 1}</h4>
-      </Box>
-    </Stack>
+      <DisplayEmojiReaction emojis={emojis} handleIncrement={addEmojis} />
+    </div>
   );
 }
