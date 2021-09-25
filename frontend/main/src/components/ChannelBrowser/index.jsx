@@ -12,8 +12,8 @@ import ChannelList from "./ChannelList";
 
 import { useSelector } from "react-redux";
 
-
 const ChannelBrowser = () => {
+
 
   const dispatch = useDispatch();
   const { _getChannels } = bindActionCreators(appActions, dispatch);
