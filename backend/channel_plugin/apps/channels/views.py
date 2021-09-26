@@ -23,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
+    ChannelAllMediaSerializer,
 )
 
 # from rest_framework.filters
@@ -94,18 +95,22 @@ class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         responses={
             200: openapi.Response(
-                "Response", ChannelMessageUpdateSerializer(many=True)
+                "Response", ChannelAllMediaSerializer
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        operation_id="list-all-channel-media"
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
+        """Retrieve all media in channel
 
-        """
-        This gets all media for a prticular channel for a
-        particular organization identified by ID
-        splitted into channelmessage and thread objects.
+        This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
+        Response is split into `channelmessage` and `thread` objects
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        ```
         """
         data = {"channel_id": channel_id, "has_files": True}
         data.update(dict(request.query_params))
@@ -259,14 +264,23 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", SocketSerializer())},
-        operation_id="get-channel's-socket-name",
+        responses={
+            200: openapi.Response("Response", SocketSerializer()),
+            404: openapi.Response("Not found"),
+        },
+        operation_id="retrieve-channel-socket-name",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def get_channel_socket_name(self, request, org_id, channel_id):
+        """Retrieve channel centrifugo socket name
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
+        ```
+        """
 
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
@@ -499,8 +513,24 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def can_input(self, request, org_id, channel_id):
-        """
-        Method checks if a user input should be disabled or enabled
+        """Check if input is enabled for users
+
+        This checks if a user input should be disabled or enabled, i.e \
+        should users be able to send messages in the channel or not.
+
+        (incomplete doc)
+
+        ```bash
+        curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_input/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"_id\": \"string\", 
+                \"role_id\": \"string\", 
+                \"is_admin\": false,  
+                \"notifications\": { }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)

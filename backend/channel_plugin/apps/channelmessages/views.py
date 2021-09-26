@@ -12,6 +12,7 @@ from channel_plugin.utils.customrequest import Request
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
+    ChannelMessageReactionSerializer,
     ChannelMessageReactionsUpdateSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
@@ -303,8 +304,25 @@ class ChannelMessageViewset(ViewSet):
     @action(
         methods=["GET"],
         detail=False,
+      
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Successful", ChannelMessageReactionSerializer(many=True))
+        },
+        operation_id="retrieve-message-reactions"
+    )
+    @action(
+        methods=["GET"],
+        detail=False
     )
     def retrieve_message_reactions(self, request, org_id, msg_id):
+        """Retrieve message reactions
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/" -H  "accept: application/json"
+        ```
+        """
+
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data) or {}
@@ -341,8 +359,26 @@ class ChannelMessageViewset(ViewSet):
     @action(
         methods=["PUT"],
         detail=False,
+        request_body=ChannelMessageReactionsUpdateSerializer,
+        responses={
+            200: openapi.Response("Reaction updated", ChannelMessageReactionSerializer(many=True))
+        },
+        operation_id="update-message-reactions"
+    )
+    @action(
+        methods=["PUT"],
+        detail=False
     )
     def update_message_reactions(self, request, org_id, msg_id):
+        """Update message reactions
+        
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
+        -H  "accept: application/json" 
+        -H  "Content-Type: application/json"
+        -d "{  \"title\": \"string\",  \"member_id\": \"string\"}"
+        ```
+        """
 
         # get referenced message
         data = {"_id": msg_id}

@@ -5,10 +5,20 @@ from .models import Thread
 
 class ThreadSerializer(serializers.Serializer):
 
-    user_id = serializers.CharField(max_length=30, required=True)
-    content = serializers.CharField(required=False)
+    user_id = serializers.CharField(
+        max_length=30,
+        required=True,
+        help_text="User ID"
+    )
+    content = serializers.CharField(
+        required=False,
+        help_text="Body (text) of thread message"
+    )
     files = serializers.ListField(
-        child=serializers.URLField(), allow_empty=True, required=False
+        child=serializers.URLField(),
+        allow_empty=True,
+        required=False,
+        help_text="List of URLs to files/media in this thread message"
     )
     timestamp = serializers.DateTimeField(read_only=True)
 
@@ -42,19 +52,43 @@ class ThreadSerializer(serializers.Serializer):
 
 class ThreadUpdateSerializer(serializers.Serializer):
 
-    _id = serializers.ReadOnlyField()
-    user_id = serializers.CharField(read_only=True)
-    channelmessage_id = serializers.CharField(read_only=True)
-    channel_id = serializers.CharField(read_only=True)
-    content = serializers.CharField(required=False)
+    _id = serializers.ReadOnlyField(help_text="Thread message ID")
+    user_id = serializers.CharField(
+        read_only=True,
+        help_text="User ID"
+    )
+    channelmessage_id = serializers.CharField(
+        read_only=True,
+        help_text="Channel message ID"
+    )
+    channel_id = serializers.CharField(
+        read_only=True,
+        help_text="Channel ID"
+    )
+    content = serializers.CharField(
+        required=False,
+        help_text="Body (text) of thread message",
+    )
     files = serializers.ListField(
-        child=serializers.URLField(), allow_empty=True, read_only=True
+        child=serializers.URLField(),
+        allow_empty=True,
+        read_only=True,
+        help_text="List of URLs to files/media in this thread message"
     )
-    has_files = serializers.BooleanField(read_only=True)
+    has_files = serializers.BooleanField(
+        read_only=True,
+        help_text="Default: false. True if a file/media is in this thread message"
+    )
     emojis = serializers.ListField(
-        serializers.CharField(), allow_empty=True, required=False
+        serializers.CharField(),
+        allow_empty=True,
+        required=False,
+        help_text="List of reactions made to this thread message"
     )
-    edited = serializers.BooleanField(read_only=True)
+    edited = serializers.BooleanField(
+        read_only=True,
+        help_text="Default: false. True if this thread message has been edited"
+    )
     timestamp = serializers.DateTimeField(read_only=True)
 
     def to_representation(self, instance):

@@ -50,9 +50,8 @@ const MessageCardContainer = () =>{
 
   const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
   //console.log(channelMessages, sockets);
-  
 
   const { channelId } = useParams()
 
@@ -81,8 +80,8 @@ const MessageCardContainer = () =>{
   useEffect( () => {
       const loadData = async ()=> {
         console.log('\n\n\nabout to fetch')
-        const res = await APIService.getMessages(1, channelId);
-      
+        const res = await APIService.getMessages(users.Organisations, channelId);
+        console.log(users.Organisations);
         const receivedMessages = res.data.data
         messageEndIndex = receivedMessages.length
         messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
