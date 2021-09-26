@@ -33,7 +33,7 @@ const MessageInput = () =>{
     const { channelId } = useParams()
 
     const datas={
-      user_id:"214846",
+      user_id:"614b15fa44a9bd81cedc09d2",
       content:data
     }
 //For Post Request
@@ -44,7 +44,7 @@ const MessageInput = () =>{
     // console.log(sendMessages);
 
     const loadData= async ()=>{
-      const org_id = '1';//Test value for org id
+      const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
       const channel_id = channelId; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
       console.log(data)
