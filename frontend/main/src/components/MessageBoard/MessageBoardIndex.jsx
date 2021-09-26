@@ -18,10 +18,11 @@ const MessageBoardIndex = () => {
 
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
+    <CentrifugoComponent />
       <Flex>
         <Box width="100%">
         <ChannelHeader />
-        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "65vh", "65vh"]}
+        <Box m="5px" bg="white" overflowY="scroll" height={["73vh","75vh", "60vh", "58vh"]}
         css={{
         "&::-webkit-scrollbar": {
           width: "0",
@@ -38,7 +39,6 @@ const MessageBoardIndex = () => {
           <Thread/>
         </Box> */}
       </Flex>
-    <CentrifugoComponent />
     </Box>
   );
 };

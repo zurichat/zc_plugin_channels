@@ -23,7 +23,7 @@ const ChannelBrowser = () => {
   const { _getChannels } = bindActionCreators(appActions, dispatch);
 
   const loadChannels = async () => {
-    await _getChannels(org_id);
+    await _getChannels("614679ee1a5607b13c00bcb7");
   };
 
   useEffect(() => {
