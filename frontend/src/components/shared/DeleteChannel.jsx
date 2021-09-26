@@ -13,6 +13,7 @@ import {
   Flex,
   Box,
   Text,
+  
 } from '@chakra-ui/react'
 import { bindActionCreators } from "redux";
 import { useDispatch } from "react-redux";
@@ -24,7 +25,7 @@ import { useSelector } from "react-redux";
 function DeleteChannel() {
   // STEP FIVE (Extract redux function)
   const dispatch = useDispatch();
-  const { _deleteChannel } = bindActionCreators(appActions, dispatch);
+  const { _deleteChannel } = bindActionCreators(appActions, dispatch)
 
   // STEP EIGHT (Extract redux state)
   const { deleteChannel } = useSelector((state) => state.channelsReducer);
