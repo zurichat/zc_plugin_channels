@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from '../../../../redux/actions/app';
+import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 import { useParams } from 'react-router';
 
@@ -32,15 +33,17 @@ const CentrifugoComponent = () => {
   });
 
   centrifuge.on('publish', (ctx) => {
-    console.log(ctx);
+    console.log("Publishing: ", ctx);
   });
 
   const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
 
-  const { channelMessages, sockets } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
   const { channelDetails } = useSelector((state) => state.channelsReducer)
-  console.log(channelMessages, sockets, channelDetails);
+
+  console.log("ChannelMessages: ", channelMessages);
+  console.log("Sockets: ", sockets);
 
   const { channelId } = useParams()
 
@@ -52,17 +55,21 @@ const CentrifugoComponent = () => {
   
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    // console.log(messageCtx);
+    console.log("from centrifugo: ", messageCtx);
+    dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.concat([messageCtx.data]) })
+    console.log("Testing rendered messages: ", renderedMessages);
+
     let eventType = messageCtx.data.event.action
     let eventNumber = messageCtx.data.event.recipients
-    switch (eventType) {
-        case "JOIN":
-            channelDetails.members + eventNumber.length
-            break;
+    // switch (eventType) {
+    //     case "join:channel":
+    //       dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
+    //       console.log("Testing switch statement: ", renderedMessages);
+    //         break;
     
-        default:
-            break;
-    }
+    //     default:
+    //         break;
+    // }
   })
 
   useEffect(async () => {
