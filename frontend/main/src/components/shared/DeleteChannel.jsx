@@ -14,26 +14,12 @@ import {
   Box,
   Text,
 } from '@chakra-ui/react'
-import appActions from "../../redux/actions/app";
-import { bindActionCreators } from "redux";
-import { useDispatch } from "react-redux";
 
-function DeleteChannel({isOpen, onClose}) {
-  // const { isOpen, onOpen, onClose } = useDisclosure()
-    const dispatch = useDispatch();
-    const { _deleteChannel } = bindActionCreators(appActions, dispatch);
-    const deleteChannel = async () => {
-        // close the modal first
-        onClose()
-        
-        const orgId = 1
-        const channelId = "613f70bd6173056af01b4aba"
-        // code to archive the channel with Id from props
-        _deleteChannel(orgId, channelId)
-    }
+function DeleteChannel() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
-      {/* <Button onClick={onOpen}> Delete channel</Button> */}
+      <Button onClick={onOpen}> Delete channel</Button>
       <Box >
         <Modal isOpen={isOpen} onClose={onClose} size='xl' >
           <ModalOverlay />
@@ -82,7 +68,7 @@ function DeleteChannel({isOpen, onClose}) {
                 width='151px'
                 height='56px'
               >
-                Cancel
+                Cancle
               </Button>
               <Button
                 variant='ghost'
@@ -94,7 +80,6 @@ function DeleteChannel({isOpen, onClose}) {
                 width='151px'
                 height='56px'
                 _hover={{ bg: '#000' }}
-                onClick={deleteChannel}
               >
                 Delete
               </Button>
