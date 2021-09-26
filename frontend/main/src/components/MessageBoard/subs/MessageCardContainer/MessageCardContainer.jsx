@@ -50,9 +50,8 @@ const MessageCardContainer = () =>{
 
   const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
   //console.log(channelMessages, sockets);
-  
 
   const { channelId } = useParams()
 
@@ -81,18 +80,18 @@ const MessageCardContainer = () =>{
   useEffect( () => {
       const loadData = async ()=> {
         console.log('\n\n\nabout to fetch')
-        const res = await APIService.getMessages(1, channelId);
-      
+        const res = await APIService.getMessages("614679ee1a5607b13c00bcb7", channelId);
+        // console.log("614679ee1a5607b13c00bcb7");
         const receivedMessages = res.data.data
         messageEndIndex = receivedMessages.length
         messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
 
         loadedMessages = receivedMessages && receivedMessages.slice(messageStartingIndex, messageEndIndex)
-        
+        _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
         dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
       }
       loadData()
-}, []);
+}, [channelId]);
 
   // let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
     

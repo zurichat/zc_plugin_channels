@@ -12,6 +12,7 @@ from channel_plugin.utils.customrequest import Request
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
+    ChannelMessageReactionSerializer,
     ChannelMessageReactionsUpdateSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
@@ -54,11 +55,14 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message(self, request, org_id, channel_id):
-        """Create a channel message
+        """
+        Create a channel message and automatically publishes to Centrifugo
+        
         
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
         ```
+
         """
         serializer = ChannelMessageSerializer(
             data=request.data, context={"channel_id": channel_id, "org_id": org_id}
@@ -99,12 +103,6 @@ class ChannelMessageViewset(ViewSet):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
         ```
         """
-        # data = {"channel_id": channel_id}
-        # data.update(dict(request.query_params))
-
-        # result = Request.get(org_id, "channelmessage", data) or []
-        
-        """TODO: removo this  block when zc-core implemnents pagination"""
         data = ""
         status_code = status.HTTP_404_NOT_FOUND
 
@@ -210,7 +208,9 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_update(self, request, org_id, msg_id):
-        """Update message details
+
+        """
+        Updates message based on ID
         
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
@@ -270,11 +270,13 @@ class ChannelMessageViewset(ViewSet):
         detail=False,
     )
     def message_delete(self, request, org_id, msg_id):
-        """Delete a message
-
+        """
+        Deletes a message based on ID, and organisation 
+        
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json""
         ```
+
         """
 
         result = Request.delete(org_id, "channelmessage", object_id=msg_id)
@@ -301,7 +303,24 @@ class ChannelMessageViewset(ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Successful", ChannelMessageReactionSerializer(many=True))
+        },
+        operation_id="retrieve-message-reactions"
+    )
+    @action(
+        methods=["GET"],
+        detail=False
+    )
     def retrieve_message_reactions(self, request, org_id, msg_id):
+        """Retrieve message reactions
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/" -H  "accept: application/json"
+        ```
+        """
+
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data) or {}
@@ -311,7 +330,27 @@ class ChannelMessageViewset(ViewSet):
             status_code = status.HTTP_200_OK
         return Response(reactions, status=status_code)
 
+    @swagger_auto_schema(
+        request_body=ChannelMessageReactionsUpdateSerializer,
+        responses={
+            200: openapi.Response("Reaction updated", ChannelMessageReactionSerializer(many=True))
+        },
+        operation_id="update-message-reactions"
+    )
+    @action(
+        methods=["PUT"],
+        detail=False
+    )
     def update_message_reactions(self, request, org_id, msg_id):
+        """Update message reactions
+        
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
+        -H  "accept: application/json" 
+        -H  "Content-Type: application/json"
+        -d "{  \"title\": \"string\",  \"member_id\": \"string\"}"
+        ```
+        """
 
         # get referenced message
         data = {"_id": msg_id}

@@ -130,7 +130,7 @@ const _getChannels = (org_id) => async (dispatch) => {
 const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
   try {
     const res = await APIService.getPinnedMessages(org_id, channel_id);
-    const { data } = res.data
+    const data = res.data.data || []
     dispatch({ type: GET_PINNED_MESSAGES, payload: data });
   } catch (err) {
     _alert("error");
