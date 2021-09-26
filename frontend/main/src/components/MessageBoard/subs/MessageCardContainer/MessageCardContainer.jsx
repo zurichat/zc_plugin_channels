@@ -4,6 +4,8 @@ import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router';
 
+import APIService from "../../../../utils/api";
+
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -46,35 +48,29 @@ const MessageCardContainer = () =>{
 
   
 
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-
   const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
-  console.log(channelMessages, sockets);
+  //console.log(channelMessages, sockets);
+  
 
   const { channelId } = useParams()
-
-
-
-  
 
   // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
   //   console.log(messageCtx);
   // })
 
-  
-
-  
-
     // dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
 
 
-  
   const [ allChannelMessage, setAllChannelMessage ] = useState() 
   const [moreMessages, setMoreMessages] = useState(false)
 
-  let messageStartingIndex = channelMessages.length > 10 ? channelMessages.length - 10 : 0 
-  let loadedMessages
+  const noOfMessages= 20;
+  
+  let loadedMessages;
+  let messageStartingIndex;
+  let messageEndIndex;
 
 
   // const loadData = async () => {
@@ -84,11 +80,18 @@ const dispatch = useDispatch()
 
   useEffect( () => {
       const loadData = async ()=> {
-        await _getChannelMessages(1, channelId)
-        loadedMessages = channelMessages && channelMessages.slice(messageStartingIndex, channelMessages.length)
+        console.log('\n\n\nabout to fetch')
+        const res = await APIService.getMessages(1, channelId);
+      
+        const receivedMessages = res.data.data
+        messageEndIndex = receivedMessages.length
+        messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
+
+        loadedMessages = receivedMessages && receivedMessages.slice(messageStartingIndex, messageEndIndex)
+        
         dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
-    }
-  loadData()
+      }
+      loadData()
 }, []);
 
   // let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
@@ -102,7 +105,9 @@ const dispatch = useDispatch()
       setMoreMessages(true)
       console.log("loading " + loadedMessages, loadedMessages.length, "message limit= " + messageStartingIndex);
     }
-    console.log("LOADEDMESSAGES: \n\n\n", loadedMessages, "DESTRUCTURED: ", channelMessages);
+   
+    
+
       // dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
     return(
       <>
@@ -125,7 +130,7 @@ const dispatch = useDispatch()
             <Box>
             
             
-            { channelMessages && channelMessages.length > 0 &&
+            { renderedMessages && renderedMessages.length > 0 &&
                 renderedMessages.map((message) => {
                     return(
                       message === [] ? <Text textAlign="center">Loading...</Text> :

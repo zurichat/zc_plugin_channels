@@ -55,7 +55,7 @@ const CentrifugoComponent = () => {
   
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    console.log(messageCtx);
+    console.log("from centrifugo: ", messageCtx);
 
     let eventType = messageCtx.data.event.action
     let eventNumber = messageCtx.data.event.recipients
