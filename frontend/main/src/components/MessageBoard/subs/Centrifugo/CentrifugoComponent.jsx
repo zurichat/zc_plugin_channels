@@ -48,8 +48,8 @@ const CentrifugoComponent = () => {
   const { channelId } = useParams()
 
   const loadData = async () => {
-    await _getChannelMessages(users.Organisations, channelId)
-    await _getSocket(users.Organisations, channelId)
+    await _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
+    await _getSocket("614679ee1a5607b13c00bcb7", channelId)
   }
 
   
