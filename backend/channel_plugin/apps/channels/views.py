@@ -23,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
+    ChannelAllMediaSerializer,
 )
 
 # from rest_framework.filters
@@ -94,18 +95,22 @@ class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         responses={
             200: openapi.Response(
-                "Response", ChannelMessageUpdateSerializer(many=True)
+                "Response", ChannelAllMediaSerializer
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        operation_id="list-all-channel-media"
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
+        """Retrieve all media in channel
 
-        """
-        This gets all media for a prticular channel for a
-        particular organization identified by ID
-        splitted into channelmessage and thread objects.
+        This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
+        Response is split into `channelmessage` and `thread` objects
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        ```
         """
         data = {"channel_id": channel_id, "has_files": True}
         data.update(dict(request.query_params))
