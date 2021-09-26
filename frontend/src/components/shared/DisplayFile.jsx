@@ -126,6 +126,7 @@ export default function  DisplayFiles() {
                         />
                       </Box>
                       <Spacer />
+                      
                       <Box>
                         <AiOutlineUpload />
                       </Box>
