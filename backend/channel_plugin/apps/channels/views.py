@@ -23,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
+    ChannelAllMediaSerializer,
 )
 
 # from rest_framework.filters
@@ -33,6 +34,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
 
 class ChannelViewset(ViewSet):
     @swagger_auto_schema(
+        operation_id="create-channel",
         request_body=ChannelSerializer,
         responses={
             201: openapi.Response("Response", ChannelUpdateSerializer),
@@ -48,8 +50,16 @@ class ChannelViewset(ViewSet):
         """
         This creates a channel for a
         particular organization identified by ID and creates corresponding Centrifugo room
-        """
 
+        ```bash
+        curl -X POST "{baseUrl}/v1/{org_id}/channels/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\",  \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
+        ```
+
+        """
+        
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
@@ -61,6 +71,7 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="retrieve-channels",
         responses={
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
@@ -68,10 +79,11 @@ class ChannelViewset(ViewSet):
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
+        """Get all channels in the organization
 
-        """
-        This gets all channels for a
-        particular organization identified by ID
+        ```bash
+        curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
+        ```
         """
         data = {}
         data.update(dict(request.query_params))
@@ -87,18 +99,22 @@ class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         responses={
             200: openapi.Response(
-                "Response", ChannelMessageUpdateSerializer(many=True)
+                "Response", ChannelAllMediaSerializer
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        operation_id="list-all-channel-media"
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
+        """Retrieve all media in channel
 
-        """
-        This gets all media for a prticular channel for a
-        particular organization identified by ID
-        splitted into channelmessage and thread objects.
+        This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
+        Response is split into `channelmessage` and `thread` objects
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        ```
         """
         data = {"channel_id": channel_id, "has_files": True}
         data.update(dict(request.query_params))
@@ -119,17 +135,23 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="retrieve-channel-details",
         responses={
             200: openapi.Response("Response", ChannelGetSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="message read one channel",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def channel_retrieve(self, request, org_id, channel_id):
+        """Get channel details
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
+        ```
+        """
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
@@ -140,6 +162,7 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="update-channel-details",
         request_body=ChannelUpdateSerializer,
         responses={
             200: openapi.Response("Response", ChannelGetSerializer),
@@ -151,6 +174,15 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def channel_update(self, request, org_id, channel_id):
+        """Update channel details
+
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\"}"
+        ```
+        """
         serializer = ChannelUpdateSerializer(
             data=request.data, context={"org_id": org_id, "_id": channel_id}
         )
@@ -164,11 +196,26 @@ class ChannelViewset(ViewSet):
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
+    @swagger_auto_schema(
+        operation_id="delete-channel",
+        responses={
+            204: openapi.Response("Channel deleted successfully"),
+            404: openapi.Response("Not found")
+        }
+    )
     @action(
         methods=["DELETE"],
         detail=False,
     )
     def channel_delete(self, request, org_id, channel_id):
+        """Delete a channel
+
+        This endpoint deletes a channel and its related objects: messages, roles and threads
+
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
+        ```
+        """
         result = Request.delete(org_id, "channel", object_id=channel_id)
 
         # delete relationships
@@ -183,19 +230,20 @@ class ChannelViewset(ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @swagger_auto_schema(
+        operation_id="retrieve-user-channels",
         responses={
             200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
-            204: openapi.Response("User Does Not Belong To Any Channels"),
-            404: openapi.Response("Error Response", ErrorSerializer),
+            204: openapi.Response("User does not belong to any channel"),
+            404: openapi.Response("Not found", ErrorSerializer),
         }
     )
     @action(methods=["GET"], detail=False)
     def user_channel_retrieve(self, request, org_id, user_id):
+        """Retrieve list of channels a user belongs to
 
-        """
-
-        This gets a list of all channels that a user belongs to
-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/users/{{user_id}}/" -H  "accept: application/json"
+        ```
         """
         data = {}
         data.update(dict(request.query_params))
@@ -220,8 +268,11 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", SocketSerializer())},
-        operation_id="get-channel's-socket-name",
+        responses={
+            200: openapi.Response("Response", SocketSerializer()),
+            404: openapi.Response("Not found"),
+        },
+        operation_id="retrieve-channel-socket-name",
     )
     @action(
         methods=["GET"],
@@ -229,7 +280,11 @@ class ChannelViewset(ViewSet):
     )
     def get_channel_socket_name(self, request, org_id, channel_id):
         """
-        Returns Centrifugo channel name based on organisation and channel IDs
+        Retrieve Centrifugo socket channel name based on organisation and channel IDs
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
+        ```
         """
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
@@ -286,7 +341,7 @@ class ChannelMemberViewset(ViewSet):
         """
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
-        if result.__contains__("_id") or isinstance(result, dict):
+        if result.__contains__("_id") and isinstance(result, dict):
             if result:
                 return result
         return None
@@ -305,7 +360,7 @@ class ChannelMemberViewset(ViewSet):
         """
             Note if your planing to use the filterwrapper class
             you have to convert the values of your query_parameter
-            to a python value byt using json.loads
+            to a python value by using json.loads
         """
 
         for key in self.request.query_params.keys():
@@ -353,6 +408,22 @@ class ChannelMemberViewset(ViewSet):
     def add_member(self, request, org_id, channel_id):
         """
         Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
+        
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{\"_id\": \"string\",  
+            \"role_id\": \"string\",  
+            \"is_admin\": false,  
+            \"notifications\": {   
+                 \"web\": \"nothing\",    
+                 \"mobile\": \"mentions\",    
+                 \"same_for_mobile\": true,
+                 \"mute\": false
+                }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -447,8 +518,24 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def can_input(self, request, org_id, channel_id):
-        """
-        Method checks if a user input should be disabled or enabled
+        """Check if input is enabled for users
+
+        This checks if a user input should be disabled or enabled, i.e \
+        should users be able to send messages in the channel or not.
+
+        (incomplete doc)
+
+        ```bash
+        curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_input/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"_id\": \"string\", 
+                \"role_id\": \"string\", 
+                \"is_admin\": false,  
+                \"notifications\": { }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -478,11 +565,11 @@ class ChannelMemberViewset(ViewSet):
         )
 
     @swagger_auto_schema(
+        operation_id="list-channel-members",
         responses={
             200: openapi.Response("Response", UserSerializer(many=True)),
             404: openapi.Response("Not Found"),
-        },
-        operation_id="list-channel-members",
+        }
     )
     @action(
         methods=["GET"],
@@ -492,6 +579,10 @@ class ChannelMemberViewset(ViewSet):
         """
         This method gets all members for a
         channel identified by ID
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
+        ```
         """
 
         # get the channel from zc-core
@@ -514,18 +605,21 @@ class ChannelMemberViewset(ViewSet):
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", ChannelUpdateSerializer),
+            200: openapi.Response("Response", UserSerializer),
             404: openapi.Response("Not Found"),
         },
-        operation_id="retrieve-member-detail",
+        operation_id="retrieve-member-details",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def get_member(self, request, org_id, channel_id, member_id):
-        """
-        Method adds a user to a channel
+        """Get details of a channel member
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
+        ```
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
 
@@ -549,16 +643,34 @@ class ChannelMemberViewset(ViewSet):
 
     @swagger_auto_schema(
         request_body=UserSerializer,
-        responses={200: openapi.Response("Response", UserSerializer)},
-        operation_id="upadte-member-details",
+        responses={
+            200: openapi.Response("Response", UserSerializer),
+            404: openapi.Response("Not found")
+        },
+        operation_id="update-member-details",
     )
     @action(
         methods=["PUT"],
         detail=False,
     )
     def update_member(self, request, org_id, channel_id, member_id):
-        """
-        Method updates a user's channel membership details
+        """Update channel member details
+
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{\"_id\": \"string\",  
+            \"role_id\": \"string\",  
+            \"is_admin\": false,  
+            \"notifications\": {   
+                 \"web\": \"nothing\",    
+                 \"mobile\": \"mentions\",    
+                 \"same_for_mobile\": true,
+                 \"mute\": false
+                }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -610,11 +722,24 @@ class ChannelMemberViewset(ViewSet):
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
+    @swagger_auto_schema(
+        responses={
+            204: openapi.Response("User removed successfully"),
+            404: openapi.Response("Not found")
+        },
+        operation_id="delete-member-details",
+    )
     @action(
         methods=["DELETE"],
         detail=False,
     )
     def remove_member(self, request, org_id, channel_id, member_id):
+        """Remove member from a channel
+        
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
+        ```
+        """
         channel = self.retrieve_channel(request, org_id, channel_id)
 
         if channel:
@@ -674,12 +799,11 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def notification_retrieve(self, request, org_id, channel_id, member_id):
-        """Retrieve a user's notification preferences for a particular channel.
+        """Retrieve user notification preferences for channel
 
-        By default, users do not have a notifications field in the database,
-        so an empty {} will be returned.
-
-        A field is only appended to their records when changes have been made.
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
+        ```    
         """
         channel = self.retrieve_channel(request, org_id, channel_id)
         if channel:
@@ -722,15 +846,19 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def notification_update(self, request, org_id, channel_id, member_id):
-        """Update a user's notification preferences for a particular channel.
+        """Update user notification preferences for a channel
 
-        Example request body:
-        {
-            "web": "nothing",
-            "mobile": "mentions",
-            "same_for_mobile": False,
-            "mute": False
-        }
+        ```bash
+        curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"web\": \"all\", 
+                \"mobile\": \"all\", 
+                \"same_for_mobile\": true,  
+                \"mute\": true
+            }"
+        ```
         """
 
         channel = self.retrieve_channel(request, org_id, channel_id)

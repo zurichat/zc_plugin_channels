@@ -1,0 +1,1605 @@
+swagger: '2.0'
+info:
+  title: Zuri Chat Channel Plugin Endpoints
+  description: Made By Team Coelho
+  termsOfService: https://www.google.com/policies/terms/
+  contact:
+    email: team-coelho@zuri.chat
+  license:
+    name: BSD License
+  version: http://127.0.0.1:8000
+host: localhost:8000
+schemes:
+  - http
+basePath: /api
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /v1/collections/{plugin_id}:
+    get:
+      operationId: v1_collections
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - v1
+    parameters:
+      - name: plugin_id
+        in: path
+        required: true
+        type: string
+  /v1/collections/{plugin_id}/organizations/{org_id}:
+    get:
+      operationId: v1_collections_collections_by_organization
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - v1
+    parameters:
+      - name: org_id
+        in: path
+        required: true
+        type: string
+      - name: plugin_id
+        in: path
+        required: true
+        type: string
+  /v1/details:
+    get:
+      operationId: v1_info_details
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - v1
+    parameters: []
+  /v1/info:
+    get:
+      operationId: v1_info
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - v1
+    parameters: []
+  /v1/ping:
+    get:
+      operationId: v1_ping
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - v1
+    parameters: []
+  /v1/sidebar:
+    get:
+      operationId: v1_info_sidebar
+      description: ''
+      parameters:
+        - name: org
+          in: query
+          description: Organization ID
+          required: true
+          type: string
+        - name: user
+          in: query
+          description: User ID
+          required: true
+          type: string
+        - name: token
+          in: query
+          description: Token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: ''
+      tags:
+        - v1
+    parameters: []
+  /v1/{org_id}/channels/:
+    get:
+      operationId: retrieve-channels
+      summary: Get all channels in the organization
+      description: |-
+        ```bash
+        curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ChannelGet'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    post:
+      operationId: create-channel
+      summary: Create a new channel in the organization
+      description: |-
+        ```bash
+        curl -X POST "{baseUrl}/v1/{org_id}/channels/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  "name": "channel name",  "owner": "member_id",  "description": "channel description",  "private": false,  "topic": "channel topic"}"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Channel'
+      responses:
+        '201':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    parameters:
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/users/{user_id}/:
+    get:
+      operationId: retrieve-user-channels
+      summary: Retrieve list of channels a user belongs to
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/users/{{user_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserChannelGet'
+        '204':
+          description: User does not belong to any channel
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    parameters:
+      - name: org_id
+        in: path
+        required: true
+        type: string
+      - name: user_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/:
+    get:
+      operationId: retrieve-channel-details
+      summary: Get channel details
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelGet'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    put:
+      operationId: update-channel-details
+      summary: Update channel details
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  "name": "channel name",  "description": "channel description",  "private": false,  "archived": false,  "topic": "channel topic"}"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChannelUpdate'
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelGet'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    delete:
+      operationId: delete-channel
+      summary: Delete a channel
+      description: |-
+        This endpoint deletes a channel and its related objects: messages, roles and threads
+
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '204':
+          description: Channel deleted successfully
+        '404':
+          description: Not found
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/media/:
+    get:
+      operationId: list-all-channel-media
+      summary: Retrieve all media in channel
+      description: |-
+        This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
+        Response is split into `channelmessage` and `thread` objects
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelAllMedia'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/members/:
+    get:
+      operationId: list-channel-members
+      summary: Get all members in a channel
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        '404':
+          description: Not Found
+      tags:
+        - v1
+    post:
+      operationId: add-channel-member
+      summary: Add a user to channel
+      description: |-
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{"_id": "string",  
+            "role_id": "string",  
+            "is_admin": false,  
+            "notifications": {   
+                 "web": "nothing",    
+                 "mobile": "mentions",    
+                 "same_for_mobile": true,
+                 "mute": false
+                }
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: Response
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Error Response
+        '404':
+          description: Collection Not Found
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/members/can_input/:
+    post:
+      operationId: channel-member-can-input
+      summary: Check if input is enabled for users
+      description: |-
+        This checks if a user input should be disabled or enabled, i.e         should users be able to send messages in the channel or not.
+
+        (incomplete doc)
+
+        ```bash
+        curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_input/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                "_id": "string", 
+                "role_id": "string", 
+                "is_admin": false,  
+                "notifications": { }
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: Response
+          schema:
+            $ref: '#/definitions/User'
+        '404':
+          description: Collection Not Found
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/members/{member_id}/:
+    get:
+      operationId: retrieve-member-details
+      summary: Get details of a channel member
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/User'
+        '404':
+          description: Not Found
+      tags:
+        - v1
+    put:
+      operationId: update-member-details
+      summary: Update channel member details
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{"_id": "string",  
+            "role_id": "string",  
+            "is_admin": false,  
+            "notifications": {   
+                 "web": "nothing",    
+                 "mobile": "mentions",    
+                 "same_for_mobile": true,
+                 "mute": false
+                }
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/User'
+        '404':
+          description: Not found
+      tags:
+        - v1
+    delete:
+      operationId: delete-member-details
+      summary: Remove member from a channel
+      description: |-
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '204':
+          description: User removed successfully
+        '404':
+          description: Not found
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: member_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/members/{member_id}/notifications/:
+    get:
+      operationId: retrieve-user-notifications
+      summary: Retrieve user notification preferences for channel
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/NotificationsSetting'
+        '404':
+          description: Not Found
+      tags:
+        - v1
+    put:
+      operationId: update-user-notifications
+      summary: Update user notification preferences for a channel
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                "web": "all", 
+                "mobile": "all", 
+                "same_for_mobile": true,  
+                "mute": true
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationsSetting'
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/NotificationsSetting'
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: member_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/messages/:
+    get:
+      operationId: retrieve-channel-messages
+      summary: Get all the messages sent in a channel.
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ChannelMessageUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    post:
+      operationId: create-channel-message
+      summary: Create a channel message
+      description: |-
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChannelMessage'
+      responses:
+        '201':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelMessageUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/roles/:
+    get:
+      operationId: retrieve-channel-roles
+      summary: Retrieve channel roles
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/roles/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Role'
+      tags:
+        - v1
+    post:
+      operationId: create-channel-role
+      summary: Create a channel role
+      description: |-
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/roles/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                 "name": "string", 
+                 "permissions": [
+                    { 
+                         "name": "string",
+                         "description": "string"
+                    }
+                ]
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Role'
+      responses:
+        '201':
+          description: Response
+          schema:
+            $ref: '#/definitions/Role'
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/channels/{channel_id}/socket/:
+    get:
+      operationId: retrieve-channel-socket-name
+      summary: Retrieve channel centrifugo socket name
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/Socket'
+        '404':
+          description: Not found
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/messages/{channelmessage_id}/threads/:
+    get:
+      operationId: retrieve-message-threads
+      summary: Retrieve all replies to message
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ThreadUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    post:
+      operationId: create-message-thread
+      summary: Add reply to message
+      description: |-
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/?channel_id={{channel_id}}"
+        -H  "accept: application/json" 
+        -H  "Content-Type: application/json"
+        -d "{
+                "user_id": "string",
+                "content": "string", 
+                "files": [
+                    "string"
+                ]
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Thread'
+        - name: channel_id
+          in: query
+          description: Channel ID (ID of channel message to be posted)
+          required: true
+          type: string
+      responses:
+        '201':
+          description: Response
+          schema:
+            $ref: '#/definitions/ThreadUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    parameters:
+      - name: channelmessage_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/messages/{msg_id}/:
+    get:
+      operationId: retrieve-message-details
+      summary: Retrieve message details
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelMessageUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    put:
+      operationId: update-message-details
+      summary: Update message details
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                "pinned": true, 
+                "content": "string"
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChannelMessageUpdate'
+        - name: user_id
+          in: query
+          description: User ID (owner of message)
+          required: true
+          type: string
+        - name: channel_id
+          in: query
+          description: Channel ID (ID of channel message was posted)
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/ChannelMessageUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    delete:
+      operationId: delete-message
+      summary: Delete a message
+      description: |-
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json""
+        ```
+      parameters:
+        - name: user_id
+          in: query
+          description: User ID (owner of message)
+          required: true
+          type: string
+        - name: channel_id
+          in: query
+          description: Channel ID (ID of channel message was posted)
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Message deleted successfully
+        '404':
+          description: Not found
+      tags:
+        - v1
+    parameters:
+      - name: msg_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/messages/{msg_id}/reactions/:
+    get:
+      operationId: retrieve-message-reactions
+      summary: Retrieve message reactions
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ChannelMessageReaction'
+      tags:
+        - v1
+    put:
+      operationId: update-message-reactions
+      summary: Update message reactions
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
+        -H  "accept: application/json" 
+        -H  "Content-Type: application/json"
+        -d "{  "title": "string",  "member_id": "string"}"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChannelMessageReactionsUpdate'
+      responses:
+        '200':
+          description: Reaction updated
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ChannelMessageReaction'
+      tags:
+        - v1
+    parameters:
+      - name: msg_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/roles/{role_id}/:
+    get:
+      operationId: retrieve-role-details
+      summary: Retrieve role details
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/roles/{{role_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/Role'
+      tags:
+        - v1
+    put:
+      operationId: update-role-details
+      summary: Update role details
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/roles/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                 "name": "string", 
+                 "permissions": [
+                    { 
+                         "name": "string",
+                         "description": "string"
+                    }
+                ]
+            }"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Role'
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/Role'
+      tags:
+        - v1
+    delete:
+      operationId: delete-role-details
+      summary: Delete a role
+      description: |-
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/roles/{{role_id}}/" -H  "accept: application/json"
+        ```
+      parameters: []
+      responses:
+        '204':
+          description: Role deleted successfully
+        '404':
+          description: Not found
+      tags:
+        - v1
+    parameters:
+      - name: org_id
+        in: path
+        required: true
+        type: string
+      - name: role_id
+        in: path
+        required: true
+        type: string
+  /v1/{org_id}/threads/{thread_id}/:
+    put:
+      operationId: update-thread-message
+      summary: Update thread message
+      description: |-
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  "content": "string"}"
+        ```
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ThreadUpdate'
+        - name: user_id
+          in: query
+          description: User ID (owner of message)
+          required: true
+          type: string
+        - name: channel_id
+          in: query
+          description: Channel ID (ID of channel message was posted)
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Response
+          schema:
+            $ref: '#/definitions/ThreadUpdate'
+        '404':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    delete:
+      operationId: delete-thread-message
+      summary: Delete thread message
+      description: |-
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json"
+        ```
+      parameters:
+        - name: user_id
+          in: query
+          description: User ID (owner of message)
+          required: true
+          type: string
+        - name: channel_id
+          in: query
+          description: Channel ID (ID of channel message was posted)
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Thread message deleted successfully
+      tags:
+        - v1
+    parameters:
+      - name: org_id
+        in: path
+        required: true
+        type: string
+      - name: thread_id
+        in: path
+        required: true
+        type: string
+definitions:
+  User:
+    required:
+      - _id
+    type: object
+    properties:
+      _id:
+        title: id
+        description: User ID
+        type: string
+        maxLength: 30
+        minLength: 1
+      role_id:
+        title: Role id
+        description: Role ID
+        type: string
+        maxLength: 30
+        minLength: 1
+      is_admin:
+        title: Is admin
+        description: 'Default: false. True if the member is an admin'
+        type: boolean
+        default: false
+      notifications:
+        title: Notifications
+        description: User's notification preferences
+        type: object
+        additionalProperties:
+          type: string
+          x-nullable: true
+  ChannelGet:
+    type: object
+    properties:
+      _id:
+        title: id
+        description: Channel ID
+        type: string
+        readOnly: true
+      name:
+        title: Name
+        description: Channel name
+        type: string
+        maxLength: 100
+        minLength: 1
+      description:
+        title: Description
+        description: Channel description
+        type: string
+        minLength: 1
+      private:
+        title: Private
+        description: 'Default: false. True if this channel has been set to private.'
+        type: boolean
+      owner:
+        title: Owner
+        description: Owner (member_id) of the channel
+        type: string
+        minLength: 1
+      archived:
+        title: Archived
+        description: 'Default: false. True if this channel has been archived.'
+        type: boolean
+      topic:
+        title: Topic
+        description: Channel topic
+        type: string
+        maxLength: 100
+        minLength: 1
+      users:
+        title: Users
+        description: List of users in the channel
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            $ref: '#/definitions/User'
+  BaseError:
+    required:
+      - message
+      - status
+    type: object
+    properties:
+      message:
+        title: Message
+        type: string
+        minLength: 1
+      status:
+        title: Status
+        type: integer
+  Error:
+    required:
+      - error
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/BaseError'
+  Channel:
+    required:
+      - name
+      - owner
+    type: object
+    properties:
+      name:
+        title: Name
+        description: Channel name
+        type: string
+        maxLength: 100
+        minLength: 1
+      owner:
+        title: Owner
+        description: Owner (member_id) of the channel
+        type: string
+        maxLength: 30
+        minLength: 1
+      description:
+        title: Description
+        description: Channel description
+        type: string
+        minLength: 1
+      private:
+        title: Private
+        description: 'Default: false. True if this channel is set to private.'
+        type: boolean
+        default: false
+      topic:
+        title: Topic
+        description: Channel topic
+        type: string
+        maxLength: 100
+        minLength: 1
+  ChannelUpdate:
+    type: object
+    properties:
+      _id:
+        title: id
+        description: Channel ID
+        type: string
+        readOnly: true
+      name:
+        title: Name
+        description: Channel name
+        type: string
+        maxLength: 100
+        minLength: 1
+      description:
+        title: Description
+        description: Channel description
+        type: string
+        minLength: 1
+      private:
+        title: Private
+        description: 'Default: false. True if this channel has been set to private.'
+        type: boolean
+      archived:
+        title: Archived
+        description: 'Default: false. True if this channel has been archived.'
+        type: boolean
+      topic:
+        title: Topic
+        description: Channel topic
+        type: string
+        maxLength: 100
+        minLength: 1
+  UserChannelGet:
+    type: object
+    properties:
+      _id:
+        title: id
+        description: Channel ID
+        type: string
+        readOnly: true
+      name:
+        title: Name
+        description: Channel name
+        type: string
+        maxLength: 100
+        minLength: 1
+      description:
+        title: Description
+        description: Channel description
+        type: string
+        minLength: 1
+  ChannelAllMedia:
+    type: object
+    properties:
+      channelmessage:
+        description: List of URLs for all files/media in channelmessage objects
+        type: array
+        items:
+          description: URL to media/file
+          type: string
+          format: uri
+          minLength: 1
+        readOnly: true
+      thread:
+        description: List of URLs for all files/media in thread objects
+        type: array
+        items:
+          description: URL to media/file
+          type: string
+          format: uri
+          minLength: 1
+        readOnly: true
+  NotificationsSetting:
+    required:
+      - web
+      - mobile
+      - same_for_mobile
+      - mute
+    type: object
+    properties:
+      web:
+        title: Web
+        type: string
+        enum:
+          - all
+          - mentions
+          - nothing
+      mobile:
+        title: Mobile
+        type: string
+        enum:
+          - all
+          - mentions
+          - nothing
+      same_for_mobile:
+        title: Same for mobile
+        description: 'Default: true. False if user has set web client notifications
+          preferences to be different for mobile.'
+        type: boolean
+      mute:
+        title: Mute
+        description: 'Default: true. False if user has muted this channel.'
+        type: boolean
+  ChannelMessageUpdate:
+    type: object
+    properties:
+      _id:
+        title: id
+        type: string
+        readOnly: true
+      user_id:
+        title: User id
+        type: string
+        readOnly: true
+        minLength: 1
+      channel_id:
+        title: Channel id
+        description: Channel UUID
+        type: string
+        readOnly: true
+        minLength: 1
+      can_reply:
+        title: Can reply
+        type: boolean
+        readOnly: true
+      type:
+        title: Type
+        type: string
+        enum:
+          - message
+          - event
+        readOnly: true
+      edited:
+        title: Edited
+        description: 'Default: false. True if this message has been updated'
+        type: boolean
+        readOnly: true
+      files:
+        description: List of URLs to files/media in this message
+        type: array
+        items:
+          type: string
+          x-nullable: true
+        readOnly: true
+      timestamp:
+        title: Timestamp
+        type: string
+        format: date-time
+        readOnly: true
+      replies:
+        title: Replies
+        description: Number of messages sent as replies to this message (threads)
+        type: integer
+        readOnly: true
+      has_files:
+        title: Has files
+        description: 'Default: false. True if files/media are in this message'
+        type: boolean
+        readOnly: true
+      pinned:
+        title: Pinned
+        description: 'Default: false. True if this message has been pinned to the
+          channel'
+        type: boolean
+      content:
+        title: Content
+        description: Body (text) of this message
+        type: string
+        minLength: 1
+      emojis:
+        description: List of reactions made to this message
+        type: array
+        items:
+          type: string
+          x-nullable: true
+        readOnly: true
+      event:
+        title: Event
+        description: Contains the payload, if the 'type' of this object is 'event'
+        type: object
+        additionalProperties:
+          type: string
+          x-nullable: true
+        readOnly: true
+  Event:
+    required:
+      - action
+    type: object
+    properties:
+      action:
+        title: Action
+        type: string
+        maxLength: 20
+        minLength: 1
+      recipients:
+        type: array
+        items:
+          type: array
+          items:
+            $ref: '#/definitions/User'
+  ChannelMessage:
+    required:
+      - user_id
+    type: object
+    properties:
+      user_id:
+        title: User id
+        type: string
+        maxLength: 30
+        minLength: 1
+      content:
+        title: Content
+        description: Body (text) of this message
+        type: string
+        minLength: 1
+      files:
+        description: List of URLs to files/media in this message
+        type: array
+        items:
+          type: string
+          format: uri
+          minLength: 1
+      event:
+        title: Event
+        description: Event payload related to this message
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/Event'
+      timestamp:
+        title: Timestamp
+        type: string
+        format: date-time
+        readOnly: true
+  Permission:
+    description: List of permissions for this role
+    required:
+      - name
+      - description
+    type: object
+    properties:
+      name:
+        title: Name
+        type: string
+        maxLength: 50
+        minLength: 1
+      description:
+        title: Description
+        type: string
+        minLength: 1
+  Role:
+    required:
+      - name
+      - permissions
+    type: object
+    properties:
+      _id:
+        title: id
+        description: Role ID
+        type: string
+        readOnly: true
+      name:
+        title: Name
+        description: Role name
+        type: string
+        maxLength: 20
+        minLength: 1
+      channel_id:
+        title: Channel id
+        description: Channel ID
+        type: string
+        readOnly: true
+        minLength: 1
+      permissions:
+        description: List of permissions for this role
+        type: array
+        items:
+          $ref: '#/definitions/Permission'
+  Socket:
+    required:
+      - socket_name
+      - channel_id
+    type: object
+    properties:
+      socket_name:
+        title: Socket name
+        description: Socket name
+        type: string
+        maxLength: 200
+        minLength: 1
+      channel_id:
+        title: Channel id
+        description: Channel ID
+        type: string
+        maxLength: 30
+        minLength: 1
+  ThreadUpdate:
+    type: object
+    properties:
+      _id:
+        title: id
+        description: Thread message ID
+        type: string
+        readOnly: true
+      user_id:
+        title: User id
+        description: User ID
+        type: string
+        readOnly: true
+        minLength: 1
+      channelmessage_id:
+        title: Channelmessage id
+        description: Channel message ID
+        type: string
+        readOnly: true
+        minLength: 1
+      channel_id:
+        title: Channel id
+        description: Channel ID
+        type: string
+        readOnly: true
+        minLength: 1
+      content:
+        title: Content
+        description: Body (text) of thread message
+        type: string
+        minLength: 1
+      files:
+        description: List of URLs to files/media in this thread message
+        type: array
+        items:
+          type: string
+          format: uri
+          minLength: 1
+        readOnly: true
+      has_files:
+        title: Has files
+        description: 'Default: false. True if a file/media is in this thread message'
+        type: boolean
+        readOnly: true
+      emojis:
+        description: List of reactions made to this thread message
+        type: array
+        items:
+          type: string
+          x-nullable: true
+        readOnly: true
+      edited:
+        title: Edited
+        description: 'Default: false. True if this thread message has been edited'
+        type: boolean
+        readOnly: true
+      timestamp:
+        title: Timestamp
+        type: string
+        format: date-time
+        readOnly: true
+  Thread:
+    required:
+      - user_id
+    type: object
+    properties:
+      user_id:
+        title: User id
+        description: User ID
+        type: string
+        maxLength: 30
+        minLength: 1
+      content:
+        title: Content
+        description: Body (text) of thread message
+        type: string
+        minLength: 1
+      files:
+        description: List of URLs to files/media in this thread message
+        type: array
+        items:
+          type: string
+          format: uri
+          minLength: 1
+      timestamp:
+        title: Timestamp
+        type: string
+        format: date-time
+        readOnly: true
+  ChannelMessageReaction:
+    type: object
+    properties:
+      title:
+        title: Title
+        description: Emoji title
+        type: string
+        readOnly: true
+        minLength: 1
+      count:
+        title: Count
+        description: Number of reactions made with this emoji
+        type: integer
+        readOnly: true
+      users:
+        description: List of users that reacted with this emoji
+        type: array
+        items:
+          type: string
+          x-nullable: true
+        readOnly: true
+  ChannelMessageReactionsUpdate:
+    required:
+      - title
+      - member_id
+    type: object
+    properties:
+      title:
+        title: Title
+        description: Emoji title
+        type: string
+        minLength: 1
+      member_id:
+        title: Member id
+        description: User ID
+        type: string
+        minLength: 1

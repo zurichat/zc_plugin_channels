@@ -12,6 +12,7 @@ from channel_plugin.utils.customrequest import Request
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
+    ChannelMessageReactionSerializer,
     ChannelMessageReactionsUpdateSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
@@ -42,11 +43,12 @@ class ChannelMessageViewset(ViewSet):
         return permissions
 
     @swagger_auto_schema(
+        operation_id="create-channel-message",
         request_body=ChannelMessageSerializer,
         responses={
             201: openapi.Response("Response", ChannelMessageUpdateSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
-        },
+        }
     )
     @action(
         methods=["POST"],
@@ -54,7 +56,13 @@ class ChannelMessageViewset(ViewSet):
     )
     def message(self, request, org_id, channel_id):
         """
-        Creates messages and automatically publishes to Centrifugo
+        Create a channel message and automatically publishes to Centrifugo
+        
+        
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
+        ```
+
         """
         serializer = ChannelMessageSerializer(
             data=request.data, context={"channel_id": channel_id, "org_id": org_id}
@@ -76,27 +84,25 @@ class ChannelMessageViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="retrieve-channel-messages",
         responses={
             200: openapi.Response(
                 "Response", ChannelMessageUpdateSerializer(many=True)
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
-        }
+        },
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def message_all(self, request, org_id, channel_id):
-        """
-        Return all messages of a channel in an organisation
-        """
-        # data = {"channel_id": channel_id}
-        # data.update(dict(request.query_params))
+        """Get all the messages sent in a channel.
 
-        # result = Request.get(org_id, "channelmessage", data) or []
-        
-        # TODO: removo this  block when zc-core implemnents pagination"""
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
+        ```
+        """
         data = ""
         status_code = status.HTTP_404_NOT_FOUND
 
@@ -152,15 +158,18 @@ class ChannelMessageViewset(ViewSet):
             200: openapi.Response("Response", ChannelMessageUpdateSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="message read one channelmessage",
+        operation_id="retrieve-message-details",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def message_retrieve(self, request, org_id, msg_id):
-        """
-        Retrieves particular message based on ID
+        """Retrieve message details
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/" -H  "accept: application/json"
+        ```
         """
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
@@ -192,14 +201,26 @@ class ChannelMessageViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
+        operation_id="update-message-details"
     )
     @action(
         methods=["PUT"],
         detail=False,
     )
     def message_update(self, request, org_id, msg_id):
+
         """
         Updates message based on ID
+        
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"pinned\": true, 
+                \"content\": \"string\"
+            }"
+        ```
         """
         serializer = ChannelMessageUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -237,7 +258,12 @@ class ChannelMessageViewset(ViewSet):
                 required=True,
                 type=openapi.TYPE_STRING,
             ),
-        ]
+        ],
+        operation_id="delete-message",
+        responses={
+            204: openapi.Response("Message deleted successfully"),
+            404: openapi.Response("Not found")
+        }
     )
     @action(
         methods=["DELETE"],
@@ -246,6 +272,11 @@ class ChannelMessageViewset(ViewSet):
     def message_delete(self, request, org_id, msg_id):
         """
         Deletes a message based on ID, and organisation 
+        
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json""
+        ```
+
         """
 
         result = Request.delete(org_id, "channelmessage", object_id=msg_id)
@@ -272,7 +303,24 @@ class ChannelMessageViewset(ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response("Successful", ChannelMessageReactionSerializer(many=True))
+        },
+        operation_id="retrieve-message-reactions"
+    )
+    @action(
+        methods=["GET"],
+        detail=False
+    )
     def retrieve_message_reactions(self, request, org_id, msg_id):
+        """Retrieve message reactions
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/" -H  "accept: application/json"
+        ```
+        """
+
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "channelmessage", data) or {}
@@ -282,7 +330,27 @@ class ChannelMessageViewset(ViewSet):
             status_code = status.HTTP_200_OK
         return Response(reactions, status=status_code)
 
+    @swagger_auto_schema(
+        request_body=ChannelMessageReactionsUpdateSerializer,
+        responses={
+            200: openapi.Response("Reaction updated", ChannelMessageReactionSerializer(many=True))
+        },
+        operation_id="update-message-reactions"
+    )
+    @action(
+        methods=["PUT"],
+        detail=False
+    )
     def update_message_reactions(self, request, org_id, msg_id):
+        """Update message reactions
+        
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
+        -H  "accept: application/json" 
+        -H  "Content-Type: application/json"
+        -d "{  \"title\": \"string\",  \"member_id\": \"string\"}"
+        ```
+        """
 
         # get referenced message
         data = {"_id": msg_id}
