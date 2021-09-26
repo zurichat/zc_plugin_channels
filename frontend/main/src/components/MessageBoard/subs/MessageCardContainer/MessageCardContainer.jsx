@@ -87,7 +87,7 @@ const MessageCardContainer = () =>{
         messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
 
         loadedMessages = receivedMessages && receivedMessages.slice(messageStartingIndex, messageEndIndex)
-        
+        _getChannelMessages()
         dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
       }
       loadData()
