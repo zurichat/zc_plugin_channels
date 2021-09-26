@@ -259,14 +259,24 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", SocketSerializer())},
-        operation_id="get-channel's-socket-name",
+        responses={
+            200: openapi.Response("Response", SocketSerializer()),
+            404: openapi.Response("Not found"),
+            500: openapi.Response("Internal server error")
+        },
+        operation_id="retrieve-channel-socket-name",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def get_channel_socket_name(self, request, org_id, channel_id):
+        """Retrieve channel centrifugo socket name
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
+        ```
+        """
 
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 

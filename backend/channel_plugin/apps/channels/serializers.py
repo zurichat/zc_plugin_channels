@@ -186,8 +186,16 @@ class UserChannelGetSerializer(serializers.Serializer):
 
 
 class SocketSerializer(serializers.Serializer):
-    socket_name = serializers.CharField(max_length=200, required=True)
-    channel_id = serializers.CharField(max_length=30, required=True)
+    socket_name = serializers.CharField(
+        max_length=200,
+        required=True,
+        help_text="Socket name"
+    )
+    channel_id = serializers.CharField(
+        max_length=30,
+        required=True,
+        help_text="Channel ID"
+    )
 
 
 class NotificationsSettingSerializer(serializers.Serializer):
