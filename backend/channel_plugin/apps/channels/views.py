@@ -521,7 +521,7 @@ class ChannelMemberViewset(ViewSet):
         (incomplete doc)
 
         ```bash
-        curl -X POST "http://localhost:8000/api/v1/1/channels/qw/members/can_input/"
+        curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_input/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
