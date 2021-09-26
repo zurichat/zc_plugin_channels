@@ -4,6 +4,7 @@ import {
   GET_CHANNELS,
   CREATE_CHANNELS,
   GET_SOCKETS,
+  GET_RENDEREDMESSAGES
 } from "../actions/types";
 
 const initialState = {
@@ -11,7 +12,8 @@ const initialState = {
   // Default State
   users: [],
   channelMessages: [],
-  sockets: []
+  sockets: [],
+  renderedMessages: []
 };
 
 const appReducer = (state = initialState, action) => {
@@ -30,6 +32,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         channelMessages: payload,
+      };
+    case GET_RENDEREDMESSAGES:
+      return {
+        ...state,
+        renderedMessages: payload,
       };
 
     // Default state is returned
