@@ -139,3 +139,9 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
 
         data = {"message": instance}
         return data
+
+class ChannelMessageSearchSerializer(serializers.Serializer):
+    user_id = serializers.CharField(max_length=100, required=False)
+    content = serializers.CharField(max_length=100, required=False)
+    has_files = serializers.BooleanField(required=False)
+    pinned = serializers.BooleanField(required=False)
