@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from '../../../../redux/actions/app';
-import { GET_CHANNELMESSAGES } from '../../../../redux/actions/types';
+import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 import { useParams } from 'react-router';
 
