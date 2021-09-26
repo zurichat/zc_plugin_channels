@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 
 
-function MessageMenuPopUp() {
+function MessageOptionsMenuPopUp() {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
@@ -66,4 +66,4 @@ function MessageMenuPopUp() {
     );
 }
 
-export default MessageMenuPopUp;
+export default MessageOptionsMenuPopUp;
