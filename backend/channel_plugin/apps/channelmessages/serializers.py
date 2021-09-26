@@ -11,10 +11,9 @@ class EventSerializer(serializers.Serializer):
     action = serializers.CharField(max_length=20, required=True)
 
     recipients = serializers.ListField(
-        child=UserSerializer(many=True),
-        required=False,
-        allow_empty=False
+        child=UserSerializer(many=True), required=False, allow_empty=False
     )
+
 
 class ChannelMessageSerializer(serializers.Serializer):
 
@@ -25,7 +24,7 @@ class ChannelMessageSerializer(serializers.Serializer):
         child=serializers.URLField(), allow_empty=True, required=False
     )
     event = serializers.DictField(
-        child=EventSerializer(many=False),allow_empty=True, required=False
+        child=EventSerializer(many=False), allow_empty=True, required=False
     )
     timestamp = serializers.DateTimeField(read_only=True)
 
@@ -88,6 +87,7 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
         data = {"message": instance}
         return data
 
-class MessageEmojiUpdateSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=50)
-    member_id = serializers.CharField()
+
+# class MessageEmojiUpdateSerializer(serializers.Serializer):
+#     title = serializers.CharField(max_length=50)
+#     member_id = serializers.CharField()

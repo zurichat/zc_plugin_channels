@@ -15,14 +15,13 @@ from .serializers import (
     ChannelMessageReactionsUpdateSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
-    MessageEmojiUpdateSerializer
+    # MessageEmojiUpdateSerializer
 )
 
 import requests
 from django.conf import settings
 from urllib.parse import urlencode
 from django.conf import settings
-
 
 
 class ChannelMessageViewset(ViewSet):
@@ -112,10 +111,10 @@ class ChannelMessageViewset(ViewSet):
 
     def _stream_message_all(self, request, org_id, channel_id):
         """
-            This method reads the response to a
-            zc-core request in streams
+        This method reads the response to a
+        zc-core request in streams
         """
-        #TODO: Remove this method when zc-core implements pagination
+        # TODO: Remove this method when zc-core implements pagination
         data = {"channel_id": channel_id}
         data.update(self.request.query_params)
 
@@ -129,8 +128,8 @@ class ChannelMessageViewset(ViewSet):
 
         r = requests.get(url, stream=True, timeout=10000)
 
-        if int(r.headers.get('Content-Length', 10000)) > max_chunk_size:
-            raise ValueError('response too large')
+        if int(r.headers.get("Content-Length", 10000)) > max_chunk_size:
+            raise ValueError("response too large")
 
         size = 0
 
@@ -138,9 +137,8 @@ class ChannelMessageViewset(ViewSet):
 
             size += len(chunk)
             if size > max_chunk_size:
-                raise ValueError('response too large')
+                raise ValueError("response too large")
             yield chunk
-
 
     @swagger_auto_schema(
         responses={
@@ -262,7 +260,6 @@ class ChannelMessageViewset(ViewSet):
         methods=["GET"],
         detail=False,
     )
-
     def retrieve_message_reactions(self, request, org_id, msg_id):
         data = {"_id": msg_id}
         data.update(dict(request.query_params))
@@ -281,7 +278,6 @@ class ChannelMessageViewset(ViewSet):
                 description="User ID (owner of message)",
                 required=True,
                 type=openapi.TYPE_STRING,
-
             ),
             openapi.Parameter(
                 "channel_id",
@@ -291,15 +287,13 @@ class ChannelMessageViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
-        request_body = MessageEmojiUpdateSerializer,
-         responses={
-            200: openapi.Response("Response", MessageEmojiUpdateSerializer),
+        request_body=ChannelMessageReactionsUpdateSerializer,
+        responses={
+            200: openapi.Response("Response", ChannelMessageReactionsUpdateSerializer),
             404: openapi.Response("Not Found"),
         },
         operation_id="retrieve-message-reactions",
     )
-
-
     @action(
         methods=["PUT"],
         detail=False,
@@ -350,21 +344,22 @@ class ChannelMessageViewset(ViewSet):
             result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
             status_code = status.HTTP_400_BAD_REQUEST
             if result:
-                # request_finished.send(
-                #     sender=self.__class__,
-                #     dispatch_uid="EditMessageSignal",
-                #     org_id=org_id,
-                #     channel_id=result.get("channel_id"),
-                #     data=result,
-                # )
+                try:
+                    request_finished.send(
+                        sender=self.__class__,
+                        dispatch_uid="EditMessageSignal",
+                        org_id=org_id,
+                        channel_id=result.get("channel_id"),
+                        data=result,
+                    )
 
+                except:
+                    pass
                 return Response(message_reactions, status=status.HTTP_200_OK)
-
             return Response({"error": "failed to update reaction"}, status=status_code)
 
         status_code = status.HTTP_404_NOT_FOUND
         return Response({"error": "message not found"}, status=status_code)
-
 
 
 channelmessage_views = ChannelMessageViewset.as_view(
