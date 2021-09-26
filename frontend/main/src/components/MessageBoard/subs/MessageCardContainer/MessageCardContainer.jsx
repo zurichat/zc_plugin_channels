@@ -91,7 +91,7 @@ const MessageCardContainer = () =>{
         dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
       }
       loadData()
-}, [channelId]);
+}, [channelId, renderedMessages]);
 
   // let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
     
