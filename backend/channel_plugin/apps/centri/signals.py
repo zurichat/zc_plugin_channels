@@ -123,12 +123,12 @@ def CreateMessageSignal(sender, **kwargs):
 
         room_name = build_room_name(org_id, channel_id)
         
-        # send notification to channel that user has joined
+        # send notification to channel that has created a new message
         payload = kwargs.get("data", {})
 
-        payload.update("event", {
+        payload["event"] = {
             "action": "create:message"
-        })
+        }
 
         try: 
             CLIENT.publish(room_name, payload)
@@ -148,9 +148,9 @@ def EditMessageSignal(sender, **kwargs):
         # send message to channel that user has edited a message
         payload = kwargs.get("data", {})
 
-        payload.update("event", {
-            "action": "edit:message"
-        })
+        payload["event"] = {
+            "action": "update:message"
+        }
 
         try:
             CLIENT.publish(room_name, payload)
@@ -170,9 +170,10 @@ def DeleteMessageSignal(sender, **kwargs):
         # send notification to channel that user has joined
         payload = kwargs.get("data", {})
         payload["can_reply"] = False
-        payload.update("event", {
+        
+        payload["event"] = {
             "action": "delete:message"
-        })
+        }
 
         try: 
             CLIENT.publish(room_name, payload)

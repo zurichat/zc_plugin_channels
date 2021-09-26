@@ -29,7 +29,6 @@ class ChannelMessageSerializer(serializers.Serializer):
         help_text="List of URLs to files/media in this message"
     )
     event = serializers.DictField(
-
         child=EventSerializer(many=False),
         allow_empty=True,
         required=False,
@@ -121,8 +120,6 @@ class ChannelMessageUpdateSerializer(serializers.Serializer):
         read_only=True,
         help_text="Contains the payload, if the 'type' of this object is 'event'"
     )
-
-   
     def to_representation(self, instance):
         instance = dict(instance)
 
