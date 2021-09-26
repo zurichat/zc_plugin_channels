@@ -81,7 +81,7 @@ const MessageCardContainer = () =>{
       const loadData = async ()=> {
         console.log('\n\n\nabout to fetch')
         const res = await APIService.getMessages(users.Organisations, channelId);
-        console.log(users.Organisations[0]);
+        console.log(users.Organisations);
         const receivedMessages = res.data.data
         messageEndIndex = receivedMessages.length
         messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
