@@ -79,11 +79,11 @@ const MessageCardContainer = () =>{
   //   dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
   // }
 
+
   useEffect( () => {
       const loadData = async ()=> {
         // history.push(`/message-board/${channelId}`)
         // console.log('\n\n\nabout to fetch')
-        window.location.reload();
         const res = await APIService.getMessages("614679ee1a5607b13c00bcb7", channelId);
         // console.log("614679ee1a5607b13c00bcb7");
         const receivedMessages = res.data.data
