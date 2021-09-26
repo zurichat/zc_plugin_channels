@@ -513,8 +513,24 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def can_input(self, request, org_id, channel_id):
-        """
-        Method checks if a user input should be disabled or enabled
+        """Check if input is enabled for users
+
+        This checks if a user input should be disabled or enabled, i.e \
+        should users be able to send messages in the channel or not.
+
+        (incomplete doc)
+
+        ```bash
+        curl -X POST "http://localhost:8000/api/v1/1/channels/qw/members/can_input/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"_id\": \"string\", 
+                \"role_id\": \"string\", 
+                \"is_admin\": false,  
+                \"notifications\": { }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
