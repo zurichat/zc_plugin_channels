@@ -14,7 +14,7 @@ data = {
     "description": "Channel Plugin",
     "template_url": "https://channels.zuri.chat",
     "install_url": "https://channels.zuri.chat/install",
-    "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar/",
+    "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar",
     "icon_url": "https://channels.zuri.chat/static/images/full-logo.png/",
 }
 
