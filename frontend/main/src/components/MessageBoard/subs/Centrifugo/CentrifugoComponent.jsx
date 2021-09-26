@@ -56,7 +56,7 @@ const CentrifugoComponent = () => {
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
     console.log("from centrifugo: ", messageCtx);
-    dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
+    dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.concat([messageCtx.data]) })
     console.log("Testing rendered messages: ", renderedMessages);
 
     let eventType = messageCtx.data.event.action
