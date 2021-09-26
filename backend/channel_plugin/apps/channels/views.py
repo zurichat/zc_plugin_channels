@@ -262,7 +262,6 @@ class ChannelViewset(ViewSet):
         responses={
             200: openapi.Response("Response", SocketSerializer()),
             404: openapi.Response("Not found"),
-            500: openapi.Response("Internal server error")
         },
         operation_id="retrieve-channel-socket-name",
     )
