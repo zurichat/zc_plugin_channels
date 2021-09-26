@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import PinnedMessages from "./PinnedMessages";
+import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSettings";
 
 import { useParams } from "react-router";
 
@@ -47,13 +48,14 @@ const ChannelHeader = () => {
   return (
     <Box width="99.9%">
       <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="47px" boxShadow="xs" maxWidth='100%' w="100%" display={['none','flex']}>
-        <Link to="/channel-detail">  
+        <>  
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} _active={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
             {isPrivate === true ? <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> :<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />  }       
             <Box as="span" letterSpacing='wide' lineHeight='32px' fontSize="17.5px" color="#ffffff" fontWeight="medium" mr={1}>{channelDetails.name}</Box> 
             <Icon as={BiChevronDown} color="#ffffff" w={6} h={5} />
           </Button>
-        </Link> 
+          <ChannelDetails isOpen={isOpen} onClose={onClose} />
+        </> 
         <Spacer />
         <Link to="/channel-detail"><Flex p="4"><Spacer/>
           <Button variant='ghost' bgColor='#01D892' _hover={{ bg: "#01D892" }} _focus={{ bg: "#01D892" }} _active={{ bg: "#01D892" }} size='sm' width="85%" borderRadius='4px'  height='33px' mr='0.5%'>

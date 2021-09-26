@@ -25,6 +25,10 @@ import { FaChevronDown } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { FaHashtag } from "react-icons/fa";
 
+import { useDispatch, useSelector } from "react-redux";
+import appActions from "../../redux/actions/app";
+import { bindActionCreators } from "redux";
+
 import OrganisationMembersList from "./organisationMembersList";
 import About from "./about";
 import FileList from "./fileList";
@@ -32,6 +36,7 @@ import NotificationModal from "./NotificationModal";
 
 import React, { useState } from "react";
 
+import { useParams } from "react-router";
 
 const ChannelDetails = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,10 +49,24 @@ const ChannelDetails = () => {
     setShowModal(prev => !prev);
   };
 
+  const { channelId } = useParams()
+  const org_id = '614679ee1a5607b13c00bcb7';
+  const channel_id = channelId;
+
+  const dispatch = useDispatch();
+
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
+
+  //-------getting channel details.........//
+  const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
+  console.log(channelDetails.name, channelDetails.members, channelDetails.private);//to see what kind of data I'm actually getting
+  const loadChannelDetails = async () => { await _getChannelDetails(org_id, channel_id);};
+  useEffect(() => { loadChannelDetails(); }, []);
+  
+  const isPrivate = channelDetails.private;
 
   return (
     <>
-      {/* <Button onClick={onOpen}size="sm" bg="#00b87c" color="white" pt="2" pb="2" fontSize="14px">View Channel Details</Button> */}
       <Modal
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
@@ -78,7 +97,7 @@ const ChannelDetails = () => {
                     />
                   </Box>
                   <Text fontSize="20px" pb={2} mb={2} color="#000">
-                    Announcement
+                    {channelDetails.name}
                   </Text>
                   <Box ps={2} pt={1.5}>
                     <FaRegStar
