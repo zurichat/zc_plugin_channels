@@ -49,12 +49,29 @@ class ThreadViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
+        operation_id="create-message-thread"
     )
     @action(
         methods=["POST"],
         detail=False,
     )
     def thread_message(self, request, org_id, channelmessage_id):
+        """Add reply to message
+        
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/?channel_id={{channel_id}}"
+        -H  "accept: application/json" 
+        -H  "Content-Type: application/json"
+        -d "{
+                \"user_id\": \"string\",
+                \"content\": \"string\", 
+                \"files\": [
+                    \"string\"
+                ]
+            }"
+        ```
+        """
+
         serializer = ThreadSerializer(
             data=request.data,
             context={
@@ -84,13 +101,21 @@ class ThreadViewset(ViewSet):
         responses={
             200: openapi.Response("Response", ThreadUpdateSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
-        }
+        },
+        operation_id="retrieve-message-threads"
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def thread_message_all(self, request, org_id, channelmessage_id):
+        """Retrieve all replies to message
+        
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/" -H  "accept: application/json"
+        ```
+        """
+
         data = {"channelmessage_id": channelmessage_id}
         data.update(dict(request.query_params))
         result = Request.get(org_id, "thread", data) or []
