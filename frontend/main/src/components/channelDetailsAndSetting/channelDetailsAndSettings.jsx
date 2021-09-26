@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/layout";
 import TabsRows from "./TabsRow";
-import { FaVideo } from "react-icons/fa";
+import { FaPhoneAlt } from "react-icons/fa";
 import { FaRegBell } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
@@ -28,14 +28,23 @@ import { FaHashtag } from "react-icons/fa";
 import OrganisationMembersList from "./organisationMembersList";
 import About from "./about";
 import FileList from "./fileList";
+import NotificationModal from "./NotificationModal";
 
-import React from "react";
+import React, { useState } from "react";
 
 
 const ChannelDetails = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef();
   const finalRef = React.useRef();
+
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    setShowModal(prev => !prev);
+  };
+
+
   return (
     <>
       {/* <Button onClick={onOpen}size="sm" bg="#00b87c" color="white" pt="2" pb="2" fontSize="14px">View Channel Details</Button> */}
@@ -52,11 +61,11 @@ const ChannelDetails = () => {
             <ModalHeader
               pt={3}
               pb={2}
-              backgroundColor="#fff"
+              backgroundColor="#F6F6F6"
               color="#000"
               height="191px"
             >
-              
+
               <Box px={6}>
                 <Flex>
                   <Box pe={2} pt={1.5}>
@@ -83,8 +92,8 @@ const ChannelDetails = () => {
                   <Spacer />
                   <ModalCloseButton
                     color="#000"
-                    // border="1px"
-                    // borderColor="#000"
+                  // border="1px"
+                  // borderColor="#000"
                   />
                 </Flex>
                 <Stack direction="row" my={1} py={2}>
@@ -100,7 +109,11 @@ const ChannelDetails = () => {
                       </Box>
                       <Text color='#000'>Get Notifications for @ mentions</Text>
                       <Box ml={2} mt={1}>
-                        <FaChevronDown color="#000" mt={4} ml={5} />
+                        <FaChevronDown color="#000" mt={4} ml={5} onClick={openModal} />
+                        <NotificationModal
+                          showModal={showModal}
+                          setShowModal={setShowModal}
+                        />
                       </Box>
                     </Button>
                     <Button
@@ -110,19 +123,17 @@ const ChannelDetails = () => {
                       ml={2}
                     >
                       <Box mr={2} mt={1}>
-                        <FaVideo color="#000" w={2} />
+                        <FaPhoneAlt color="#FFFFF" w={2} />
                       </Box>
-                      <Text color='#000'>Start Meeting</Text>
+                      <Text color='#000'>Start a Call</Text>
                     </Button>
                   </Box>
                 </Stack>
-
                 <Box w={400}>
-                  <TabsRows colorScheme="WhatsApp"/>
+                  <TabsRows colorScheme="WhatsApp" />
                 </Box>
               </Box>
             </ModalHeader>
-
             <ModalBody height="703px" backgroundColor="#f9f9f9">
               <Box px={6}>
                 <TabPanels>
