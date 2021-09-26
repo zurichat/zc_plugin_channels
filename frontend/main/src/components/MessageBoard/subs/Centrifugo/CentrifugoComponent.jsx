@@ -39,7 +39,7 @@ const CentrifugoComponent = () => {
   const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
 
-  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
   const { channelDetails } = useSelector((state) => state.channelsReducer)
 
   console.log("ChannelMessages: ", channelMessages);
@@ -48,8 +48,8 @@ const CentrifugoComponent = () => {
   const { channelId } = useParams()
 
   const loadData = async () => {
-    await _getChannelMessages(1, channelId)
-    await _getSocket(1, channelId)
+    await _getChannelMessages(users.Organisations, channelId)
+    await _getSocket(users.Organisations, channelId)
   }
 
   
