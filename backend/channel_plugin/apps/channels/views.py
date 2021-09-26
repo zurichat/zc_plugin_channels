@@ -284,7 +284,7 @@ class ChannelMemberViewset(ViewSet):
         """
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
-        if result.__contains__("_id") or isinstance(result, dict):
+        if result.__contains__("_id") and isinstance(result, dict):
             if result:
                 return result
         return None
