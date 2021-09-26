@@ -74,7 +74,7 @@ const CentrifugoComponent = () => {
 
   useEffect(async () => {
     loadData()
-   }, []);
+   }, [channelId]);
 
     return(
         <>

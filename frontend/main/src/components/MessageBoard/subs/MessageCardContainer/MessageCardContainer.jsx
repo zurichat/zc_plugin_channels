@@ -79,6 +79,7 @@ const MessageCardContainer = () =>{
   //   dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
   // }
 
+
   useEffect( () => {
       const loadData = async ()=> {
         // history.push(`/message-board/${channelId}`)
