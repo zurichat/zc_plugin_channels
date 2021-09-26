@@ -23,7 +23,10 @@ const CreateChannel = () => {
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
 
   const loadData = async () => {
-    await _getChannelDetails("1", "613f70bd6173056af01b4aba");
+    await _getChannelDetails(
+      "614679ee1a5607b13c00bcb7",
+      "614fd412cf2c0f1ad7585394"
+    );
   };
 
   useEffect(() => {
