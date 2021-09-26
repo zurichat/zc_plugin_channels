@@ -130,6 +130,13 @@ class APIServices {
   async addChannelMember(org_id, channel_id, data) {
     return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
   }
+
+  async userCanInput(org_id, channel_id, data) {
+    return api.post(
+      `/${org_id}/channels/${channel_id}/members/can-input`,
+      data
+    );
+  }
 }
 
 const instance = new APIServices();
