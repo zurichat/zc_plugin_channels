@@ -30,7 +30,7 @@ function DeleteChannel() {
   const { deleteChannel } = useSelector((state) => state.channelsReducer);
   console.log(deleteChannel);
 
-  const org_id = 1; //Test value for org id
+  const org_id = '614679ee1a5607b13c00bcb7'; //Test value for org id
   const channel_id = "613f70bd6173056af01b4aba"; // Test  value to for channel_id
 
   // STEP SIX
@@ -52,7 +52,7 @@ function DeleteChannel() {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader color="#000000" fontStyle="bold" fontSize="31px" p={5}>
-              Delete message
+              Delete channel
             </ModalHeader>
             <Text color="#3A3A3A" m={5} p={5}>
               Are you sure you want to delete this channel?This cannot be undone
@@ -92,7 +92,7 @@ function DeleteChannel() {
                 width="151px"
                 height="56px"
               >
-                Cancle
+                Cancel
               </Button>
               <Button
                 variant="ghost"
@@ -104,6 +104,8 @@ function DeleteChannel() {
                 width="151px"
                 height="56px"
                 _hover={{ bg: "#000" }}
+
+                onClick={loadData}
               >
                 Delete
               </Button>
