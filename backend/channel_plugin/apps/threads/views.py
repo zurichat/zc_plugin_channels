@@ -146,12 +146,23 @@ class ThreadViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
+        operation_id="update-thread-message"
     )
     @action(
         methods=["PUT"],
         detail=False,
     )
     def thread_message_update(self, request, org_id, thread_id):
+        """Update thread message
+        
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"content\": \"string\"}"
+        ```
+        """
+
         serializer = ThreadUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("thread")
@@ -178,13 +189,24 @@ class ThreadViewset(ViewSet):
                 required=True,
                 type=openapi.TYPE_STRING,
             ),
-        ]
+        ],
+        operation_id="delete-thread-message",
+        responses={
+            204: openapi.Response("Thread message deleted successfully")
+        }
     )
     @action(
         methods=["DELETE"],
         detail=False,
     )
     def thread_message_delete(self, request, org_id, thread_id):
+        """Delete thread message
+        
+        ```bash
+        curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json"
+        ```
+        """
+
         thread = Request.get(org_id, "thread", {"_id": thread_id})
         message = Request.get(
             org_id, "channelmessage", {"_id": thread.get("channelmessage_id")}
