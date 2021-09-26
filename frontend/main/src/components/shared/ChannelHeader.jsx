@@ -18,9 +18,9 @@ import { useParams } from "react-router";
 
 //avatar details(Just a placeholder)
 const avatars = [
-  { name: "Kent Dodds", avi: "https://bit.ly/kent-c-dodds", index: 1 },
-  { name: "Segun Adebayo", avi: "https://bit.ly/sage-adebayo", index: 2 },
-  { name: "Christian Nwamba", avi:"https://bit.ly/code-beast",index: 3 },
+  { name: "Kent Dodds",  index: 1 },
+  { name: "Segun Adebayo",  index: 2 },
+  { name: "Christian Nwamba", index: 3 },
 ];
 
 const ChannelHeader = () => {
@@ -58,11 +58,11 @@ const ChannelHeader = () => {
         <Spacer />
         <Link to="/channel-detail"><Flex p="4"><Spacer/>
           <Button variant='ghost' bgColor='#01D892' _hover={{ bg: "#01D892" }} _focus={{ bg: "#01D892" }} _active={{ bg: "#01D892" }} size='sm' width="85%" borderRadius='4px'  height='33px' mr='0.5%'>
-            <AvatarGroup ml='0.1px' size="sm" max={3} spacing='-2' >
+            {/* <AvatarGroup ml='0.1px' size="sm" max={3} spacing='-2' >
               {avatars.map((avatar) => {
                 return <Avatar name={avatar.name} borderRadius="5px" borderWidth='2px' borderColor='#01D892' height='31px' width='31px' />;
               })}
-            </AvatarGroup>
+            </AvatarGroup> */}
             <Box as="span" fontWeight='medium' mr='8px' ml='5px' textColor='#ffffff' fontWeight="semi-bold" >{channelDetails.members}</Box>
           </Button>
           </Flex></Link>
