@@ -40,7 +40,7 @@ const CentrifugoComponent = () => {
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
 
   const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  const { channelDetails } = useSelector((state) => state.channelsReducer)
+  const { channelDetails, sendMessages } = useSelector((state) => state.channelsReducer)
 
   console.log("ChannelMessages: ", channelMessages);
   console.log("Sockets: ", sockets);
@@ -56,7 +56,7 @@ const CentrifugoComponent = () => {
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
     console.log("from centrifugo: ", messageCtx);
-    dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.concat([messageCtx.data]) })
+    dispatch({ type: GET_RENDEREDMESSAGES, payload: [...renderedMessages, messageCtx.data] })
     console.log("Testing rendered messages: ", renderedMessages);
 
     let eventType = messageCtx.data.event.action
