@@ -34,7 +34,6 @@ function DeleteChannel() {
   const channel_id = "613f70bd6173056af01b4aba"; // Test  value to for channel_id
 
   // STEP SIX
-  // STEP SIX
   const loadData = async () => {
     await _deleteChannel(org_id, channel_id);
   };
