@@ -39,7 +39,7 @@ const CentrifugoComponent = () => {
   const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
 
-  const { channelMessages, sockets } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
   const { channelDetails } = useSelector((state) => state.channelsReducer)
 
   console.log("ChannelMessages: ", channelMessages);
@@ -55,13 +55,13 @@ const CentrifugoComponent = () => {
   
 
   centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    console.log(messageCtx);
+    console.log("from centrifugo: ", messageCtx);
 
     let eventType = messageCtx.data.event.action
     let eventNumber = messageCtx.data.event.recipients
     switch (eventType) {
         case "join:channel":
-          channelMessages.push(messageCtx.data)
+          dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
             break;
     
         default:
