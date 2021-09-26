@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, HStack } from "@chakra-ui/layout";
-import { Flex, Spacer, Avatar, AvatarGroup, Button, IconButton, Image } from "@chakra-ui/react";
+import { Flex, Spacer, Avatar, AvatarGroup, Button, IconButton, Image, useDisclosure } from "@chakra-ui/react";
 import { BiChevronDown, BiChevronLeft, BiLockAlt } from "react-icons/bi";
 import { AiOutlineStar } from 'react-icons/ai';
 import { Icon } from "@chakra-ui/icon";
@@ -24,7 +24,9 @@ const avatars = [
   { name: "Christian Nwamba", index: 3 },
 ];
 
+
 const ChannelHeader = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { channelId } = useParams()//dynamic channel id
   const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
   const channel_id = channelId; //assigning dynamic channel id to channel_id
@@ -48,8 +50,8 @@ const ChannelHeader = () => {
   return (
     <Box width="99.9%">
       <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="47px" boxShadow="xs" maxWidth='100%' w="100%" display={['none','flex']}>
-        <>  
-          <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} _active={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='80%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} >
+        <> 
+          <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} _active={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='20%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} onClick={onOpen}>
             {isPrivate === true ? <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> :<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />  }       
             <Box as="span" letterSpacing='wide' lineHeight='32px' fontSize="17.5px" color="#ffffff" fontWeight="medium" mr={1}>{channelDetails.name}</Box> 
             <Icon as={BiChevronDown} color="#ffffff" w={6} h={5} />

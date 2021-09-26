@@ -34,14 +34,12 @@ import About from "./about";
 import FileList from "./fileList";
 import NotificationModal from "./NotificationModal";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef} from "react";
 
 import { useParams } from "react-router";
 
-const ChannelDetails = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const initialRef = React.useRef();
-  const finalRef = React.useRef();
+const ChannelDetails = ({ onClose, isOpen }) => {
+  const initialRef = useRef();
 
   const [showModal, setShowModal] = useState(false);
 
@@ -59,7 +57,6 @@ const ChannelDetails = () => {
 
   //-------getting channel details.........//
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
-  console.log(channelDetails.name, channelDetails.members, channelDetails.private);//to see what kind of data I'm actually getting
   const loadChannelDetails = async () => { await _getChannelDetails(org_id, channel_id);};
   useEffect(() => { loadChannelDetails(); }, []);
   
@@ -69,8 +66,7 @@ const ChannelDetails = () => {
     <>
       <Modal
         initialFocusRef={initialRef}
-        finalFocusRef={finalRef}
-        isOpen={onOpen}
+        isOpen={isOpen}
         onClose={onClose}
         size="lg"
       >
@@ -130,8 +126,8 @@ const ChannelDetails = () => {
                       <Box ml={2} mt={1}>
                         <FaChevronDown color="#000" mt={4} ml={5} onClick={openModal} />
                         <NotificationModal
-                          showModal={showModal}
-                          setShowModal={setShowModal}
+                          // showModal={showModal}
+                          // setShowModal={setShowModal}
                         />
                       </Box>
                     </Button>
@@ -158,10 +154,10 @@ const ChannelDetails = () => {
                 <TabPanels>
                   <TabPanel>
                     <About />
-                    <FileList />
+                    {/* <FileList /> */}
                   </TabPanel>
                   <TabPanel>
-                    <OrganisationMembersList />
+                    {/* <OrganisationMembersList /> */}
                   </TabPanel>
                   <TabPanel>
                   </TabPanel>
