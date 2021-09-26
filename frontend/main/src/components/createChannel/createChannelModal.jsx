@@ -42,14 +42,14 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
   const newChannel = async () => {
     await _createChannel("614679ee1a5607b13c00bcb7", data);
   };
-
-  const handleSubmit = () => {
+  
+   const handleSubmit = () => {
     console.log(data);
-    newChannel();
+    newChannel().then(() => {
+      window.location.reload();
+    });
     onClose();
-    history.push('/channel-browser')
-
-  }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
