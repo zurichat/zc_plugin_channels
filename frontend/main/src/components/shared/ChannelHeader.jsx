@@ -39,7 +39,7 @@ const ChannelHeader = () => {
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
   console.log(channelDetails.name, channelDetails.members, channelDetails.private);//to see what kind of data I'm actually getting
   const loadChannelDetails = async () => { await _getChannelDetails(org_id, channel_id);};
-  useEffect(() => { loadChannelDetails(); }, []);
+  useEffect(() => { loadChannelDetails(); }, [channelId]);
   
   const isPrivate = channelDetails.private;// to check if channel is private or not
   //const users = [channelDetails.users]; //to get users of a channel
