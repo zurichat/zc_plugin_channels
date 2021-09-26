@@ -9,8 +9,6 @@ import {
   GET_PINNED_MESSAGES,
   PIN_MESSAGE,
   ARCHIVE_CHANNEL,
-  DELETE_CHANNEL,
-  PRIVATE_CHANNEL,
   SEND_MESSAGES,
   GET_CHANNELS,
   CREATE_CHANNELS,
@@ -151,7 +149,7 @@ const _pinMessage =
       );
       dispatch({ type: PIN_MESSAGE, payload: res.data });
     } catch (err) {
-      _alert("error"); 
+      _alert("error");
     }
   };
 
@@ -177,28 +175,6 @@ const _createChannel = (org_id, data) => async (dispatch) => {
   }
 };
 
-const _deleteChannel = (org_id, channel_id) => async (dispatch) => {
-  try {
-    const res = await APIService.updateChannel(org_id, channel_id) //Pass {delete: "True"} after cors is resolved
-    dispatch({type: DELETE_CHANNEL, payload: res.data})
-    _alert("success", "Channel successfully deleted");
-  } catch (err) {
-    _alert("error")
-  }
-}
-
-const _privateChannel = (org_id, channel_id) => async (dispatch) => {
-  try {
-    const res = await APIService.updateChannel(org_id, channel_id, {
-      private: "True",
-    });
-    dispatch({type: PRIVATE_CHANNEL, payload: res.data})
-    _alert("success", "Channel successfully made private");
-  } catch (err) {
-    _alert("error")
-  }
-}
-
 // Export functions here
 const appActions = {
   _alert,
@@ -212,8 +188,6 @@ const appActions = {
   _sendMessage,
   _getChannels,
   _createChannel,
-  _deleteChannel,
-  _privateChannel,
   _getSocket,
 };
 export default appActions;
