@@ -47,7 +47,7 @@ class GetInfoViewset(ViewSet):
                 "scaffold_structure": "Monolith",
                 "team": "HNG 8.0/Team Coelho",
                 "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar",
-                "ping_url": "https://channels.zuri.chat/api/v1/ping/",
+                "ping_url": "https://channels.zuri.chat/api/v1/ping",
                 "homepage_url": "https://channels.zuri.chat/",
             },
             "success": True,
