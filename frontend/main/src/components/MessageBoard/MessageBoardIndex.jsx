@@ -18,6 +18,7 @@ const MessageBoardIndex = () => {
 
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
+    <CentrifugoComponent />
       <Flex>
         <Box width="100%">
         <ChannelHeader />
@@ -38,7 +39,6 @@ const MessageBoardIndex = () => {
           <Thread/>
         </Box> */}
       </Flex>
-    <CentrifugoComponent />
     </Box>
   );
 };
