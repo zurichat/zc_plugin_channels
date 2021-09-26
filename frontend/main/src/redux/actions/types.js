@@ -10,3 +10,4 @@ export const PIN_MESSAGE = "PIN_MESSAGE";
 export const ARCHIVE_CHANNEL = "ARCHIVE_CHANNEL";
 export const GET_CHANNELS = "GET_CHANNELS";
 export const CREATE_CHANNELS = "CREATE_CHANNELS";
+export const GET_SOCKETS = "GET_SOCKETS";
