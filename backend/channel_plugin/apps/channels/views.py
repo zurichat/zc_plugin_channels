@@ -46,14 +46,18 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def channels(self, request, org_id):
-        """Create a new channel in the organization
-        
+
+        """
+        This creates a channel for a
+        particular organization identified by ID and creates corresponding Centrifugo room
+
         ```bash
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\",  \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
         ```
+
         """
         
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
@@ -275,13 +279,13 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def get_channel_socket_name(self, request, org_id, channel_id):
-        """Retrieve channel centrifugo socket name
+        """
+        Retrieve Centrifugo socket channel name based on organisation and channel IDs
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
         ```
         """
-
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
         if channel.__contains__("_id") or isinstance(channel, dict):
@@ -356,7 +360,7 @@ class ChannelMemberViewset(ViewSet):
         """
             Note if your planing to use the filterwrapper class
             you have to convert the values of your query_parameter
-            to a python value byt using json.loads
+            to a python value by using json.loads
         """
 
         for key in self.request.query_params.keys():
@@ -402,8 +406,9 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def add_member(self, request, org_id, channel_id):
-        """Add a user to channel
-
+        """
+        Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
+        
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -571,7 +576,9 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def list_members(self, request, org_id, channel_id):
-        """Get all members in a channel
+        """
+        This method gets all members for a
+        channel identified by ID
         
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
