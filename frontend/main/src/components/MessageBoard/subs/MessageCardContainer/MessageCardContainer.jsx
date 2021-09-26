@@ -80,14 +80,14 @@ const MessageCardContainer = () =>{
   useEffect( () => {
       const loadData = async ()=> {
         console.log('\n\n\nabout to fetch')
-        const res = await APIService.getMessages(users.Organisations, channelId);
-        console.log(users.Organisations);
+        const res = await APIService.getMessages("614679ee1a5607b13c00bcb7", channelId);
+        // console.log("614679ee1a5607b13c00bcb7");
         const receivedMessages = res.data.data
         messageEndIndex = receivedMessages.length
         messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
 
         loadedMessages = receivedMessages && receivedMessages.slice(messageStartingIndex, messageEndIndex)
-        _getChannelMessages(users.Organisations, channelId)
+        _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
         dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
       }
       loadData()
