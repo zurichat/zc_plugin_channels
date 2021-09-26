@@ -56,14 +56,28 @@ class ChannelMessageSerializer(serializers.Serializer):
 
 class ChannelMessageReactionSerializer(serializers.Serializer):
 
-    title = serializers.CharField(read_only=True)
-    count = serializers.IntegerField(read_only=True)
-    users = serializers.ListField(read_only=True)
+    title = serializers.CharField(
+        read_only=True,
+        help_text="Emoji title"
+    )
+    count = serializers.IntegerField(
+        read_only=True,
+        help_text="Number of reactions made with this emoji"
+    )
+    users = serializers.ListField(
+        read_only=True,
+        help_text="List of users that reacted with this emoji"
+    )
 
 
 class ChannelMessageReactionsUpdateSerializer(serializers.Serializer):
-    title = serializers.CharField(required=True)
-    member_id = serializers.CharField()
+    title = serializers.CharField(
+        required=True,
+        help_text="Emoji title",
+    )
+    member_id = serializers.CharField(
+        help_text="User ID"
+    )
 
 
 class ChannelMessageUpdateSerializer(serializers.Serializer):
