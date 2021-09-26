@@ -20,6 +20,9 @@ import { useParams } from "react-router";
 
 
 const MessageInput = () =>{
+
+  const { users } = useSelector((state) => state.appReducer)
+
     const textRef = useRef(null);
     const [data,setData]=useState('');
     const [emoji,setEmoji]=useState(false);
@@ -33,7 +36,7 @@ const MessageInput = () =>{
     const { channelId } = useParams()
 
     const datas={
-      user_id:"614b15fa44a9bd81cedc09d2",
+      user_id: users._id,
       content:data
     }
 //For Post Request
