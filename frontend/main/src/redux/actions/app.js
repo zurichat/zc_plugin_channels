@@ -13,6 +13,7 @@ import {
   GET_CHANNELS,
   CREATE_CHANNELS,
   GET_SOCKETS,
+  ADD_CHANNEL_MEMBER,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -54,6 +55,17 @@ const _getUsers = (params) => async (dispatch) => {
   } catch (error) {
     // Handle exceptions here
     console.log(error);
+  }
+};
+const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.addChannelMember(org_id, channel_id, data);
+    console.log(res.data);
+    dispatch({ type: ADD_CHANNEL_MEMBER, payload: res.data }); // Result is sent to the store via dispatch (Pass payload if needed)
+  } catch (error) { 
+    console.log(error);// Handle exceptions here
   }
 };
 const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
@@ -130,7 +142,7 @@ const _getChannels = (org_id) => async (dispatch) => {
 const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
   try {
     const res = await APIService.getPinnedMessages(org_id, channel_id);
-    const { data } = res.data
+    const data = res.data.data || []
     dispatch({ type: GET_PINNED_MESSAGES, payload: data });
   } catch (err) {
     _alert("error");
@@ -189,5 +201,6 @@ const appActions = {
   _getChannels,
   _createChannel,
   _getSocket,
+  _addChannelMember,
 };
 export default appActions;

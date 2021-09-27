@@ -126,6 +126,10 @@ class APIServices {
   async getSockets(org_id, channel_id) {
     return api.get(`/${org_id}/channels/${channel_id}/socket/`);
   }
+
+  async addChannelMember(org_id, channel_id, data) {
+    return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
+  }
 }
 
 const instance = new APIServices();
