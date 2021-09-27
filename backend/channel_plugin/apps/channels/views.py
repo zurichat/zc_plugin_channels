@@ -4,17 +4,17 @@ from apps.centri.helperfuncs import build_room_name
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from django.http.response import JsonResponse
+from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers, status
-from rest_framework.decorators import action
+from rest_framework import serializers, status, throttling
+from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
 from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
-from django.utils.timezone import datetime
-
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllMediaSerializer,
@@ -33,12 +33,9 @@ from .serializers import (  # SearchMessageQuerySerializer,
 # Create your views here.
 
 
-class ChannelViewset(ViewSet, OrderMixin):
+class ChannelViewset(ThrottledViewSet, OrderMixin):
 
-    OrderingFields = {
-        "members": int,
-        "created_on": datetime.fromisoformat
-    }
+    OrderingFields = {"members": int, "created_on": datetime.fromisoformat}
 
     @swagger_auto_schema(
         operation_id="create-channel",
@@ -48,6 +45,7 @@ class ChannelViewset(ViewSet, OrderMixin):
             404: openapi.Response("Error Response", ErrorSerializer),
         },
     )
+    @throttle_classes([throttling.AnonRateThrottle])
     @action(
         methods=["POST"],
         detail=False,
@@ -92,7 +90,7 @@ class ChannelViewset(ViewSet, OrderMixin):
         curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
         ```
         """
-        data = {}        
+        data = {}
         data.update(self._clean_query_params(request))
         result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND

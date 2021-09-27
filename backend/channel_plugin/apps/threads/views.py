@@ -2,10 +2,11 @@ from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+from rest_framework.throttling import AnonRateThrottle
 
+from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
 from channel_plugin.utils.wrappers import OrderMixin
 
@@ -16,7 +17,7 @@ from .permissions import CanReply, IsMember, IsOwner
 from .serializers import ThreadSerializer, ThreadUpdateSerializer
 
 
-class ThreadViewset(ViewSet, OrderMixin):
+class ThreadViewset(ThrottledViewSet, OrderMixin):
 
     authentication_classes = []
 
@@ -57,22 +58,23 @@ class ThreadViewset(ViewSet, OrderMixin):
                 type=openapi.TYPE_STRING,
             ),
         ],
-        operation_id="create-message-thread"
+        operation_id="create-message-thread",
     )
     @action(
         methods=["POST"],
         detail=False,
     )
+    @throttle_classes([AnonRateThrottle])
     def thread_message(self, request, org_id, channelmessage_id):
         """Add reply to message
-        
+
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/?channel_id={{channel_id}}"
-        -H  "accept: application/json" 
+        -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
                 \"user_id\": \"string\",
-                \"content\": \"string\", 
+                \"content\": \"string\",
                 \"files\": [
                     \"string\"
                 ]
@@ -110,7 +112,7 @@ class ThreadViewset(ViewSet, OrderMixin):
             200: openapi.Response("Response", ThreadUpdateSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="retrieve-message-threads"
+        operation_id="retrieve-message-threads",
     )
     @action(
         methods=["GET"],
@@ -118,7 +120,7 @@ class ThreadViewset(ViewSet, OrderMixin):
     )
     def thread_message_all(self, request, org_id, channelmessage_id):
         """Retrieve all replies to message
-        
+
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/" -H  "accept: application/json"
         ```
@@ -156,7 +158,7 @@ class ThreadViewset(ViewSet, OrderMixin):
                 type=openapi.TYPE_STRING,
             ),
         ],
-        operation_id="update-thread-message"
+        operation_id="update-thread-message",
     )
     @action(
         methods=["PUT"],
@@ -164,7 +166,7 @@ class ThreadViewset(ViewSet, OrderMixin):
     )
     def thread_message_update(self, request, org_id, thread_id):
         """Update thread message
-        
+
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
         -H  "accept: application/json"
@@ -201,9 +203,7 @@ class ThreadViewset(ViewSet, OrderMixin):
             ),
         ],
         operation_id="delete-thread-message",
-        responses={
-            204: openapi.Response("Thread message deleted successfully")
-        }
+        responses={204: openapi.Response("Thread message deleted successfully")},
     )
     @action(
         methods=["DELETE"],
@@ -211,11 +211,11 @@ class ThreadViewset(ViewSet, OrderMixin):
     )
     def thread_message_delete(self, request, org_id, thread_id):
         """Delete thread message
-        
+
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json"
         ```
-        """
+        """  # noqa
 
         thread = Request.get(org_id, "thread", {"_id": thread_id})
         message = Request.get(
