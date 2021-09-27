@@ -431,17 +431,17 @@ channelmessage_reactions = ChannelMessageViewset.as_view(
 )
 
 @api_view(['POST'])
-@renderer_classes([renderers.OpenAPIRenderer, renderers.SwaggerUIRenderer])
+
 def search_messages(request, org_id, channel_id):
     """
     Search channel messages based on content, pinned status, file attachments etc.
     """
-        serializer = ChannelMessageSearchSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.data
-            response = search_db(org_id, channel_id, "channelmessage", **data)
-            response.update(data)
-            return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    serializer = ChannelMessageSearchSerializer(data=request.data)
+    if serializer.is_valid():
+        data = serializer.data
+        response = search_db(org_id, channel_id, "channelmessage", **data)
+        response.update(data)
+        return Response(response, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 search_channelmessage = search_messages

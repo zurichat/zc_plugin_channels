@@ -144,7 +144,7 @@ def search_db(org_id, channel_id, collection_name, **params):
 
     if len(params) > 0:
         for param in params:
-            if param == "has_files" or param == "pinned":
+            if type(params[param]) == bool:
                     value = params[param]
                     data["filter"]["$and"].append({param : {"$eq" : value}})
                     continue    
