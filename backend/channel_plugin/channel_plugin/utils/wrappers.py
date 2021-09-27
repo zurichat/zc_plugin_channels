@@ -165,7 +165,7 @@ class FilterWrapper:
     @staticmethod
     def _filter_exact(obj:dict, params:dict):
         flag = 0
-        output = False
+        output = True
 
         for param in params.items():
             if param in list(obj.items()):
@@ -188,7 +188,7 @@ class FilterWrapper:
         }
 
         flag = 0
-        output = False
+        output = True
 
         for param in params.items():
             
@@ -207,7 +207,7 @@ class FilterWrapper:
 
     @staticmethod
     def _startswith(obj:dict, param:tuple):
-        output = False
+        output = True
 
         key = param[0]
 
@@ -223,7 +223,7 @@ class FilterWrapper:
 
     @staticmethod
     def _endswith(obj:dict, param:tuple):
-        output = False
+        output = True
         
         key = param[0]
 
@@ -239,7 +239,7 @@ class FilterWrapper:
 
     @staticmethod
     def _contains(obj:dict, param:tuple):
-        output = False
+        output = True
 
         key = param[0]
 
