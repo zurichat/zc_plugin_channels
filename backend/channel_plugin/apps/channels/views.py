@@ -6,11 +6,12 @@ from django.core.signals import request_finished
 from django.http.response import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers, status
-from rest_framework.decorators import action
+from rest_framework import serializers, status, throttling
+from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
 from channel_plugin.utils.wrappers import FilterWrapper
 
@@ -31,7 +32,11 @@ from .serializers import (  # SearchMessageQuerySerializer,
 # Create your views here.
 
 
-class ChannelViewset(ViewSet):
+class ChannelViewset(ThrottledViewSet):
+    def get_throttled_message(self, request):
+        """Add a custom message to the throttled error."""
+        return "request limit exceeded"
+
     @swagger_auto_schema(
         operation_id="create-channel",
         request_body=ChannelSerializer,
@@ -40,6 +45,7 @@ class ChannelViewset(ViewSet):
             404: openapi.Response("Error Response", ErrorSerializer),
         },
     )
+    @throttle_classes([throttling.AnonRateThrottle])
     @action(
         methods=["POST"],
         detail=False,

@@ -1,34 +1,35 @@
 import json
+from urllib.parse import urlencode
+
+import requests
 from apps.utils.serializers import ErrorSerializer
+from django.conf import settings
 from django.core.signals import request_finished
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
-from rest_framework.decorators import action, api_view, renderer_classes
+from rest_framework import status, throttling
+from rest_framework.decorators import action, api_view, throttle_classes
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
 
+from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request, search_db
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
     ChannelMessageReactionSerializer,
     ChannelMessageReactionsUpdateSerializer,
+    ChannelMessageSearchSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
-    ChannelMessageSearchSerializer,
 )
 
-import requests
-from django.conf import settings
-from urllib.parse import urlencode
-from django.conf import settings
 
-
-
-class ChannelMessageViewset(ViewSet):
+class ChannelMessageViewset(ThrottledViewSet):
 
     authentication_classes = []
+
+    def get_throttled_message(self, request):
+        return "request limit exceeded"
 
     def get_permissions(self):
 
@@ -49,8 +50,9 @@ class ChannelMessageViewset(ViewSet):
         responses={
             201: openapi.Response("Response", ChannelMessageUpdateSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
-        }
+        },
     )
+    @throttle_classes([throttling.AnonRateThrottle])
     @action(
         methods=["POST"],
         detail=False,
@@ -58,8 +60,8 @@ class ChannelMessageViewset(ViewSet):
     def message(self, request, org_id, channel_id):
         """
         Create a channel message and automatically publishes to Centrifugo
-        
-        
+
+
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
         ```
@@ -109,11 +111,11 @@ class ChannelMessageViewset(ViewSet):
 
         for chunk in self._stream_message_all(request, org_id, channel_id):
             data += chunk
-        
+
         try:
             result = json.loads(data)
             status_code = status.HTTP_200_OK
-        except:
+        except:  # noqa
             result = []
 
         """<<<<<<"""
@@ -124,10 +126,10 @@ class ChannelMessageViewset(ViewSet):
 
     def _stream_message_all(self, request, org_id, channel_id):
         """
-            This method reads the response to a
-            zc-core request in streams
+        This method reads the response to a
+        zc-core request in streams
         """
-        #TODO: Remove this method when zc-core implements pagination
+        # TODO: Remove this method when zc-core implements pagination
         data = {"channel_id": channel_id}
         data.update(self.request.query_params)
 
@@ -139,10 +141,10 @@ class ChannelMessageViewset(ViewSet):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
         url += "?" + urlencode(data)
 
-        r = requests.get(url, stream=True, timeout=10000)         
+        r = requests.get(url, stream=True, timeout=10000)
 
-        if int(r.headers.get('Content-Length', 10000)) > max_chunk_size:
-            raise ValueError('response too large')
+        if int(r.headers.get("Content-Length", 10000)) > max_chunk_size:
+            raise ValueError("response too large")
 
         size = 0
 
@@ -150,9 +152,8 @@ class ChannelMessageViewset(ViewSet):
 
             size += len(chunk)
             if size > max_chunk_size:
-                raise ValueError('response too large')
+                raise ValueError("response too large")
             yield chunk
-
 
     @swagger_auto_schema(
         responses={
@@ -167,7 +168,7 @@ class ChannelMessageViewset(ViewSet):
     )
     def message_retrieve(self, request, org_id, msg_id):
         """Retrieve message details
-        
+
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/" -H  "accept: application/json"
         ```
@@ -202,7 +203,7 @@ class ChannelMessageViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
-        operation_id="update-message-details"
+        operation_id="update-message-details",
     )
     @action(
         methods=["PUT"],
@@ -212,13 +213,13 @@ class ChannelMessageViewset(ViewSet):
 
         """
         Updates message based on ID
-        
+
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
-                \"pinned\": true, 
+                \"pinned\": true,
                 \"content\": \"string\"
             }"
         ```
@@ -263,8 +264,8 @@ class ChannelMessageViewset(ViewSet):
         operation_id="delete-message",
         responses={
             204: openapi.Response("Message deleted successfully"),
-            404: openapi.Response("Not found")
-        }
+            404: openapi.Response("Not found"),
+        },
     )
     @action(
         methods=["DELETE"],
@@ -272,13 +273,13 @@ class ChannelMessageViewset(ViewSet):
     )
     def message_delete(self, request, org_id, msg_id):
         """
-        Deletes a message based on ID, and organisation 
-        
+        Deletes a message based on ID, and organisation
+
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json""
         ```
 
-        """
+        """  # noqa
 
         result = Request.delete(org_id, "channelmessage", object_id=msg_id)
 
@@ -306,17 +307,16 @@ class ChannelMessageViewset(ViewSet):
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Successful", ChannelMessageReactionSerializer(many=True))
+            200: openapi.Response(
+                "Successful", ChannelMessageReactionSerializer(many=True)
+            )
         },
-        operation_id="retrieve-message-reactions"
+        operation_id="retrieve-message-reactions",
     )
-    @action(
-        methods=["GET"],
-        detail=False
-    )
+    @action(methods=["GET"], detail=False)
     def retrieve_message_reactions(self, request, org_id, msg_id):
         """Retrieve message reactions
-        
+
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/" -H  "accept: application/json"
         ```
@@ -334,20 +334,19 @@ class ChannelMessageViewset(ViewSet):
     @swagger_auto_schema(
         request_body=ChannelMessageReactionsUpdateSerializer,
         responses={
-            200: openapi.Response("Reaction updated", ChannelMessageReactionSerializer(many=True))
+            200: openapi.Response(
+                "Reaction updated", ChannelMessageReactionSerializer(many=True)
+            )
         },
-        operation_id="update-message-reactions"
+        operation_id="update-message-reactions",
     )
-    @action(
-        methods=["PUT"],
-        detail=False
-    )
+    @action(methods=["PUT"], detail=False)
     def update_message_reactions(self, request, org_id, msg_id):
         """Update message reactions
-        
+
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
-        -H  "accept: application/json" 
+        -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{  \"title\": \"string\",  \"member_id\": \"string\"}"
         ```
@@ -396,7 +395,7 @@ class ChannelMessageViewset(ViewSet):
             payload = {"emojis": message_reactions}
             result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
             status_code = status.HTTP_400_BAD_REQUEST
-            
+
             if result:
                 request_finished.send(
                     sender=self.__class__,
@@ -413,7 +412,6 @@ class ChannelMessageViewset(ViewSet):
         status_code = status.HTTP_404_NOT_FOUND
         return Response({"error": "message not found"}, status=status_code)
 
-    
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
@@ -430,8 +428,8 @@ channelmessage_reactions = ChannelMessageViewset.as_view(
     {"get": "retrieve_message_reactions", "put": "update_message_reactions"}
 )
 
-@api_view(['POST'])
 
+@api_view(["POST"])
 def search_messages(request, org_id, channel_id):
     """
     Search channel messages based on content, pinned status, file attachments etc.
@@ -442,6 +440,7 @@ def search_messages(request, org_id, channel_id):
         response = search_db(org_id, channel_id, "channelmessage", **data)
         response.update(data)
         return Response(response, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 search_channelmessage = search_messages
