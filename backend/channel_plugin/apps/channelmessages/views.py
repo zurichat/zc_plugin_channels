@@ -1,6 +1,7 @@
 import json
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
+from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request, search_db
+from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
@@ -26,7 +28,12 @@ from django.conf import settings
 
 
 
-class ChannelMessageViewset(ViewSet):
+class ChannelMessageViewset(ViewSet, OrderMixin):
+    
+    OrderingFields = {
+        "timestamp": datetime.fromisoformat,
+        "replies":int
+    }
 
     authentication_classes = []
 
@@ -112,14 +119,13 @@ class ChannelMessageViewset(ViewSet):
         
         try:
             result = json.loads(data)
-            status_code = status.HTTP_200_OK
         except:
             result = []
-
-        """<<<<<<"""
-
-        if isinstance(result, list):
-            status_code = status.HTTP_200_OK
+        
+        if isinstance(result, dict):
+            if result.get("data"):
+                result = self.perform_ordering(request, result.get("data"))
+                status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
     def _stream_message_all(self, request, org_id, channel_id):
@@ -129,7 +135,8 @@ class ChannelMessageViewset(ViewSet):
         """
         #TODO: Remove this method when zc-core implements pagination
         data = {"channel_id": channel_id}
-        data.update(self.request.query_params)
+        params = self._clean_query_params(request)
+        data.update(params)
 
         read = settings.READ_URL
 
@@ -139,7 +146,7 @@ class ChannelMessageViewset(ViewSet):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
         url += "?" + urlencode(data)
 
-        r = requests.get(url, stream=True, timeout=10000)         
+        r = requests.get(url, stream=True, timeout=100)         
 
         if int(r.headers.get('Content-Length', 10000)) > max_chunk_size:
             raise ValueError('response too large')

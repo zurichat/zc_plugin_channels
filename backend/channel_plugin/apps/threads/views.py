@@ -7,14 +7,22 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.wrappers import OrderMixin
+
+from django.utils.timezone import datetime
+
 
 from .permissions import CanReply, IsMember, IsOwner
 from .serializers import ThreadSerializer, ThreadUpdateSerializer
 
 
-class ThreadViewset(ViewSet):
+class ThreadViewset(ViewSet, OrderMixin):
 
     authentication_classes = []
+
+    OrderingFields = {
+        "timestamp": datetime.fromisoformat,
+    }
 
     def get_permissions(self):
 
@@ -117,10 +125,12 @@ class ThreadViewset(ViewSet):
         """
 
         data = {"channelmessage_id": channelmessage_id}
-        data.update(dict(request.query_params))
+        params = self._clean_query_params(request)
+        data.update(params)
         result = Request.get(org_id, "thread", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
+            result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
