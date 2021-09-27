@@ -13,7 +13,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customrequest import Request
-from channel_plugin.utils.wrappers import FilterWrapper
+from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
+from django.utils.timezone import datetime
+
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelGetSerializer,
@@ -32,7 +34,13 @@ from .serializers import (  # SearchMessageQuerySerializer,
 # Create your views here.
 
 
-class ChannelViewset(ViewSet):
+class ChannelViewset(ViewSet, OrderMixin):
+
+    OrderingFields = {
+        "members": int,
+        "created_on": datetime.fromisoformat
+    }
+
     @swagger_auto_schema(
         operation_id="create-channel",
         request_body=ChannelSerializer,
@@ -85,14 +93,15 @@ class ChannelViewset(ViewSet):
         curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
         ```
         """
-        data = {}
-        data.update(dict(request.query_params))
+        data = {}        
+        data.update(self._clean_query_params(request))
         result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
             if result:
                 for i, channel in enumerate(result):
                     result[i].update({"members": len(channel["users"].keys())})
+                result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -288,7 +297,7 @@ class ChannelViewset(ViewSet):
         """
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
-        if channel.__contains__("_id") or isinstance(channel, dict):
+        if channel:
             data = {
                 "socket_name": build_room_name(org_id, channel_id),
                 "channel_id": channel_id,
