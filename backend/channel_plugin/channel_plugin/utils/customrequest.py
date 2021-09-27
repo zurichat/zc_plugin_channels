@@ -129,30 +129,30 @@ class Request:
             return response.json()
         return {"error": response}
 
+
 def search_db(org_id, channel_id, collection_name, **params):
 
     data = {
         "plugin_id": settings.PLUGIN_ID,
-        "organization_id" : org_id,
-        "collection_name" : collection_name,
-        "filter" : {"$and": [
-                                {"channel_id" : {"$eq":channel_id}},
-                                ]
-                        }
-
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
     }
 
     if len(params) > 0:
         for param in params:
-            if type(params[param]) == bool:
-                    value = params[param]
-                    data["filter"]["$and"].append({param : {"$eq" : value}})
-                    continue    
+            if isinstance(params[param], bool):
+                value = params[param]
+                data["filter"]["$and"].append({param: {"$eq": value}})
+                continue
             value = params[param]
-            data["filter"]["$and"].append({param : {"$regex" : value, "$options":"i"}})
-    print(data)
+            data["filter"]["$and"].append({param: {"$regex": value, "$options": "i"}})
+    # print(data)
     json_data = json.dumps(data)
     response = requests.post("https://api.zuri.chat/data/read", data=json_data)
-    print(response)
+    # print(response)
     return response.json()
-
