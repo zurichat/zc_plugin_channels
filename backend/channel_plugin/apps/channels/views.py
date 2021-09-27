@@ -4,6 +4,7 @@ from apps.centri.helperfuncs import build_room_name
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from django.http.response import JsonResponse
+from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status, throttling
@@ -13,7 +14,7 @@ from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
-from channel_plugin.utils.wrappers import FilterWrapper
+from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllMediaSerializer,
@@ -32,10 +33,9 @@ from .serializers import (  # SearchMessageQuerySerializer,
 # Create your views here.
 
 
-class ChannelViewset(ThrottledViewSet):
-    def get_throttled_message(self, request):
-        """Add a custom message to the throttled error."""
-        return "request limit exceeded"
+class ChannelViewset(ThrottledViewSet, OrderMixin):
+
+    OrderingFields = {"members": int, "created_on": datetime.fromisoformat}
 
     @swagger_auto_schema(
         operation_id="create-channel",
@@ -91,13 +91,14 @@ class ChannelViewset(ThrottledViewSet):
         ```
         """
         data = {}
-        data.update(dict(request.query_params))
+        data.update(self._clean_query_params(request))
         result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
             if result:
                 for i, channel in enumerate(result):
                     result[i].update({"members": len(channel["users"].keys())})
+                result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -291,7 +292,7 @@ class ChannelViewset(ThrottledViewSet):
         """
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
-        if channel.__contains__("_id") or isinstance(channel, dict):
+        if channel:
             data = {
                 "socket_name": build_room_name(org_id, channel_id),
                 "channel_id": channel_id,
