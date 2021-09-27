@@ -4,11 +4,11 @@ from django.core.signals import request_finished
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import Request, search_db
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
@@ -16,6 +16,7 @@ from .serializers import (
     ChannelMessageReactionsUpdateSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
+    ChannelMessageSearchSerializer,
 )
 
 import requests
@@ -412,7 +413,7 @@ class ChannelMessageViewset(ViewSet):
         status_code = status.HTTP_404_NOT_FOUND
         return Response({"error": "message not found"}, status=status_code)
 
-
+    
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
@@ -428,3 +429,19 @@ channelmessage_views_group = ChannelMessageViewset.as_view(
 channelmessage_reactions = ChannelMessageViewset.as_view(
     {"get": "retrieve_message_reactions", "put": "update_message_reactions"}
 )
+
+@api_view(['POST'])
+
+def search_messages(request, org_id, channel_id):
+    """
+    Search channel messages based on content, pinned status, file attachments etc.
+    """
+    serializer = ChannelMessageSearchSerializer(data=request.data)
+    if serializer.is_valid():
+        data = serializer.data
+        response = search_db(org_id, channel_id, "channelmessage", **data)
+        response.update(data)
+        return Response(response, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+search_channelmessage = search_messages
