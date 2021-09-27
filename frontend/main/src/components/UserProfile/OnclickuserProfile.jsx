@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Box,
@@ -14,14 +13,13 @@ import { BiMessageRoundedDetail } from "react-icons/bi";
 import { FiPhoneCall } from "react-icons/fi";
 import { CgMore } from "react-icons/cg";
 import smileEmoji from '../images/emoji-smile.png'
-import UserImage from "../images/Rectangle 892.png"
-
 // import UserProfileOnHover  from "./UserProfileOnHover";
 
-const ViewProfile = ({showProfile ,setShowProfile }) => {
+const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
 
   const data = {
-    imageUrl: UserImage, 
+    imageUrl:
+      "https://s3-alpha-sig.figma.com/img/d4a3/e257/f13a3cdb05ca74c9abf2933974335778?Expires=1631491200&Signature=JtDbDf-1BE7WkG0QO5i2-h-UhB8HF69Fr~QoJ0-wxPGvakH45P3R4xWFvrKRkpdqzcZWLl~aoWehGnocI-VTbns~3GT2rGw69rNnbWEOEdOlPf2RHkgceFJwzC6jma00vO1ROq3MMThgHdL0oVCLLmQV7XVgcq7RDUULJxrlrSqBffyTBjk-nuic0ONndBtT~nitN0WBUH8lKAoljTdErKZw0ucFGKC4xyfVdWGmT8w0~NRHvR6zy-3e48uxcvJ-8jIMFNJVlQ4jjnY1rXlnSWIataD0t6bJwmCGgGK7t-nADuJJtv9Vk9v31athvVG7z95o~naOyVOJabkpZoGIZw__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
     imageAlt: "profile-image",
     name: "Deryin Cutting",
     details: "View full profile",
