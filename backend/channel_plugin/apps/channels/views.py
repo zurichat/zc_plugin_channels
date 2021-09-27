@@ -23,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
+    ChannelAllMediaSerializer,
 )
 
 # from rest_framework.filters
@@ -45,14 +46,18 @@ class ChannelViewset(ViewSet):
         detail=False,
     )
     def channels(self, request, org_id):
-        """Create a new channel in the organization
-        
+
+        """
+        This creates a channel for a
+        particular organization identified by ID and creates corresponding Centrifugo room
+
         ```bash
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\",  \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
         ```
+
         """
         
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
@@ -94,18 +99,22 @@ class ChannelViewset(ViewSet):
     @swagger_auto_schema(
         responses={
             200: openapi.Response(
-                "Response", ChannelMessageUpdateSerializer(many=True)
+                "Response", ChannelAllMediaSerializer
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        operation_id="list-all-channel-media"
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
+        """Retrieve all media in channel
 
-        """
-        This gets all media for a prticular channel for a
-        particular organization identified by ID
-        splitted into channelmessage and thread objects.
+        This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
+        Response is split into `channelmessage` and `thread` objects
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        ```
         """
         data = {"channel_id": channel_id, "has_files": True}
         data.update(dict(request.query_params))
@@ -259,15 +268,24 @@ class ChannelViewset(ViewSet):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        responses={200: openapi.Response("Response", SocketSerializer())},
-        operation_id="get-channel's-socket-name",
+        responses={
+            200: openapi.Response("Response", SocketSerializer()),
+            404: openapi.Response("Not found"),
+        },
+        operation_id="retrieve-channel-socket-name",
     )
     @action(
         methods=["GET"],
         detail=False,
     )
     def get_channel_socket_name(self, request, org_id, channel_id):
+        """
+        Retrieve Centrifugo socket channel name based on organisation and channel IDs
 
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
+        ```
+        """
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
         if channel.__contains__("_id") or isinstance(channel, dict):
@@ -342,7 +360,7 @@ class ChannelMemberViewset(ViewSet):
         """
             Note if your planing to use the filterwrapper class
             you have to convert the values of your query_parameter
-            to a python value byt using json.loads
+            to a python value by using json.loads
         """
 
         for key in self.request.query_params.keys():
@@ -388,8 +406,9 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def add_member(self, request, org_id, channel_id):
-        """Add a user to channel
-
+        """
+        Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
+        
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -499,8 +518,24 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def can_input(self, request, org_id, channel_id):
-        """
-        Method checks if a user input should be disabled or enabled
+        """Check if input is enabled for users
+
+        This checks if a user input should be disabled or enabled, i.e \
+        should users be able to send messages in the channel or not.
+
+        (incomplete doc)
+
+        ```bash
+        curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_input/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                \"_id\": \"string\", 
+                \"role_id\": \"string\", 
+                \"is_admin\": false,  
+                \"notifications\": { }
+            }"
+        ```
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -541,7 +576,9 @@ class ChannelMemberViewset(ViewSet):
         detail=False,
     )
     def list_members(self, request, org_id, channel_id):
-        """Get all members in a channel
+        """
+        This method gets all members for a
+        channel identified by ID
         
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
