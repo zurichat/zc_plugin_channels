@@ -13,14 +13,7 @@
         <script src="https://cdn.jsdelivr.net/gh/centrifugal/centrifuge-js@2.8.0/dist/centrifuge.min.js"></script>
         <script type="text/javascript">
             const container = document.getElementById('counter');
-            let socketUrl = "";
-            
-            if (window.location.hostname == "127.0.0.1")
-            {
-              socketUrl = "ws://localhost:8000/connection/websocket";
-            } else {
-              socketUrl = "wss://realtime.zuri.chat/connection/websocket";
-            }
+            let socketUrl = "wss://realtime.zuri.chat/connection/websocket";
             const centrifuge = new Centrifuge(socketUrl);
             
 
