@@ -91,7 +91,7 @@ const CentrifugoComponent = () => {
       //         break;
       // }
     })
-   }, []);
+   }, [channelId]);
 
     return(
         <>
