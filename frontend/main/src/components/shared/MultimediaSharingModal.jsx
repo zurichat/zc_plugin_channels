@@ -6,9 +6,33 @@ import {
     Divider, HStack, Text, Link, Input,
     List, ListItem, FormLabel,
 } from "@chakra-ui/react"
+import axios from 'axios'
+import { useState } from 'react';
 
 
 const MultimediaSharingModal = () => {
+    const [selectedFile, setselectedFile] = useState();
+    const [isFilePicked, setIsFilePicked] = useState(false);
+
+    const fileSelectHandler = event => {
+        const fileSelected = event.target.files[0];
+        setselectedFile(fileSelected);
+        setIsFilePicked(true);
+    }
+    const fileUploadHandler = async () => {
+        const fd = new FormData();
+        fd.append('file', selectedFile);
+        axios.post(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/messages/`, fd)
+            .then(axios.get(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/media/?format=json`, fd)
+                .then(res => {
+                    console.log(res.files)
+                    return res.files[id];
+                })).catch((error) => {
+
+                    console.error('Error:', error);
+
+                });
+    }
 
     return (
         <Flex direction="column">
