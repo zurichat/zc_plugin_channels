@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Divider, Flex } from "@chakra-ui/layout";
 import { Box, Button,Modal,ModalContent,ModalOverlay} from "@chakra-ui/react";
 import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
@@ -35,6 +35,12 @@ const MessageInput = () =>{
 
     const { channelId } = useParams()
 
+    let newChannelId = channelId
+
+    useEffect(() => {
+      newChannelId = channelId
+    }, [channelId])
+
     const datas={
       user_id: users ? users._id : "614b15fa44a9bd81cedc09d2",
       content:data
@@ -48,9 +54,9 @@ const MessageInput = () =>{
 
     const loadData= async ()=>{
       const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
-      const channel_id = channelId; // Hardcoded value to for channel_id in org with id 1
+      const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
-      console.log(data)
+      console.log(data, channel_id)
       setData('');
     }
 
