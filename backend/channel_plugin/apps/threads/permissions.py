@@ -53,7 +53,7 @@ class CanReply(permissions.BasePermission):
         response = (
             Request.get(org_id, "channelmessage", {"_id": channelmessage_id}) or {}
         )
-
-        if response.get("can_reply"):
-            return True
+        if response.__contains__("_id"):
+            if response.get("can_reply"):
+                return True
         return False

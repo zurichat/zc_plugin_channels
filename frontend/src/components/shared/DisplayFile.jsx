@@ -26,7 +26,7 @@ export default function  DisplayFiles() {
   console.log(channelsFiles);
   
 
-  const org_id = 1; //Test value for org id
+  const org_id = "614679ee1a5607b13c00bcb7"; //Test value for org id
   const channel_id = "613f70bd6173056af01b4aba"; // Test  value to for channel_id 
 
   // STEP SIX
@@ -126,6 +126,7 @@ export default function  DisplayFiles() {
                         />
                       </Box>
                       <Spacer />
+                      
                       <Box>
                         <AiOutlineUpload />
                       </Box>
