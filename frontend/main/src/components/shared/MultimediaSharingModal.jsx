@@ -23,7 +23,7 @@ const MultimediaSharingModal = () => {
         const fd = new FormData();
         fd.append('file', selectedFile);
         axios.post(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/messages/`, fd)
-            .then(axios.get(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/media/?format=json`, fd)
+            .then(await axios.get(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/media/?format=json`, fd)
                 .then(res => {
                     console.log(res.files)
                     return res.files[id];
@@ -97,12 +97,12 @@ const MultimediaSharingModal = () => {
                 </HStack>
                 <Stack pt='20px'>
                     {isFilePicked ? (
-                        <Box>
+                        <Box transitionDuration='4s'>
                             <Text>Upload Successful. File url: {selectedFile}</Text>
                         </Box>
                     ) : (<Text>Select file</Text>)}
                 </Stack>
-                <IconButton onClick={fileUploadHandler} maxW={12} icon={<IoSend />} />
+                {/* <IconButton onClick={fileUploadHandler} maxW={12} icon={<IoSend />} /> */}
             </Stack>
         </Flex>
     )
