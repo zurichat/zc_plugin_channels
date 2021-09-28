@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Stack, StackDivider, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
 import LeaveChannel from './LeaveChannel';
 import axios from 'axios';
+import instance from './../../utils/api';
 
 const About = (index) => {
 
@@ -10,6 +11,7 @@ const About = (index) => {
   const [owner, setOwner] = useState("Fikun");
   const [created_on, setCreatedOn] = useState("August 28, 2021");
 
+  //For edit details modal
   const [modalValue, setModalValue] = useState({})
   const [isOpen, setIsOpen] = useState(false);
 
@@ -29,13 +31,13 @@ const About = (index) => {
 
 
   const fetchTopic = async () => {
-    const res = await axios(api_url).catch((err) => console.log(err));
+    const res = await instance.getChannelDetails(org_id, channel_id).catch((err) => console.log(err));
     const data = await res.data;
     // console.log(data.name);
     return data.topic;
   }
 
-  // Descriptionu
+  // Description
   useEffect(() => {
     const getDescription = async () => {
       const descriptionFromServer = await fetchDescription();
