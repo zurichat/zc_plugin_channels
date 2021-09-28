@@ -14,6 +14,7 @@ import {
   CREATE_CHANNELS,
   GET_SOCKETS,
   ADD_CHANNEL_MEMBER,
+  EDIT_MESSAGE,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -187,6 +188,19 @@ const _createChannel = (org_id, data) => async (dispatch) => {
   }
 };
 
+const _editMessage = (org_id, channel_id, user_id, msg_id, data) => async (dispatch) => {
+  try {
+    const res = await APIService.updateMessage(org_id, channel_id, user_id, msg_id, data, {
+      params: { user_id, channel_id },
+      update : "True",
+    });
+    dispatch({ type: EDIT_MESSAGE, payload: res.data });
+  } catch (err) {
+    _alert("error");
+  }
+};
+
+
 // Export functions here
 const appActions = {
   _alert,
@@ -202,5 +216,6 @@ const appActions = {
   _createChannel,
   _getSocket,
   _addChannelMember,
+  _editMessage,
 };
 export default appActions;

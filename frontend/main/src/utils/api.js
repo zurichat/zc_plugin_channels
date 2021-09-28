@@ -127,6 +127,12 @@ class APIServices {
     return api.get(`/${org_id}/channels/${channel_id}/socket/`);
   }
 
+  async editMessage(org_id, channel_id, user_id, msg_id, data) {
+    return api.post(`/${org_id}/messages/${msg_id}/`, data, {
+      params: { user_id, channel_id },
+      });
+  }
+
   async addChannelMember(org_id, channel_id, data) {
     return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
   }

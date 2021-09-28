@@ -7,7 +7,7 @@ import { FiBookmark, FiCornerUpRight } from "react-icons/fi"
 import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
-import appActions from "../../redux/actions/app"
+import appActions, {_editMessage} from "../../redux/actions/app"
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -91,7 +91,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
   );
 };
 
-const HoverOptions = ({ show, actions }) => {
+const HoverOptions = ({ show, actions, _editMessage }) => {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -104,7 +104,7 @@ const HoverOptions = ({ show, actions }) => {
     { label: "Copy Link" },
     { divider: true },
     { label: "Pin to channel", command: "P", onClick: actions },
-    { label: "Edit Message", command: "E" }, 
+    { label: "Edit Message", command: "E", onClick: {_editMessage}  }, 
   ], [])
   return (
     <HStack 

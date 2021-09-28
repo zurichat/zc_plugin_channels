@@ -7,6 +7,7 @@ import {
   PIN_MESSAGE,
   SEND_MESSAGES,
   ADD_CHANNEL_MEMBER,
+  EDIT_MESSAGE,
 } from "../actions/types";
 
 const initialState = {
@@ -19,6 +20,7 @@ const initialState = {
   pinnedMessages: [],
   sendMessages: {},
   channelMember: {},
+  editMessage: {},
 };
 
 const channelsReducer = (state = initialState, action) => {
@@ -41,6 +43,11 @@ const channelsReducer = (state = initialState, action) => {
         pinnedMessages: payload,
       };
     }
+      case EDIT_MESSAGE:
+        return {
+          ...state,
+          editMessage: action.payload
+        };
     case SEND_MESSAGES:
       return {
         ...state,

@@ -1,17 +1,26 @@
 import React from 'react';
-import { Box, HStack, Text} from "@chakra-ui/react";
+import { Box, HStack, Text, Button} from "@chakra-ui/react";
 import { ChevronRightIcon } from '@chakra-ui/icons';
-
+import {
+    Modal,   
+    ModalContent,
+    ModalBody,
+    useDisclosure,
+} from "@chakra-ui/react";
 
 function MessageOptionsPopUpMenu() {
+    const { isOpen, onOpen, onClose } = useDisclosure()
     return (
-        <Box bg="white" margin="auto" color="black" boxSize="sm" maxW="280px" h="max-content" paddingBlock={3} border={1} boxShadow="md" borderRadius="6px">
-            <Box paddingInline={2}>
+        <>
+          <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalContent maxW="16rem">
+                    <ModalBody bg="white" margin="auto" color="black" width="max-content" boxSize="sm" maxW="270px" h="max-content" paddingBlock={3} boxShadow="md" borderRadius="6px">
+             <Box pb={2} borderBottom="1px" borderBottomColor="gray.300">
                 Turn off notifications for replies
             </Box>
             <hr />
 
-            <Box>
+            <Box borderBottom="1px" borderBottomColor="gray.300">
                 <HStack justifyContent="space-between" p={2}>
                     <Text>Mark Unread</Text>
                     <Text fw="bold">U</Text>
@@ -23,7 +32,7 @@ function MessageOptionsPopUpMenu() {
             </Box>
             <hr />
 
-            <Box>
+            <Box borderBottom="1px" borderBottomColor="gray.300">
                 <Text paddingInline={2}>Send reply to this channel</Text>
                 <HStack justifyContent="space-between" p={2}>
                     <Text>Share message</Text>
@@ -34,14 +43,14 @@ function MessageOptionsPopUpMenu() {
             <hr />
 
 
-            <HStack justifyContent="space-between" p={2}>
+            <HStack as="button" d="flex" width="100%" justifyContent="space-between" p={2} borderBottom="1px" borderBottomColor="gray.300">
                 <Text>Pin to Channel</Text>
                 <Text>P</Text>
             </HStack>
             <hr />
 
 
-            <HStack justifyContent="space-between" p={2}>
+            <HStack as="button" d="flex" width="100%" justifyContent="space-between" p={2}>
                 <Text>Edit message</Text>
                 <Text>E</Text>
             </HStack>
@@ -50,7 +59,10 @@ function MessageOptionsPopUpMenu() {
                 <Text>Delete message</Text>
                 <Text>delete</Text>
             </HStack>
-        </Box>
+            </ModalBody>
+                </ModalContent>
+            </Modal>
+        </>  
     );
 }
 
