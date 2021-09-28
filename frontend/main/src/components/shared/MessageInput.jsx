@@ -113,7 +113,7 @@ const MessageInput = () =>{
     formatSelection("b") // for bold
     formatSelection("strike") // for strike through
     return(
-      <Box border="1px solid #EBEBEB" marginBottom="10px" onMouseLeave={togglingDisplay}        
+      <Box border="1px solid #EBEBEB" bg="white" marginBottom="10px"       
       css={{
         '&::-webkit-scrollbar':{
           display:'none'
