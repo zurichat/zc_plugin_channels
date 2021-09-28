@@ -1,8 +1,9 @@
 import React from 'react'
+import { IoSend } from 'react-icons/io5'
 import { FaGoogleDrive, FaTv } from 'react-icons/fa'
 import {
     Flex, Box, Image, Heading, Stack,
-    Divider, HStack, Text, Link,
+    Divider, HStack, Text, Link, Input,
     List, ListItem, FormLabel,
 } from "@chakra-ui/react"
 
@@ -11,7 +12,7 @@ const MultimediaSharingModal = () => {
 
     return (
         <Flex direction="column">
-            <Stack direction="column" px={4}>
+            <Stack direction="column" p={4} pb={0}>
                 <Box pt={2} pb={2}>
                     <Heading
                         as='h3'
@@ -41,7 +42,7 @@ const MultimediaSharingModal = () => {
                 pt={4} />
             <Stack
                 direction='column'
-                px={4}>
+                p={4} pt={0}>
                 <Box pt={4} pb={2}>
                     <Heading
                         as='h3'
@@ -60,15 +61,24 @@ const MultimediaSharingModal = () => {
                             </HStack> */}
                 <HStack
                     color='#c4c4c4'
-                    spacing={4}>
+                    spacing={4} >
                     <FaTv size='1.4rem' />
-                    <Text fontSize='md' fontWeight='normal' cursor='pointer'>
-                        <FormLabel for="upload-option-file">
-                            <Link _hover={{ textDecoration: 'none' }} pt='12px'>Upload from your computer</Link>
-                        </FormLabel>
-                        <Input type="file" style={{ display: 'none' }} id="upload-option-file" name="upload-option-file" />
-                    </Text>
+
+                    <FormLabel for="upload-option-file">
+                        <Link _hover={{ textDecoration: 'none' }}>Upload from your computer</Link>
+                    </FormLabel>
+                    <Input type="file" style={{ display: 'none' }} id="upload-option-file" name="upload-option-file" onClick={fileSelectHandler} />
+
+
                 </HStack>
+                <Stack pt='20px'>
+                    {isFilePicked ? (
+                        <Box>
+                            <Text>Upload Successful. File url: {selectedFile}</Text>
+                        </Box>
+                    ) : (<Text>Select file</Text>)}
+                </Stack>
+                <IconButton onClick={fileUploadHandler} maxW={12} icon={<IoSend />} />
             </Stack>
         </Flex>
     )
