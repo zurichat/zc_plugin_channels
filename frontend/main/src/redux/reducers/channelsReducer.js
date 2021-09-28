@@ -6,18 +6,30 @@ import {
   GET_PINNED_MESSAGES,
   PIN_MESSAGE,
   SEND_MESSAGES,
+  ADD_CHANNEL_MEMBER,
 } from "../actions/types";
 
 const initialState = {
-  channelDetails: {},
+  channelDetails: {
+    name : 'General',
+    members:  '1',
+    private: false,
+    archived : false,
+  },
   pinnedMessages: [],
   sendMessages: {},
+  channelMember: {},
 };
 
 const channelsReducer = (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {
+    case ADD_CHANNEL_MEMBER:
+      return {
+        ...state,
+        channelMember: { ...payload },
+      };
     case GET_CHANNEL_DETAILS:
       return {
         ...state,

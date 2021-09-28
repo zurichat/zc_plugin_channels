@@ -1,9 +1,138 @@
-from dataclasses import dataclass
+import json
+from copy import copy
 
-@dataclass
-class OrderingWrapper:
-    pass
 
+class OrderMixin:
+    """
+        This class is a mixin for applying
+        ordering to List endpoints
+
+        HOW TO USE:
+        -----------
+        Inherit the class in your view class
+        at anypoint where you ping zc-core and want to use 
+        query_params use the _clean_query_params(request) method of this
+        class instead to get the query params
+        -
+        once you are done processing your payload pass it through the
+        perform_ordering(request, payload:list)
+        method of the class to order the payload by the users parameters
+
+        HOW DOES THE USER USE THIS METHOD
+        ---------------------------------
+        to perform ordering on a payload a user has to pass the
+        order_by=parameter to the requests query parameters
+
+        Ordering On Nested Data
+        -----------------------
+        Ordering can be applied on Nested data by using double underscore
+        e.g order a payload by some data channel.members.date_added
+        the query parameter must be passed as order_by=members__date_added
+
+        You can View an example on applying this mixin on apps/channels/views.py
+        ChannelViewSet.channel_all
+    """
+
+
+    """
+        PARAMETERS
+        ----------
+
+        OrderingFields
+        --------------
+        a dict whose keys->str , represent fields allowed for ordering
+        and the values->callable is a function that converts the value to a
+        comparable type example { "timestamp"; datetime.fromisoformat} 
+    """
+
+    Query = "order_by"
+    Dquery = "ascending" #sho
+    OrderingFields = {} #contans allowed ordering fields 
+
+    Queryset = []
+
+    def _get_queryset(self):
+        return getattr(self, "Queryset", [])
+    
+    def _clean_query_params(self, request):
+        """
+            This  method is used to remove the ordering query params
+            so as to avoid sending them as filters to zc-core
+        """
+        params = dict(request.query_params)
+        params.pop(self.Query, None)
+        params.pop(self.Dquery, None)
+        return params
+    
+    def parse_field_to_path(self, key):
+        return key.split("__")
+
+    def _get_value(self, obj:dict, path:list, converter=None):
+        temp = copy(obj)
+        value = None
+
+        for param in path:
+            try:
+                value = temp.get(param)
+            except:
+                value = None
+                break
+            else:
+                temp = value
+        
+        
+        if converter:
+            
+            try:
+                value = converter(value)
+            except:
+                pass
+        
+        return value
+
+    def partition(self, path:list, converter, array:list, low:int, high:int):
+        pivot = self._get_value(array[high], path, converter)
+
+        i = low - 1
+
+        for j in range(low, high):
+            try:
+                if self._get_value(array[j], path, converter) <= pivot:
+
+                    i = i + 1
+
+                    (array[i], array[j]) = (array[j], array[i])
+            except TypeError:
+                pass
+        (array[i + 1], array[high]) = (array[high], array[i + 1])
+        return i + 1
+
+    def quick_sort(self, path:list, converter:None, array:list, low:int, high:int):        
+        if low < high:
+            pi = self.partition(path, converter, array, low, high)
+            self.quick_sort(path, converter, array, low, pi - 1)
+            self.quick_sort(path, converter, array, pi + 1, high)
+
+    def _order_queryset(self, by:str, ascending=True) -> list:
+        queryset = copy(self._get_queryset())
+        assert (type(by)==str), " 'by'  must be of type string"
+        assert by in self.OrderingFields.keys(), "can not perform order by this key as it is not in the ordering fields"
+        converter = self.OrderingFields.get(by)
+        path = self.parse_field_to_path(by)
+        self.quick_sort(path, converter, queryset, 0, len(queryset) - 1)
+        print(queryset)
+        return queryset if ascending else queryset[::-1]
+
+    def perform_ordering(self, request, payload:list):
+        by = request.query_params.get(self.Query, None)
+        direction = json.loads(request.query_params.get(self.Dquery, "true"))
+        self.Queryset = payload        
+        if by:
+            try:
+                return self._order_queryset(by, direction)
+            except:
+                pass
+        return payload
 
 
 class FilterWrapper:
@@ -35,7 +164,7 @@ class FilterWrapper:
     @staticmethod
     def _filter_exact(obj:dict, params:dict):
         flag = 0
-        output = False
+        output = True
 
         for param in params.items():
             if param in list(obj.items()):
@@ -58,7 +187,7 @@ class FilterWrapper:
         }
 
         flag = 0
-        output = False
+        output = True
 
         for param in params.items():
             
@@ -77,7 +206,7 @@ class FilterWrapper:
 
     @staticmethod
     def _startswith(obj:dict, param:tuple):
-        output = False
+        output = True
 
         key = param[0]
 
@@ -93,7 +222,7 @@ class FilterWrapper:
 
     @staticmethod
     def _endswith(obj:dict, param:tuple):
-        output = False
+        output = True
         
         key = param[0]
 
@@ -109,7 +238,7 @@ class FilterWrapper:
 
     @staticmethod
     def _contains(obj:dict, param:tuple):
-        output = False
+        output = True
 
         key = param[0]
 
@@ -229,4 +358,3 @@ class FilterWrapper:
 
             return output
         return data
-

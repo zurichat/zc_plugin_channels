@@ -24,11 +24,21 @@ icons = [
 
 
 class GetInfoViewset(ViewSet):
+    def get_throttled_message(self, request):
+        """Add a custom message to the throttled error."""
+        return "request limit exceeded"
+
     @action(
         methods=["GET"],
         detail=False,
     )
     def ping(self, request):
+        """Get server status
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/ping" -H  "accept: application/json"
+        ```
+        """
         return Response({"success": True}, status=status.HTTP_200_OK)
 
     @action(
@@ -36,6 +46,12 @@ class GetInfoViewset(ViewSet):
         detail=False,
     )
     def info(self, request):
+        """Get plugin details and developer information
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/info" -H  "accept: application/json"
+        ```
+        """
         data = {
             "message": "Plugin Information Retrieved",
             "data": {
@@ -46,8 +62,8 @@ class GetInfoViewset(ViewSet):
                 },
                 "scaffold_structure": "Monolith",
                 "team": "HNG 8.0/Team Coelho",
-                "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar/",
-                "ping_url": "https://channels.zuri.chat/api/v1/ping/",
+                "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar",
+                "ping_url": "https://channels.zuri.chat/api/v1/ping",
                 "homepage_url": "https://channels.zuri.chat/",
             },
             "success": True,
@@ -81,9 +97,15 @@ class GetInfoViewset(ViewSet):
     )
     @action(methods=["GET"], detail=False, url_path="sidebar")
     def info_sidebar(self, request):
+        """Get dynamic sidebar details for a user in an organisation
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/sidebar?org=<org_id>&user=<user_id>&token=<token>" -H  "accept: application/json"
+        ```
+        """
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
-        # token = request.query_params.get("token")
+
         data = {
             "name": "Channels Plugin",
             "description": description,
@@ -97,18 +119,19 @@ class GetInfoViewset(ViewSet):
                 joined_rooms = list(
                     map(
                         lambda channel: {
-                            "id": channel.get("_id"),
-                            "sidebar_item_name": channel.get("slug"),
-                            "url": f"/channels/message-board/{channel.get('_id')}",
-                            "title": channel.get("name"),
-                            "members": channel.get(
-                                "members", len(channel["users"].keys())
-                            ),
-                            "unread": channel.get("unread", random.randint(0, 50)),
-                            "icon": channel.get(
-                                "icon", icons[random.randint(0, len(icons) - 1)]
-                            ),
-                            "action": "open",
+                            # "id": channel.get("_id"),
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                            # "title": channel.get("name"),
+                            # "members": channel.get(
+                            #     "members", len(channel["users"].keys())
+                            # ),
+                            # "unread": channel.get("unread", random.randint(0, 50)),
+                            # "icon": channel.get(
+                            #     "icon", icons[random.randint(0, len(icons) - 1)]
+                            # ),
+                            # "action": "open",
                         },
                         list(
                             filter(
@@ -121,18 +144,19 @@ class GetInfoViewset(ViewSet):
                 public_rooms = list(
                     map(
                         lambda channel: {
-                            "id": channel.get("_id"),
-                            "sidebar_item_name": channel.get("slug"),
-                            "url": f"/channels/message-board/{channel.get('_id')}",
-                            "title": channel.get("name"),
-                            "members": channel.get(
-                                "members", len(channel["users"].keys())
-                            ),
-                            "unread": channel.get("unread", random.randint(0, 50)),
-                            "icon": channel.get(
-                                "icon", icons[random.randint(0, len(icons) - 1)]
-                            ),
-                            "action": "open",
+                            # "id": channel.get("_id"),
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                            # "title": channel.get("name"),
+                            # "members": channel.get(
+                            #     "members", len(channel["users"].keys())
+                            # ),
+                            # "unread": channel.get("unread", random.randint(0, 50)),
+                            # "icon": channel.get(
+                            #     "icon", icons[random.randint(0, len(icons) - 1)]
+                            # ),
+                            # "action": "open",
                         },
                         list(
                             filter(
@@ -148,7 +172,7 @@ class GetInfoViewset(ViewSet):
                 {
                     "organisation_id": org_id,
                     "user_id": user_id,
-                    "group_name": "Zuri",
+                    "group_name": "Channel",
                     "show_group": False,
                     "joined_rooms": joined_rooms,
                     "public_rooms": public_rooms,
@@ -174,6 +198,12 @@ class GetInfoViewset(ViewSet):
 
     @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
     def collections(self, request, plugin_id):
+        """Get all database collections related to plugin
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/collections/<plugin_id>" -H  "accept: application/json"
+        ```
+        """
         response = (
             requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}").json()
             or {}
@@ -186,6 +216,12 @@ class GetInfoViewset(ViewSet):
         url_path="collections/(?P<plugin_id>[^/.]+)/organizations/(?P<org_id>[^/.]+)",
     )
     def collections_by_organization(self, request, org_id, plugin_id):
+        """Get all database collections related to plugin specific to an organisation
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/collections/{{plugin_id}}/organizations/{{org_id}}" -H  "accept: application/json"
+        ```
+        """
         response = (
             requests.get(
                 f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"

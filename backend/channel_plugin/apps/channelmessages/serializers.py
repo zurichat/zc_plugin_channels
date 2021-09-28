@@ -17,13 +17,21 @@ class EventSerializer(serializers.Serializer):
 class ChannelMessageSerializer(serializers.Serializer):
 
     user_id = serializers.CharField(max_length=30, required=True)
-    content = serializers.CharField(required=False)
-    
+    content = serializers.CharField(
+        required=False,
+        help_text="Body (text) of this message"
+    )
     files = serializers.ListField(
-        child=serializers.URLField(), allow_empty=True, required=False
+        child=serializers.URLField(),
+        allow_empty=True,
+        required=False,
+        help_text="List of URLs to files/media in this message"
     )
     event = serializers.DictField(
-        child=EventSerializer(many=False),allow_empty=True, required=False
+        child=EventSerializer(many=False),
+        allow_empty=True,
+        required=False,
+        help_text="Event payload related to this message"
     )
     timestamp = serializers.DateTimeField(read_only=True)
 
@@ -48,40 +56,92 @@ class ChannelMessageSerializer(serializers.Serializer):
 
 class ChannelMessageReactionSerializer(serializers.Serializer):
 
-    title = serializers.CharField(read_only=True)
-    count = serializers.IntegerField(read_only=True)
-    users = serializers.ListField(read_only=True)
+    title = serializers.CharField(
+        read_only=True,
+        help_text="Emoji title"
+    )
+    count = serializers.IntegerField(
+        read_only=True,
+        help_text="Number of reactions made with this emoji"
+    )
+    users = serializers.ListField(
+        read_only=True,
+        help_text="List of users that reacted with this emoji"
+    )
 
 
 class ChannelMessageReactionsUpdateSerializer(serializers.Serializer):
-    title = serializers.CharField(required=True)
-    member_id = serializers.CharField()
+    title = serializers.CharField(
+        required=True,
+        help_text="Emoji title",
+    )
+    member_id = serializers.CharField(
+        help_text="User ID"
+    )
 
 
 class ChannelMessageUpdateSerializer(serializers.Serializer):
 
     _id = serializers.ReadOnlyField()
     user_id = serializers.CharField(read_only=True)
-    channel_id = serializers.CharField(read_only=True)
-    can_reply = serializers.BooleanField(read_only=True)
-    type = serializers.ChoiceField(choices=MESSAGE_TYPES, read_only=True)
-    edited = serializers.BooleanField(read_only=True)
-    files = serializers.ListField(read_only=True)
-    timestamp = serializers.DateTimeField(read_only=True)
-    replies = serializers.IntegerField(read_only=True)
-    has_files = serializers.BooleanField(read_only=True)
-
-    pinned = serializers.BooleanField(required=False)
-    content = serializers.CharField(required=False)
-
-    emojis = serializers.ListField(
-        serializers.CharField(), allow_empty=True, required=False
+    channel_id = serializers.CharField(
+        read_only=True, 
+        help_text="Channel UUID"
     )
-
-    event = serializers.DictField(read_only=True)
+    can_reply = serializers.BooleanField(
+        read_only=True
+    )
+    type = serializers.ChoiceField(
+        choices=MESSAGE_TYPES, 
+        read_only=True,
+        # help_text="This object is one of these two types: message or event"
+    )
+    edited = serializers.BooleanField(
+        read_only=True,
+        help_text="Default: false. True if this message has been updated"
+    )
+    files = serializers.ListField(
+        read_only=True,
+        help_text="List of URLs to files/media in this message"
+    )
+    timestamp = serializers.DateTimeField(
+        read_only=True
+    )
+    replies = serializers.IntegerField(
+        read_only=True,
+        help_text="Number of messages sent as replies to this message (threads)"
+    )
+    has_files = serializers.BooleanField(
+        read_only=True,
+        help_text="Default: false. True if files/media are in this message"
+    )
+    pinned = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this message has been pinned to the channel"
+    )
+    content = serializers.CharField(
+        required=False,
+        help_text="Body (text) of this message"
+    )
+    emojis = serializers.ListField(
+        serializers.CharField(),
+        allow_empty=True,
+        required=False,
+        help_text="List of reactions made to this message"
+    )
+    event = serializers.DictField(
+        read_only=True,
+        help_text="Contains the payload, if the 'type' of this object is 'event'"
+    )
     
     def to_representation(self, instance):
         instance = dict(instance)
 
         data = {"message": instance}
         return data
+
+class ChannelMessageSearchSerializer(serializers.Serializer):
+    user_id = serializers.CharField(max_length=100, required=False)
+    content = serializers.CharField(max_length=100, required=False)
+    has_files = serializers.BooleanField(required=False)
+    pinned = serializers.BooleanField(required=False)
