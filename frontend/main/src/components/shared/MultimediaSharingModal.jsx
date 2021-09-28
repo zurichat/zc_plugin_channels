@@ -97,7 +97,7 @@ const MultimediaSharingModal = () => {
                 </HStack>
                 <Stack pt='20px'>
                     {isFilePicked ? (
-                        <Box transitionDuration='4s'>
+                        <Box>
                             <Text>Upload Successful. File url: {selectedFile}</Text>
                         </Box>
                     ) : (<Text>Select file</Text>)}
