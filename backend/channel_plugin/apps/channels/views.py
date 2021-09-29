@@ -238,7 +238,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         responses={
             200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
             204: openapi.Response("User does not belong to any channel"),
-            404: openapi.Response("Not found", ErrorSerializer),
+            400: openapi.Response("Not found", ErrorSerializer),
         },
     )
     @action(methods=["GET"], detail=False)
@@ -252,22 +252,27 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         data = {}
         data.update(dict(request.query_params))
         response = Request.get(org_id, "channel", data) or []
-        response = list(enumerate(response))
         result = []
-        status_code = status.HTTP_204_NO_CONTENT
-        if response:
-            status_code = status.HTTP_200_OK
-            for i in response:
-                if user_id in i[1]["users"].keys():
-                    channel = {}
-                    channel["_id"] = i[1]["_id"]
-                    channel["name"] = i[1]["name"]
-                    channel["description"] = i[1]["description"]
-                    result.append(channel)
-                else:
-                    pass
-        else:
-            status_code = status.HTTP_404_NOT_FOUND
+        status_code = status.HTTP_400_BAD_REQUEST
+        if isinstance(response, list):
+            status_code = (
+                status.HTTP_200_OK if len(response) > 0 else status.HTTP_204_NO_CONTENT
+            )
+            result = list(
+                map(
+                    lambda item: {
+                        "_id": item.get("_id"),
+                        "name": item.get("name"),
+                        "description": item.get("description"),
+                    },
+                    list(
+                        filter(
+                            lambda item: user_id in item.get("users", {}).keys(),
+                            response,
+                        )
+                    ),
+                )
+            )
 
         return Response(result, status=status_code)
 
