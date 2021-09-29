@@ -50,6 +50,10 @@ class Request:
                         "filter": _filter,
                     }
                 )
+                logging.error(
+                    f"data: {data} | params: {params} with logging before pop"
+                )
+                data.pop("object_id", None)
             else:
                 data.update(
                     {
