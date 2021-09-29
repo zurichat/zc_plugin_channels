@@ -60,7 +60,9 @@ class Request:
         else:
             response = requests.get(url)
         logger.info(f"data: {data} | response: {response} with logger")
-        logging.error(f"data: {data} | response: {response} with logging")
+        logging.error(
+            f"data: {data} | response: {response} params: {params} with logging"
+        )
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
