@@ -22,7 +22,6 @@ const CentrifugoComponent = () => {
   }
 
   const centrifuge = new Centrifuge(socketUrl);
-  centrifuge.connect();
 
   centrifuge.on('connect', function(ctx) {
     console.log("connected", ctx);
@@ -92,6 +91,8 @@ const CentrifugoComponent = () => {
       // }
     })
    }, [channelId]);
+   
+   centrifuge.connect();
 
     return(
         <>

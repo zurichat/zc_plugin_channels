@@ -23,32 +23,6 @@ import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 const MessageCardContainer = () =>{
 
-  // let socketUrl = "";
-            
-  // if (window.location.hostname == "127.0.0.1")
-  // {
-  //   socketUrl = "ws://localhost:8000/connection/websocket";
-  // } else {
-  //   socketUrl = "wss://realtime.zuri.chat/connection/websocket";
-  // }
-
-  // const centrifuge = new Centrifuge(socketUrl);
-  // centrifuge.connect();
-
-  // centrifuge.on('connect', function(ctx) {
-  //   console.log("connected", ctx);
-  // });
-
-  // centrifuge.on('disconnect', function(ctx) {
-  //   console.log("disconnected", ctx);
-  // });
-
-  // centrifuge.on('publish', (ctx) => {
-  //   console.log("A publication has been detected");
-  // });
-
-  
-
   const dispatch = useDispatch()
   const history = useHistory()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
@@ -56,12 +30,6 @@ const MessageCardContainer = () =>{
   //console.log(channelMessages, sockets);
 
   const { channelId } = useParams()
-
-  // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-  //   console.log(messageCtx);
-  // })
-
-    // dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
 
 
   const [ allChannelMessage, setAllChannelMessage ] = useState() 
@@ -72,12 +40,6 @@ const MessageCardContainer = () =>{
   let loadedMessages;
   let messageStartingIndex;
   let messageEndIndex;
-
-
-  // const loadData = async () => {
-  //   await _getChannelMessages(1, channelId)
-  //   dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
-  // }
 
 
   useEffect( () => {

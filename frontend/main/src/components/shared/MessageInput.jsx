@@ -42,7 +42,7 @@ const MessageInput = () =>{
     }, [channelId])
 
     const datas={
-      user_id: users ? users._id : "614b15fa44a9bd81cedc09d2",
+      user_id: users ? users._id : "61468abd1a5607b13c00bd4f",
       content:data
     }
 //For Post Request

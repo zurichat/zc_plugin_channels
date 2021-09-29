@@ -130,6 +130,10 @@ class APIServices {
   async addChannelMember(org_id, channel_id, data) {
     return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
   }
+
+  async setNotification(org_id, channel_id, member_id, data) {
+    return api.put(`/${org_id}/channels/${channel_id}/members/${member_id}/notifications/`, data);
+  }
 }
 
 const instance = new APIServices();

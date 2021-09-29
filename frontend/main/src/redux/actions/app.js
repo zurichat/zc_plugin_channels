@@ -14,6 +14,7 @@ import {
   CREATE_CHANNELS,
   GET_SOCKETS,
   ADD_CHANNEL_MEMBER,
+  SET_NOTIFICATION,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -89,6 +90,18 @@ const _getSocket = (org_id, channel_id) => async (dispatch) => {
     console.log(res.data);
     // Result is sent to the store via dispatch (Pass payload if needed)
     dispatch({ type: GET_SOCKETS, payload: res.data });
+  } catch (error) {
+    // Handle exceptions here
+    console.log(error);
+  }
+};
+const _setNotifications = (org_id, channel_id, member_id, data) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.setNotification(org_id, channel_id, member_id, data);
+    // Result is sent to the store via dispatch (Pass payload if needed)
+    dispatch({ type: SET_NOTIFICATION, payload: res.data });
   } catch (error) {
     // Handle exceptions here
     console.log(error);
@@ -202,5 +215,6 @@ const appActions = {
   _createChannel,
   _getSocket,
   _addChannelMember,
+  _setNotifications,
 };
 export default appActions;

@@ -13,8 +13,14 @@ import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
+//redux
+import { useDispatch, useSelector } from "react-redux";
+
+
 
 const MessageBoardIndex = () => {
+
+  const { channelDetails } = useSelector((state) => state.channelsReducer)
 
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
@@ -33,7 +39,7 @@ const MessageBoardIndex = () => {
       }}>
           <MessageCardContainer />
         </Box>
-        <MessageInput /> 
+        { channelDetails.allow_members_input ? <MessageInput /> : <DisabledInput /> }
         </Box>
         {/* <Box>
           <Thread/>
