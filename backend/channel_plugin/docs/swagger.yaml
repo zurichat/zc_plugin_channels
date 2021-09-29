@@ -738,9 +738,21 @@ paths:
         type: string
   /v1/{org_id}/channels/{channel_id}/search_messages/:
     post:
-      operationId: v1_channels_search_messages_create
-      description: Search channel messages based on content, pinned status, file attachments
+      operationId: search-channel-messages
+      summary: Search channel messages based on content, pinned status, file attachments
         etc.
+      description: |-
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/search_messages/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{
+                "user_id": "string",
+                "content": "string",
+                "has_files": true,
+                "pinned": true
+            }"
+        ```
       parameters:
         - name: data
           in: body

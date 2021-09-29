@@ -798,12 +798,28 @@ curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/roles/"
 | ---- | ----------- | ------ |
 | 201 | Response | [Role](#role) |
 
-### /v1/{org_id}/channels/{channel_id}/search_messages/
+### Search channel messages
+
+`/v1/{org_id}/channels/{channel_id}/search_messages/`
 
 #### POST
-##### Description
+##### Summary
 
 Search channel messages based on content, pinned status, file attachments etc.
+
+##### Description
+
+```bash
+curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/search_messages/"
+-H  "accept: application/json"
+-H  "Content-Type: application/json"
+-d "{
+        "user_id": "string",
+        "content": "string",
+        "has_files": true,
+        "pinned": true
+    }"
+```
 
 ##### Parameters
 
