@@ -8,7 +8,7 @@ import {
   ModalBody,
   ModalFooter,
 } from '@chakra-ui/react';
-import { Text, VStack, Link, Button } from "@chakra-ui/react";
+import { Text, VStack, Link, Button, Divider } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@chakra-ui/react";
 import { Checkbox } from "@chakra-ui/react";
 
@@ -22,7 +22,7 @@ const MoreNotificationModal = ({onClose, isOpen}) => {
         <ModalCloseButton />
         <ModalBody>
           <Text color="#8B8B8B" marginBottom="0.5rem">Set notifications for</Text>
-          <RadioGroup defaultValue="1">
+          <RadioGroup defaultValue="1" paddingBottom="1rem">
             <VStack alignItems="flex-start" >
               <Radio colorScheme="green" value="1">
                 All new messages
@@ -35,19 +35,22 @@ const MoreNotificationModal = ({onClose, isOpen}) => {
               </Radio>
             </VStack>
           </RadioGroup>
+          <Divider />
           <VStack alignItems="flex-start">
-            <Checkbox py="1.5rem" colorScheme="green">
+            <Checkbox py="1rem" colorScheme="green">
               Use different settings
             </Checkbox>
-            <Checkbox colorScheme="green">
+            <Divider />
+            <Checkbox colorScheme="green" paddingTop="1rem">
               Mute channel
             </Checkbox>
-            <Text color="#8B8B8B" paddingLeft="1.5rem" paddingBottom="2rem">
+            <Text color="#8B8B8B" paddingLeft="1.5rem" paddingBottom="1rem">
                 Muted channels are greyed out at the bottom of your channel list.
                 You’ll still see a badge in the sidebar if you’ve been mentioned.
             </Text>
           </VStack>
-          <Text color="#8B8B8B">
+          <Divider />
+          <Text color="#8B8B8B" paddingTop="1rem">
             Note: You can set notification keywords and change your workspace-wide settings in your <Link href="#" color="blue.500" fontWeight="semibold">Preference.</Link>
           </Text>
         </ModalBody>
@@ -55,13 +58,17 @@ const MoreNotificationModal = ({onClose, isOpen}) => {
           <Button
             width="135px"
             color="#00B87C"
-            backgroundColor="#ffffff"
+            backgroundColor="transparent"
             border="1px solid #00B87C"
             borderRadius="4px"
             variant="solid"
             fontSize="15px"
             fontWeight="400"
             mr="10px"
+            _hover={{ 
+              color: "#00B87C",
+              backgroundColor:"transparent"
+             }}
           >
             Cancel
           </Button>
@@ -74,6 +81,10 @@ const MoreNotificationModal = ({onClose, isOpen}) => {
               variant="solid"
               fontSize="15px"
               fontWeight="400"
+              _hover={{ 
+                color: "#ffffff",
+                backgroundColor:"00B87C"
+              }}
             >
               Save Changes
           </Button>
