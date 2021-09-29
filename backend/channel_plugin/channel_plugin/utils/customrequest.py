@@ -50,9 +50,9 @@ class Request:
                         "filter": _filter,
                     }
                 )
-                logging.error(
-                    f"data: {data} | params: {params} with logging before pop"
-                )
+                # logging.error(
+                #     f"data: {data} | params: {params} with logging before pop"
+                # )
                 data.pop("object_id", None)
             else:
                 data.update(
@@ -63,10 +63,10 @@ class Request:
             response = requests.post(read, json.dumps(data))
         else:
             response = requests.get(url)
-        logger.info(f"data: {data} | response: {response} with logger")
-        logging.error(
-            f"data: {data} | response: {response} params: {params} with logging"
-        )
+        # logger.info(f"data: {data} | response: {response} with logger")
+        # logging.error(
+        #     f"data: {data} | response: {response} params: {params} with logging"
+        # )
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
