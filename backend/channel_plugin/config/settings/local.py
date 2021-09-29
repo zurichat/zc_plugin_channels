@@ -77,7 +77,4 @@ if env("USE_DOCKER") == "yes":
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]  # noqa F405
 
-CENTRIFUGO_API_KEY = "7b4ea4dc-6c4e-494e-a6e1-a0ac03e16c2b"
-CENTRIFUGO_URL = "http://localhost:8000/api"
-
 BASE_URL = "http://127.0.0.1:8000"
