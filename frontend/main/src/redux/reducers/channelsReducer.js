@@ -19,6 +19,9 @@ const initialState = {
   pinnedMessages: [],
   sendMessages: {},
   channelMember: {},
+  editMessage: {},
+  messages : [],
+  isEditMode : false,
 };
 
 const channelsReducer = (state = initialState, action) => {
