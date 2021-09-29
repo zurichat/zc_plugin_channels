@@ -1,9 +1,11 @@
 import json
+import logging
 from dataclasses import dataclass
 
 import requests
 from django.conf import settings
 
+logger = logging.getLogger("sentry_sdk")
 # from urllib.parse import urlencode
 
 
@@ -57,6 +59,8 @@ class Request:
             response = requests.post(read, json.dumps(data))
         else:
             response = requests.get(url)
+        logger.info(f"data: {data} | response: {response} with logger")
+        logging.info(f"data: {data} | response: {response} with logger")
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
