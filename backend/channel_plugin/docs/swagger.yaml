@@ -25,7 +25,11 @@ paths:
   /v1/collections/{plugin_id}:
     get:
       operationId: v1_collections
-      description: ''
+      summary: Get all database collections related to plugin
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/collections/<plugin_id>" -H  "accept: application/json"
+        ```
       parameters: []
       responses:
         '200':
@@ -40,7 +44,11 @@ paths:
   /v1/collections/{plugin_id}/organizations/{org_id}:
     get:
       operationId: v1_collections_collections_by_organization
-      description: ''
+      summary: Get all database collections related to plugin specific to an organisation
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/collections/{{plugin_id}}/organizations/{{org_id}}" -H  "accept: application/json"
+        ```
       parameters: []
       responses:
         '200':
@@ -70,7 +78,11 @@ paths:
   /v1/info:
     get:
       operationId: v1_info
-      description: ''
+      summary: Get plugin details and developer information
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/info" -H  "accept: application/json"
+        ```
       parameters: []
       responses:
         '200':
@@ -81,7 +93,11 @@ paths:
   /v1/ping:
     get:
       operationId: v1_ping
-      description: ''
+      summary: Get server status
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/ping" -H  "accept: application/json"
+        ```
       parameters: []
       responses:
         '200':
@@ -92,7 +108,11 @@ paths:
   /v1/sidebar:
     get:
       operationId: v1_info_sidebar
-      description: ''
+      summary: Get dynamic sidebar details for a user in an organisation
+      description: |-
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/sidebar?org=<org_id>&user=<user_id>&token=<token>" -H  "accept: application/json"
+        ```
       parameters:
         - name: org
           in: query
@@ -139,13 +159,15 @@ paths:
         - v1
     post:
       operationId: create-channel
-      summary: Create a new channel in the organization
+      summary: |-
+        This creates a channel for a
+        particular organization identified by ID and creates corresponding Centrifugo room
       description: |-
         ```bash
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  "name": "channel name",  "owner": "member_id",  "description": "channel description",  "private": false,  "topic": "channel topic"}"
+        -d "{  "name": "channel name",  "owner": "member_id", "description": "channel description",  "private": false,  "topic": "channel topic"}"
         ```
       parameters:
         - name: data
@@ -310,7 +332,9 @@ paths:
   /v1/{org_id}/channels/{channel_id}/members/:
     get:
       operationId: list-channel-members
-      summary: Get all members in a channel
+      summary: |-
+        This method gets all members for a
+        channel identified by ID
       description: |-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
@@ -328,23 +352,67 @@ paths:
       tags:
         - v1
     post:
-      operationId: add-channel-member
-      summary: Add a user to channel
+      operationId: add-channel-members
+      summary: This method adds one or more users to a channel
       description: |-
+        A JOIN event is published to Centrifugo when users are added to the channel
+
+        **Add one user**
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{"_id": "string",  
-            "role_id": "string",  
-            "is_admin": false,  
-            "notifications": {   
-                 "web": "nothing",    
-                 "mobile": "mentions",    
+        -d "{"_id": "string",
+            "role_id": "string",
+            "is_admin": false,
+            "notifications": {
+                 "web": "nothing",
+                 "mobile": "mentions",
                  "same_for_mobile": true,
                  "mute": false
                 }
             }"
+        ```
+
+        **Add multiple users**
+
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "[
+                {"_id": "string",
+                "role_id": "string",
+                "is_admin": false,
+                "notifications": {
+                    "web": "nothing",
+                    "mobile": "mentions",
+                    "same_for_mobile": true,
+                    "mute": false
+                    }
+                },
+                {"_id": "string",
+                "role_id": "string",
+                "is_admin": false,
+                "notifications": {
+                    "web": "nothing",
+                    "mobile": "mentions",
+                    "same_for_mobile": true,
+                    "mute": false
+                    }
+                },
+                {"_id": "string",
+                "role_id": "string",
+                "is_admin": false,
+                "notifications": {
+                    "web": "nothing",
+                    "mobile": "mentions",
+                    "same_for_mobile": true,
+                    "mute": false
+                    }
+                },
+                ...
+            ]"
         ```
       parameters:
         - name: data
@@ -386,9 +454,9 @@ paths:
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
-                "_id": "string", 
-                "role_id": "string", 
-                "is_admin": false,  
+                "_id": "string",
+                "role_id": "string",
+                "is_admin": false,
                 "notifications": { }
             }"
         ```
@@ -442,12 +510,12 @@ paths:
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{"_id": "string",  
-            "role_id": "string",  
-            "is_admin": false,  
-            "notifications": {   
-                 "web": "nothing",    
-                 "mobile": "mentions",    
+        -d "{"_id": "string",
+            "role_id": "string",
+            "is_admin": false,
+            "notifications": {
+                 "web": "nothing",
+                 "mobile": "mentions",
                  "same_for_mobile": true,
                  "mute": false
                 }
@@ -523,9 +591,9 @@ paths:
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
-                "web": "all", 
-                "mobile": "all", 
-                "same_for_mobile": true,  
+                "web": "all",
+                "mobile": "all",
+                "same_for_mobile": true,
                 "mute": true
             }"
         ```
@@ -579,7 +647,7 @@ paths:
         - v1
     post:
       operationId: create-channel-message
-      summary: Create a channel message
+      summary: Create a channel message and automatically publishes to Centrifugo
       description: |-
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
@@ -668,10 +736,44 @@ paths:
         in: path
         required: true
         type: string
+  /v1/{org_id}/channels/{channel_id}/search_messages/:
+    post:
+      operationId: v1_channels_search_messages_create
+      description: Search channel messages based on content, pinned status, file attachments
+        etc.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChannelMessageSearch'
+      responses:
+        '200':
+          description: Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ChannelMessageSearchResult'
+        '400':
+          description: Error Response
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - v1
+    parameters:
+      - name: channel_id
+        in: path
+        required: true
+        type: string
+      - name: org_id
+        in: path
+        required: true
+        type: string
   /v1/{org_id}/channels/{channel_id}/socket/:
     get:
       operationId: retrieve-channel-socket-name
-      summary: Retrieve channel centrifugo socket name
+      summary: Retrieve Centrifugo socket channel name based on organisation and channel
+        IDs
       description: |-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
@@ -723,11 +825,11 @@ paths:
       description: |-
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/?channel_id={{channel_id}}"
-        -H  "accept: application/json" 
+        -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
                 "user_id": "string",
-                "content": "string", 
+                "content": "string",
                 "files": [
                     "string"
                 ]
@@ -786,14 +888,14 @@ paths:
         - v1
     put:
       operationId: update-message-details
-      summary: Update message details
+      summary: Updates message based on ID
       description: |-
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
-                "pinned": true, 
+                "pinned": true,
                 "content": "string"
             }"
         ```
@@ -826,7 +928,7 @@ paths:
         - v1
     delete:
       operationId: delete-message
-      summary: Delete a message
+      summary: Deletes a message based on ID, and organisation
       description: |-
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json""
@@ -882,7 +984,7 @@ paths:
       description: |-
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
-        -H  "accept: application/json" 
+        -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{  "title": "string",  "member_id": "string"}"
         ```
@@ -1459,6 +1561,37 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Permission'
+  ChannelMessageSearch:
+    type: object
+    properties:
+      user_id:
+        title: User id
+        type: string
+        maxLength: 100
+        minLength: 1
+      content:
+        title: Content
+        type: string
+        maxLength: 100
+        minLength: 1
+      has_files:
+        title: Has files
+        type: boolean
+      pinned:
+        title: Pinned
+        type: boolean
+  ChannelMessageSearchResult:
+    required:
+      - result
+      - query
+    type: object
+    properties:
+      result:
+        type: array
+        items:
+          $ref: '#/definitions/ChannelMessageUpdate'
+      query:
+        $ref: '#/definitions/ChannelMessageSearch'
   Socket:
     required:
       - socket_name
