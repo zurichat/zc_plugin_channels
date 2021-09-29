@@ -19,30 +19,12 @@ import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
 const MessageBoardIndex = () => {
-  const dispatch = useDispatch();
-
-  const [canInput, setCanInput] = useState(true);
-
-  const { _userCanInput } = bindActionCreators(appActions, dispatch);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = `{
-        "_id": "123",
-        "role_id": "1",
-        "is_admin": false,
-      }`;
-      const res = await APIService.userCanInput(
-        "614679ee1a5607b13c00bcb7",
-        "614fd412cf2c0f1ad7585394",
-        data
-      );
-      console.log(data, res);
-    };
-
-    fetchData();
-    // setCanInput(res)
-  }, []);
+  const {
+    channelsReducer: { channelDetails },
+  } = useSelector((state) => state);
+  // extract members permission to input
+  const canInput = channelDetails.allow_members_input;
+  // console.log(canInput);
 
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
