@@ -186,8 +186,16 @@ class UserChannelGetSerializer(serializers.Serializer):
 
 
 class SocketSerializer(serializers.Serializer):
-    socket_name = serializers.CharField(max_length=200, required=True)
-    channel_id = serializers.CharField(max_length=30, required=True)
+    socket_name = serializers.CharField(
+        max_length=200,
+        required=True,
+        help_text="Socket name"
+    )
+    channel_id = serializers.CharField(
+        max_length=30,
+        required=True,
+        help_text="Channel ID"
+    )
 
 
 class NotificationsSettingSerializer(serializers.Serializer):
@@ -202,3 +210,17 @@ class NotificationsSettingSerializer(serializers.Serializer):
         required=True,
         help_text="Default: true. False if user has muted this channel."
     )
+
+
+class ChannelAllMediaSerializer(serializers.Serializer):
+    channelmessage = serializers.ListField(
+        child=serializers.URLField(help_text="URL to media/file"),
+        read_only=True,
+        help_text="List of URLs for all files/media in channelmessage objects"
+    )
+    thread = serializers.ListField(
+        child=serializers.URLField(help_text="URL to media/file"),
+        read_only=True,
+        help_text="List of URLs for all files/media in thread objects"
+    )
+

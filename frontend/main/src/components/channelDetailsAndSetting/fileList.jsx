@@ -1,9 +1,36 @@
 import React from "react";
 import { Box, Text, Flex, Divider } from "@chakra-ui/layout";
 import { Image } from "@chakra-ui/react";
-import files from "./files";
+
+const files = [
+  {
+    filename: "Image.png",
+    time: "Aug 25th at 10:10pm",
+    username: "Kevin",
+    src: "https://bit.ly/sage-adebayo",
+  },
+  {
+    filename: "Image.png",
+    time: "Aug 25th at 10:10pm",
+    username: "Kevin",
+    src: "https://bit.ly/sage-adebayo",
+  },
+  {
+    filename: "Image.png",
+    time: "Aug 25th at 10:10pm",
+    username: "Kevin",
+    src: "https://bit.ly/sage-adebayo",
+  },
+  {
+    filename: "Image.png",
+    time: "Aug 25th at 10:10pm",
+    username: "Kevin",
+    src: "https://bit.ly/sage-adebayo",
+  },
+];
 
 const FileList = () => {
+  
   let fileElements = files.map((file) => {
     return (
       <Box>

@@ -3,6 +3,7 @@ import { Box, Text, Flex} from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router';
+import { useHistory } from 'react-router';
 
 import APIService from "../../../../utils/api";
 
@@ -49,10 +50,10 @@ const MessageCardContainer = () =>{
   
 
   const dispatch = useDispatch()
+  const history = useHistory()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-  const { channelMessages, sockets, renderedMessages } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
   //console.log(channelMessages, sockets);
-  
 
   const { channelId } = useParams()
 
@@ -78,21 +79,23 @@ const MessageCardContainer = () =>{
   //   dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
   // }
 
+
   useEffect( () => {
       const loadData = async ()=> {
-        console.log('\n\n\nabout to fetch')
-        const res = await APIService.getMessages(1, channelId);
-      
+        // history.push(`/message-board/${channelId}`)
+        // console.log('\n\n\nabout to fetch')
+        const res = await APIService.getMessages("614679ee1a5607b13c00bcb7", channelId);
+        // console.log("614679ee1a5607b13c00bcb7");
         const receivedMessages = res.data.data
         messageEndIndex = receivedMessages.length
         messageStartingIndex = messageEndIndex > noOfMessages ? channelMessages.length - noOfMessages : 0
 
         loadedMessages = receivedMessages && receivedMessages.slice(messageStartingIndex, messageEndIndex)
-        
+        _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
         dispatch({ type: GET_RENDEREDMESSAGES, payload: loadedMessages })
       }
       loadData()
-}, []);
+}, [channelId]);
 
   // let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
     

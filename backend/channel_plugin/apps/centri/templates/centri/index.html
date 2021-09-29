@@ -13,16 +13,10 @@
         <script src="https://cdn.jsdelivr.net/gh/centrifugal/centrifuge-js@2.8.0/dist/centrifuge.min.js"></script>
         <script type="text/javascript">
             const container = document.getElementById('counter');
-            let socketUrl = "";
-            
-            if (window.location.hostname == "127.0.0.1")
-            {
-              socketUrl = "ws://localhost:8000/connection/websocket";
-            } else {
-              socketUrl = "wss://realtime.zuri.chat/connection/websocket";
-            }
+            let socketUrl = "wss://realtime.zuri.chat/connection/websocket";
             const centrifuge = new Centrifuge(socketUrl);
-            
+
+            // centrifuge.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2MzMxMzk5NzF9.q0axw1RBCy0HX3GDS6KxPJgdSGr_pBHdsTya4hY_IsE");
 
             centrifuge.on('connect', function(ctx) {
               console.log("connected", ctx);
@@ -66,20 +60,21 @@
               return new Promise((resolve, reject)=> {
 
                 let url = build_url(
-                    `${window.location.origin}/api/v1/sidebar/?`,
+                    `${window.location.origin}/api/v1/sidebar?`,
                     {
                       "user":"{{ user_id }}",
                       "org":"1",
                       "token":"345x4345634x3436x445z343"
                     }
                 );
-  
+
                 const xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
                 xhr.send();
   
                 xhr.onload = async () => {
-                  if (xhr.status >= 200 & xhr.status < 300){
+                  if ((xhr.status >= 200) && (xhr.status < 300)){
+                    console.log(xhr.responseText);
                     resolve(JSON.parse(xhr.responseText));
                   } else {
                     reject(xhr.responseText);
@@ -94,6 +89,7 @@
                   } else {
                     console.log(error);
                     reject(null);
+                    resolve("Firewall blocking process, continue process")
                   }
                 };
               });
