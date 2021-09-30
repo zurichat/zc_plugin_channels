@@ -10,13 +10,17 @@ import {
   ModalCloseButton,
   Button,
   useDisclosure,
-  Flex,
+  // Flex,
   Box,
   Text,
-} from '@chakra-ui/react'
+  UnorderedList,
+  ListItem,
+  Checkbox,
+  Stack,
+} from "@chakra-ui/react";
 import { bindActionCreators } from "redux";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import appActions from "../../redux/actions/app";
 import { useSelector } from "react-redux";
 
@@ -30,7 +34,7 @@ function DeleteChannel() {
   const { deleteChannel } = useSelector((state) => state.channelsReducer);
   console.log(deleteChannel);
 
-  const org_id = 1; //Test value for org id
+  const org_id = "614679ee1a5607b13c00bcb7"; //Test value for org id
   const channel_id = "613f70bd6173056af01b4aba"; // Test  value to for channel_id
 
   // STEP SIX
@@ -44,6 +48,25 @@ function DeleteChannel() {
   }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [checked, setChecked] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+
+   const canDelete = () => {
+     if (checked) {
+       setIsDisabled(true);
+     } else {
+       setIsDisabled(false);
+     }
+   };
+
+   const handleCheckBox = () => {
+     setChecked(!checked);
+
+     return canDelete();
+   };
+
+
   return (
     <>
       <Button onClick={onOpen}> Delete channel</Button>
@@ -52,7 +75,7 @@ function DeleteChannel() {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader color="#000000" fontStyle="bold" fontSize="31px" p={5}>
-              Delete message
+              Delete channel
             </ModalHeader>
             <Text color="#3A3A3A" m={5} p={5}>
               Are you sure you want to delete this channel?This cannot be undone
@@ -66,15 +89,25 @@ function DeleteChannel() {
                 border="1px"
                 borderColor="blue.200"
               >
-                <Flex direction>
-                  <Box>
-                    <Text>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </Text>
-                  </Box>
-                </Flex>
+                <Box>
+                  <Text>Keep in mind that:</Text>
+                </Box>
+                <UnorderedList mb={5}>
+                  <ListItem>
+                    Any files uploaded to this channel won’t be removed
+                  </ListItem>
+                  <ListItem>
+                    You can archive a channel instead without removing its
+                    messages
+                  </ListItem>
+                </UnorderedList>
+                <Stack spacing={10} direction="row">
+                  <Checkbox
+                    onChange={handleCheckBox}
+                    colorScheme="green"
+                  ></Checkbox>
+                  <Text>Yes, permanently delete the channel</Text>
+                </Stack>
               </Box>
             </ModalBody>
 
@@ -82,28 +115,31 @@ function DeleteChannel() {
               <Button
                 colorScheme="blue"
                 border="1px"
-                borderColor="gray.200"
+                borderColor="FF0000"
                 bg="white"
-                color="#000"
+                color="#FF0000"
                 mr={3}
                 p={3}
                 onClick={onClose}
                 borderRadius="10px"
                 width="151px"
                 height="56px"
+                _hover={{ bg: "#fff" }}
               >
-                Cancle
+                Cancel
               </Button>
               <Button
                 variant="ghost"
                 border="1px"
                 borderColor="gray.200"
                 color="white"
-                bg="#e23434"
+                bg="#00B87C"
                 borderRadius="5px"
                 width="151px"
                 height="56px"
-                _hover={{ bg: "#000" }}
+                _hover={{ bg: "#00B87C" }}
+                onClick={loadData}
+                disabled={isDisabled}
               >
                 Delete
               </Button>

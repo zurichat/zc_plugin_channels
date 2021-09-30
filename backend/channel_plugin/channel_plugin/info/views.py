@@ -24,6 +24,10 @@ icons = [
 
 
 class GetInfoViewset(ViewSet):
+    def get_throttled_message(self, request):
+        """Add a custom message to the throttled error."""
+        return "request limit exceeded"
+
     @action(
         methods=["GET"],
         detail=False,
@@ -93,7 +97,7 @@ class GetInfoViewset(ViewSet):
     )
     @action(methods=["GET"], detail=False, url_path="sidebar")
     def info_sidebar(self, request):
-        """Get dynamic sidebar details for a user in an organisation 
+        """Get dynamic sidebar details for a user in an organisation
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/sidebar?org=<org_id>&user=<user_id>&token=<token>" -H  "accept: application/json"
@@ -101,7 +105,7 @@ class GetInfoViewset(ViewSet):
         """
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
-        
+
         data = {
             "name": "Channels Plugin",
             "description": description,

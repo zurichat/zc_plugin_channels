@@ -1,21 +1,23 @@
 import json
 
 from apps.centri.helperfuncs import build_room_name
-from apps.channelmessages.serializers import ChannelMessageUpdateSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from django.http.response import JsonResponse
+from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers, status
-from rest_framework.decorators import action
+from rest_framework import serializers, status, throttling
+from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
-from channel_plugin.utils.wrappers import FilterWrapper
+from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
+    ChannelAllMediaSerializer,
     ChannelGetSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
@@ -23,7 +25,6 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
-    ChannelAllMediaSerializer,
 )
 
 # from rest_framework.filters
@@ -32,7 +33,10 @@ from .serializers import (  # SearchMessageQuerySerializer,
 # Create your views here.
 
 
-class ChannelViewset(ViewSet):
+class ChannelViewset(ThrottledViewSet, OrderMixin):
+
+    OrderingFields = {"members": int, "created_on": datetime.fromisoformat}
+
     @swagger_auto_schema(
         operation_id="create-channel",
         request_body=ChannelSerializer,
@@ -41,6 +45,7 @@ class ChannelViewset(ViewSet):
             404: openapi.Response("Error Response", ErrorSerializer),
         },
     )
+    @throttle_classes([throttling.AnonRateThrottle])
     @action(
         methods=["POST"],
         detail=False,
@@ -55,11 +60,11 @@ class ChannelViewset(ViewSet):
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\",  \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
+        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
         ```
 
-        """
-        
+        """  # noqa
+
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
@@ -75,7 +80,7 @@ class ChannelViewset(ViewSet):
         responses={
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
-        }
+        },
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
@@ -86,24 +91,23 @@ class ChannelViewset(ViewSet):
         ```
         """
         data = {}
-        data.update(dict(request.query_params))
+        data.update(self._clean_query_params(request))
         result = Request.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
             if result:
                 for i, channel in enumerate(result):
                     result[i].update({"members": len(channel["users"].keys())})
+                result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response(
-                "Response", ChannelAllMediaSerializer
-            ),
+            200: openapi.Response("Response", ChannelAllMediaSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="list-all-channel-media"
+        operation_id="list-all-channel-media",
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
@@ -156,7 +160,7 @@ class ChannelViewset(ViewSet):
         result = Request.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
-            if result:
+            if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
@@ -182,7 +186,7 @@ class ChannelViewset(ViewSet):
         -H  "Content-Type: application/json"
         -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\"}"
         ```
-        """
+        """  # noqa
         serializer = ChannelUpdateSerializer(
             data=request.data, context={"org_id": org_id, "_id": channel_id}
         )
@@ -200,8 +204,8 @@ class ChannelViewset(ViewSet):
         operation_id="delete-channel",
         responses={
             204: openapi.Response("Channel deleted successfully"),
-            404: openapi.Response("Not found")
-        }
+            404: openapi.Response("Not found"),
+        },
     )
     @action(
         methods=["DELETE"],
@@ -234,8 +238,8 @@ class ChannelViewset(ViewSet):
         responses={
             200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
             204: openapi.Response("User does not belong to any channel"),
-            404: openapi.Response("Not found", ErrorSerializer),
-        }
+            400: openapi.Response("Not found", ErrorSerializer),
+        },
     )
     @action(methods=["GET"], detail=False)
     def user_channel_retrieve(self, request, org_id, user_id):
@@ -248,22 +252,27 @@ class ChannelViewset(ViewSet):
         data = {}
         data.update(dict(request.query_params))
         response = Request.get(org_id, "channel", data) or []
-        response = list(enumerate(response))
         result = []
-        status_code = status.HTTP_204_NO_CONTENT
-        if response:
-            status_code = status.HTTP_200_OK
-            for i in response:
-                if user_id in i[1]["users"].keys():
-                    channel = {}
-                    channel["_id"] = i[1]["_id"]
-                    channel["name"] = i[1]["name"]
-                    channel["description"] = i[1]["description"]
-                    result.append(channel)
-                else:
-                    pass
-        else:
-            status_code = status.HTTP_404_NOT_FOUND
+        status_code = status.HTTP_400_BAD_REQUEST
+        if isinstance(response, list):
+            status_code = (
+                status.HTTP_200_OK if len(response) > 0 else status.HTTP_204_NO_CONTENT
+            )
+            result = list(
+                map(
+                    lambda item: {
+                        "_id": item.get("_id"),
+                        "name": item.get("name"),
+                        "description": item.get("description"),
+                    },
+                    list(
+                        filter(
+                            lambda item: user_id in item.get("users", {}).keys(),
+                            response,
+                        )
+                    ),
+                )
+            )
 
         return Response(result, status=status_code)
 
@@ -288,7 +297,7 @@ class ChannelViewset(ViewSet):
         """
         channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
 
-        if channel.__contains__("_id") or isinstance(channel, dict):
+        if channel:
             data = {
                 "socket_name": build_room_name(org_id, channel_id),
                 "channel_id": channel_id,
@@ -342,9 +351,8 @@ class ChannelMemberViewset(ViewSet):
         data = {"_id": channel_id}
         result = Request.get(org_id, "channel", data) or {}
         if result.__contains__("_id") and isinstance(result, dict):
-            if result:
-                return result
-        return None
+            return result
+        return {}
 
     def prepare_params(self):
         param_checkers = {
@@ -408,17 +416,17 @@ class ChannelMemberViewset(ViewSet):
     def add_member(self, request, org_id, channel_id):
         """
         Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
-        
+
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{\"_id\": \"string\",  
-            \"role_id\": \"string\",  
-            \"is_admin\": false,  
-            \"notifications\": {   
-                 \"web\": \"nothing\",    
-                 \"mobile\": \"mentions\",    
+        -d "{\"_id\": \"string\",
+            \"role_id\": \"string\",
+            \"is_admin\": false,
+            \"notifications\": {
+                 \"web\": \"nothing\",
+                 \"mobile\": \"mentions\",
                  \"same_for_mobile\": true,
                  \"mute\": false
                 }
@@ -428,7 +436,7 @@ class ChannelMemberViewset(ViewSet):
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id"):
 
             output = None
 
@@ -530,9 +538,9 @@ class ChannelMemberViewset(ViewSet):
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
-                \"_id\": \"string\", 
-                \"role_id\": \"string\", 
-                \"is_admin\": false,  
+                \"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
                 \"notifications\": { }
             }"
         ```
@@ -540,7 +548,7 @@ class ChannelMemberViewset(ViewSet):
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id"):
             if channel["allow_members_input"] is True:
                 can_input = True
                 return Response(can_input, status=status.HTTP_200_OK)
@@ -569,7 +577,7 @@ class ChannelMemberViewset(ViewSet):
         responses={
             200: openapi.Response("Response", UserSerializer(many=True)),
             404: openapi.Response("Not Found"),
-        }
+        },
     )
     @action(
         methods=["GET"],
@@ -579,7 +587,7 @@ class ChannelMemberViewset(ViewSet):
         """
         This method gets all members for a
         channel identified by ID
-        
+
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
         ```
@@ -588,7 +596,7 @@ class ChannelMemberViewset(ViewSet):
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id"):
             # apply filters to user list
             users = self.filter_objects(
                 list(channel["users"].values()),
@@ -620,10 +628,10 @@ class ChannelMemberViewset(ViewSet):
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
         ```
-        """
+        """  # noqa
         channel = self.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id"):
 
             # checks if the user is a member of the channel
             user_data = channel["users"].get(member_id)
@@ -645,7 +653,7 @@ class ChannelMemberViewset(ViewSet):
         request_body=UserSerializer,
         responses={
             200: openapi.Response("Response", UserSerializer),
-            404: openapi.Response("Not found")
+            404: openapi.Response("Not found"),
         },
         operation_id="update-member-details",
     )
@@ -660,12 +668,12 @@ class ChannelMemberViewset(ViewSet):
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{\"_id\": \"string\",  
-            \"role_id\": \"string\",  
-            \"is_admin\": false,  
-            \"notifications\": {   
-                 \"web\": \"nothing\",    
-                 \"mobile\": \"mentions\",    
+        -d "{\"_id\": \"string\",
+            \"role_id\": \"string\",
+            \"is_admin\": false,
+            \"notifications\": {
+                 \"web\": \"nothing\",
+                 \"mobile\": \"mentions\",
                  \"same_for_mobile\": true,
                  \"mute\": false
                 }
@@ -675,7 +683,7 @@ class ChannelMemberViewset(ViewSet):
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id"):
 
             # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
@@ -725,7 +733,7 @@ class ChannelMemberViewset(ViewSet):
     @swagger_auto_schema(
         responses={
             204: openapi.Response("User removed successfully"),
-            404: openapi.Response("Not found")
+            404: openapi.Response("Not found"),
         },
         operation_id="delete-member-details",
     )
@@ -735,14 +743,14 @@ class ChannelMemberViewset(ViewSet):
     )
     def remove_member(self, request, org_id, channel_id, member_id):
         """Remove member from a channel
-        
+
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
         ```
-        """
+        """  # noqa
         channel = self.retrieve_channel(request, org_id, channel_id)
 
-        if channel:
+        if channel.__contains__("_id"):
 
             # check if the user is aleady a member of the channel
             user_data = channel["users"].get(member_id)
@@ -803,10 +811,10 @@ class ChannelMemberViewset(ViewSet):
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
-        ```    
-        """
+        ```
+        """  # noqa
         channel = self.retrieve_channel(request, org_id, channel_id)
-        if channel:
+        if channel.__contains__("_id"):
             user_data = channel["users"].get(member_id)
             if user_data:
                 serializer = UserSerializer(data=user_data)
@@ -853,16 +861,16 @@ class ChannelMemberViewset(ViewSet):
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
-                \"web\": \"all\", 
-                \"mobile\": \"all\", 
-                \"same_for_mobile\": true,  
+                \"web\": \"all\",
+                \"mobile\": \"all\",
+                \"same_for_mobile\": true,
                 \"mute\": true
             }"
         ```
         """
 
         channel = self.retrieve_channel(request, org_id, channel_id)
-        if channel:
+        if channel.__contains__("_id"):
             user_data = channel["users"].get(member_id)
 
             if user_data:
