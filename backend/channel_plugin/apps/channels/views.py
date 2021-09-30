@@ -407,7 +407,7 @@ class ChannelMemberViewset(ViewSet):
             400: openapi.Response("Error Response"),
             404: openapi.Response("Collection Not Found"),
         },
-        operation_id="add-channel-member",
+        operation_id="add-channel-members",
     )
     @action(
         methods=["POST"],
@@ -415,8 +415,11 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-        Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
+        This method adds one or more users to a channel
 
+        A JOIN event is published to Centrifugo when users are added to the channel
+
+        **Add one user**
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -432,6 +435,48 @@ class ChannelMemberViewset(ViewSet):
                 }
             }"
         ```
+        
+        **Add multiple users**
+
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "[
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                ...
+            ]"
+        ```
+        
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
