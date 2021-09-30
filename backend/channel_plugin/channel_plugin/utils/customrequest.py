@@ -1,9 +1,13 @@
 import json
+import logging
 from dataclasses import dataclass
-from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
+
+logger = logging.getLogger("sentry_sdk")
+# from urllib.parse import urlencode
+
 
 data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
@@ -12,9 +16,9 @@ delete = settings.DELETE_URL
 
 
 def check_payload(payload):
-    if type(payload) == list:
+    if isinstance(payload, list):
         return True
-    assert type(payload) == dict, "payload must be list or dict"
+    assert isinstance(payload, dict), "payload must be list or dict"
     return False
 
 
@@ -24,12 +28,45 @@ class Request:
     def get(org_id, collection_name, params=None):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
         if params is not None and len(params) > 0:
-            data = params
-            for k, v in params.items():
-                if isinstance(v, list):
-                    data.update({k: v[0]})
-            url += f"?{urlencode(data)}"
-        response = requests.get(url)
+            _filter = {}
+            tmp = []
+            data.update(
+                {
+                    "organization_id": org_id,
+                    "collection_name": collection_name,
+                }
+            )
+            if "_id" not in params.keys():
+                for k, v in params.items():
+                    if isinstance(v, list):
+                        v = v[0]
+                        if v.lower() in ["true", "false"]:
+                            v = True if v.lower() == "true" else False
+                    tmp.append({k: {"$eq": v}})
+                _filter.update({"$and": tmp})
+
+                data.update(
+                    {
+                        "filter": _filter,
+                    }
+                )
+                # logging.error(
+                #     f"data: {data} | params: {params} with logging before pop"
+                # )
+                data.pop("object_id", None)
+            else:
+                data.update(
+                    {
+                        "object_id": params["_id"],
+                    }
+                )
+            response = requests.post(read, json.dumps(data))
+        else:
+            response = requests.get(url)
+        # logger.info(f"data: {data} | response: {response} with logger")
+        # logging.error(
+        #     f"data: {data} | response: {response} params: {params} with logging"
+        # )
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
@@ -71,7 +108,6 @@ class Request:
             data.update({"object_id": object_id})
 
         response = requests.put(write, data=json.dumps(data))
-        print(response)
         if response.status_code >= 200 and response.status_code < 300:
             if not bulk_write:
                 tmp = {"_id": object_id}
@@ -102,3 +138,29 @@ class Request:
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()
         return {"error": response}
+
+
+def search_db(org_id, channel_id, collection_name, **params):
+
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
+    }
+    if len(params) > 0:
+        for param in params:
+            if isinstance(params[param], bool):
+                value = params[param]
+                data["filter"]["$and"].append({param: {"$eq": value}})
+                continue
+            value = params[param]
+            data["filter"]["$and"].append({param: {"$regex": value, "$options": "i"}})
+    response = requests.post(read, data=json.dumps(data))
+    if response.status_code >= 200 and response.status_code < 300:
+        return response.json()["data"]
+    return {"error": response.json()}

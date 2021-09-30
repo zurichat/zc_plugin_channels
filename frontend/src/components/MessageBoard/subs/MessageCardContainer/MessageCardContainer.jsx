@@ -30,7 +30,7 @@ const dispatch = useDispatch()
   // let loadedMessages = channelMessages.splice(0, messageNumber)
   const [loadedMessagesArray, setLoadedMessages] = useState([])
 
-  let loadedMessages = channelMessages.map((message, key) => {return key <= messageNumber})
+  let loadedMessages = channelMessages.slice(0, messageNumber)
 
   useEffect(async () => {
   loadData()
@@ -50,13 +50,13 @@ const dispatch = useDispatch()
     return(
         <Box>
             <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
-            <Button
+        <Button
         background='#FFFFFF'
         border='1px solid rgba(87, 87, 87, 0.3)'
         borderRadius='15px'
         size='xs'
         mb='10px'
-        rightIcon={<FaCaretDown />}
+        rightIcon={<FaCaretDown /  >}
       >
         Today
       </Button>

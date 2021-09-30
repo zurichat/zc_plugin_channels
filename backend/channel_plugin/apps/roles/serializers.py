@@ -12,10 +12,19 @@ class Permission(serializers.Serializer):
 
 class RoleSerializer(serializers.Serializer):
 
-    _id = serializers.ReadOnlyField()
-    name = serializers.CharField(max_length=20)
-    channel_id = serializers.CharField(read_only=True)
-    permissions = Permission(many=True)
+    _id = serializers.ReadOnlyField(help_text="Role ID")
+    name = serializers.CharField(
+        max_length=20,
+        help_text="Role name"
+    )
+    channel_id = serializers.CharField(
+        read_only=True,
+        help_text="Channel ID"
+    )
+    permissions = Permission(
+        many=True,
+        help_text="List of permissions for this role"
+    )
 
     def to_representation(self, instance):
         instance = dict(instance)

@@ -14,7 +14,7 @@ class Thread:
     emojis: list = field(default_factory=list)
     # list of files
     files: list = field(default_factory=list)
-    has_files: str = "no"
+    has_files: bool = False
     edited: bool = False
     timestamp: str = timezone.now().isoformat()
 
@@ -27,7 +27,7 @@ class Thread:
             "files": self.files,
             "has_files": self.has_files,
             "emojis": self.emojis,
-            "edited": str(self.edited),
+            "edited": self.edited,
             "timestamp": self.timestamp,
         }
         response = Request.post(

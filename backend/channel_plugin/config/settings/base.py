@@ -73,7 +73,7 @@ THIRD_PARTY_APPS = [
     # "django_celery_beat",
     "rest_framework",
     # "rest_framework.authtoken",
-    #"corsheaders",
+    # "corsheaders",
     "drf_yasg",
 ]
 
@@ -123,9 +123,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # "channel_plugin.utils.middleware.CorsMiddleware",
+    "channel_plugin.utils.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    #"corsheaders.middleware.CorsMiddleware",
+    # "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -146,7 +146,7 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
     str(APPS_DIR / "static"),
-    str(APPS_DIR / "build" / "static"),
+    str(APPS_DIR / "build"),
 ]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
@@ -302,15 +302,22 @@ SOCIALACCOUNT_ADAPTER = "channel_plugin.users.adapters.SocialAccountAdapter"
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        # "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ),
+    # "DEFAULT_AUTHENTICATION_CLASSES": (
+    #     # "rest_framework.authentication.SessionAuthentication",
+    #     "rest_framework.authentication.TokenAuthentication",
+    # ),
+    # "DEFAULT_THROTTLE_CLASSES": [
+    #     "rest_framework.throttling.AnonRateThrottle",
+    # ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "5/min",
+    },
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "EXCEPTION_HANDLER": "channel_plugin.utils.custom_exception_handler.custom_exception_handler",
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
-CORS_URLS_REGEX = r"^/api/.*$"
+# CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
 TEAM_NAME = "Team Coelho"
@@ -347,6 +354,6 @@ CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
 #     "http://localhost:3001",
 # ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS_ALLOW_CREDENTIALS = True

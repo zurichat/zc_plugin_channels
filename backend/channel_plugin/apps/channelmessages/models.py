@@ -23,9 +23,13 @@ class ChannelMessage:
     has_files: bool = False
     pinned: bool = False
     edited: bool = False
+    replies: int = 0
     can_reply: bool = True
     type: str = DEFAULT_MESSAGE_TYPE
     timestamp: str = timezone.now().isoformat()
+
+    #NewlyAdded: 
+    event: dict = field(default_factory=dict)
 
     def create(self, organization_id):
         payload = {
@@ -33,12 +37,14 @@ class ChannelMessage:
             "channel_id": self.channel_id,
             "content": self.content,
             "emojis": self.emojis,
-            "has_files": str(self.has_files),
+            "has_files": self.has_files,
             "files": self.files,
-            "pinned": str(self.pinned),
-            "edited": str(self.edited),
+            "pinned": self.pinned,
+            "edited": self.edited,
             "type": self.type,
-            "can_reply": str(self.can_reply),
+            "event": self.event,
+            "replies": self.replies,
+            "can_reply": self.can_reply,
             "timestamp": self.timestamp,
         }
         response = Request.post(

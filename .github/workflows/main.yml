@@ -22,9 +22,14 @@ jobs:
          
       - name: install Dependencies
         run: |
-          cd frontend
+          cd frontend/main
+          git init
           yarn install
-          yarn relocate
+          yarn relocate_main
+          cd ../root
+          git init
+          yarn install
+          yarn relocate_root
 
       - name: Exec remote commands via SSH
         uses: appleboy/ssh-action@master
@@ -37,8 +42,11 @@ jobs:
             git checkout dev
             git stash
             git pull origin dev
-            cd frontend
+            cd frontend/main 
             yarn install
+            cd ../root
+            yarn install
+            
 
       - name: Copy Client dist folder to server
         uses: Creepios/sftp-action@v1.0.1
@@ -46,8 +54,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
-          localPath: './frontend/build/'
-          remotePath: '/var/www/zc_plugin_channels/fronend/build'
+          localPath: './backend/channel_plugin/channel_plugin/build'
+          remotePath: '/var/www/zc_plugin_channels/backend/channel_plugin/channel_plugin/build'
 
       - name: Exec remote commands via SSH
         uses: appleboy/ssh-action@master

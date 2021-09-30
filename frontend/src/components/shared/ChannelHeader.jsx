@@ -12,6 +12,7 @@ import infoImage from "../../assets/info.png";
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
+import PinnedMessages from "./PinnedMessages";
 
 //avatar details(Just a placeholder)
 const avatars = [
@@ -63,7 +64,11 @@ const ChannelHeader = () => {
       </Flex>
       <Box ml='1px'  display={['none','flex']}>
         <Flex w='95vw' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='1.938rem' > 
-          { pinnedMessages.length > 0 && <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button> }
+          { pinnedMessages.length > 0 && (
+            <PinnedMessages>
+              <Button mr='10px' {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button>
+            </PinnedMessages>
+          ) }
           <Button {...pinnedAndBookmarkButtonStyle} leftIcon={<Image src={addImage}/>}>Add a bookmark</Button>        
         </Flex>
       </Box> 
@@ -106,6 +111,10 @@ const pinnedAndBookmarkButtonStyle = {
   _focus: {
     outline: "none",
     bg: "#98FFDD"
+  },
+  _active: {
+    outline: "none",
+    bg: "#29FFB9"
   }
 }
 
