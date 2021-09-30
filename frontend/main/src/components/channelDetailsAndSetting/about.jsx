@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Stack, StackDivider, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
-import LeaveChannel from './LeaveChannel';
+import { FiEdit } from 'react-icons/fi';
+import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import instance from './../../utils/api';
+import moment from 'moment'
 
 const About = (index) => {
 
-  const [topic, setTopic] = useState("Add topic");
+  const [topic, setTopic] = useState("Add a topic");
   const [description, setDescription] = useState("Add description");
-  const [owner, setOwner] = useState("Fikun");
+  const [owner, setOwner] = useState("owner");
   const [created_on, setCreatedOn] = useState("August 28, 2021");
 
   //For edit details modal
@@ -31,7 +32,8 @@ const About = (index) => {
 
 
   const fetchTopic = async () => {
-    const res = await instance.getChannelDetails(org_id, channel_id).catch((err) => console.log(err));
+    const res = await axios(api_url).catch((err) => console.log(err));
+    // await instance.getChannelDetails(org_id, channel_id).catch((err) => console.log(err));
     const data = await res.data;
     // console.log(data.name);
     return data.topic;
@@ -94,41 +96,19 @@ const About = (index) => {
 
   return (
 
-    <List>
+    <List >
       <Stack
         direction='column'
         my='1.2rem'
-        // m="1.2rem 3.1rem"
-        py={3}
-        bg="whiteAlpha.700"
-        border="1px"
-        borderColor="gray.200"
-        borderRadius="3px"
-        divider={<StackDivider borderColor="gray.200" />}
+        spacing={3}
+
+
+
       >
 
-        <Info key={index} title='Topic' placeholder={topic} clickHandler={clickHandler} />
-        <Info key={index} title='Description' placeholder={description} clickHandler={clickHandler} />
-        <Info key={index} title='Created by' placeholder={`${owner} on ${created_on}`} clickHandler={clickHandler} />
-
-
-        <Box
-          px='1rem'
-          py='0.2rem'
-          pt={2} >
-
-          {/* <Link
-            href='/'
-            // as={ReachLink}
-            // to="/home"
-            color="#f44336"
-            _hover={{ textDecoration: 'none' }}
-            fontWeight="600"
-            fontSize='sm'>
-            Leave Channel Now
-          </Link> */}
-          <LeaveChannel />
-        </Box>
+        <Info title='Topic' placeholder={topic} edit={<Edit clickHandler={clickHandler} />} />
+        <Info title='Description' placeholder={description} edit={<Edit clickHandler={clickHandler} />} />
+        <Info title='Created by' placeholder={`${owner} on ${moment(created_on).format('MMMM Do, YYYY')}`} />
       </Stack>
     </List>
 
@@ -137,37 +117,73 @@ const About = (index) => {
   );
 }
 
-const Info = ({ title, placeholder, clickHandler }) => {
+const Info = ({ title, placeholder, index }) => {
   return (
-    <ListItem key=''>
+    <ListItem key={index}>
       <>
-        <Box
-          px='1rem'
-          py='0.2rem'
-          color="blackAlpha.800"
-          onClick={clickHandler}
+        <Stack border="1px"
+          borderColor="gray.200"
+          borderRadius="3px"
+          p={4}
+          bg="white.700"
         >
-          <Heading
-            mb=".32rem"
-            fontWeight="bold"
-            fontSize='sm'
+
+          <Box
+            px='1rem'
+            py='0.2rem'
+            color="black.800"
           >
-            {title}
-          </Heading>
-          <Text
-            fontSize="sm"
-            fontWeight='light'
-            height="auto"
-            onClick={() => clickHandler(
-              //data params
-            )}
-          >{placeholder}
-          </Text>
-        </Box>
+            <Flex>
+              <Heading
+                mb=".32rem"
+                fontWeight="normal"
+                fontSize='md'
+                color="#1D1D1D"
+                fontFamily='Lato, sans-serif'
+              >
+                {title}
+              </Heading>
+              <Spacer />
+              <Box>{edit}</Box>
+            </Flex>
+            <Text
+              fontSize="md"
+              height="auto"
+              color='#B0AFB0'
+              fontFamily='Lato, sans-serif'
+            >{placeholder}
+            </Text>
+          </Box>
+        </Stack>
       </>
     </ListItem>
 
   )
+}
+
+const Edit = ({ clickHandler }) => {
+  return (
+    <Link
+      _hover={{
+        textDecoration: 'none',
+        // color: 'gray' 
+      }}
+      color='#1264A3'
+      onClick={() => clickHandler(
+        //data params
+      )}
+    >
+
+      <HStack>
+        <FiEdit mx={2} size={16} />
+        <Text
+          pt='2px'
+          fontFamily='Roboto, sans-serif'
+          fontSize={14}>Edit</Text>
+      </HStack>
+    </Link >
+  )
+
 }
 
 export default About;
