@@ -21,7 +21,15 @@ team-coelho@zuri.chat
 ### /v1/collections/{plugin_id}
 
 #### GET
+##### Summary
+
+Get all database collections related to plugin
+
 ##### Description
+
+```bash
+curl -X GET "{{baseUrl}}/v1/collections/<plugin_id>" -H  "accept: application/json"
+```
 
 ##### Parameters
 
@@ -38,7 +46,15 @@ team-coelho@zuri.chat
 ### /v1/collections/{plugin_id}/organizations/{org_id}
 
 #### GET
+##### Summary
+
+Get all database collections related to plugin specific to an organisation
+
 ##### Description
+
+```bash
+curl -X GET "{{baseUrl}}/v1/collections/{{plugin_id}}/organizations/{{org_id}}" -H  "accept: application/json"
+```
 
 ##### Parameters
 
@@ -72,7 +88,15 @@ team-coelho@zuri.chat
 ### /v1/info
 
 #### GET
+##### Summary
+
+Get plugin details and developer information
+
 ##### Description
+
+```bash
+curl -X GET "{{baseUrl}}/v1/info" -H  "accept: application/json"
+```
 
 ##### Parameters
 
@@ -88,7 +112,15 @@ team-coelho@zuri.chat
 ### /v1/ping
 
 #### GET
+##### Summary
+
+Get server status
+
 ##### Description
+
+```bash
+curl -X GET "{{baseUrl}}/v1/ping" -H  "accept: application/json"
+```
 
 ##### Parameters
 
@@ -104,7 +136,15 @@ team-coelho@zuri.chat
 ### /v1/sidebar
 
 #### GET
+##### Summary
+
+Get dynamic sidebar details for a user in an organisation
+
 ##### Description
+
+```bash
+curl -X GET "{{baseUrl}}/v1/sidebar?org=<org_id>&user=<user_id>&token=<token>" -H  "accept: application/json"
+```
 
 ##### Parameters
 
@@ -151,7 +191,8 @@ curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
 #### POST
 ##### Summary
 
-Create a new channel in the organization
+This creates a channel for a
+particular organization identified by ID and creates corresponding Centrifugo room
 
 ##### Description
 
@@ -159,7 +200,7 @@ Create a new channel in the organization
 curl -X POST "{baseUrl}/v1/{org_id}/channels/"
 -H  "accept: application/json"
 -H  "Content-Type: application/json"
--d "{  "name": "channel name",  "owner": "member_id",  "description": "channel description",  "private": false,  "topic": "channel topic"}"
+-d "{  "name": "channel name",  "owner": "member_id", "description": "channel description",  "private": false,  "topic": "channel topic"}"
 ```
 
 ##### Parameters
@@ -330,7 +371,8 @@ curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "acce
 #### GET
 ##### Summary
 
-Get all members in a channel
+This method gets all members for a
+channel identified by ID
 
 ##### Description
 
@@ -355,17 +397,21 @@ curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "ac
 #### POST
 ##### Summary
 
-Add a user to channel
+This method adds one or more users to a channel
 
 ##### Description
+
+A JOIN event is published to Centrifugo when users are added to the channel
+
+**Add one user**
 
 ```bash
 curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
 -H  "accept: application/json"
 -H  "Content-Type: application/json"
--d "{"_id": "string",  
-    "role_id": "string",  
-    "is_admin": false,  
+-d "{"_id": "string",
+    "role_id": "string",
+    "is_admin": false,
     "notifications": {
          "web": "nothing",
          "mobile": "mentions",
@@ -373,6 +419,47 @@ curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
          "mute": false
         }
     }"
+```
+
+**Add multiple users**
+
+```bash
+curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+-H  "accept: application/json"
+-H  "Content-Type: application/json"
+-d "[
+        {"_id": "string",
+        "role_id": "string",
+        "is_admin": false,
+        "notifications": {
+            "web": "nothing",
+            "mobile": "mentions",
+            "same_for_mobile": true,
+            "mute": false
+            }
+        },
+        {"_id": "string",
+        "role_id": "string",
+        "is_admin": false,
+        "notifications": {
+            "web": "nothing",
+            "mobile": "mentions",
+            "same_for_mobile": true,
+            "mute": false
+            }
+        },
+        {"_id": "string",
+        "role_id": "string",
+        "is_admin": false,
+        "notifications": {
+            "web": "nothing",
+            "mobile": "mentions",
+            "same_for_mobile": true,
+            "mute": false
+            }
+        },
+        ...
+    ]"
 ```
 
 ##### Parameters
@@ -413,7 +500,7 @@ curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_
 -d "{
         "_id": "string",
         "role_id": "string",
-        "is_admin": false,  
+        "is_admin": false,
         "notifications": { }
     }"
 ```
@@ -474,9 +561,9 @@ Update channel member details
 curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
 -H  "accept: application/json"
 -H  "Content-Type: application/json"
--d "{"_id": "string",  
-    "role_id": "string",  
-    "is_admin": false,  
+-d "{"_id": "string",
+    "role_id": "string",
+    "is_admin": false,
     "notifications": {
          "web": "nothing",
          "mobile": "mentions",
@@ -572,7 +659,7 @@ curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_i
 -d "{
         "web": "all",
         "mobile": "all",
-        "same_for_mobile": true,  
+        "same_for_mobile": true,
         "mute": true
     }"
 ```
@@ -624,7 +711,7 @@ curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "a
 #### POST
 ##### Summary
 
-Create a channel message
+Create a channel message and automatically publishes to Centrifugo
 
 ##### Description
 
@@ -711,6 +798,44 @@ curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/roles/"
 | ---- | ----------- | ------ |
 | 201 | Response | [Role](#role) |
 
+### Search channel messages
+
+`/v1/{org_id}/channels/{channel_id}/search_messages/`
+
+#### POST
+##### Summary
+
+Search channel messages based on content, pinned status, file attachments etc.
+
+##### Description
+
+```bash
+curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/search_messages/"
+-H  "accept: application/json"
+-H  "Content-Type: application/json"
+-d "{
+        "user_id": "string",
+        "content": "string",
+        "has_files": true,
+        "pinned": true
+    }"
+```
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| channel_id | path |  | Yes | string |
+| org_id | path |  | Yes | string |
+| data | body |  | Yes | [ChannelMessageSearch](#channelmessagesearch) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Response | [ [ChannelMessageSearchResult](#channelmessagesearchresult) ] |
+| 400 | Error Response | [Error](#error) |
+
 ### Channel socket name
 
 `/v1/{org_id}/channels/{channel_id}/socket/`
@@ -718,7 +843,7 @@ curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/roles/"
 #### GET
 ##### Summary
 
-Retrieve channel centrifugo socket name
+Retrieve Centrifugo socket channel name based on organisation and channel IDs
 
 ##### Description
 
@@ -837,7 +962,7 @@ curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/" -H  "accept: applic
 #### PUT
 ##### Summary
 
-Update message details
+Updates message based on ID
 
 ##### Description
 
@@ -871,7 +996,7 @@ curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/?user_id={{user_id}}&
 #### DELETE
 ##### Summary
 
-Delete a message
+Deletes a message based on ID, and organisation
 
 ##### Description
 
@@ -1236,6 +1361,22 @@ List of permissions for this role
 | name | string | Role name | Yes |
 | channel_id | string | Channel ID | No |
 | permissions | [ [Permission](#permission) ] | List of permissions for this role | Yes |
+
+#### ChannelMessageSearch
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| user_id | string |  | No |
+| content | string |  | No |
+| has_files | boolean |  | No |
+| pinned | boolean |  | No |
+
+#### ChannelMessageSearchResult
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| result | [ [ChannelMessageUpdate](#channelmessageupdate) ] |  | Yes |
+| query | [ChannelMessageSearch](#channelmessagesearch) |  | Yes |
 
 #### Socket
 

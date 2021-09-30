@@ -212,7 +212,7 @@ class NotificationsSettingSerializer(serializers.Serializer):
     )
 
 
-class ChannelAllMediaSerializer(serializers.Serializer):
+class ChannelAllFilesSerializer(serializers.Serializer):
     channelmessage = serializers.ListField(
         child=serializers.URLField(help_text="URL to media/file"),
         read_only=True,
