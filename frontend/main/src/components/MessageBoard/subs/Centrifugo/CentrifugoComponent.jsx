@@ -9,31 +9,39 @@ import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 import { useParams } from 'react-router';
 
 //Centrifugo
-import Centrifuge from 'centrifuge';
+//import Centrifuge from 'centrifuge';
+import { SubscribeToChannel } from '@zuri/control'
+
 
 const CentrifugoComponent = () => {
-    let socketUrl = "";
+
+  //WHERE WE DO THE PREVIOUS CONNECTION
+
+  // let socketUrl = "";
             
-  if (window.location.hostname == "127.0.0.1")
-  {
-    socketUrl = "ws://localhost:8000/connection/websocket";
-  } else {
-    socketUrl = "wss://realtime.zuri.chat/connection/websocket";
-  }
+  // if (window.location.hostname == "127.0.0.1")
+  // {
+  //   socketUrl = "ws://localhost:8000/connection/websocket";
+  // } else {
+  //   socketUrl = "wss://realtime.zuri.chat/connection/websocket";
+  // }
 
-  const centrifuge = new Centrifuge(socketUrl);
+  // const centrifuge = new Centrifuge(socketUrl);
+  // centrifuge.connect();
 
-  centrifuge.on('connect', function(ctx) {
-    console.log("connected", ctx);
-  });
+  // centrifuge.on('connect', function(ctx) {
+  //   console.log("connected", ctx);
+  // });
 
-  centrifuge.on('disconnect', function(ctx) {
-    console.log("disconnected", ctx);
-  });
+  // centrifuge.on('disconnect', function(ctx) {
+  //   console.log("disconnected", ctx);
+  // });
 
-  centrifuge.on('publish', (ctx) => {
-    console.log("Publishing: ", ctx);
-  });
+  // centrifuge.on('publish', (ctx) => {
+  //   console.log("Publishing: ", ctx);
+  // });
+
+
 
   const dispatch = useDispatch()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
@@ -52,28 +60,29 @@ const CentrifugoComponent = () => {
   }
 
   
-  centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    console.log("from centrifugo: ", messageCtx);
-    dispatch({ type: GET_RENDEREDMESSAGES, payload: [...renderedMessages, messageCtx.data] })
-    console.log("Testing rendered messages: ", renderedMessages);
+  // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
+  //   console.log("from centrifugo: ", messageCtx);
+  //   dispatch({ type: GET_RENDEREDMESSAGES, payload: [...renderedMessages, messageCtx.data] })
+  //   console.log("Testing rendered messages: ", renderedMessages);
 
-    let eventType = messageCtx.data.event.action
-    let eventNumber = messageCtx.data.event.recipients
-    // switch (eventType) {
-    //     case "join:channel":
-    //       dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
-    //       console.log("Testing switch statement: ", renderedMessages);
-    //         break;
+  //   let eventType = messageCtx.data.event.action
+  //   let eventNumber = messageCtx.data.event.recipients
+  //   // switch (eventType) {
+  //   //     case "join:channel":
+  //   //       dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
+  //   //       console.log("Testing switch statement: ", renderedMessages);
+  //   //         break;
     
-    //     default:
-    //         break;
-    // }
-  })
+  //   //     default:
+  //   //         break;
+  //   // }
+  // })
   
 
   useEffect(async () => {
     loadData()
-    centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
+
+    SubscribeToChannel(sockets.socket_name, function(messageCtx) {
       console.log("from centrifugo: ", messageCtx);
       dispatch({ type: GET_RENDEREDMESSAGES, payload: [...renderedMessages, messageCtx.data] })
       console.log("Testing rendered messages: ", renderedMessages);
