@@ -216,8 +216,12 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         payload = serializer.data.get("channel")
         result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or isinstance(result, dict):
-            if result:
+        if (
+            result.__contains__("_id")
+            or isinstance(result, dict)
+            and not result.__contains__("error")
+        ):
+            if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
@@ -457,7 +461,7 @@ class ChannelMemberViewset(ViewSet):
                 }
             }"
         ```
-        
+
         **Add multiple users**
 
         ```bash
@@ -498,7 +502,7 @@ class ChannelMemberViewset(ViewSet):
                 ...
             ]"
         ```
-        
+
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
