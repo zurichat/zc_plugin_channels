@@ -15,6 +15,8 @@ import {
   GET_SOCKETS,
   ADD_CHANNEL_MEMBER,
   USER_CAN_INPUT,
+  GET_FILES,
+  DELETE_CHANNEL,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -198,6 +200,28 @@ const _userCanInput = (org_id, data) => async (dispatch) => {
   }
 };
 
+const _getFiles = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.getChannelFiles(org_id, channel_id);
+    dispatch({ type: GET_FILES, payload: res.data });
+    // _alert("success", "Channel successfully created");
+  } catch (error) {
+    _alert("slow connection");
+  }
+};
+
+const _deleteChannel = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.deleteChannel(org_id, channel_id, {
+      delete: "True",
+    });
+    dispatch({ type: DELETE_CHANNEL, payload: res.data });
+    _alert("success", "Channel successfully deleted");
+  } catch (err) {
+    _alert("error");
+  }
+};
+
 // Export functions here
 const appActions = {
   _alert,
@@ -214,5 +238,7 @@ const appActions = {
   _getSocket,
   _addChannelMember,
   _userCanInput,
+  _deleteChannel,
+  _getFiles,
 };
 export default appActions;
