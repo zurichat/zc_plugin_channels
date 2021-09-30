@@ -238,7 +238,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         responses={
             200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
             204: openapi.Response("User does not belong to any channel"),
-            404: openapi.Response("Not found", ErrorSerializer),
+            400: openapi.Response("Not found", ErrorSerializer),
         },
     )
     @action(methods=["GET"], detail=False)
@@ -252,22 +252,27 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         data = {}
         data.update(dict(request.query_params))
         response = Request.get(org_id, "channel", data) or []
-        response = list(enumerate(response))
         result = []
-        status_code = status.HTTP_204_NO_CONTENT
-        if response:
-            status_code = status.HTTP_200_OK
-            for i in response:
-                if user_id in i[1]["users"].keys():
-                    channel = {}
-                    channel["_id"] = i[1]["_id"]
-                    channel["name"] = i[1]["name"]
-                    channel["description"] = i[1]["description"]
-                    result.append(channel)
-                else:
-                    pass
-        else:
-            status_code = status.HTTP_404_NOT_FOUND
+        status_code = status.HTTP_400_BAD_REQUEST
+        if isinstance(response, list):
+            status_code = (
+                status.HTTP_200_OK if len(response) > 0 else status.HTTP_204_NO_CONTENT
+            )
+            result = list(
+                map(
+                    lambda item: {
+                        "_id": item.get("_id"),
+                        "name": item.get("name"),
+                        "description": item.get("description"),
+                    },
+                    list(
+                        filter(
+                            lambda item: user_id in item.get("users", {}).keys(),
+                            response,
+                        )
+                    ),
+                )
+            )
 
         return Response(result, status=status_code)
 
@@ -402,7 +407,7 @@ class ChannelMemberViewset(ViewSet):
             400: openapi.Response("Error Response"),
             404: openapi.Response("Collection Not Found"),
         },
-        operation_id="add-channel-member",
+        operation_id="add-channel-members",
     )
     @action(
         methods=["POST"],
@@ -410,8 +415,11 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-        Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
+        This method adds one or more users to a channel
 
+        A JOIN event is published to Centrifugo when users are added to the channel
+
+        **Add one user**
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -427,6 +435,48 @@ class ChannelMemberViewset(ViewSet):
                 }
             }"
         ```
+        
+        **Add multiple users**
+
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "[
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                ...
+            ]"
+        ```
+        
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
