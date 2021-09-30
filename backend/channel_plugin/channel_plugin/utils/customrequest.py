@@ -60,6 +60,7 @@ class Request:
                         "object_id": params["_id"],
                     }
                 )
+            print(data)
             response = requests.post(read, json.dumps(data))
         else:
             response = requests.get(url)

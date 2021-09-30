@@ -1,3 +1,4 @@
+from enum import Flag
 import json
 from copy import copy
 
