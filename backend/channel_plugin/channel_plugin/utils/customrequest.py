@@ -57,6 +57,7 @@ class Request:
             response = requests.post(read, json.dumps(data))
         else:
             response = requests.get(url)
+        print(url)
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}

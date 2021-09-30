@@ -8,7 +8,7 @@ from rest_framework.throttling import AnonRateThrottle
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
-from channel_plugin.utils.wrappers import OrderMixin
+# from channel_plugin.utils.wrappers import OrderMixin
 
 from django.utils.timezone import datetime
 
@@ -17,7 +17,7 @@ from .permissions import CanReply, IsMember, IsOwner
 from .serializers import ThreadSerializer, ThreadUpdateSerializer
 
 
-class ThreadViewset(ThrottledViewSet, OrderMixin):
+class ThreadViewset(ThrottledViewSet):
 
     authentication_classes = []
 
@@ -127,12 +127,13 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
         """
 
         data = {"channelmessage_id": channelmessage_id}
-        params = self._clean_query_params(request)
-        data.update(params)
-        result = Request.get(org_id, "thread", data) or []
+        # params = self._clean_query_params(request)
+        data.update(dict(request.query_params))
+        result = Request.get(org_id, "thread", data)
+        print(result)
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
-            result = self.perform_ordering(request, result)
+            # result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
