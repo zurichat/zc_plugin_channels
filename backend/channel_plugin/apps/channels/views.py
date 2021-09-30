@@ -81,6 +81,22 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        manual_parameters=[
+            openapi.Parameter(
+                "order_by",
+                openapi.IN_QUERY,
+                description="property to use for payload ordering",
+                required=False,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ascending",
+                openapi.IN_QUERY,
+                description="direction to order payload ",
+                required=False,
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
@@ -648,7 +664,7 @@ class ChannelMemberViewset(ViewSet):
                 UserSerializer,
             )
 
-            serializer = UserSerializer(data=users, many=True)
+            serializer = UserSerializer(data=channel["users"], many=True)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
