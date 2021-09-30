@@ -17,7 +17,7 @@ from channel_plugin.utils.customrequest import Request
 from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
-    ChannelAllMediaSerializer,
+    ChannelAllFilesSerializer,
     ChannelGetSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
@@ -120,35 +120,61 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", ChannelAllMediaSerializer),
+            200: openapi.Response("Response", ChannelAllFilesSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="list-all-channel-media",
+        operation_id="list-all-channel-files",
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
-        """Retrieve all media in channel
+        """Retrieve all files in channel
 
         This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
         Response is split into `channelmessage` and `thread` objects
 
         ```bash
-        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/files/" -H  "accept: application/json"
         ```
         """
-        data = {"channel_id": channel_id, "has_files": True}
+        data = {"channel_id": channel_id, "has_files": "yes", "type": "message"}
         data.update(dict(request.query_params))
         result = {}
+        flag = 0
         result_message = Request.get(org_id, "channelmessage", data) or []
         result_thread = Request.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result_message, list) or isinstance(result_thread, list):
+            message_response = []
+            thread_response = []
+            if result_message:
+                for i in result_message:
+                    message_response.append(
+                        {
+                            "timestamp":i["timestamp"],
+                            "files":i["files"],
+                            "message_id":i["_id"],
+                            "user_id":i["user_id"]
+                            }
+                        )
+                    flag = 1
+            if result_thread:
+                for i in result_thread:
+                    thread_response.append(
+                        {
+                            "timestamp":i["timestamp"],
+                            "files":i["files"],
+                            "message_id":i["_id"],
+                            "user_id":i["user_id"]
+                            }
+                            )
+                    flag = 1    
             result.update(
                 {
-                    "channelmessage": result_message
-                    if isinstance(result_message, list)
+                    "message": "Successfully Retrieved" if flag == 1 else "There are no files in this channel",
+                    "channelfiles": message_response
+                    if isinstance(message_response, list)
                     else [],
-                    "thread": result_thread if isinstance(result_thread, list) else [],
+                    "threadfiles": thread_response if isinstance(thread_response, list) else [],
                 }
             )
             status_code = status.HTTP_200_OK
@@ -210,8 +236,12 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         payload = serializer.data.get("channel")
         result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or isinstance(result, dict):
-            if result:
+        if (
+            result.__contains__("_id")
+            or isinstance(result, dict)
+            and not result.__contains__("error")
+        ):
+            if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
@@ -451,7 +481,7 @@ class ChannelMemberViewset(ViewSet):
                 }
             }"
         ```
-        
+
         **Add multiple users**
 
         ```bash
@@ -492,7 +522,7 @@ class ChannelMemberViewset(ViewSet):
                 ...
             ]"
         ```
-        
+
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)

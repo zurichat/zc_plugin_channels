@@ -1,3 +1,5 @@
+import cancelIcon from '../../assets/cancel_icon.png'
+
 import {
     Modal,
     ModalOverlay,
@@ -10,6 +12,9 @@ import {
     Textarea,
     useDisclosure,
     Text,
+    Flex,
+    Center,
+    Box,
   } from "@chakra-ui/react"
 import React, { useState } from 'react'
 
@@ -56,25 +61,56 @@ function saveDescription(description){
             >
           <ModalOverlay />
           <ModalContent 
-            h='408px' maxW='565px'
-            padding='0 24px'  >
-            <ModalHeader 
-                padding ='0px'
-                mt='24px'
-                mb='0px'
-                fontSize='24px' 
+            h='442px' maxW='464px'
+            padding='0px'
+            margin= '0px'
+            borderRadius='4px'  >
+              <Flex 
+                borderBottom='1px solid #F6F6F6'
+                margin='0'
+                padding='32px 29px 26px 23px'
                 >
-                  Edit Description
-            </ModalHeader>
-            <ModalCloseButton mt='16px' marginRight='10px' fontSize='14px' />
-            <ModalBody padding='0px' mt='24px' >
+                <Center 
+                  justifyContent='space-between'
+                  width='100%'
+                  >
+                   <ModalHeader 
+                    padding ='0px'
+                    fontSize='18px'
+                    >
+                      Description
+                  </ModalHeader>
+                  <Flex>
+                    <Center
+                    width='40px'
+                    height= '40px'
+                    borderRadius='3px'
+                    _hover={{backgroundColor:'#F6F6F6'}}
+                    onClick={onclose}
+                    >
+                      <img src={cancelIcon} alt='cancel_icon' />
+                    </Center>
+                    
+                  </Flex>
+                </Center>
+                
+              </Flex>
+           
+            <ModalBody padding='0px 29px 0px 23px' mt='24px' >
               <Textarea
-                height='201px'
+                height='159px'
+                maxWidth = '100%'
+                margin='0px'
                 borderRadius='3px'
+                fontSize='13px'
+                fontWeight='400'
                 ref={initialRef}
                 resize='none'
                 focusBorderColor='green.500'
-                onChange={onTextAreaChange} 
+                placeholder='Add description'
+                onChange={onTextAreaChange}
+                _placeholder={{fontSize:'13px',fontWeight: 400}}
+                
               /> 
               <Text 
                 mt='24px'
@@ -88,18 +124,14 @@ function saveDescription(description){
               </Text>
             </ModalBody>
   
-            <ModalFooter
-                padding='0px 0px 25px'
-            >
+            <ModalFooter padding='0px 23px 24px'>
               <Button 
-              fontSize='16px'
+              fontSize='15px'
               fontWeight='400'
-              padding='0px 36px'
-              height='30px'
+              padding='12px 18px'
               borderRadius='3px'
-              width='105px'
-              border='1px solid #00B87C'
-              color='#00B87C'
+              border='1px solid red'
+              color='red'
               backgroundColor ='white'
               mr='20px'
               onClick={onClose}>
@@ -109,11 +141,9 @@ function saveDescription(description){
                 colorScheme='green'
                 color='white'
                 backgroundColor ='#00B87C'
-                fontSize='16px'
+                fontSize='15px'
                 fontWeight='400'
-                padding='0px 36px'
-                height='30px'
-                width='105px'
+                padding='12px 18px'
                 borderRadius='3px'
                 onClick={() => saveDescription(description)}
                 >Save</Button>
