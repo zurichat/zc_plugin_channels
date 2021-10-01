@@ -1,6 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
-import { GetUserInfo } from "@zuri/control";
+import { GetUserInfo, GetWorkspaceUsers } from "@zuri/control";
 
 import {
   GET_CHANNELMESSAGES,
@@ -15,6 +15,7 @@ import {
   GET_SOCKETS,
   ADD_CHANNEL_MEMBER,
   USER_CAN_INPUT,
+  GET_WORKSPACE_USERS,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -46,15 +47,23 @@ const _getUsers = (params) => async (dispatch) => {
   try {
     // Result comes from the endpoint
     // Let's assume an array of objects is returned from the endpoint
-    // const res = await GetUserInfo();
-
-    GetUserInfo().then((res) => {
-      dispatch({ type: GET_USERS, payload: res });
-    });
-
+    const res = await GetUserInfo();
+    dispatch({ type: GET_USERS, payload: res });
     // Result is sent to the store via dispatch (Pass payload if needed)
   } catch (error) {
     // Handle exceptions here
+    console.log(error);
+  }
+};
+
+const _getWorkspaceUsers = (params) => async (dispatch) => {
+  try {
+    // const res = await GetWorkspaceUser();
+    // dispatch({ type: GET_WORKSPACE_USERS, payload: res });
+    GetWorkspaceUsers().then((res) => {
+      dispatch({ type: GET_WORKSPACE_USERS, payload: res });
+    });
+  } catch (error) {
     console.log(error);
   }
 };
@@ -214,5 +223,6 @@ const appActions = {
   _getSocket,
   _addChannelMember,
   _userCanInput,
+  _getWorkspaceUsers,
 };
 export default appActions;
