@@ -21,6 +21,7 @@ class Channel:
     # private / public
     private: bool = False
     archived: bool = False
+    default: bool = False
     # when channel was created
     created_on: str = timezone.now().isoformat()
     # allow all members input/post messages
@@ -36,6 +37,7 @@ class Channel:
             "topic": self.topic,
             "private": self.private,
             "archived": self.archived,
+            "default": self.default,
             "users": self.users,
             "created_on": self.created_on,
             "allow_members_input": self.allow_members_input,
