@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Link, HStack } from '@chakra-ui/react';
+import { Box, Flex, Text, Link, HStack } from "@chakra-ui/react";
 
 const DisabledInput = () => {
   return (
@@ -7,7 +7,7 @@ const DisabledInput = () => {
         <Flex alignItems="center" justifyContent="center">
           <HStack
             spacing="11px"
-            display={{ lg: 'inline-block', sm: 'none' }}
+            display={{ lg: "inline-block", sm: "none" }}
             position="fixed"
             left="5em"
           >
