@@ -321,7 +321,6 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                     org_id, "thread", data_filter={"channelmessage_id": msg_id}
                 )
 
-        # add a signal here for delete signal
         channel_id = request.query_params.get("channel_id")
         request_finished.send(
             sender=self.__class__,
