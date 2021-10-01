@@ -11,6 +11,8 @@ from channel_plugin.utils.customrequest import Request
 from channel_plugin.utils.wrappers import OrderMixin
 
 from django.utils.timezone import datetime
+from django.core.signals import request_finished
+
 
 
 from .permissions import CanReply, IsMember, IsOwner
@@ -100,11 +102,20 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
             replies = Request.get(
                 org_id, "channelmessage", {"_id": channelmessage_id}
             ).get("replies", 0)
+            
             Request.put(
                 org_id,
                 "channelmessage",
                 {"replies": replies + 1},
                 object_id=channelmessage_id,
+            )
+            result.update({"replies": replies + 1})
+            request_finished.send(
+                sender=self.__class__,
+                dispatch_uid="CreateThreadSignal",
+                org_id=org_id,
+                channel_id=result.get("channel_id"),
+                data=result.copy(),
             )
         return Response(result, status=status_code)
 
@@ -198,6 +209,13 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
         result = Request.put(org_id, "thread", payload, object_id=thread_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
+            request_finished.send(
+                sender=self.__class__,
+                dispatch_uid="EditThreadSignal",
+                org_id=org_id,
+                channel_id=result.get("channel_id"),
+                data=result.copy(),
+            )
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -245,6 +263,18 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
             {"replies": replies - 1},
             object_id=message.get("_id"),
         )
+
+        request_finished.send(
+            sender=self.__class__,
+            dispatch_uid="DeleteThreadSignal",
+            org_id=org_id,
+            channel_id=thread.get("channel_id"),
+            data={
+                "_id": thread.get("_id"),
+                "channel_id": thread.get("channel_id"),
+                "user_id": request.query_params.get("user_id"),
+            },
+        )        
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     @swagger_auto_schema(
@@ -253,7 +283,24 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
             201: openapi.Response("Response", ReactionSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="update_thread_reaction"
+        operation_id="update_thread_reaction",
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+
     )
     @action(
         methods=["POST"],
@@ -303,14 +350,24 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
                 obj_id = thread.pop("_id")
 
                 result = Request.put(
-                    org_id=org_id, collection_name="thread", payload=thread, object_id=obj_id) or {}
+                    org_id=org_id,
+                    collection_name="thread", 
+                    payload={"emojis": thread.get("emojis")}, 
+                    object_id=obj_id) or {}
 
                 if isinstance(result, dict):                
                     if result.__contains__("_id"):
                         # return status code 201 if user reaction was added
                         # return status code 200 if user reaction was removed
-                        return Response(emoji, status=status_code)
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="EditThreadSignal",
+                            org_id=org_id,
+                            channel_id=result.get("channel_id"),
+                            data=result.copy(),
+                        )
 
+                        return Response(emoji, status=status_code)
                 return Response(result)
         return Response(
             {"error": "thread not found"}, 
