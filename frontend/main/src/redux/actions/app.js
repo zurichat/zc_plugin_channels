@@ -57,6 +57,7 @@ const _getUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
+
 const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
   try {
     // Result comes from the endpoint

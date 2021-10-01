@@ -11,6 +11,7 @@ import TopSearch from "../createChannel/TopSearch";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Icon } from "@chakra-ui/icon";
 
+
 const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // STEP FIVE (Extract redux function)
@@ -30,6 +31,8 @@ const Home = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+ 
 
   return (
     <Box width="100%" height="100vh" bg="#E5E5E5" pt={4}>
@@ -62,6 +65,7 @@ const Home = () => {
         borderRadius="2px"
       >
         {/* Mount your component here and unmount when done */}
+        
       </Box>
     </Box>
   );

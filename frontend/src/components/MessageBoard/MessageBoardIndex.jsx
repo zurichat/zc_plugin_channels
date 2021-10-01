@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Flex } from "@chakra-ui/layout";
+import EditDescriptionModal from '../../../main/src/components/EditDescriptionModal'
 
 import ChannelHeader from "../shared/ChannelHeader";
 // import ChannelNameBanner from "../admin/subs/ChannelNameBanner/ChannelNameBanner";
@@ -31,6 +32,7 @@ const MessageBoardIndex = () => {
         </Box>
         <MessageInput />
         </Box>
+          <EditDescriptionModal />
         {/* <Box>
           <Thread/>
         </Box> */}

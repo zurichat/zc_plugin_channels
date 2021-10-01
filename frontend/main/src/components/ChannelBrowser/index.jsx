@@ -1,6 +1,7 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
-  Box
+  Box,
+  Text
 } from "@chakra-ui/layout";
 import React, { useEffect } from "react";
 import ChannelBrowserHeader from "./ChannelBrowserHeader";
@@ -11,6 +12,8 @@ import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
 
 import { useSelector } from "react-redux";
+
+import EditDescriptionModal from "../EditDescriptionModal";
 
 
 const ChannelBrowser = () => {
@@ -52,7 +55,7 @@ const ChannelBrowser = () => {
         display="none"
         sx={{ "@media screen and (max-width: 768.5px)": { display: "block" } }}
       />
-     
+      
     </Box>
   );
 };

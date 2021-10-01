@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Box } from "@chakra-ui/layout";
+import { Box, } from "@chakra-ui/layout";
+import {Text} from '@chakra-ui/react'
 import UserProfileOnHover from "./UserProfileOnHover";
 import OnClickUserProfile from "./OnclickuserProfile";
 
