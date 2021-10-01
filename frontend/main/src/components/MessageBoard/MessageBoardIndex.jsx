@@ -19,9 +19,6 @@ import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
 const MessageBoardIndex = () => {
-  const {
-    channelsReducer: { channelDetails },
-  } = useSelector((state) => state);
   // extract members permission to input
   const canInput = channelDetails.allow_members_input;
   // console.log(canInput);
