@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FiEdit } from 'react-icons/fi';
-import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
+import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text, Link } from '@chakra-ui/react';
 import axios from 'axios';
 import instance from './../../utils/api';
 import moment from 'moment'
+import Edit from "../channelDetailsAndSetting/Edit"
 
 const About = (index) => {
 
@@ -117,7 +117,7 @@ const About = (index) => {
   );
 }
 
-const Info = ({ title, placeholder, index }) => {
+const Info = ({ title, placeholder, edit, index }) => {
   return (
     <ListItem key={index}>
       <>
@@ -159,31 +159,6 @@ const Info = ({ title, placeholder, index }) => {
     </ListItem>
 
   )
-}
-
-const Edit = ({ clickHandler }) => {
-  return (
-    <Link
-      _hover={{
-        textDecoration: 'none',
-        // color: 'gray' 
-      }}
-      color='#1264A3'
-      onClick={() => clickHandler(
-        //data params
-      )}
-    >
-
-      <HStack>
-        <FiEdit mx={2} size={16} />
-        <Text
-          pt='2px'
-          fontFamily='Roboto, sans-serif'
-          fontSize={14}>Edit</Text>
-      </HStack>
-    </Link >
-  )
-
 }
 
 export default About;
