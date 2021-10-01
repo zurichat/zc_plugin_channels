@@ -1,17 +1,42 @@
 import React from 'react'
+import { IoSend } from 'react-icons/io5'
 import { FaGoogleDrive, FaTv } from 'react-icons/fa'
 import {
     Flex, Box, Image, Heading, Stack,
-    Divider, HStack, Text, Link,
+    Divider, HStack, Text, Link, Input,
     List, ListItem, FormLabel,
 } from "@chakra-ui/react"
+import axios from 'axios'
+import { useState } from 'react';
 
 
 const MultimediaSharingModal = () => {
+    const [selectedFile, setselectedFile] = useState();
+    const [isFilePicked, setIsFilePicked] = useState(false);
+
+    const fileSelectHandler = event => {
+        const fileSelected = event.target.files[0];
+        setselectedFile(fileSelected);
+        setIsFilePicked(true);
+    }
+    const fileUploadHandler = async () => {
+        const fd = new FormData();
+        fd.append('file', selectedFile);
+        axios.post(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/messages/`, fd)
+            .then(await axios.get(`https://channels.zuri.chat/api/v1/1/channels/614fd30bcf2c0f1ad758538e/media/?format=json`, fd)
+                .then(res => {
+                    console.log(res.files)
+                    return res.files[id];
+                })).catch((error) => {
+
+                    console.error('Error:', error);
+
+                });
+    }
 
     return (
         <Flex direction="column">
-            <Stack direction="column" px={4}>
+            <Stack direction="column" p={4} pb={0}>
                 <Box pt={2} pb={2}>
                     <Heading
                         as='h3'
@@ -41,7 +66,7 @@ const MultimediaSharingModal = () => {
                 pt={4} />
             <Stack
                 direction='column'
-                px={4}>
+                p={4} pt={0}>
                 <Box pt={4} pb={2}>
                     <Heading
                         as='h3'
@@ -60,15 +85,24 @@ const MultimediaSharingModal = () => {
                             </HStack> */}
                 <HStack
                     color='#c4c4c4'
-                    spacing={4}>
+                    spacing={4} >
                     <FaTv size='1.4rem' />
-                    <Text fontSize='md' fontWeight='normal' cursor='pointer'>
-                        <FormLabel for="upload-option-file">
-                            <Link _hover={{ textDecoration: 'none' }} pt='12px'>Upload from your computer</Link>
-                        </FormLabel>
-                        <Input type="file" style={{ display: 'none' }} id="upload-option-file" name="upload-option-file" />
-                    </Text>
+
+                    <FormLabel for="upload-option-file">
+                        <Link _hover={{ textDecoration: 'none' }}>Upload from your computer</Link>
+                    </FormLabel>
+                    <Input type="file" style={{ display: 'none' }} id="upload-option-file" name="upload-option-file" onClick={fileSelectHandler} />
+
+
                 </HStack>
+                <Stack pt='20px'>
+                    {isFilePicked ? (
+                        <Box>
+                            <Text>Upload Successful. File url: {selectedFile}</Text>
+                        </Box>
+                    ) : (<Text>Select file</Text>)}
+                </Stack>
+                {/* <IconButton onClick={fileUploadHandler} maxW={12} icon={<IoSend />} /> */}
             </Stack>
         </Flex>
     )

@@ -18,6 +18,7 @@ from .permissions import IsMember, IsOwner
 from .serializers import (
     ChannelMessageReactionSerializer,
     ChannelMessageReactionsUpdateSerializer,
+    ChannelMessageSearchResultSerializer,
     ChannelMessageSearchSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
@@ -429,18 +430,42 @@ channelmessage_reactions = ChannelMessageViewset.as_view(
 )
 
 
+@swagger_auto_schema(
+    method="POST",
+    request_body=ChannelMessageSearchSerializer,
+    responses={
+        200: openapi.Response(
+            "Response", ChannelMessageSearchResultSerializer(many=True)
+        ),
+        400: openapi.Response("Error Response", ErrorSerializer),
+    },
+    operation_id="search-channel-messages"
+)
 @api_view(["POST"])
 def search_messages(request, org_id, channel_id):
+    """Search channel messages based on content, pinned status, file attachments etc.
+
+    ```bash
+    curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/search_messages/"
+    -H  "accept: application/json"
+    -H  "Content-Type: application/json"
+    -d "{
+            \"user_id\": \"string\",
+            \"content\": \"string\",
+            \"has_files\": true,
+            \"pinned\": true
+        }"
+    ```
     """
-    Search channel messages based on content, pinned status, file attachments etc.
-    """
+
     serializer = ChannelMessageSearchSerializer(data=request.data)
-    if serializer.is_valid():
-        data = serializer.data
-        response = search_db(org_id, channel_id, "channelmessage", **data)
-        response.update(data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.data
+    result = search_db(org_id, channel_id, "channelmessage", **data) or []
+    if isinstance(result, list):
+        response = {"result": result, "query": data}
         return Response(response, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 
 search_channelmessage = search_messages
