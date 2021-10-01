@@ -7,18 +7,27 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  Text
 } from '@chakra-ui/react';
 import { VStack, Button } from "@chakra-ui/react";
 import { Checkbox } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/hooks";
 
-const MoreNotificationModal = ({onClose, isOpen}) => {
+
+const MoreNotificationModal = () => {
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [checked, setChecked] = useState("");
 
   const handleChange = (e) => {
     setChecked(e.target.checked)
+    console.log(e);
   }
   
   return (
+    <>
+    <Text onClick={onOpen}>Open Modal</Text>
     <Modal onClose={onClose} isOpen={isOpen}>
       <ModalOverlay />
       <ModalContent pb={5}>
@@ -75,6 +84,7 @@ const MoreNotificationModal = ({onClose, isOpen}) => {
         </ModalFooter>
       </ModalContent>
     </Modal>
+    </>
   )
 }
 

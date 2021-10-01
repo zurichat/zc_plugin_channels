@@ -191,7 +191,7 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
         </Accordion>
       </Box>
       <Box>
-        {moreDetails.map((detail) => (
+        {/* {moreDetails.map((detail) => (
           <>
             <HStack
               key={detail.id}
@@ -213,7 +213,7 @@ const ChannelDetails = ({ channelName="Announcements" }) => {
               </HStack>
             </HStack>
           </>
-        ))}
+        ))} */}
       </Box>
       <Box py="1rem" px="29px" h="56px" bg="white" mt="2px" borderTopLeftRadius="3px" borderTopRightRadius="3px">
         <Text fontWeight="bold" fontSize="sm" color="gray.400">

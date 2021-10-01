@@ -1,9 +1,5 @@
-import json
-from urllib.parse import urlencode
-
-import requests
+from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
-from django.conf import settings
 from django.core.signals import request_finished
 from django.utils.timezone import datetime
 from drf_yasg import openapi
@@ -14,30 +10,24 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-
 from channel_plugin.utils.customrequest import Request, search_db
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
     ChannelMessageReactionSerializer,
-    ChannelMessageReactionsUpdateSerializer,
     ChannelMessageSearchResultSerializer,
     ChannelMessageSearchSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
 
-from apps.threads.serializers import ReactionSerializer
-
-
-
 
 class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
-    
+
     OrderingFields = {
         "timestamp": datetime.fromisoformat,
-        "replies":int,
+        "replies": int,
     }
 
     authentication_classes = []
@@ -52,7 +42,12 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         """
 
         permissions = super().get_permissions()
-        if self.action in ["message", "message_delete", "message_update", "update_message_reaction"]:
+        if self.action in [
+            "message",
+            "message_delete",
+            "message_update",
+            "update_message_reaction",
+        ]:
             permissions.append(IsMember())
             if self.action in ["message_delete", "message_update"]:
                 permissions.append(IsOwner())
@@ -124,7 +119,6 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                 type=openapi.TYPE_BOOLEAN,
             ),
         ],
-
     )
     @action(
         methods=["GET"],
@@ -137,55 +131,48 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
         ```
         """
-        data = ""
-        status_code = status.HTTP_404_NOT_FOUND
-
-        for chunk in self._stream_message_all(request, org_id, channel_id):
-            data += chunk
-
-        try:
-            result = json.loads(data)
-        except: # noqa
-            status_code = status.HTTP_200_OK
-            result = []
-        
-        if isinstance(result, dict):
-            if result.get("data"):
-                result = self.perform_ordering(request, result.get("data"))
-                status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
-
-    def _stream_message_all(self, request, org_id, channel_id):
-        """
-        This method reads the response to a
-        zc-core request in streams
-        """
-        # TODO: Remove this method when zc-core implements pagination
         data = {"channel_id": channel_id}
         params = self._clean_query_params(request)
         data.update(params)
+        result = Request.get(org_id, "channelmessage", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result, list):
+            if len(result) > 0:
+                result = self.perform_ordering(request, result)
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
-        read = settings.READ_URL
+    # def _stream_message_all(self, request, org_id, channel_id):
+    #     """
+    #     This method reads the response to a
+    #     zc-core request in streams
+    #     """
+    #     # TODO: Remove this method when zc-core implements pagination
+    #     data = {"channel_id": channel_id}
+    #     params = self._clean_query_params(request)
+    #     data.update(params)
 
-        collection_name = "channelmessage"
-        max_chunk_size = 500000
+    #     read = settings.READ_URL
 
-        url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
-        url += "?" + urlencode(data)
+    #     collection_name = "channelmessage"
+    #     max_chunk_size = 500000
 
-        r = requests.get(url, stream=True, timeout=100)         
+    #     url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
+    #     url += "?" + urlencode(data)
 
-        if int(r.headers.get("Content-Length", 10000)) > max_chunk_size:
-            raise ValueError("response too large")
+    #     r = requests.get(url, stream=True, timeout=100)
 
-        size = 0
+    #     if int(r.headers.get("Content-Length", 10000)) > max_chunk_size:
+    #         raise ValueError("response too large")
 
-        for chunk in r.iter_content(None, True):
+    #     size = 0
 
-            size += len(chunk)
-            if size > max_chunk_size:
-                raise ValueError("response too large")
-            yield chunk
+    #     for chunk in r.iter_content(None, True):
+
+    #         size += len(chunk)
+    #         if size > max_chunk_size:
+    #             raise ValueError("response too large")
+    #         yield chunk
 
     @swagger_auto_schema(
         responses={
@@ -375,7 +362,12 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         ],
     )
     @action(methods=["GET"], detail=False)
-    def retrieve_message_reactions(self, request, org_id, msg_id,):
+    def retrieve_message_reactions(
+        self,
+        request,
+        org_id,
+        msg_id,
+    ):
         """Retrieve message reactions
 
         ```bash
@@ -384,11 +376,11 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         """
 
         data = {"_id": msg_id}
-        
+
         self.OrderingFields = {
             "count": datetime.fromisoformat,
         }
-        params =  self._clean_query_params(request)
+        params = self._clean_query_params(request)
         data.update(params)
         result = Request.get(org_id, "channelmessage", data) or {}
         reactions = self.perform_ordering(request, result.get("emojis", []))
@@ -428,7 +420,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
     @throttle_classes([AnonRateThrottle])
     def update_message_reaction(self, request, org_id, msg_id):
         message = Request.get(org_id, "channelmessage", {"_id": msg_id}) or []
-        
+
         status_code = status.HTTP_404_NOT_FOUND
 
         if isinstance(message, dict):
@@ -445,7 +437,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                         emoji = i.copy()
                         message.get("emojis", []).remove(emoji)
                         break
-           
+
                 if emoji:
                     if data.get("user_id") in emoji.get("users", []):
                         emoji.get("users", []).remove(data.get("user_id"))
@@ -462,7 +454,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                         "users": [data.get("user_id")],
                     }
                     status_code = status.HTTP_201_CREATED
-            
+
                 if emoji["count"] > 0:
                     message.get("emojis", []).append(emoji)
 
@@ -473,7 +465,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                     collection_name="channelmessage",
                     payload={"emojis": message.get("emojis")}, object_id=obj_id) or {}
 
-                if isinstance(result, dict):                
+                if isinstance(result, dict):
                     if result.__contains__("_id"):
                         # return status code 201 if user reaction was added
                         # return status code 200 if user reaction was removed
@@ -488,8 +480,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                         return Response(emoji, status=status_code)
                 return Response(result)
         return Response(
-            {"error": "message not found"}, 
-            status=status.HTTP_404_NOT_FOUND
+            {"error": "message not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
 
@@ -518,7 +509,7 @@ channelmessage_reactions = ChannelMessageViewset.as_view(
         ),
         400: openapi.Response("Error Response", ErrorSerializer),
     },
-    operation_id="search-channel-messages"
+    operation_id="search-channel-messages",
 )
 @api_view(["POST"])
 def search_messages(request, org_id, channel_id):
