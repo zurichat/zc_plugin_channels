@@ -25,7 +25,7 @@ const MoreNotificationModal = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [value, setValue] = useState("1")
-  const [webSetting, setWebSetting] = useState()
+  const [webSetting, setWebSetting] = useState(1)
 
   const [checked, setChecked] = useState("");
 
@@ -38,17 +38,18 @@ const MoreNotificationModal = () => {
     setWebSetting(e.target.value)
     console.log(e.target.value, webSetting);
     switch (webSetting) {
-      case 1:
-        console.log("all setting clicked");
+      case "1":
+        console.log(webSetting, "all setting clicked");
         break;
-      case 2:
+      case "2":
         console.log("Mention setting clicked");
         break;
-      case 3:
+      case "3":
         console.log("Nothing setting clicked");
         break;
     
       default:
+        console.log(webSetting, "no input");
         break;
     }
   }
