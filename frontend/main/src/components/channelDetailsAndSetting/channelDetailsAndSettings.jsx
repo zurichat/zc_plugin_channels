@@ -153,8 +153,8 @@ const ChannelDetails = ({ onClose, isOpen }) => {
               <Box px={6}>
                 <TabPanels>
                   <TabPanel>
-                    {/* <About />
-                    <FileList /> */}
+                    <About />
+                    {/* <FileList /> */}
                   </TabPanel>
                   <TabPanel>
                     {/* <OrganisationMembersList /> */}
