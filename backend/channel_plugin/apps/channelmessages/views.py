@@ -95,7 +95,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                 dispatch_uid="CreateMessageSignal",
                 org_id=org_id,
                 channel_id=channel_id,
-                data=result,
+                data=result.copy(),
             )
             status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code)
@@ -270,7 +270,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                 dispatch_uid="EditMessageSignal",
                 org_id=org_id,
                 channel_id=result.get("channel_id"),
-                data=result,
+                data=result.copy(),
             )
 
             status_code = status.HTTP_200_OK
@@ -471,12 +471,20 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
                 result = Request.put(
                     org_id=org_id,
                     collection_name="channelmessage",
-                    payload=message, object_id=obj_id) or {}
+                    payload={"emojis": message.get("emojis")}, object_id=obj_id) or {}
 
                 if isinstance(result, dict):                
                     if result.__contains__("_id"):
                         # return status code 201 if user reaction was added
                         # return status code 200 if user reaction was removed
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="EditMessageSignal",
+                            org_id=org_id,
+                            channel_id=result.get("channel_id"),
+                            data=result.copy(),
+                        )
+
                         return Response(emoji, status=status_code)
                 return Response(result)
         return Response(
