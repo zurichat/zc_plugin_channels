@@ -48,9 +48,9 @@ const routes = () => {
       <Route path="/admin">
         <Admin />
       </Route>
-      <Route exact path="/message-board/">
+      {/* <Route exact path="/message-board/">
         <MessageBoardEmpty />
-      </Route>
+      </Route> */}
       <Route exact path="/message-board/:channelId">
         <MessageBoardIndex />
       </Route>

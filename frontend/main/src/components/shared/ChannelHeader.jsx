@@ -25,9 +25,9 @@ const avatars = [
 ];
 
 
-const ChannelHeader = () => {
+const ChannelHeader = ({channelId}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { channelId } = useParams()//dynamic channel id
+  // const { channelId } = useParams()//dynamic channel id
   const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
   const channel_id = channelId; //assigning dynamic channel id to channel_id
   console.log(channel_id);
@@ -37,7 +37,9 @@ const ChannelHeader = () => {
   //.......getting pinned messages...........//
   const { pinnedMessages } = useSelector((state) => state.channelsReducer)
   console.log('Number of pinned messages = ' + pinnedMessages)
-  useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
+  
+  // useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
+
   //-------getting channel details.........//
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
   console.log(channelDetails.name, channelDetails.members, channelDetails.private);//to see what kind of data I'm actually getting
