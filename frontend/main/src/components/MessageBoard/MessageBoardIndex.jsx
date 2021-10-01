@@ -19,17 +19,15 @@ import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
 const MessageBoardIndex = () => {
-  
-  const { channelId } = useParams()
+  const { channelId } = useParams();
 
-  const { channelDetails } = useSelector((state) => state.channelsReducer)
+  const { channelDetails } = useSelector((state) => state.channelsReducer);
 
   const canInput = channelDetails.allow_members_input;
 
-
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
-      <CentrifugoComponent channelId={channelId} />
+      {/* <CentrifugoComponent channelId={channelId} /> */}
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} />
@@ -49,7 +47,11 @@ const MessageBoardIndex = () => {
           >
             <MessageCardContainer channelId={channelId} />
           </Box>
-          {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />}
+          {canInput ? (
+            <MessageInput channelId={channelId} />
+          ) : (
+            <DisabledInput />
+          )}
         </Box>
         {/* <Box>
           <Thread/>
