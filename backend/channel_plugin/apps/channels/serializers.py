@@ -26,10 +26,6 @@ class ChannelSerializer(serializers.Serializer):
         default=False,
         help_text="Default: false. True if this channel is a default channel for an organization.",
     )
-    starred = serializers.BooleanField(
-        default=False,
-        help_text="Default: false. True if this channel is starred."
-    )
 
     def validate_name(self, name):
         """
@@ -89,9 +85,13 @@ class ChannelGetSerializer(serializers.Serializer):
         required=False,
         help_text="List of users in the channel",
     )
+    default = serializers.BooleanField(
+        default=False,
+        help_text="Default: false. True if this channel is a default channel for an organization.",
+    )
     starred = serializers.BooleanField(
         required=False,
-        help_text="Default: false. True if this channel has been set to starred."
+        help_text="Default: false. True if this channel has been set to starred.",
     )
 
 
@@ -115,7 +115,7 @@ class ChannelUpdateSerializer(serializers.Serializer):
     )
     starred = serializers.BooleanField(
         required=False,
-        help_text="Default: false. True if this channel has been starred."
+        help_text="Default: false. True if this channel has been starred.",
     )
 
     def validate_name(self, name):
