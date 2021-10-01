@@ -24,42 +24,38 @@ def check_payload(payload):
 @dataclass
 class Request:
     @staticmethod
-    def get(org_id, collection_name, params=None):
+    def get(org_id, collection_name, params={}):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
-        if params is not None and len(params) > 0 and "_id" not in params.keys():
-            _filter = {}
-            tmp = []
-            data.update(
-                {
-                    "organization_id": org_id,
-                    "collection_name": collection_name,
-                }
-            )
-            for k, v in params.items():
-                if isinstance(v, list):
-                    v = v[0]
-                if v.lower() in ["true", "false"]:
-                    v = True if v.lower() == "true" else False
-                tmp.append({k: {"$eq": v}})
-            _filter.update({"$and": tmp})
+        if params:
+            if "_id" not in params.keys():
+                _filter = {}
+                tmp = []
+                data.update(
+                    {
+                        "organization_id": org_id,
+                        "collection_name": collection_name,
+                    }
+                )
+                for k, v in params.items():
+                    if isinstance(v, list):
+                        v = v[0]
+                    if v.lower() in ["true", "false"]:
+                        v = True if v.lower() == "true" else False
+                    tmp.append({k: {"$eq": v}})
+                _filter.update({"$and": tmp})
 
-            data.update(
-                {
-                    "filter": _filter,
-                }
-            )
-            # logging.error(
-            #     f"data: {data} | params: {params} with logging before pop"
-            # )
-            data.pop("object_id", None)
-            response = requests.post(read, data=json.dumps(data))
+                data.update(
+                    {
+                        "filter": _filter,
+                    }
+                )
+                data.pop("object_id", None)
+                response = requests.post(read, data=json.dumps(data))
+            else:
+                url += f"?{urlencode(params)}"
+                response = requests.get(url)
         else:
-            url += f"?{urlencode(params)}"
             response = requests.get(url)
-        # logger.info(f"data: {data} | response: {response} with logger")
-        # logging.error(
-        #     f"data: {data} | response: {response} params: {params} with logging"
-        # )
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
