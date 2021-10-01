@@ -17,7 +17,7 @@ from channel_plugin.utils.customrequest import Request
 from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
-    ChannelAllMediaSerializer,
+    ChannelAllFilesSerializer,
     ChannelGetSerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
@@ -81,6 +81,22 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        manual_parameters=[
+            openapi.Parameter(
+                "order_by",
+                openapi.IN_QUERY,
+                description="property to use for payload ordering",
+                required=False,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ascending",
+                openapi.IN_QUERY,
+                description="direction to order payload ",
+                required=False,
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
@@ -104,35 +120,61 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
 
     @swagger_auto_schema(
         responses={
-            200: openapi.Response("Response", ChannelAllMediaSerializer),
+            200: openapi.Response("Response", ChannelAllFilesSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="list-all-channel-media",
+        operation_id="list-all-channel-files",
     )
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
-        """Retrieve all media in channel
+        """Retrieve all files in channel
 
         This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
         Response is split into `channelmessage` and `thread` objects
 
         ```bash
-        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/media/" -H  "accept: application/json"
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/files/" -H  "accept: application/json"
         ```
         """
-        data = {"channel_id": channel_id, "has_files": True}
+        data = {"channel_id": channel_id, "has_files": "yes", "type": "message"}
         data.update(dict(request.query_params))
         result = {}
+        flag = 0
         result_message = Request.get(org_id, "channelmessage", data) or []
         result_thread = Request.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result_message, list) or isinstance(result_thread, list):
+            message_response = []
+            thread_response = []
+            if result_message:
+                for i in result_message:
+                    message_response.append(
+                        {
+                            "timestamp":i["timestamp"],
+                            "files":i["files"],
+                            "message_id":i["_id"],
+                            "user_id":i["user_id"]
+                            }
+                        )
+                    flag = 1
+            if result_thread:
+                for i in result_thread:
+                    thread_response.append(
+                        {
+                            "timestamp":i["timestamp"],
+                            "files":i["files"],
+                            "message_id":i["_id"],
+                            "user_id":i["user_id"]
+                            }
+                            )
+                    flag = 1    
             result.update(
                 {
-                    "channelmessage": result_message
-                    if isinstance(result_message, list)
+                    "message": "Successfully Retrieved" if flag == 1 else "There are no files in this channel",
+                    "channelfiles": message_response
+                    if isinstance(message_response, list)
                     else [],
-                    "thread": result_thread if isinstance(result_thread, list) else [],
+                    "threadfiles": thread_response if isinstance(thread_response, list) else [],
                 }
             )
             status_code = status.HTTP_200_OK
@@ -194,8 +236,12 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         payload = serializer.data.get("channel")
         result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
-        if result.__contains__("_id") or isinstance(result, dict):
-            if result:
+        if (
+            result.__contains__("_id")
+            or isinstance(result, dict)
+            and not result.__contains__("error")
+        ):
+            if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
@@ -238,7 +284,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         responses={
             200: openapi.Response("Response", UserChannelGetSerializer(many=True)),
             204: openapi.Response("User does not belong to any channel"),
-            404: openapi.Response("Not found", ErrorSerializer),
+            400: openapi.Response("Not found", ErrorSerializer),
         },
     )
     @action(methods=["GET"], detail=False)
@@ -252,22 +298,27 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         data = {}
         data.update(dict(request.query_params))
         response = Request.get(org_id, "channel", data) or []
-        response = list(enumerate(response))
         result = []
-        status_code = status.HTTP_204_NO_CONTENT
-        if response:
-            status_code = status.HTTP_200_OK
-            for i in response:
-                if user_id in i[1]["users"].keys():
-                    channel = {}
-                    channel["_id"] = i[1]["_id"]
-                    channel["name"] = i[1]["name"]
-                    channel["description"] = i[1]["description"]
-                    result.append(channel)
-                else:
-                    pass
-        else:
-            status_code = status.HTTP_404_NOT_FOUND
+        status_code = status.HTTP_400_BAD_REQUEST
+        if isinstance(response, list):
+            status_code = (
+                status.HTTP_200_OK if len(response) > 0 else status.HTTP_204_NO_CONTENT
+            )
+            result = list(
+                map(
+                    lambda item: {
+                        "_id": item.get("_id"),
+                        "name": item.get("name"),
+                        "description": item.get("description"),
+                    },
+                    list(
+                        filter(
+                            lambda item: user_id in item.get("users", {}).keys(),
+                            response,
+                        )
+                    ),
+                )
+            )
 
         return Response(result, status=status_code)
 
@@ -349,51 +400,51 @@ class ChannelMemberViewset(ViewSet):
             return result
         return {}
 
-    def prepare_params(self):
-        param_checkers = {
-            "__starts": "$",
-            "__ends": "#",
-            "__contains": "*",
-            "__gt": ">",
-            "__lt": "<",
-        }
+    # def prepare_params(self):
+    #     param_checkers = {
+    #         "__starts": "$",
+    #         "__ends": "#",
+    #         "__contains": "*",
+    #         "__gt": ">",
+    #         "__lt": "<",
+    #     }
 
-        params = dict(self.request.query_params)
+    #     params = dict(self.request.query_params)
 
-        """
-            Note if your planing to use the filterwrapper class
-            you have to convert the values of your query_parameter
-            to a python value by using json.loads
-        """
+    #     """
+    #         Note if your planing to use the filterwrapper class
+    #         you have to convert the values of your query_parameter
+    #         to a python value by using json.loads
+    #     """
 
-        for key in self.request.query_params.keys():
-            try:
-                params[key] = json.loads(params.get(key)[0])
-            except:  # noqa
-                params[key] = params.get(key)[0]
+    #     for key in self.request.query_params.keys():
+    #         try:
+    #             params[key] = json.loads(params.get(key)[0])
+    #         except:  # noqa
+    #             params[key] = params.get(key)[0]
 
-            for chk in param_checkers:
-                if key.endswith(chk):
-                    p = param_checkers[chk] + key.replace(chk, "")
+    #         for chk in param_checkers:
+    #             if key.endswith(chk):
+    #                 p = param_checkers[chk] + key.replace(chk, "")
 
-                    try:
-                        params[p] = json.loads(params.get(key))
-                    except:  # noqa
-                        params[p] = params.get(key)
-                    params.pop(key)
-        return params
+    #                 try:
+    #                     params[p] = json.loads(params.get(key))
+    #                 except:  # noqa
+    #                     params[p] = params.get(key)
+    #                 params.pop(key)
+    #     return params
 
-    def filter_objects(self, data: list, serializer: serializers.Serializer):
-        # method  applies filteration to user list
-        output = []
+    # def filter_objects(self, data: list, serializer: serializers.Serializer):
+    #     # method  applies filteration to user list
+    #     output = []
 
-        params = self.prepare_params()
-        params = FilterWrapper.filter_params(
-            allowed=list(serializer().get_fields().keys()), params=params
-        )
+    #     params = self.prepare_params()
+    #     params = FilterWrapper.filter_params(
+    #         allowed=list(serializer().get_fields().keys()), params=params
+    #     )
 
-        output = FilterWrapper.filter_objects(data, params)
-        return output
+    #     output = FilterWrapper.filter_objects(data, params)
+    #     return output
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -402,7 +453,7 @@ class ChannelMemberViewset(ViewSet):
             400: openapi.Response("Error Response"),
             404: openapi.Response("Collection Not Found"),
         },
-        operation_id="add-channel-member",
+        operation_id="add-channel-members",
     )
     @action(
         methods=["POST"],
@@ -410,8 +461,11 @@ class ChannelMemberViewset(ViewSet):
     )
     def add_member(self, request, org_id, channel_id):
         """
-        Method adds a user to a channel identified by id and publish JOIN event to Centrifugo
+        This method adds one or more users to a channel
 
+        A JOIN event is published to Centrifugo when users are added to the channel
+
+        **Add one user**
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -427,6 +481,48 @@ class ChannelMemberViewset(ViewSet):
                 }
             }"
         ```
+
+        **Add multiple users**
+
+        ```bash
+        curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "[
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                {\"_id\": \"string\",
+                \"role_id\": \"string\",
+                \"is_admin\": false,
+                \"notifications\": {
+                    \"web\": \"nothing\",
+                    \"mobile\": \"mentions\",
+                    \"same_for_mobile\": true,
+                    \"mute\": false
+                    }
+                },
+                ...
+            ]"
+        ```
+
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -592,13 +688,9 @@ class ChannelMemberViewset(ViewSet):
         channel = self.retrieve_channel(request, org_id, channel_id)
 
         if channel.__contains__("_id"):
-            # apply filters to user list
-            users = self.filter_objects(
-                list(channel["users"].values()),
-                UserSerializer,
-            )
-
+            users = list(channel.get("users", {}).values())
             serializer = UserSerializer(data=users, many=True)
+
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
