@@ -18,18 +18,38 @@ import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 
+import { SubscribeToChannel } from '@zuri/control'
+
+
 const MessageBoardIndex = () => {
   
   const { channelId } = useParams()
-
   const { channelDetails } = useSelector((state) => state.channelsReducer)
 
-  const canInput = channelDetails.allow_members_input;
+  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
+
+  const canInput = channelDetails.allow_members_inpu
+
+
+  useEffect(() => {
+
+    async function subscribe(){
+
+      await SubscribeToChannel(sockets.socket_name, function(messageCtx) {
+      console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
+      dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+      console.log("\n\n\nTesting rendered messages: ", renderedMessages);
+    })
+
+    }
+    
+    subscribe()
+
+   }, [channelId]);
 
 
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
-      <CentrifugoComponent channelId={channelId} />
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} />
