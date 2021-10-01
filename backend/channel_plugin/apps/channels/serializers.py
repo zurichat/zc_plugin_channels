@@ -211,16 +211,26 @@ class NotificationsSettingSerializer(serializers.Serializer):
         help_text="Default: true. False if user has muted this channel."
     )
 
+class FilesDictSerializer(serializers.DictField):
+    timestamp = serializers.TimeField()
+    file = serializers.ListField(
+        child=serializers.URLField(help_text="URL to media/file"),
+        read_only=True,)
+    message_id = serializers.UUIDField()
+    user_id = serializers.UUIDField()
+
+
+class MessageFilesSerializer(serializers.ListField):
+    child = FilesDictSerializer()
+    read_only=True
+    help_text="List of URLs for all files/media in Message objects"
+
+class ThreadFilesSerializer(serializers.ListField):
+    child = FilesDictSerializer()
+    read_only=True
+    help_text="List of URLs for all files/media in thread objects"
 
 class ChannelAllFilesSerializer(serializers.Serializer):
-    channelmessage = serializers.ListField(
-        child=serializers.URLField(help_text="URL to media/file"),
-        read_only=True,
-        help_text="List of URLs for all files/media in channelmessage objects"
-    )
-    thread = serializers.ListField(
-        child=serializers.URLField(help_text="URL to media/file"),
-        read_only=True,
-        help_text="List of URLs for all files/media in thread objects"
-    )
+    channelmessage = MessageFilesSerializer()
+    thread = ThreadFilesSerializer()
 

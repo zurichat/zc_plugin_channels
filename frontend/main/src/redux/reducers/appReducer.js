@@ -7,13 +7,16 @@ import {
   GET_RENDEREDMESSAGES,
   SET_NOTIFICATION,
   USER_CAN_INPUT,
+  GET_WORKSPACE_USERS,
 } from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
   users: [],
+  workspace_users: [],
   channelMessages: [],
+  channels: [],
   sockets: [],
   renderedMessages: [],
   notificationSettings: [],
@@ -31,6 +34,12 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         users: payload,
+      };
+
+    case GET_WORKSPACE_USERS:
+      return {
+        ...state,
+        workspace_users: payload,
       };
     case GET_CHANNELMESSAGES:
       return {
