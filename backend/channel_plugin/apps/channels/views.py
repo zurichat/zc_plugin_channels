@@ -690,6 +690,7 @@ class ChannelMemberViewset(ViewSet):
         if channel.__contains__("_id"):
             users = list(channel.get("users", {}).values())
             serializer = UserSerializer(data=users, many=True)
+
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
