@@ -14,15 +14,16 @@ const MainMessage = () => {
   return (
     <Box
       p={4}
-      w="360px"
-      border="1px solid rgba(180, 180, 180, .5)"
-      borderRadius="3px"
+      w="95%"
+      border="none"
+      backgroundColor="white"
     >
       <Box d="flex">
         <Box pr={4} pt={1}>
           <Image
-            borderRadius="full"
-            boxSize="36px"
+            borderRadius="3px"
+            w="100px"
+            h="50px"
             src={avatar}
             alt="user profile picture"
           />
@@ -36,13 +37,18 @@ const MainMessage = () => {
               {time}
             </Box>
           </Flex>
-          <Text color="rgba(58, 58, 58, 1)" w="275px">
+          <Text color="rgba(58, 58, 58, 1)" fontSize="15px" w="95%">
             {message}
           </Text>
         </Box>
       </Box>
       <Box fontWeight="light" color="rgba(154, 154, 158, 1)" pt={3}>
-        {replies} replies
+        
+        <Text textAlign="left" display="flex" position="relative"
+          //  _after={{content: "", position: "absolute", top: "50%", zIndex: "-2", display: "block", background: "#000", width: "200px" }}
+        >
+          {replies} replies 
+        </Text>
       </Box>
     </Box>
   );

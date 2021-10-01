@@ -5,11 +5,12 @@ const Reply = (props) => {
   const { name, time, message, avatar } = props;
 
   return (
-    <Box d="flex" p={2}>
+    <Box d="flex" p={2} backgroundColor="white" >
       <Box pr={4} pt={1}>
         <Image
-          borderRadius="full"
-          boxSize="36px"
+          borderRadius="3px"
+          w="100px"
+          h="50px"
           src={avatar}
           alt="user profile picture"
         />
@@ -23,7 +24,7 @@ const Reply = (props) => {
             {time}
           </Box>
         </Flex>
-        <Text color="rgba(58, 58, 58, 1)" w="260px">
+        <Text color="rgba(58, 58, 58, 1)" w="95%" fontSize="15px">
           {message}
         </Text>
       </Box>
@@ -69,9 +70,8 @@ const replies = [
 const ThreadReplies = () => {
   return (
     <Box
-      w="360px"
-      border="1px solid rgba(180, 180, 180, .5)"
-      borderRadius="3px"
+      w="100%"
+      
     >
       {replies && replies.map((reply) => <Reply key={reply.id} {...reply} />)}
     </Box>

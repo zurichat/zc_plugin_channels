@@ -1,4 +1,3 @@
-
 import { StackDivider, VStack } from '@chakra-ui/layout'
 import React from 'react'
 
@@ -9,7 +8,6 @@ import ChannelContainer from './ChannelContainer'
 const ChannelList = () => {
 
   const { channels } = useSelector((state) => state.appReducer);
-  console.log(channels);
 
     return (
         <VStack

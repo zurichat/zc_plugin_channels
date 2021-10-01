@@ -1,13 +1,12 @@
 import json
 import logging
 from dataclasses import dataclass
+from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
 
 logger = logging.getLogger("sentry_sdk")
-# from urllib.parse import urlencode
-
 
 data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
@@ -25,23 +24,23 @@ def check_payload(payload):
 @dataclass
 class Request:
     @staticmethod
-    def get(org_id, collection_name, params=None):
+    def get(org_id, collection_name, params={}):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
-        if params is not None and len(params) > 0:
-            _filter = {}
-            tmp = []
-            data.update(
-                {
-                    "organization_id": org_id,
-                    "collection_name": collection_name,
-                }
-            )
+        if params:
             if "_id" not in params.keys():
+                _filter = {}
+                tmp = []
+                data.update(
+                    {
+                        "organization_id": org_id,
+                        "collection_name": collection_name,
+                    }
+                )
                 for k, v in params.items():
                     if isinstance(v, list):
                         v = v[0]
-                        if v.lower() in ["true", "false"]:
-                            v = True if v.lower() == "true" else False
+                    if v.lower() in ["true", "false"]:
+                        v = True if v.lower() == "true" else False
                     tmp.append({k: {"$eq": v}})
                 _filter.update({"$and": tmp})
 
@@ -50,23 +49,13 @@ class Request:
                         "filter": _filter,
                     }
                 )
-                # logging.error(
-                #     f"data: {data} | params: {params} with logging before pop"
-                # )
                 data.pop("object_id", None)
+                response = requests.post(read, data=json.dumps(data))
             else:
-                data.update(
-                    {
-                        "object_id": params["_id"],
-                    }
-                )
-            response = requests.post(read, json.dumps(data))
+                url += f"?{urlencode(params)}"
+                response = requests.get(url)
         else:
             response = requests.get(url)
-        # logger.info(f"data: {data} | response: {response} with logger")
-        # logging.error(
-        #     f"data: {data} | response: {response} params: {params} with logging"
-        # )
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
