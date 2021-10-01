@@ -145,7 +145,7 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
 
         data = {"channelmessage_id": channelmessage_id}
         data.update(self._clean_query_params(request))
-        result = Request.get(org_id, "thread", data)
+        result = Request.get(org_id, "thread", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
             result = self.perform_ordering(request, result)
