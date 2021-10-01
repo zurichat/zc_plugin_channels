@@ -126,7 +126,7 @@ class GetInfoViewset(ViewSet):
                         list(
                             filter(
                                 lambda channel: user_id in channel["users"].keys()
-                                and channel.get("default", False),
+                                and not channel.get("default", False),
                                 channels,
                             )
                         ),
@@ -142,8 +142,8 @@ class GetInfoViewset(ViewSet):
                         list(
                             filter(
                                 lambda channel: user_id not in channel["users"].keys()
-                                and not bool(channel.get("private"))
-                                and channel.get("default", False),
+                                and not channel.get("private")
+                                and not channel.get("default", False),
                                 channels,
                             )
                         ),
