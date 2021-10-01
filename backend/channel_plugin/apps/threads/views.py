@@ -115,7 +115,7 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
                 dispatch_uid="CreateThreadSignal",
                 org_id=org_id,
                 channel_id=result.get("channel_id"),
-                data=result,
+                data=result.copy(),
             )
         return Response(result, status=status_code)
 
@@ -214,7 +214,7 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
                 dispatch_uid="EditThreadSignal",
                 org_id=org_id,
                 channel_id=result.get("channel_id"),
-                data=result,
+                data=result.copy(),
             )
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
@@ -283,7 +283,24 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
             201: openapi.Response("Response", ReactionSerializer),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="update_thread_reaction"
+        operation_id="update_thread_reaction",
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+
     )
     @action(
         methods=["POST"],
@@ -333,25 +350,24 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
                 obj_id = thread.pop("_id")
 
                 result = Request.put(
-                    org_id=org_id, collection_name="thread", payload=thread, object_id=obj_id) or {}
+                    org_id=org_id,
+                    collection_name="thread", 
+                    payload={"emojis": thread.get("emojis")}, 
+                    object_id=obj_id) or {}
 
                 if isinstance(result, dict):                
                     if result.__contains__("_id"):
                         # return status code 201 if user reaction was added
                         # return status code 200 if user reaction was removed
-                        try:
-                            request_finished.send(
-                                sender=self.__class__,
-                                dispatch_uid="EditThreadSignal",
-                                org_id=org_id,
-                                channel_id=result.get("channel_id"),
-                                data=result,
-                            )
-                        except:
-                            pass
+                        request_finished.send(
+                            sender=self.__class__,
+                            dispatch_uid="EditThreadSignal",
+                            org_id=org_id,
+                            channel_id=result.get("channel_id"),
+                            data=result.copy(),
+                        )
 
                         return Response(emoji, status=status_code)
-
                 return Response(result)
         return Response(
             {"error": "thread not found"}, 
