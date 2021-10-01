@@ -10,6 +10,7 @@ import { bindActionCreators } from 'redux';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import appActions from '../../redux/actions/app';
+
 import { useSelector } from 'react-redux';
 
 
@@ -66,9 +67,7 @@ export default function  DisplayFiles() {
                         <CgList color='#a1a1a1' onClick={this.handleList} />
                       }
                     />
-                    {/* <CgList color='#a1a1a1' /> */}
-                    {/* <Spacer /> */}
-                    {/* <BsGrid color='#a1a1a1' /> */}
+                   
                     <IconButton
                       icon={
                         <BsGrid color='#a1a1a1' onClick={this.handleGrid} />
