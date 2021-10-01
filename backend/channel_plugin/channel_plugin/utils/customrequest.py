@@ -1,13 +1,12 @@
 import json
 import logging
 from dataclasses import dataclass
+from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
 
 logger = logging.getLogger("sentry_sdk")
-# from urllib.parse import urlencode
-
 
 data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
@@ -27,7 +26,7 @@ class Request:
     @staticmethod
     def get(org_id, collection_name, params=None):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
-        if params is not None and len(params) > 0:
+        if params is not None and len(params) > 0 and "_id" not in params.keys():
             _filter = {}
             tmp = []
             data.update(
@@ -36,33 +35,26 @@ class Request:
                     "collection_name": collection_name,
                 }
             )
-            if "_id" not in params.keys():
-                for k, v in params.items():
-                    if isinstance(v, list):
-                        v = v[0]
-                        if v.lower() in ["true", "false"]:
-                            v = True if v.lower() == "true" else False
-                    tmp.append({k: {"$eq": v}})
-                _filter.update({"$and": tmp})
+            for k, v in params.items():
+                if isinstance(v, list):
+                    v = v[0]
+                if v.lower() in ["true", "false"]:
+                    v = True if v.lower() == "true" else False
+                tmp.append({k: {"$eq": v}})
+            _filter.update({"$and": tmp})
 
-                data.update(
-                    {
-                        "filter": _filter,
-                    }
-                )
-                # logging.error(
-                #     f"data: {data} | params: {params} with logging before pop"
-                # )
-                data.pop("object_id", None)
-            else:
-                data.update(
-                    {
-                        "object_id": params["_id"],
-                    }
-                )
-            print(data)
-            response = requests.post(read, json.dumps(data))
+            data.update(
+                {
+                    "filter": _filter,
+                }
+            )
+            # logging.error(
+            #     f"data: {data} | params: {params} with logging before pop"
+            # )
+            data.pop("object_id", None)
+            response = requests.post(read, data=json.dumps(data))
         else:
+            url += f"?{urlencode(params)}"
             response = requests.get(url)
         # logger.info(f"data: {data} | response: {response} with logger")
         # logging.error(
