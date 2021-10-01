@@ -56,7 +56,7 @@ const MessageInput = () =>{
       const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
       const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
-      console.log(data, channel_id)
+      // console.log(data, channel_id)
       setData('');
     }
 
@@ -81,10 +81,6 @@ const MessageInput = () =>{
         data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor);
       setData(text);
     }
-    const togglingDisplay=()=>{
-      setOnClick(false);
-      setEmoji(false)
-    }
     const changeWeight=(e)=>{
       const active=e.target
       const value=e.target.value
@@ -92,32 +88,6 @@ const MessageInput = () =>{
       !toggle ? setActive(cmd) : setActive(" ");
       setToggle(!toggle)
     }
-    const formatSelection=(ch, tag) =>{
-      var sel, range, replacementText;
-      var formatElement = document.createElement(tag)
-      if (document.activeElement.nodeName.toLowerCase !== "textarea") return;
-      if (window.getSelection) { // if it is supported
-        sel = window.getSelection(); // get the Selection object
-        formatElement.appendChild(document.createTextNode(sel.toString()))
-        if (sel.rangeCount) {
-          range = sel.getRangeAt(0);
-          range.deleteContents();
-          range.insertNode(formatElement);
-        } else {
-          sel.deleteFromDocument();
-        }
-      } else if (document.selection && document.selection.createRange) {
-        sel = document.selection
-        range = document.selection.createRange();
-        formatElement.appendChild(document.createTextNode(sel.toString()))
-        range.deleteContents();
-        range.insertNode(formatElement);
-      }
-    }
-    
-    // you can use the function like
-    formatSelection("b") // for bold
-    formatSelection("strike") // for strike through
     return(
       <Box border="1px solid #EBEBEB" bg="white" marginBottom="10px"       
       css={{
@@ -134,7 +104,7 @@ const MessageInput = () =>{
           </ModalContent>
         </Modal>
         {
-          emoji && <Picker onEmojiClick={onEmojiClick}/>
+          emoji && <Picker onEmojiClick={onEmojiClick} pickerStyle={{ width: '100%' }}/>
         }
         <Box display={['none','block']}>
           <ResizableInput
@@ -153,7 +123,6 @@ const MessageInput = () =>{
             onInput={()=>setOnInput(true)}
             fontWeight={active}
             fontStyle={italic}
-            onMouseDown={formatSelection}
             onBlur={()=>setOnInput(false)}
           />
           <Box display="flex" justifyContent="space-between" alignItems="center" m={3}>
