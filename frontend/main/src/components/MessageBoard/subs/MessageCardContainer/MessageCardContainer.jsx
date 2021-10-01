@@ -55,7 +55,6 @@ const MessageCardContainer = () => {
   const history = useHistory()
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
   const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  //console.log(channelMessages, sockets);
 
   const { channelId } = useParams()
 
@@ -74,19 +73,6 @@ const MessageCardContainer = () => {
   let messageStartingIndex;
   let messageEndIndex;
 
-  const messagesEndRef = useRef()
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView(
-        {
-          behavior: 'smooth',
-          block: 'end',
-          inline: 'nearest'
-        })
-    }
-  }, [renderedMessages])
-
   useEffect(() => {
     const loadData = async () => {
       // history.push(`/message-board/${channelId}`)
@@ -103,7 +89,22 @@ const MessageCardContainer = () => {
       setLoading(false)
     }
     loadData()
-  }, [channelId]);
+  }, [channelId, renderedMessages]);
+
+  const messagesEndRef = useRef()
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView(
+        {
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'nearest'
+        })
+    }
+  }, [renderedMessages])
+
+
 
   // let renderedMessages = moreMessages ? allChannelMessage : loadedMessages;
 
@@ -141,7 +142,7 @@ const MessageCardContainer = () => {
                   Today
                 </Button>
               </Flex>
-              <Box ref={messagesEndRef} >
+              <Box ref={messagesEndRef}>
                 {renderedMessages && renderedMessages.length > 0 &&
                   renderedMessages.map((message) => {
                     return (
