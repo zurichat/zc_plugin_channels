@@ -119,23 +119,14 @@ class GetInfoViewset(ViewSet):
                 joined_rooms = list(
                     map(
                         lambda channel: {
-                            # "id": channel.get("_id"),
                             "room_name": channel.get("slug"),
                             "room_url": f"/channels/message-board/{channel.get('_id')}",
                             "room_image": "",
-                            # "title": channel.get("name"),
-                            # "members": channel.get(
-                            #     "members", len(channel["users"].keys())
-                            # ),
-                            # "unread": channel.get("unread", random.randint(0, 50)),
-                            # "icon": channel.get(
-                            #     "icon", icons[random.randint(0, len(icons) - 1)]
-                            # ),
-                            # "action": "open",
                         },
                         list(
                             filter(
-                                lambda channel: user_id in channel["users"].keys(),
+                                lambda channel: user_id in channel["users"].keys()
+                                and channel.get("default", False),
                                 channels,
                             )
                         ),
@@ -144,24 +135,15 @@ class GetInfoViewset(ViewSet):
                 public_rooms = list(
                     map(
                         lambda channel: {
-                            # "id": channel.get("_id"),
                             "room_name": channel.get("slug"),
                             "room_url": f"/channels/message-board/{channel.get('_id')}",
                             "room_image": "",
-                            # "title": channel.get("name"),
-                            # "members": channel.get(
-                            #     "members", len(channel["users"].keys())
-                            # ),
-                            # "unread": channel.get("unread", random.randint(0, 50)),
-                            # "icon": channel.get(
-                            #     "icon", icons[random.randint(0, len(icons) - 1)]
-                            # ),
-                            # "action": "open",
                         },
                         list(
                             filter(
                                 lambda channel: user_id not in channel["users"].keys()
-                                and not bool(channel.get("private")),
+                                and not bool(channel.get("private"))
+                                and channel.get("default", False),
                                 channels,
                             )
                         ),
