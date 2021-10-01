@@ -15,7 +15,7 @@ app_name = "channels"
 
 urlpatterns = [
     path("<str:org_id>/channels/", channel_list_create_view),
-    path("<str:org_id>/channels/<str:channel_id>/media/", channel_media_all_view),
+    path("<str:org_id>/channels/<str:channel_id>/files/", channel_media_all_view),
     path(
         "<str:org_id>/channels/<str:channel_id>/", channel_retrieve_update_delete_view
     ),

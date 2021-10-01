@@ -95,3 +95,8 @@ class ThreadUpdateSerializer(serializers.Serializer):
         instance = dict(instance)
         data = {"thread": instance}
         return data
+
+
+class ReactionSerializer(serializers.Serializer):
+    title = serializers.CharField(required=True, max_length=100)
+    user_id = serializers.CharField(required=True)
