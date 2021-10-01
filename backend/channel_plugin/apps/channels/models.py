@@ -16,15 +16,17 @@ class Channel:
     users: dict = field(default_factory=dict)
     # description of channel
     description: str = ""
-    # NewlyAdded: a channels  topic 
+    # NewlyAdded: a channels  topic
     topic: str = ""
     # private / public
     private: bool = False
     archived: bool = False
+    default: bool = False
     # when channel was created
     created_on: str = timezone.now().isoformat()
     # allow all members input/post messages
     allow_members_input: bool = True
+    starred: bool = False
 
     def create(self, organization_id):
         payload = {
@@ -35,9 +37,11 @@ class Channel:
             "topic": self.topic,
             "private": self.private,
             "archived": self.archived,
+            "default": self.default,
             "users": self.users,
             "created_on": self.created_on,
             "allow_members_input": self.allow_members_input,
+            "starred": self.starred
         }
         response = Request.post(
             organization_id, self.__class__.__name__.lower(), payload
