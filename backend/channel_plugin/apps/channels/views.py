@@ -24,7 +24,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     NotificationsSettingSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
-    UserSerializer,
+    UserSerializer
 )
 
 # from rest_framework.filters
@@ -226,7 +226,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\"}"
+        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\",  \"starred\": false}"
         ```
         """  # noqa
         serializer = ChannelUpdateSerializer(
@@ -356,6 +356,8 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             return JsonResponse(
                 {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
 
 
 channel_list_create_view = ChannelViewset.as_view(

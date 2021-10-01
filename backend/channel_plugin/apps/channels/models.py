@@ -16,7 +16,7 @@ class Channel:
     users: dict = field(default_factory=dict)
     # description of channel
     description: str = ""
-    # NewlyAdded: a channels  topic 
+    # NewlyAdded: a channels  topic
     topic: str = ""
     # private / public
     private: bool = False
@@ -25,6 +25,7 @@ class Channel:
     created_on: str = timezone.now().isoformat()
     # allow all members input/post messages
     allow_members_input: bool = True
+    starred: bool = False
 
     def create(self, organization_id):
         payload = {
@@ -38,6 +39,7 @@ class Channel:
             "users": self.users,
             "created_on": self.created_on,
             "allow_members_input": self.allow_members_input,
+            "starred": self.starred
         }
         response = Request.post(
             organization_id, self.__class__.__name__.lower(), payload
