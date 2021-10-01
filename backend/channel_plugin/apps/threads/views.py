@@ -2,19 +2,28 @@ from apps.utils.serializers import ErrorSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+from rest_framework.throttling import AnonRateThrottle
 
+from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.wrappers import OrderMixin
+
+from django.utils.timezone import datetime
+
 
 from .permissions import CanReply, IsMember, IsOwner
-from .serializers import ThreadSerializer, ThreadUpdateSerializer
+from .serializers import ThreadSerializer, ThreadUpdateSerializer, ReactionSerializer
 
 
-class ThreadViewset(ViewSet):
+class ThreadViewset(ThrottledViewSet, OrderMixin):
 
     authentication_classes = []
+
+    OrderingFields = {
+        "timestamp": datetime.fromisoformat,
+    }
 
     def get_permissions(self):
 
@@ -26,6 +35,7 @@ class ThreadViewset(ViewSet):
             "thread_message",
             "thread_message_update",
             "thread_message_delete",
+            "update_thread_reaction"
         ]:
             permissions.append(IsMember())
             if self.action in ["thread_message_delete", "thread_message_update"]:
@@ -49,22 +59,23 @@ class ThreadViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
-        operation_id="create-message-thread"
+        operation_id="create-message-thread",
     )
     @action(
         methods=["POST"],
         detail=False,
     )
+    @throttle_classes([AnonRateThrottle])
     def thread_message(self, request, org_id, channelmessage_id):
         """Add reply to message
-        
+
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/?channel_id={{channel_id}}"
-        -H  "accept: application/json" 
+        -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{
                 \"user_id\": \"string\",
-                \"content\": \"string\", 
+                \"content\": \"string\",
                 \"files\": [
                     \"string\"
                 ]
@@ -102,7 +113,23 @@ class ThreadViewset(ViewSet):
             200: openapi.Response("Response", ThreadUpdateSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="retrieve-message-threads"
+        operation_id="retrieve-message-threads",
+        manual_parameters=[
+            openapi.Parameter(
+                "order_by",
+                openapi.IN_QUERY,
+                description="property to use for payload ordering",
+                required=False,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ascending",
+                openapi.IN_QUERY,
+                description="direction to order payload ",
+                required=False,
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
     )
     @action(
         methods=["GET"],
@@ -110,17 +137,18 @@ class ThreadViewset(ViewSet):
     )
     def thread_message_all(self, request, org_id, channelmessage_id):
         """Retrieve all replies to message
-        
+
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/" -H  "accept: application/json"
         ```
         """
 
         data = {"channelmessage_id": channelmessage_id}
-        data.update(dict(request.query_params))
-        result = Request.get(org_id, "thread", data) or []
+        data.update(self._clean_query_params(request))
+        result = Request.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
+            result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -146,7 +174,7 @@ class ThreadViewset(ViewSet):
                 type=openapi.TYPE_STRING,
             ),
         ],
-        operation_id="update-thread-message"
+        operation_id="update-thread-message",
     )
     @action(
         methods=["PUT"],
@@ -154,7 +182,7 @@ class ThreadViewset(ViewSet):
     )
     def thread_message_update(self, request, org_id, thread_id):
         """Update thread message
-        
+
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}"
         -H  "accept: application/json"
@@ -191,9 +219,7 @@ class ThreadViewset(ViewSet):
             ),
         ],
         operation_id="delete-thread-message",
-        responses={
-            204: openapi.Response("Thread message deleted successfully")
-        }
+        responses={204: openapi.Response("Thread message deleted successfully")},
     )
     @action(
         methods=["DELETE"],
@@ -201,11 +227,11 @@ class ThreadViewset(ViewSet):
     )
     def thread_message_delete(self, request, org_id, thread_id):
         """Delete thread message
-        
+
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/threads/{{thread_id}}/?user_id={{user_id}}&channel_id={{channel_id}}" -H  "accept: application/json"
         ```
-        """
+        """  # noqa
 
         thread = Request.get(org_id, "thread", {"_id": thread_id})
         message = Request.get(
@@ -220,6 +246,76 @@ class ThreadViewset(ViewSet):
             object_id=message.get("_id"),
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @swagger_auto_schema(
+        request_body=ReactionSerializer,
+        responses={
+            201: openapi.Response("Response", ReactionSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+        operation_id="update_thread_reaction"
+    )
+    @action(
+        methods=["POST"],
+        detail=True,
+    )
+    @throttle_classes([AnonRateThrottle])
+    def update_thread_reaction(self, request, org_id, thread_id):
+        thread = Request.get(org_id, "thread", {"_id": thread_id}) or []
+        
+        status_code = status.HTTP_404_NOT_FOUND
+
+        if isinstance(thread, dict):
+            if thread.__contains__("_id"):
+                serializer = ReactionSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                
+                data = dict(serializer.data)
+
+                emoji = None
+
+                for i in thread.get("emojis", []):
+                    if data.get("title", None) == i.get("title", None):
+                        emoji = i.copy()
+                        thread.get("emojis", []).remove(emoji)
+                        break
+           
+                if emoji:
+                    if data.get("user_id") in emoji.get("users", []):
+                        emoji.get("users", []).remove(data.get("user_id"))
+                        emoji["count"] = emoji.get("count", 1) - 1
+                        status_code = status.HTTP_200_OK
+                    else:
+                        emoji.get("users", []).append(data.get("user_id"))
+                        emoji["count"] = emoji.get("count", 0) + 1
+                        status_code = status.HTTP_201_CREATED
+                else:
+                    emoji = {
+                        "title": data.get("title"),
+                        "count": 1,
+                        "users": [data.get("user_id")],
+                    }
+                    status_code = status.HTTP_201_CREATED
+            
+                if emoji["count"] > 0:
+                    thread.get("emojis", []).append(emoji)
+
+                obj_id = thread.pop("_id")
+
+                result = Request.put(
+                    org_id=org_id, collection_name="thread", payload=thread, object_id=obj_id) or {}
+
+                if isinstance(result, dict):                
+                    if result.__contains__("_id"):
+                        # return status code 201 if user reaction was added
+                        # return status code 200 if user reaction was removed
+                        return Response(emoji, status=status_code)
+
+                return Response(result)
+        return Response(
+            {"error": "thread not found"}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
 
 
 thread_views = ThreadViewset.as_view(
@@ -229,5 +325,9 @@ thread_views = ThreadViewset.as_view(
     }
 )
 thread_views_group = ThreadViewset.as_view(
-    {"put": "thread_message_update", "delete": "thread_message_delete"}
+    {   
+        "post": "update_thread_reaction",
+        "put": "thread_message_update", 
+        "delete": "thread_message_delete",
+    }
 )

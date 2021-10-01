@@ -7,22 +7,38 @@ import { Container, Box } from "@chakra-ui/react";
 
 function Thread() {
   return (
-    <Container maxW={["100vw","38vw"]} bg="white" m="5px" p="0px">
-      <ThreadHeader />
+    <Container maxW="40vw" minW="20vw" bg="#f9f9f9" m="5px" p="0px">
+      <Box width="100%">
+          <ThreadHeader />
+      </Box>      
       <MainMessage />
-        <Box width="100%" overflowY="scroll" 
+        <Box width="95%" overflowY="scroll" 
+            
         css={{
         "&::-webkit-scrollbar": {
-          width: "0",
+          width: "8px",
         },
         "&::-webkit-scrollbar-track": {
-          width: "0",
-        }}
+          background: "#f1f1f1",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background:"#00B87C",
+        },
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#60a37a",
+        }
       }
-        height={["45vh"]}>
+      }
+        height={["45vh"]}
+        >
+          
           <ThreadReplies />
         </Box>
-      <MessageInput />
+        <Box width="95%" backgroundColor="white" 
+        marginTop="0.5rem"
+        >
+          <MessageInput />
+        </Box>      
     </Container>
   );
 }

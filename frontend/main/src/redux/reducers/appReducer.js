@@ -4,16 +4,21 @@ import {
   GET_CHANNELS,
   CREATE_CHANNELS,
   GET_SOCKETS,
-  GET_RENDEREDMESSAGES
+  GET_RENDEREDMESSAGES,
+  USER_CAN_INPUT,
+  GET_WORKSPACE_USERS,
 } from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
   users: [],
+  workspace_users: [],
   channelMessages: [],
+  channels: [],
   sockets: [],
-  renderedMessages: []
+  renderedMessages: [],
+  userCanInput: true,
 };
 
 const appReducer = (state = initialState, action) => {
@@ -28,6 +33,12 @@ const appReducer = (state = initialState, action) => {
         ...state,
         users: payload,
       };
+
+    case GET_WORKSPACE_USERS:
+      return {
+        ...state,
+        workspace_users: payload,
+      };
     case GET_CHANNELMESSAGES:
       return {
         ...state,
@@ -37,6 +48,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         renderedMessages: payload,
+      };
+    case USER_CAN_INPUT:
+      return {
+        ...state,
+        userCanInput: payload,
       };
 
     // Default state is returned

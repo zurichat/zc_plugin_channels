@@ -73,7 +73,7 @@ def replace_content(export=temp_content):
     correction = "### Channel roles\n\n`/v1/{org_id}/channels/{channel_id}/roles/`\n"
     export = export.replace(original, correction)
 
-    # replace channel socket name heading
+    # Channel socket name heading
     original = "### /v1/{org_id}/channels/{channel_id}/socket/"
     correction = "### Channel socket name\n\n`/v1/{org_id}/channels/{channel_id}/socket/`"
     export = export.replace(original, correction)
@@ -101,6 +101,11 @@ def replace_content(export=temp_content):
     # Thread message heading
     original = "### /v1/{org_id}/threads/{thread_id}/"
     correction = "### Thread message\n\n`/v1/{org_id}/threads/{thread_id}/`"
+    export = export.replace(original, correction)
+
+    # Search messages heading
+    original = "### /v1/{org_id}/channels/{channel_id}/search_messages/"
+    correction = "### Search channel messages\n\n`/v1/{org_id}/channels/{channel_id}/search_messages/`"
     export = export.replace(original, correction)
 
     return export
