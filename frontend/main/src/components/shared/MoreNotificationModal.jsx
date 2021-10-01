@@ -7,44 +7,104 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  Text
+  Text, 
+  Radio,
+  RadioGroup,
+  Stack,
+  Box
 } from '@chakra-ui/react';
 import { VStack, Button } from "@chakra-ui/react";
 import { Checkbox } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
+import { useDispatch } from 'react-redux';
+import appActions from '../../redux/actions/app';
+import { bindActionCreators } from 'redux';
 
 
 const MoreNotificationModal = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [value, setValue] = useState("1")
+  const [webSetting, setWebSetting] = useState(1)
 
   const [checked, setChecked] = useState("");
 
+  const dispatch = useDispatch()
+
+  const { _setNotifications } = bindActionCreators(appActions, dispatch);
+
   const handleChange = (e) => {
     setChecked(e.target.checked)
-    console.log(e);
+    setWebSetting(e.target.value)
+    console.log(e.target.value, webSetting);
+    switch (webSetting) {
+      case "1":
+        console.log(webSetting, "all setting clicked");
+        break;
+      case "2":
+        console.log("Mention setting clicked");
+        break;
+      case "3":
+        console.log("Nothing setting clicked");
+        break;
+    
+      default:
+        console.log(webSetting, "no input");
+        break;
+    }
   }
   
+  const datas ={
+          "web": "all",
+          "mobile": "all",
+          "same_for_mobile": true,
+          "mute": true
+  }
+
+
+
+
   return (
     <>
     <Text onClick={onOpen}>Open Modal</Text>
     <Modal onClose={onClose} isOpen={isOpen}>
       <ModalOverlay />
       <ModalContent pb={5}>
-        <ModalHeader>Send a notification for</ModalHeader>
+        <ModalHeader>Notifications</ModalHeader>
         <ModalCloseButton />
         <ModalBody>          
-          <VStack alignItems="flex-start">
-            <Checkbox paddingTop="1rem" colorScheme="green" onChange={handleChange}>
-              All messages
+          <VStack alignItems="flex-start" borderBottom= "1px solid #EBEBEB">
+          <Text fontSize="15px" fontWeight="bold">Send a notification for</Text>
+          <RadioGroup onChange={setValue} value={value} name="web-setting">
+            <Stack direction="column" mb="24px">
+              <Radio colorScheme="green" onChange={handleChange} value="1">All messages</Radio>
+              <Radio colorScheme="green" onChange={handleChange} value="2">Mentions</Radio>
+              <Radio colorScheme="green" onChange={handleChange} value="3">Mute Channel</Radio>
+            </Stack>
+          </RadioGroup>
+          </VStack>
+
+          <Stack dir="column" mt="24px" fontSize="15px" fontWeight="bold" borderBottom= "1px solid #EBEBEB">
+            <Checkbox colorScheme="green">
+              Use different settings for mobile devices
             </Checkbox>
-            <Checkbox colorScheme="green" paddingTop="1rem" onChange={handleChange}>
-              Mentions
-            </Checkbox>
-            <Checkbox colorScheme="green" paddingTop="1rem" onChange={handleChange}>
+            <RadioGroup name="mobile-setting">
+              <Stack direction="column" mb="24px" ml="20px">
+                <Radio colorScheme="green" value="4">All messages</Radio>
+                <Radio colorScheme="green" value="5">Mentions</Radio>
+                <Radio colorScheme="green" value="6">Mute Channel</Radio>
+              </Stack>
+          </RadioGroup>
+          </Stack>
+
+          <Box mt="24px">
+            <Checkbox colorScheme="green" fontStyle="15px" fontWeight="bold">
               Mute Channel
             </Checkbox>
-          </VStack>
+            <Text fontSize="15px" ml="20px">
+            Muted channels are greyed out at the bottom of your channel list. You’ll still see a badge in the sidebar if you’ve been mentioned.
+            </Text>
+          </Box>
           
         </ModalBody>
         <ModalFooter>

@@ -39,18 +39,18 @@ const routes = () => {
       <Route exact path="/">
         <ChannelBrowser />
       </Route>
-      <Route exact path="/home">
+      {/* <Route exact path="/home">
         <Home />
-      </Route>
+      </Route> */}
       <Route path="/create-channel">
         <CreateChannel />
       </Route>
       <Route path="/admin">
         <Admin />
       </Route>
-      {/* <Route exact path="/message-board/">
+      <Route exact path="/message-board/">
         <MessageBoardEmpty />
-      </Route> */}
+      </Route>
       <Route exact path="/message-board/:channelId">
         <MessageBoardIndex />
       </Route>
