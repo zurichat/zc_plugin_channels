@@ -22,9 +22,9 @@ import { SubscribeToChannel } from '@zuri/control'
 
 
 const MessageBoardIndex = () => {
-  
-  const { channelId } = useParams()
-  const { channelDetails } = useSelector((state) => state.channelsReducer)
+  const { channelId } = useParams();
+
+  const { channelDetails } = useSelector((state) => state.channelsReducer);
 
   const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
 
@@ -47,7 +47,6 @@ const MessageBoardIndex = () => {
 
    }, [channelId]);
 
-
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
       <Flex>
@@ -69,7 +68,11 @@ const MessageBoardIndex = () => {
           >
             <MessageCardContainer channelId={channelId} />
           </Box>
-          {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />}
+          {canInput ? (
+            <MessageInput channelId={channelId} />
+          ) : (
+            <DisabledInput />
+          )}
         </Box>
         {/* <Box>
           <Thread/>

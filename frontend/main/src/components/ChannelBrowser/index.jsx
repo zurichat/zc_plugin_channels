@@ -1,37 +1,42 @@
 import { AddIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Text
-} from "@chakra-ui/layout";
-import React, { useEffect } from "react";
+import { Box } from "@chakra-ui/layout";
+import React, { useEffect, useState } from "react";
 import ChannelBrowserHeader from "./ChannelBrowserHeader";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
-
-import { useSelector } from "react-redux";
-
-import EditDescriptionModal from "../EditDescriptionModal";
-
+import PluginHeaderC from "../createChannel/homeHeader";
 
 const ChannelBrowser = () => {
+  const { users } = useSelector((state) => state.appReducer);
+  console.log("Organisation id for channels: ", users.currentWorkspace);
 
   const dispatch = useDispatch();
+  const [orgId, setOrgId] = useState("");
   const { _getChannels } = bindActionCreators(appActions, dispatch);
 
   const loadChannels = async () => {
-    await _getChannels("614679ee1a5607b13c00bcb7");
+    await _getChannels(orgId.org_id);
   };
 
   useEffect(() => {
-    loadChannels();
-  }, []);
+    if (users) {
+      setOrgId(users[0]);
+    }
+  }, [users]);
+
+  useEffect(() => {
+    if (orgId) {
+      loadChannels();
+    }
+  }, [orgId]);
 
   return (
     <Box mt="0" bgColor="#E5E5E5" height="100vh">
-      <ChannelBrowserHeader />
+      {/* <ChannelBrowserHeader /> */}
+      <PluginHeaderC />
       <Box
         bgColor="white"
         h="full"
@@ -40,8 +45,8 @@ const ChannelBrowser = () => {
         pt="16px"
         sx={{ "@media screen and (max-width: 768.5px)": { marginRight: "0" } }}
       >
-        <SearchMenu/>
-        <ChannelList/>
+        <SearchMenu />
+        <ChannelList orgId={orgId} />
       </Box>
 
       {/* Mobile View to Add Channel */}
@@ -55,7 +60,6 @@ const ChannelBrowser = () => {
         display="none"
         sx={{ "@media screen and (max-width: 768.5px)": { display: "block" } }}
       />
-      
     </Box>
   );
 };
