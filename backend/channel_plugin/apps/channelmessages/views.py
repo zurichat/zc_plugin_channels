@@ -5,26 +5,40 @@ import requests
 from apps.utils.serializers import ErrorSerializer
 from django.conf import settings
 from django.core.signals import request_finished
+from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
 from rest_framework.decorators import action, api_view, throttle_classes
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
+
 from channel_plugin.utils.customrequest import Request, search_db
+from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
 from .serializers import (
     ChannelMessageReactionSerializer,
     ChannelMessageReactionsUpdateSerializer,
+    ChannelMessageSearchResultSerializer,
     ChannelMessageSearchSerializer,
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
 
+from apps.threads.serializers import ReactionSerializer
 
-class ChannelMessageViewset(ThrottledViewSet):
+
+
+
+class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
+    
+    OrderingFields = {
+        "timestamp": datetime.fromisoformat,
+        "replies":int,
+    }
 
     authentication_classes = []
 
@@ -38,7 +52,7 @@ class ChannelMessageViewset(ThrottledViewSet):
         """
 
         permissions = super().get_permissions()
-        if self.action in ["message", "message_delete", "message_update"]:
+        if self.action in ["message", "message_delete", "message_update", "update_message_reaction"]:
             permissions.append(IsMember())
             if self.action in ["message_delete", "message_update"]:
                 permissions.append(IsOwner())
@@ -94,6 +108,23 @@ class ChannelMessageViewset(ThrottledViewSet):
             ),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        manual_parameters=[
+            openapi.Parameter(
+                "order_by",
+                openapi.IN_QUERY,
+                description="property to use for payload ordering",
+                required=False,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ascending",
+                openapi.IN_QUERY,
+                description="direction to order payload ",
+                required=False,
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
+
     )
     @action(
         methods=["GET"],
@@ -114,14 +145,14 @@ class ChannelMessageViewset(ThrottledViewSet):
 
         try:
             result = json.loads(data)
+        except: # noqa
             status_code = status.HTTP_200_OK
-        except:  # noqa
             result = []
-
-        """<<<<<<"""
-
-        if isinstance(result, list):
-            status_code = status.HTTP_200_OK
+        
+        if isinstance(result, dict):
+            if result.get("data"):
+                result = self.perform_ordering(request, result.get("data"))
+                status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
     def _stream_message_all(self, request, org_id, channel_id):
@@ -131,7 +162,8 @@ class ChannelMessageViewset(ThrottledViewSet):
         """
         # TODO: Remove this method when zc-core implements pagination
         data = {"channel_id": channel_id}
-        data.update(self.request.query_params)
+        params = self._clean_query_params(request)
+        data.update(params)
 
         read = settings.READ_URL
 
@@ -141,7 +173,7 @@ class ChannelMessageViewset(ThrottledViewSet):
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}/"
         url += "?" + urlencode(data)
 
-        r = requests.get(url, stream=True, timeout=10000)
+        r = requests.get(url, stream=True, timeout=100)         
 
         if int(r.headers.get("Content-Length", 10000)) > max_chunk_size:
             raise ValueError("response too large")
@@ -312,9 +344,39 @@ class ChannelMessageViewset(ThrottledViewSet):
             )
         },
         operation_id="retrieve-message-reactions",
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "order_by",
+                openapi.IN_QUERY,
+                description="property to use for payload ordering",
+                required=False,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ascending",
+                openapi.IN_QUERY,
+                description="direction to order payload ",
+                required=False,
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
     )
     @action(methods=["GET"], detail=False)
-    def retrieve_message_reactions(self, request, org_id, msg_id):
+    def retrieve_message_reactions(self, request, org_id, msg_id,):
         """Retrieve message reactions
 
         ```bash
@@ -323,94 +385,105 @@ class ChannelMessageViewset(ThrottledViewSet):
         """
 
         data = {"_id": msg_id}
-        data.update(dict(request.query_params))
+        
+        self.OrderingFields = {
+            "count": datetime.fromisoformat,
+        }
+        params =  self._clean_query_params(request)
+        data.update(params)
         result = Request.get(org_id, "channelmessage", data) or {}
-        reactions = result.get("emojis", [])
+        reactions = self.perform_ordering(request, result.get("emojis", []))
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
         return Response(reactions, status=status_code)
 
     @swagger_auto_schema(
-        request_body=ChannelMessageReactionsUpdateSerializer,
+        request_body=ReactionSerializer,
         responses={
-            200: openapi.Response(
-                "Reaction updated", ChannelMessageReactionSerializer(many=True)
-            )
+            201: openapi.Response("Response", ReactionSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
         },
-        operation_id="update-message-reactions",
+        operation_id="update_message_reaction",
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "channel_id",
+                openapi.IN_QUERY,
+                description="Channel ID (ID of channel message was posted)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
-    @action(methods=["PUT"], detail=False)
-    def update_message_reactions(self, request, org_id, msg_id):
-        """Update message reactions
-
-        ```bash
-        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/messages/{{msg_id}}/reactions/"
-        -H  "accept: application/json"
-        -H  "Content-Type: application/json"
-        -d "{  \"title\": \"string\",  \"member_id\": \"string\"}"
-        ```
-        """
-
-        # get referenced message
-        data = {"_id": msg_id}
-        data.update(dict(request.query_params))
-        message = Request.get(org_id, "channelmessage", data)
-
-        if message:
-            message_reactions = message.get("emojis", [])
-
-            serializer = ChannelMessageReactionsUpdateSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-
-            # todo: refactor code to use dict instead of list
-            new_message_reaction = serializer.data
-            message_reaction = {
-                "title": new_message_reaction["title"],
-                "count": 1,
-                "users": [new_message_reaction["member_id"]],
-            }
-            message_reaction_index = None
-            for reaction in message_reactions:
-                if reaction["title"] == new_message_reaction["title"]:
-                    message_reaction_index = message_reactions.index(reaction)
-                    message_reaction = reaction
-                    if new_message_reaction["member_id"] in message_reaction["users"]:
-                        message_reaction["count"] -= 1
-                        message_reaction["users"].remove(
-                            new_message_reaction["member_id"]
-                        )
-                    else:
-                        message_reaction["count"] += 1
-                        message_reaction["users"].append(
-                            new_message_reaction["member_id"]
-                        )
-
-            if message_reaction_index:
-                message_reactions.pop(message_reaction_index)
-                message_reactions.insert(message_reaction_index, message_reaction)
-            else:
-                message_reactions.append(message_reaction)
-
-            payload = {"emojis": message_reactions}
-            result = Request.put(org_id, "channelmessage", payload, object_id=msg_id)
-            status_code = status.HTTP_400_BAD_REQUEST
-
-            if result:
-                request_finished.send(
-                    sender=self.__class__,
-                    dispatch_uid="EditMessageSignal",
-                    org_id=org_id,
-                    channel_id=result.get("channel_id"),
-                    data=result,
-                )
-
-                return Response(message_reactions, status=status.HTTP_200_OK)
-
-            return Response({"error": "failed to update reaction"}, status=status_code)
-
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    @throttle_classes([AnonRateThrottle])
+    def update_message_reaction(self, request, org_id, msg_id):
+        message = Request.get(org_id, "channelmessage", {"_id": msg_id}) or []
+        
         status_code = status.HTTP_404_NOT_FOUND
-        return Response({"error": "message not found"}, status=status_code)
+
+        if isinstance(message, dict):
+            if message.__contains__("_id"):
+                serializer = ReactionSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+
+                data = dict(serializer.data)
+
+                emoji = None
+
+                for i in message.get("emojis", []):
+                    if data.get("title", None) == i.get("title", None):
+                        emoji = i.copy()
+                        message.get("emojis", []).remove(emoji)
+                        break
+           
+                if emoji:
+                    if data.get("user_id") in emoji.get("users", []):
+                        emoji.get("users", []).remove(data.get("user_id"))
+                        emoji["count"] = emoji.get("count", 1) - 1
+                        status_code = status.HTTP_200_OK
+                    else:
+                        emoji.get("users", []).append(data.get("user_id"))
+                        emoji["count"] = emoji.get("count", 0) + 1
+                        status_code = status.HTTP_201_CREATED
+                else:
+                    emoji = {
+                        "title": data.get("title"),
+                        "count": 1,
+                        "users": [data.get("user_id")],
+                    }
+                    status_code = status.HTTP_201_CREATED
+            
+                if emoji["count"] > 0:
+                    message.get("emojis", []).append(emoji)
+
+                obj_id = message.pop("_id")
+
+                result = Request.put(
+                    org_id=org_id,
+                    collection_name="channelmessage",
+                    payload=message, object_id=obj_id) or {}
+
+                if isinstance(result, dict):                
+                    if result.__contains__("_id"):
+                        # return status code 201 if user reaction was added
+                        # return status code 200 if user reaction was removed
+                        return Response(emoji, status=status_code)
+                return Response(result)
+        return Response(
+            {"error": "message not found"}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
 
 
 channelmessage_views = ChannelMessageViewset.as_view(
@@ -425,22 +498,46 @@ channelmessage_views_group = ChannelMessageViewset.as_view(
 )
 
 channelmessage_reactions = ChannelMessageViewset.as_view(
-    {"get": "retrieve_message_reactions", "put": "update_message_reactions"}
+    {"get": "retrieve_message_reactions", "post": "update_message_reaction"}
 )
 
 
+@swagger_auto_schema(
+    method="POST",
+    request_body=ChannelMessageSearchSerializer,
+    responses={
+        200: openapi.Response(
+            "Response", ChannelMessageSearchResultSerializer(many=True)
+        ),
+        400: openapi.Response("Error Response", ErrorSerializer),
+    },
+    operation_id="search-channel-messages"
+)
 @api_view(["POST"])
 def search_messages(request, org_id, channel_id):
+    """Search channel messages based on content, pinned status, file attachments etc.
+
+    ```bash
+    curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/search_messages/"
+    -H  "accept: application/json"
+    -H  "Content-Type: application/json"
+    -d "{
+            \"user_id\": \"string\",
+            \"content\": \"string\",
+            \"has_files\": true,
+            \"pinned\": true
+        }"
+    ```
     """
-    Search channel messages based on content, pinned status, file attachments etc.
-    """
+
     serializer = ChannelMessageSearchSerializer(data=request.data)
-    if serializer.is_valid():
-        data = serializer.data
-        response = search_db(org_id, channel_id, "channelmessage", **data)
-        response.update(data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.data
+    result = search_db(org_id, channel_id, "channelmessage", **data) or []
+    if isinstance(result, list):
+        response = {"result": result, "query": data}
         return Response(response, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 
 search_channelmessage = search_messages

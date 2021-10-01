@@ -1,6 +1,6 @@
 import APIService from "../../utils/api";
 import UtlilityService from "../../utils/utils";
-import { GetUserInfo } from "@zuri/control";
+import { GetUserInfo, GetWorkspaceUsers } from "@zuri/control";
 
 import {
   GET_CHANNELMESSAGES,
@@ -14,6 +14,8 @@ import {
   CREATE_CHANNELS,
   GET_SOCKETS,
   ADD_CHANNEL_MEMBER,
+  USER_CAN_INPUT,
+  GET_WORKSPACE_USERS,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -45,15 +47,23 @@ const _getUsers = (params) => async (dispatch) => {
   try {
     // Result comes from the endpoint
     // Let's assume an array of objects is returned from the endpoint
-    // const res = await GetUserInfo();
-
-    GetUserInfo().then((res) => {
-      dispatch({ type: GET_USERS, payload: res });
-    })
-
+    const res = await GetUserInfo();
+    dispatch({ type: GET_USERS, payload: res });
     // Result is sent to the store via dispatch (Pass payload if needed)
   } catch (error) {
     // Handle exceptions here
+    console.log(error);
+  }
+};
+
+const _getWorkspaceUsers = (params) => async (dispatch) => {
+  try {
+    // const res = await GetWorkspaceUser();
+    // dispatch({ type: GET_WORKSPACE_USERS, payload: res });
+    GetWorkspaceUsers().then((res) => {
+      dispatch({ type: GET_WORKSPACE_USERS, payload: res });
+    });
+  } catch (error) {
     console.log(error);
   }
 };
@@ -64,8 +74,8 @@ const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
     const res = await APIService.addChannelMember(org_id, channel_id, data);
     console.log(res.data);
     dispatch({ type: ADD_CHANNEL_MEMBER, payload: res.data }); // Result is sent to the store via dispatch (Pass payload if needed)
-  } catch (error) { 
-    console.log(error);// Handle exceptions here
+  } catch (error) {
+    console.log(error); // Handle exceptions here
   }
 };
 const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
@@ -142,7 +152,7 @@ const _getChannels = (org_id) => async (dispatch) => {
 const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
   try {
     const res = await APIService.getPinnedMessages(org_id, channel_id);
-    const data = res.data.data || []
+    const data = res.data.data || [];
     dispatch({ type: GET_PINNED_MESSAGES, payload: data });
   } catch (err) {
     _alert("error");
@@ -187,6 +197,16 @@ const _createChannel = (org_id, data) => async (dispatch) => {
   }
 };
 
+const _userCanInput = (org_id, data) => async (dispatch) => {
+  try {
+    const res = await APIService.userCanInput(org_id, data);
+    dispatch({ type: USER_CAN_INPUT, payload: res.data });
+    console.log("can input?", res);
+  } catch (error) {
+    console.log("err", err);
+  }
+};
+
 // Export functions here
 const appActions = {
   _alert,
@@ -202,5 +222,7 @@ const appActions = {
   _createChannel,
   _getSocket,
   _addChannelMember,
+  _userCanInput,
+  _getWorkspaceUsers,
 };
 export default appActions;

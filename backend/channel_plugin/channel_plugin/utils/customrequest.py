@@ -1,9 +1,11 @@
 import json
+import logging
 from dataclasses import dataclass
 
 import requests
 from django.conf import settings
 
+logger = logging.getLogger("sentry_sdk")
 # from urllib.parse import urlencode
 
 
@@ -48,15 +50,24 @@ class Request:
                         "filter": _filter,
                     }
                 )
+                # logging.error(
+                #     f"data: {data} | params: {params} with logging before pop"
+                # )
+                data.pop("object_id", None)
             else:
                 data.update(
                     {
                         "object_id": params["_id"],
                     }
                 )
+            print(data)
             response = requests.post(read, json.dumps(data))
         else:
             response = requests.get(url)
+        # logger.info(f"data: {data} | response: {response} with logger")
+        # logging.error(
+        #     f"data: {data} | response: {response} params: {params} with logging"
+        # )
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()["data"]
         return {"error": response.json()}
@@ -142,7 +153,6 @@ def search_db(org_id, channel_id, collection_name, **params):
             ]
         },
     }
-
     if len(params) > 0:
         for param in params:
             if isinstance(params[param], bool):
@@ -151,8 +161,7 @@ def search_db(org_id, channel_id, collection_name, **params):
                 continue
             value = params[param]
             data["filter"]["$and"].append({param: {"$regex": value, "$options": "i"}})
-    # print(data)
-    json_data = json.dumps(data)
-    response = requests.post("https://api.zuri.chat/data/read", data=json_data)
-    # print(response)
-    return response.json()
+    response = requests.post(read, data=json.dumps(data))
+    if response.status_code >= 200 and response.status_code < 300:
+        return response.json()["data"]
+    return {"error": response.json()}
