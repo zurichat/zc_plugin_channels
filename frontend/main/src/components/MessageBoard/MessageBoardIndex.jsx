@@ -24,8 +24,6 @@ const MessageBoardIndex = () => {
 
   const { channelDetails } = useSelector((state) => state.channelsReducer)
 
-  const canInput = channelDetails.allow_members_input;
-
 
   return (
     <Box bg="#F9F9F9" m="5px" width="99%">
@@ -49,7 +47,7 @@ const MessageBoardIndex = () => {
           >
             <MessageCardContainer channelId={channelId} />
           </Box>
-          {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />}
+          {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
         {/* <Box>
           <Thread/>
