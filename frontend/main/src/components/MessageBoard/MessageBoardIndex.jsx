@@ -68,11 +68,7 @@ const MessageBoardIndex = () => {
           >
             <MessageCardContainer channelId={channelId} />
           </Box>
-          {canInput ? (
-            <MessageInput channelId={channelId} />
-          ) : (
-            <DisabledInput />
-          )}
+          {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
         {/* <Box>
           <Thread/>
