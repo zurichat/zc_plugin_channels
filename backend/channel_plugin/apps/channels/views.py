@@ -1,5 +1,3 @@
-import json
-
 from apps.centri.helperfuncs import build_room_name
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
@@ -7,14 +5,14 @@ from django.http.response import JsonResponse
 from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers, status, throttling
+from rest_framework import status, throttling
 from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
-from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
+from channel_plugin.utils.wrappers import OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
@@ -24,7 +22,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     NotificationsSettingSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
-    UserSerializer,
+    UserSerializer
 )
 
 # from rest_framework.filters
@@ -60,7 +58,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
+        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false, \"default\":false,  \"topic\": \"channel topic\"}"
         ```
 
         """  # noqa
@@ -81,6 +79,22 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
+        manual_parameters=[
+            openapi.Parameter(
+                "order_by",
+                openapi.IN_QUERY,
+                description="property to use for payload ordering",
+                required=False,
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ascending",
+                openapi.IN_QUERY,
+                description="direction to order payload ",
+                required=False,
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
@@ -120,9 +134,10 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/files/" -H  "accept: application/json"
         ```
         """
-        data = {"channel_id": channel_id, "has_files": True, "type": "message"}
+        data = {"channel_id": channel_id, "has_files": "yes", "type": "message"}
         data.update(dict(request.query_params))
         result = {}
+        flag = 0
         result_message = Request.get(org_id, "channelmessage", data) or []
         result_thread = Request.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
@@ -133,28 +148,35 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
                 for i in result_message:
                     message_response.append(
                         {
-                            "timestamp":i["timestamp"],
-                            "files":i["files"],
-                            "message_id":i["_id"],
-                            "user_id":i["user_id"]
-                            }
-                        )
+                            "timestamp": i["timestamp"],
+                            "files": i["files"],
+                            "message_id": i["_id"],
+                            "user_id": i["user_id"],
+                        }
+                    )
+                    flag = 1
             if result_thread:
                 for i in result_thread:
                     thread_response.append(
                         {
-                            "timestamp":i["timestamp"],
-                            "files":i["files"],
-                            "message_id":i["_id"],
-                            "user_id":i["user_id"]
-                            }
-                            )    
+                            "timestamp": i["timestamp"],
+                            "files": i["files"],
+                            "message_id": i["_id"],
+                            "user_id": i["user_id"],
+                        }
+                    )
+                    flag = 1
             result.update(
                 {
+                    "message": "Successfully Retrieved"
+                    if flag == 1
+                    else "There are no files in this channel",
                     "channelfiles": message_response
                     if isinstance(message_response, list)
                     else [],
-                    "threadfiles": thread_response if isinstance(thread_response, list) else [],
+                    "threadfiles": thread_response
+                    if isinstance(thread_response, list)
+                    else [],
                 }
             )
             status_code = status.HTTP_200_OK
@@ -206,7 +228,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\"}"
+        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\",  \"starred\": false}"
         ```
         """  # noqa
         serializer = ChannelUpdateSerializer(
@@ -338,6 +360,8 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             )
 
 
+
+
 channel_list_create_view = ChannelViewset.as_view(
     {
         "get": "channel_all",
@@ -380,51 +404,51 @@ class ChannelMemberViewset(ViewSet):
             return result
         return {}
 
-    def prepare_params(self):
-        param_checkers = {
-            "__starts": "$",
-            "__ends": "#",
-            "__contains": "*",
-            "__gt": ">",
-            "__lt": "<",
-        }
+    # def prepare_params(self):
+    #     param_checkers = {
+    #         "__starts": "$",
+    #         "__ends": "#",
+    #         "__contains": "*",
+    #         "__gt": ">",
+    #         "__lt": "<",
+    #     }
 
-        params = dict(self.request.query_params)
+    #     params = dict(self.request.query_params)
 
-        """
-            Note if your planing to use the filterwrapper class
-            you have to convert the values of your query_parameter
-            to a python value by using json.loads
-        """
+    #     """
+    #         Note if your planing to use the filterwrapper class
+    #         you have to convert the values of your query_parameter
+    #         to a python value by using json.loads
+    #     """
 
-        for key in self.request.query_params.keys():
-            try:
-                params[key] = json.loads(params.get(key)[0])
-            except:  # noqa
-                params[key] = params.get(key)[0]
+    #     for key in self.request.query_params.keys():
+    #         try:
+    #             params[key] = json.loads(params.get(key)[0])
+    #         except:  # noqa
+    #             params[key] = params.get(key)[0]
 
-            for chk in param_checkers:
-                if key.endswith(chk):
-                    p = param_checkers[chk] + key.replace(chk, "")
+    #         for chk in param_checkers:
+    #             if key.endswith(chk):
+    #                 p = param_checkers[chk] + key.replace(chk, "")
 
-                    try:
-                        params[p] = json.loads(params.get(key))
-                    except:  # noqa
-                        params[p] = params.get(key)
-                    params.pop(key)
-        return params
+    #                 try:
+    #                     params[p] = json.loads(params.get(key))
+    #                 except:  # noqa
+    #                     params[p] = params.get(key)
+    #                 params.pop(key)
+    #     return params
 
-    def filter_objects(self, data: list, serializer: serializers.Serializer):
-        # method  applies filteration to user list
-        output = []
+    # def filter_objects(self, data: list, serializer: serializers.Serializer):
+    #     # method  applies filteration to user list
+    #     output = []
 
-        params = self.prepare_params()
-        params = FilterWrapper.filter_params(
-            allowed=list(serializer().get_fields().keys()), params=params
-        )
+    #     params = self.prepare_params()
+    #     params = FilterWrapper.filter_params(
+    #         allowed=list(serializer().get_fields().keys()), params=params
+    #     )
 
-        output = FilterWrapper.filter_objects(data, params)
-        return output
+    #     output = FilterWrapper.filter_objects(data, params)
+    #     return output
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -668,13 +692,9 @@ class ChannelMemberViewset(ViewSet):
         channel = self.retrieve_channel(request, org_id, channel_id)
 
         if channel.__contains__("_id"):
-            # apply filters to user list
-            users = self.filter_objects(
-                list(channel["users"].values()),
-                UserSerializer,
-            )
-
+            users = list(channel.get("users", {}).values())
             serializer = UserSerializer(data=users, many=True)
+
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -849,9 +869,8 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=user_data["_id"],
+                            user=user_data.copy(),
                         )
-
                     status_code = (
                         status.HTTP_204_NO_CONTENT
                         if not result.get("error")
