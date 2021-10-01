@@ -71,14 +71,14 @@ export default function  DisplayFiles() {
                     {/* <BsGrid color='#a1a1a1' /> */}
                     <IconButton
                       icon={
-                        <BsGrid color='#a1a1a1' onClick={this.handleDownload} />
+                        <BsGrid color='#a1a1a1' onClick={this.handleGrid} />
                       }
                     />
                   </Flex>
                 </Box>
               </Flex>
             </Box>
-
+{/* display list */}
             <Flex m='10px'>
               <Box>
                 <Text>4 results</Text>
@@ -248,6 +248,7 @@ export default function  DisplayFiles() {
               </Box>
             </Grid>
 
+{/* display grid */}
             <SimpleGrid columns={[1, 2, 3, 4]} gap='2px'>
               <Box
                 w='90%'
