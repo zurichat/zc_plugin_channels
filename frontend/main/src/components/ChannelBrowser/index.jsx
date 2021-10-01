@@ -1,7 +1,5 @@
 import { AddIcon } from "@chakra-ui/icons";
-import {
-  Box
-} from "@chakra-ui/layout";
+import { Box } from "@chakra-ui/layout";
 import React, { useEffect, useState } from "react";
 import ChannelBrowserHeader from "./ChannelBrowserHeader";
 import appActions from "../../redux/actions/app";
@@ -11,13 +9,12 @@ import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
 import PluginHeaderC from "../createChannel/homeHeader";
 
-
 const ChannelBrowser = () => {
   const { users } = useSelector((state) => state.appReducer);
-  console.log("Organisation id for channels: ", users.currentWorkspace)
+  console.log("Organisation id for channels: ", users.currentWorkspace);
 
   const dispatch = useDispatch();
-  const [orgId, setOrgId] = useState('')
+  const [orgId, setOrgId] = useState("");
   const { _getChannels } = bindActionCreators(appActions, dispatch);
 
   const loadChannels = async () => {
@@ -25,14 +22,14 @@ const ChannelBrowser = () => {
   };
 
   useEffect(() => {
-    if(users){
-      setOrgId(users[0])
+    if (users) {
+      setOrgId(users[0]);
     }
-  }, [users])
+  }, [users]);
 
   useEffect(() => {
-    if(orgId){
-    loadChannels();
+    if (orgId) {
+      loadChannels();
     }
   }, [orgId]);
 
@@ -48,8 +45,8 @@ const ChannelBrowser = () => {
         pt="16px"
         sx={{ "@media screen and (max-width: 768.5px)": { marginRight: "0" } }}
       >
-        <SearchMenu/>
-        <ChannelList/>
+        <SearchMenu />
+        <ChannelList orgId={orgId} />
       </Box>
 
       {/* Mobile View to Add Channel */}
@@ -63,7 +60,6 @@ const ChannelBrowser = () => {
         display="none"
         sx={{ "@media screen and (max-width: 768.5px)": { display: "block" } }}
       />
-     
     </Box>
   );
 };
