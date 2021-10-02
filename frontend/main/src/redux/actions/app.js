@@ -16,6 +16,8 @@ import {
   ADD_CHANNEL_MEMBER,
   SET_NOTIFICATION,
   USER_CAN_INPUT,
+  GET_FILES,
+  DELETE_CHANNEL,
   GET_WORKSPACE_USERS,
 } from "./types";
 
@@ -87,6 +89,7 @@ const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
     console.log(res.data);
     // Result is sent to the store via dispatch (Pass payload if needed)
     dispatch({ type: GET_CHANNELMESSAGES, payload: res.data });
+    return res.data
   } catch (error) {
     // Handle exceptions here
     console.log(error);
@@ -220,6 +223,28 @@ const _userCanInput = (org_id, data) => async (dispatch) => {
   }
 };
 
+const _getFiles = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.getChannelFiles(org_id, channel_id);
+    dispatch({ type: GET_FILES, payload: res.data });
+    // _alert("success", "Channel successfully created");
+  } catch (error) {
+    _alert("slow connection");
+  }
+};
+
+const _deleteChannel = (org_id, channel_id) => async (dispatch) => {
+  try {
+    const res = await APIService.deleteChannel(org_id, channel_id, {
+      delete: "True",
+    });
+    dispatch({ type: DELETE_CHANNEL, payload: res.data });
+    _alert("success", "Channel successfully deleted");
+  } catch (err) {
+    _alert("error");
+  }
+};
+
 // Export functions here
 const appActions = {
   _alert,
@@ -237,6 +262,8 @@ const appActions = {
   _addChannelMember,
   _setNotifications,
   _userCanInput,
+  _deleteChannel,
+  _getFiles,
   _getWorkspaceUsers,
 };
 export default appActions;

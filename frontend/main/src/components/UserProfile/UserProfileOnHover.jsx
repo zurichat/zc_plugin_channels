@@ -58,7 +58,7 @@ import smileEmoji from '../images/emoji-smile.png'
             <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='20rem' >Status</Text>
             <Image src={smileEmoji}  pos='absolute' left='2rem'  top='22rem'  h='25px' w='25px' />
             <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='25rem' >Local Time</Text>
-            <Text fontSize='.96rem' fontStyle='Lato' fontWeight='bold' color='black'  pos='absolute' pl='.5rem' top='26.8rem' >{data.time}</Text>
+            <Text fontSize='.96rem' fontStyle='Lato' fontWeight='bold' color='gray'  pos='absolute' pl='.5rem' top='26.8rem' >{data.time}</Text>
             <Box display='flex' pos='absolute'   w='240px'  top='30.4rem'  >
 
                     <Button pos='relative' top='-1.8rem'

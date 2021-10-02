@@ -131,6 +131,17 @@ class APIServices {
     return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
   }
 
+    async getChannelFiles(org_id, channel_id) {
+    return api.get(`/${org_id}/channels/${channel_id}/media/?format=json`);
+  }
+
+
+  async userCanInput(org_id, channel_id, data) {
+    return api.post(
+      `/${org_id}/channels/${channel_id}/members/can-input`,
+      data
+    );
+  }
   async setNotification(org_id, channel_id, member_id, data) {
     return api.put(`/${org_id}/channels/${channel_id}/members/${member_id}/notifications/`, data);
 }

@@ -1,9 +1,13 @@
-import React, {useEffect, useState, useMemo} from 'react'
-import { Box, Text, Flex} from '@chakra-ui/layout'
+
+
+import React, { useEffect, useState, useRef } from 'react'
+import { Box, Text, Flex } from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router';
 import { useHistory } from 'react-router';
+import { Image } from "@chakra-ui/react"
+import Spinner from '../../../../../src/assets/spinner.gif'
 
 import APIService from "../../../../utils/api";
 
@@ -21,64 +25,65 @@ import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
-const MessageCardContainer = ({channelId}) =>{
+const MessageCardContainer = ({ channelId }) => {
 
-  const dispatch = useDispatch()
-  const history = useHistory()
-  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  //console.log(channelMessages, sockets);
+    const dispatch = useDispatch()
+    const history = useHistory()
+    const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
+    const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
 
-  const [ allChannelMessage, setAllChannelMessage ] = useState() 
-  const [moreMessages, setMoreMessages] = useState(false)
+    const [allChannelMessage, setAllChannelMessage] = useState()
+    const [moreMessages, setMoreMessages] = useState(false)
+    const noOfMessages = 20;
 
+    const messageRef = useRef();
 
-  useEffect( () => {
-    console.log("\n\n\nUseEffect works\n\n\n");
-      const loadData = async ()=> {
-       _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
-      }
-      loadData()
-}, [channelId]);
+    useEffect(() => {
+        if (messageRef.current) {
+            messageRef.current.scrollIntoView(
 
-    return(
-      <>
-      <EmptyStateComponent />
-     { channelMessages && channelMessages.length > 0 &&
-        <Box>
-            <Flex borderRadius="15px" p="4px 6px" flexDir="row" justifyContent="center" alignItems="center" gridGap="4px">
-            <Button
-        background='#FFFFFF'
-        border='1px solid rgba(87, 87, 87, 0.3)'
-        borderRadius='15px'
-        size='xs'
-        mb='10px'
-        rightIcon={<FaCaretDown /  >}
-      >
-        Today
-      </Button>
-            </Flex>
-            
-            <Box>
-            
-            
-            { channelMessages && channelMessages.length > 0 &&
-                channelMessages.map((message) => {
-                    return(
-                      message === [] ? <Text textAlign="center">Loading...</Text> :
-                    <MessageCard {...message} key={message._id} />
-                    )
+                {
+                    behavior: 'smooth',
+                    block: 'end',
+                    inline: 'nearest'
                 })
-            }
-            {/* {
-              channelMessages.length > 0 ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageStartingIndex  ? "Load More..." : " "}</Text> :
-              null 
-            } */}
+        }
+    })
+
+
+    useEffect(() => {
+        console.log("\n\n\nUseEffect works\n\n\n");
+        const loadData = async () => {
+            _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
+        }
+        loadData()
+    }, [channelId]);
+
+
+    return (
+        <>
+            <Box overflowY='scroll'
+                height='100%'
+                position='relative'>
+                <EmptyStateComponent />
+                {channelMessages && channelMessages.length > 0 &&
+                    <Box ref={messageRef}>
+                        {channelMessages && channelMessages.length > 0 &&
+                            channelMessages.map((message) => {
+                                return (
+                                    message === [] ? <Text textAlign="center">Loading...</Text> :
+                                        <MessageCard {...message} key={message._id} />
+                                )
+                            })
+                        }
+                    </Box>
+                }
+                <Box />
             </Box>
-        </Box> }
-        </>  
+        </>
     )
 }
 
 export default MessageCardContainer;
+
+
