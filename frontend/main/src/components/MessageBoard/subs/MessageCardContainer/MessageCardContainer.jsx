@@ -34,7 +34,6 @@ const MessageCardContainer = ({ channelId }) => {
 
     const [allChannelMessage, setAllChannelMessage] = useState()
     const [moreMessages, setMoreMessages] = useState(false)
-    const [loading, setLoading] = useState(true);
     const noOfMessages = 20;
 
     const messageRef = useRef();
@@ -42,6 +41,7 @@ const MessageCardContainer = ({ channelId }) => {
     useEffect(() => {
         if (messageRef.current) {
             messageRef.current.scrollIntoView(
+
                 {
                     behavior: 'smooth',
                     block: 'end',
@@ -49,6 +49,7 @@ const MessageCardContainer = ({ channelId }) => {
                 })
         }
     })
+
 
     useEffect(() => {
         console.log("\n\n\nUseEffect works\n\n\n");
@@ -77,6 +78,7 @@ const MessageCardContainer = ({ channelId }) => {
                         }
                     </Box>
                 }
+                <Box />
             </Box>
         </>
     )
