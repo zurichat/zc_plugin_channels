@@ -30,10 +30,12 @@ urlpatterns = [
         channel_members_can_input_view,
         name="channel-members-can-input",
     ),
+    path("<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/notifications/", 
+         notification_views),
     path(
         "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/",
         channel_members_update_retrieve_views,
     ),
     path("<str:org_id>/channels/users/<str:user_id>/", user_channel_list),
-    path("<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/notifications/", notification_views),
+    
 ]
