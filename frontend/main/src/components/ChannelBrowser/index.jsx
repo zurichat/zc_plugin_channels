@@ -11,7 +11,6 @@ import PluginHeaderC from "../createChannel/homeHeader";
 
 const ChannelBrowser = () => {
   const { users } = useSelector((state) => state.appReducer);
-  console.log("Organisation id for channels: ", users.currentWorkspace);
 
   const dispatch = useDispatch();
   const [orgId, setOrgId] = useState("");

@@ -11,12 +11,14 @@
         "200": {
           "id": "200",
           "role_id": "198",
-          "is_admin": false
+          "is_admin": false,
+          "starred": true
         },
         "202": {
           "id": "202",
           "role_id": "199",
-          "is_admin": true
+          "is_admin": true,
+          "starred": true
         }
       },
       "created_on": "12-08-2021 12:00:00"
