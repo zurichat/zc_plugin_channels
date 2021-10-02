@@ -47,14 +47,16 @@ const EmptyStateComponent = () => {
             <Link color="#0562ed" ml='2px' fontWeight="700" fontweight='700' textTransform="capitalize">
               @{channelDetails.owner}
             </Link>{" "}
-            created this channel on{" "}
-            {UtilityService.formatDate(channelDetails.created_on, "MMM Do")}.
+            <Box as="span" color="#B0AFB0" fontSize="13px">
+              created this channel on{" "}
+              {UtilityService.formatDate(channelDetails.created_on, "MMM Do")}.
+            </Box>
           </Text>
         </HStack>
       </Center>
       <Center color="white" >
         <Box w={['40%', '30%', '30%', '15%']}
-          mt={['0', '-4%', '0 ', '5%']}
+          mt={['0', '-4%', '0 ', '3%']}
           mb={['5%', '5%', '5%', '1%']}
           height='40px'
           border="1px solid #00B87C"

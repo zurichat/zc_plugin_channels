@@ -27,55 +27,61 @@ import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 const MessageCardContainer = ({ channelId }) => {
 
-  const dispatch = useDispatch()
-  const history = useHistory()
-  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
+    const dispatch = useDispatch()
+    const history = useHistory()
+    const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
+    const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
 
-  const [allChannelMessage, setAllChannelMessage] = useState()
-  const [moreMessages, setMoreMessages] = useState(false)
-  const [loading, setLoading] = useState(true);
-  const noOfMessages = 20;
+    const [allChannelMessage, setAllChannelMessage] = useState()
+    const [moreMessages, setMoreMessages] = useState(false)
+    const [loading, setLoading] = useState(true);
+    const noOfMessages = 20;
 
+    const messageRef = useRef();
 
-  useEffect(() => {
-    console.log("\n\n\nUseEffect works\n\n\n");
-    const loadData = async () => {
-      _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
-    }
-    loadData()
-    setLoading(false)
-  }, [channelId, renderedMessages]);
-
-  return (
-    loading ?
-      <Image src={Spinner} objectFit="cover" justifyContent="center" paddingTop='70px' margin='auto' />
-      :
-      <>
-        <Box overflowY='scroll'
-          height='100%'
-          position='relative'>
-          <EmptyStateComponent />
-          {channelMessages && channelMessages.length > 0 &&
-            <Box>
-              {channelMessages && channelMessages.length > 0 &&
-                channelMessages.map((message) => {
-                  return (
-                    message === [] ? <Text textAlign="center">Loading...</Text> :
-                      <MessageCard {...message} key={message._id} />
-                  )
+    useEffect(() => {
+        if (messageRef.current) {
+            messageRef.current.scrollIntoView(
+                {
+                    behavior: 'smooth',
+                    block: 'end',
+                    inline: 'nearest'
                 })
-              }
-              {/* {
-              channelMessages.length > 0 ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageStartingIndex  ? "Load More..." : " "}</Text> :
-              null 
-            } */}
+        }
+    },
+        [channelMessages])
+
+    useEffect(() => {
+        console.log("\n\n\nUseEffect works\n\n\n");
+        const loadData = async () => {
+            _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
+        }
+        loadData()
+    }, [channelId]);
+
+
+
+    return (
+        <>
+            <Box overflowY='scroll'
+                height='100%'
+                position='relative'>
+                <EmptyStateComponent />
+                {channelMessages && channelMessages.length > 0 &&
+                    <Box ref={messageRef}>
+                        {channelMessages && channelMessages.length > 0 &&
+                            channelMessages.map((message) => {
+                                return (
+                                    message === [] ? <Text textAlign="center">Loading...</Text> :
+                                        <MessageCard {...message} key={message._id} />
+                                )
+                            })
+                        }
+                    </Box>
+                }
             </Box>
-          }
-        </Box>
-      </>
-  )
+        </>
+    )
 }
 
 export default MessageCardContainer;
