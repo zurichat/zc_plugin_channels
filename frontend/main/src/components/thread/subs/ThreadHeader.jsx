@@ -1,7 +1,9 @@
 import React from "react";
 import { Box, Container, CloseButton } from "@chakra-ui/react";
 
-function ThreadHeader() {
+
+
+function ThreadHeader({ onClose }) {
   return (
     <Container
       alignItems="center"
@@ -17,7 +19,10 @@ function ThreadHeader() {
         Thread
         {/* <Text fontSize="13px">#Announcement</Text> */}
       </Box>
-      <CloseButton borderWidth="0" bg="none" margin="12px" />
+      <CloseButton borderWidth="0" bg="none" margin="12px"
+        onClick={onClose}
+
+      />
     </Container>
   );
 }

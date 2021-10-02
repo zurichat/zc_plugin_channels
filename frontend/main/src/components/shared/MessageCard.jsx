@@ -11,17 +11,20 @@ import appActions from "../../redux/actions/app"
 import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import instance from '../../utils/utils';
+import { useDisclosure } from "@chakra-ui/react";
+
 import _ from 'lodash';
 
 const threadReply = [
-    { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
-    { name: "Dan Abramov", profilePic: "https://bit.ly/code-beast", index: 2 },
-    { name: "Dan Abramov", profilePic: "https://bit.ly/ryan-florence", index: 3 },
-    { name: "Dan Abramov", profilePic: "https://bit.ly/prosper-baba", index: 4 },
-    { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
-  ];
+  { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
+  { name: "Dan Abramov", profilePic: "https://bit.ly/code-beast", index: 2 },
+  { name: "Dan Abramov", profilePic: "https://bit.ly/ryan-florence", index: 3 },
+  { name: "Dan Abramov", profilePic: "https://bit.ly/prosper-baba", index: 4 },
+  { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
+];
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers }) => {
+
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers, onOpen }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
@@ -37,12 +40,12 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
 
   // const [userDetails, setUserDetails] = useState({})
   let empty = [];
-  const res = _.findKey(allUsers, function(item){
-    if (item._id === user_id){
+  const res = _.findKey(allUsers, function (item) {
+    if (item._id === user_id) {
       empty.push(item)
       // setUserDetails(item)
     }
-    else{
+    else {
       console.log("No")
     }
   })
@@ -50,35 +53,35 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
   // console.log(empty)
   // const userDisplay = empty ? (empty.user_name === "" ? user.user_name : user_id) : user_id;
 
-  
-    return (
-      <Box 
-        position="relative" 
-        _hover={{ bg: "#C4C4C41A" }} 
-        onMouseEnter={() => setShowOptions(true)}
-        onMouseLeave={() => setShowOptions(false)}
-      >
-        <HoverOptions show={showOptions} actions={pinMessage} />
-        <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
-          <Box>
-            <Avatar name={empty && empty.length > 0 ? empty[0].user_name : user_id } src={empty && empty.length > 0 ? empty[0].image_url : ""} w="36px" h="36px" borderRadius="4px" />
+
+  return (
+    <Box
+      position="relative"
+      _hover={{ bg: "#C4C4C41A" }}
+      onMouseEnter={() => setShowOptions(true)}
+      onMouseLeave={() => setShowOptions(false)}
+    >
+      <HoverOptions show={showOptions} actions={pinMessage} onOpen={onOpen} />
+      <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
+        <Box>
+          <Avatar name={empty && empty.length > 0 ? empty[0].user_name : user_id} src={empty && empty.length > 0 ? empty[0].image_url : ""} w="36px" h="36px" borderRadius="4px" />
+        </Box>
+        <Flex flexDir="column">
+          <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
+            <Text fontSize="16px" fontWeight="900">
+              {empty && empty.length > 0 ? empty[0].user_name : "External User "}
+            </Text>
+            <Text fontSize="13px" color="#616061">
+              {formattedTime}
+            </Text>
+          </HStack>
+          <Box m="0px">
+            <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
           </Box>
-          <Flex flexDir="column">
-            <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
-              <Text fontSize="16px" fontWeight="900">
-                {empty && empty.length > 0 ? empty[0].user_name : "External User "}
-              </Text>
-              <Text fontSize="13px" color="#616061">
-                {formattedTime}
-              </Text>
-            </HStack>
-            <Box m="0px">
-              <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
-            </Box>
-            {replies !== 0 && (
-              <HStack spacing="5px" mt="5px">
-                {
-                  threadReply.slice(0, Math.min(4, threadReply.length))
+          {replies !== 0 && (
+            <HStack spacing="5px" mt="5px">
+              {
+                threadReply.slice(0, Math.min(4, threadReply.length))
                   .map((reply, index) => {
                     return (
                       <Avatar
@@ -91,12 +94,12 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
                       />
                     );
                   })
-                }
-                <HStack spacing="5px" alignItems="baseline">
-                  <Link fontSize={["8px", "14px"]} color="#1264A3">{threadReply.length} Replies</Link>
-                  <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
-                </HStack>
+              }
+              <HStack spacing="5px" alignItems="baseline">
+                <Link fontSize={["8px", "14px"]} color="#1264A3">{threadReply.length} Replies</Link>
+                <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
               </HStack>
+            </HStack>
           )}
         </Flex>
       </Flex>
@@ -104,7 +107,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
   );
 };
 
-const HoverOptions = ({ show, actions }) => {
+const HoverOptions = ({ show, actions, onOpen }) => {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -117,15 +120,15 @@ const HoverOptions = ({ show, actions }) => {
     { label: "Copy Link" },
     { divider: true },
     { label: "Pin to channel", command: "P", onClick: actions },
-    { label: "Edit Message", command: "E" }, 
+    { label: "Edit Message", command: "E" },
   ], [])
   return (
-    <HStack 
-      px="9px" py="7px" 
-      spacing="6px" 
-      position="absolute" 
-      top="-20px" right="10px" 
-      border="1px solid #EBEBEB" borderRadius="3px" 
+    <HStack
+      px="9px" py="7px"
+      spacing="6px"
+      position="absolute"
+      top="-20px" right="10px"
+      border="1px solid #EBEBEB" borderRadius="3px"
       bg="white"
       display={show || isMenuOpen ? "flex" : "none"}
     >
@@ -133,7 +136,7 @@ const HoverOptions = ({ show, actions }) => {
         <HiOutlineEmojiHappy />
       </Square>
       <Square {...commonOptionStyle}>
-        <FaRegCommentDots />
+        <FaRegCommentDots onClick={onOpen} />
       </Square>
       <Square {...commonOptionStyle}>
         <FiCornerUpRight />
@@ -158,9 +161,9 @@ const HoverOptions = ({ show, actions }) => {
           />
           <MenuList border="0.5px solid #8B8B8B">
             {
-              menuItemImpl.map(({ label, divider=false, ...rest }, index) => (
+              menuItemImpl.map(({ label, divider = false, ...rest }, index) => (
                 <React.Fragment key={`menu-item-${index}`}>
-                  { !divider ? <MenuItem {...rest} {...commonMoreOptionStyle}>{ label }</MenuItem> : <MenuDivider /> }
+                  {!divider ? <MenuItem {...rest} {...commonMoreOptionStyle}>{label}</MenuItem> : <MenuDivider />}
                 </React.Fragment>
               ))
             }
@@ -169,9 +172,10 @@ const HoverOptions = ({ show, actions }) => {
         </Menu>
       </Square>
     </HStack>
-)}
+  )
+}
 const commonOptionStyle = {
-  size: "24px" ,
+  size: "24px",
   cursor: "pointer",
   borderRadius: "2px",
   _hover: { bg: "#E7E7E7" }
