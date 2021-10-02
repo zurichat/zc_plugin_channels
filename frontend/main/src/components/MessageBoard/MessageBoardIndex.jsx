@@ -24,7 +24,7 @@ import { SubscribeToChannel } from '@zuri/control'
 
 
 
-const MessageBoardIndex = () => {
+const MessageBoardIndex = ({allUsers}) => {
 
   const { channelId } = useParams();
   const dispatch = useDispatch()
@@ -104,7 +104,7 @@ const MessageBoardIndex = () => {
               },
             }}
           >
-            <MessageCardContainer channelId={channelId} />
+            <MessageCardContainer channelId={channelId} allUsers={allUsers} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
