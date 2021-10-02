@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
+from django.urls import reverse
 
 logger = logging.getLogger("sentry_sdk")
 
@@ -159,7 +160,7 @@ def search_db(org_id, channel_id, collection_name, **params):
     return {"error": response.json()}
 
 
-def get_messages_from_page(org_id, collection_name, channel_id, page, page_size):
+def get_messages_from_page(org_id, collection_name, channel_id, page, page_size, site_host=None):
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -184,7 +185,66 @@ def get_messages_from_page(org_id, collection_name, channel_id, page, page_size)
     
     response = requests.post(read, data=json.dumps(data))
 
-    return response.json()
+
+    data = response.json()
+    pg_links = gen_page_links(org_id, "userscroll", channel_id, page, page_size)
+    
+    for i in pg_links:
+        if pg_links[i] != None:
+            try:
+                pg_links[i] = site_host + pg_links[i]
+            except:
+                pass
+
+
+
+    data['links'] = pg_links
+
+    return data
+
+def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
+    new_url = reverse("paginate_messages",kwargs= {"org_id":org_id, "channel_id":channel_id})
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
+
+        "options" : {
+
+        }
+    }
+
+    skips = page_size * (cur_page - 1) + 1
+
+    data["options"].update({
+        "skip" : skips,
+        "limit" : page_size,
+        })
+    
+    response = requests.post(read, data=json.dumps(data))
+    data =  response.json()
+    if cur_page > 1:
+        prev_link = new_url + f"?page={cur_page - 1}&?page_size={page_size}"
+        pass
+    else:
+        prev_link = None
+    try:
+        if data['data']:
+            # next_link = 
+            pass
+        else:
+            next_link = new_url + f"?page={cur_page + 1}&page_size={page_size}"
+    except:
+        print("Error RetrIEVEING DATA")
+        pass
+    data_links = {"prev":prev_link, "next":next_link}
+    return data_links
+
 
 
 def save_last_message_user(org_id, collection_name, payload):
@@ -195,7 +255,21 @@ def save_last_message_user(org_id, collection_name, payload):
             "bulk_write": False,
             "payload": payload,
         }
+    if find_match_in_db(org_id, collection_name, "user_id", payload['user_id']):
+        data["bulk_write"]= True
+        data.update({"filter": {"user_id": 
+                                            {"$eq": payload["user_id"]}
+                                   }
+                        })
+        r = requests.put(write, data= json.dumps(data))
+        print("UPDATED")
+    
+    else:
 
+        r = requests.post(write, data = json.dumps(data))
+        print("Created new")
+    
+def find_match_in_db(org_id, collection_name, param, value, return_data=False):
     match = find_match_in_db(org_id, collection_name, "user_id", payload['user_id'])
     if match == None:
         r = requests.post(write, data = json.dumps(data))
@@ -217,6 +291,19 @@ def find_match_in_db(org_id, collection_name, param, value):
         },
     }
 
+    response = requests.post(read, data=json.dumps(data))
+    response_data = response.json()
+    print(response_data)
+    try:
+        if return_data:
+            return response_data['data']
+        if response_data['data'] != None:
+            print("We made a match")
+            return True
+
+    except:
+        print("No match")
+        return None
     response = requests.get(read, data=json.dumps(data))
     response_data = response
     print(response_data)
