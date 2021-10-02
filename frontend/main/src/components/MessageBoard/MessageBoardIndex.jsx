@@ -87,6 +87,8 @@ const MessageBoardIndex = () => {
 
   return (
     <Box bg="#F9F9F9" width="99%">
+
+      {/* {there is an uncaught error from the centrifugo component that causes a crash when an attempt is made to navigate back to the previous route (which is zuri.chat/channels), and that is what is preventing smooth switch between channels.} */}
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} />
