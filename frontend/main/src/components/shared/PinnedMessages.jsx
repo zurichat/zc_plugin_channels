@@ -61,6 +61,7 @@ const PinMessageCard = ({
   _id,
 }) => {
   const formattedTime = instance.formatDate(timestamp, "MMM Do, LT");
+  console.log(formattedTime);
   return (
     <Flex
       p="17px"
@@ -73,7 +74,7 @@ const PinMessageCard = ({
       _hover={{ bg: "#F1FFFA" }}
     >
       <VStack>
-        <HStack flexWrap="nowrap" flexDir="row">
+        <HStack flexWrap="nowrap" flexDir="row" justifyContent="space-between">
           <Box>
             <Avatar
               name={user_id}
@@ -86,19 +87,16 @@ const PinMessageCard = ({
           <Text fontWeight="900" color="#1D1C1D" fontSize="16px">
             {user_id}
           </Text>
-          <Text
-            fontSize="13px"
-            color="#616061"
-            display="inline-flex"
-            flexWrap="none"
-          >
+          <Text fontSize="13px" color="#616061" flexWrap="none" width="125px">
             {formattedTime}
           </Text>
         </HStack>
-        <Text mt="5px" color="#1D1C1D" fontSize={["12px", "15px"]}>
-          {content}
-          {/* Emoji Stuff here */}
-        </Text>
+        <HStack>
+          <Text mt="10px" color="#1D1C1D" fontSize={["12px", "15px"]}>
+            {content}
+            {/* Emoji Stuff here */}
+          </Text>
+        </HStack>
       </VStack>
     </Flex>
   );

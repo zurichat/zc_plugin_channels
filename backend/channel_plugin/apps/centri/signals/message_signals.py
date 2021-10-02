@@ -36,6 +36,9 @@ def CreateMessageSignal(sender, **kwargs):
         }
 
         try: 
+            print("\n")
+            print(payload)
+            print("\n")
             CLIENT.publish(room_name, payload)
         except CentException:
             pass
@@ -58,6 +61,10 @@ def EditMessageSignal(sender, **kwargs):
         }
 
         try:
+            print("\n")
+            print(payload)
+            print("\n")
+
             CLIENT.publish(room_name, payload)
         except CentException:
             pass
@@ -80,7 +87,11 @@ def DeleteMessageSignal(sender, **kwargs):
             "action": "delete:message"
         }
 
-        try: 
+        try:
+            print("\n")
+            print(payload)
+            print("\n")
+
             CLIENT.publish(room_name, payload)
         except CentException:
             pass

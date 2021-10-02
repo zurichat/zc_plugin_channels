@@ -20,7 +20,7 @@ import EmptyStateComponent from "../../../createChannel/EmptyStateComponent";
 import Centrifuge from "centrifuge";
 import { GET_RENDEREDMESSAGES } from "../../../../redux/actions/types";
 
-const MessageCardContainer = ({ channelId }) => {
+const MessageCardContainer = ({ channelId, allUsers }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { _getChannelMessages, _getSocket } = bindActionCreators(
@@ -30,10 +30,22 @@ const MessageCardContainer = ({ channelId }) => {
   const { channelMessages, sockets, renderedMessages, users } = useSelector(
     (state) => state.appReducer
   );
-  //console.log(channelMessages, sockets);
 
   const [allChannelMessage, setAllChannelMessage] = useState();
   const [moreMessages, setMoreMessages] = useState(false);
+  const noOfMessages = 20;
+
+  const messageRef = useRef();
+
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+    }
+  });
 
   useEffect(() => {
     console.log("\n\n\nUseEffect works\n\n\n");
@@ -45,30 +57,10 @@ const MessageCardContainer = ({ channelId }) => {
 
   return (
     <>
-      <EmptyStateComponent />
-      {channelMessages && channelMessages.length > 0 && (
-        <Box>
-          <Flex
-            borderRadius="15px"
-            p="4px 6px"
-            flexDir="row"
-            justifyContent="center"
-            alignItems="center"
-            gridGap="4px"
-          >
-            <Button
-              background="#FFFFFF"
-              border="1px solid rgba(87, 87, 87, 0.3)"
-              borderRadius="15px"
-              size="xs"
-              mb="10px"
-              rightIcon={<FaCaretDown />}
-            >
-              Today
-            </Button>
-          </Flex>
-
-          <Box>
+      <Box overflowY="scroll" height="100%" position="relative">
+        <EmptyStateComponent />
+        {channelMessages && channelMessages.length > 0 && (
+          <Box ref={messageRef}>
             {channelMessages &&
               channelMessages.length > 0 &&
               channelMessages.map((message) => {
@@ -78,19 +70,14 @@ const MessageCardContainer = ({ channelId }) => {
                   <MessageCard
                     {...message}
                     key={message._id}
-                    channelId={channelId}
-                    message={message}
+                    allUsers={allUsers}
                   />
                 );
               })}
-            {/* {
-              channelMessages.length > 0 ? 
-              <Text color="#1264A3" textAlign="center" cursor="pointer" onClick={loadMore}>{channelMessages.length > messageStartingIndex  ? "Load More..." : " "}</Text> :
-              null 
-            } */}
           </Box>
-        </Box>
-      )}
+        )}
+        <Box />
+      </Box>
     </>
   );
 };
