@@ -25,6 +25,7 @@ def check_payload(payload):
 class Request:
     @staticmethod
     def get(org_id, collection_name, params={}):
+        data = {"plugin_id": settings.PLUGIN_ID}
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
         if params:
             if "_id" not in params.keys():
@@ -62,6 +63,7 @@ class Request:
 
     @staticmethod
     def post(org_id, collection_name, payload):
+        data = {"plugin_id": settings.PLUGIN_ID}
         data.update(
             {
                 "organization_id": org_id,
@@ -78,6 +80,7 @@ class Request:
 
     @staticmethod
     def put(org_id, collection_name, payload, data_filter=None, object_id=None):
+        data = {"plugin_id": settings.PLUGIN_ID}
         data.update(
             {
                 "organization_id": org_id,
@@ -109,6 +112,7 @@ class Request:
 
     @staticmethod
     def delete(org_id, collection_name, data_filter=None, object_id=None):
+        data = {"plugin_id": settings.PLUGIN_ID}
         data.update(
             {
                 "organization_id": org_id,
@@ -153,3 +157,75 @@ def search_db(org_id, channel_id, collection_name, **params):
     if response.status_code >= 200 and response.status_code < 300:
         return response.json()["data"]
     return {"error": response.json()}
+
+
+def get_messages_from_page(org_id, collection_name, channel_id, page, page_size):
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
+
+        "options" : {
+
+        }
+    }
+
+    skips = page_size * (page - 1)
+
+    data["options"].update({
+        "skip" : skips,
+        "limit" : page_size,
+        })
+    
+    response = requests.post(read, data=json.dumps(data))
+
+    return response.json()
+
+
+def save_last_message_user(org_id, collection_name, payload):
+    data = { 
+            "plugin_id": settings.PLUGIN_ID,
+            "organization_id": org_id,
+            "collection_name": collection_name,
+            "bulk_write": False,
+            "payload": payload,
+        }
+
+    match = find_match_in_db(org_id, collection_name, "user_id", payload['user_id'])
+    if match == None:
+        r = requests.post(write, data = json.dumps(data))
+        print("Created new")
+    else:
+        data.update({"object_id":payload['user_id']})
+        r = requests.put(read, data= json.dumps(data))
+        print("Updated")
+
+def find_match_in_db(org_id, collection_name, param, value):
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {param: {"$eq": value}},
+            ]
+        },
+    }
+
+    response = requests.get(read, data=json.dumps(data))
+    response_data = response
+    print(response_data)
+    if response.ok:
+        print("We made a match")
+        return True
+
+    else:
+        print("No match")
+        return None
+
+
