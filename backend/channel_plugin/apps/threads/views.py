@@ -374,55 +374,10 @@ class ThreadViewset(ThrottledViewSet, OrderMixin):
             status=status.HTTP_404_NOT_FOUND
         )
 
-    @swagger_auto_schema(
-        responses={
-            200: openapi.Response("Response", ThreadUpdateSerializer(many=True)),
-            404: openapi.Response("Error Response", ErrorSerializer),
-        },
-        operation_id="retrieve-message-threads",
-        manual_parameters=[
-            openapi.Parameter(
-                "order_by",
-                openapi.IN_QUERY,
-                description="property to use for payload ordering",
-                required=False,
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                "ascending",
-                openapi.IN_QUERY,
-                description="direction to order payload ",
-                required=False,
-                type=openapi.TYPE_BOOLEAN,
-            ),
-        ],
-    )
-    @action(
-        methods=["GET"],
-        detail=False,
-    )
-    def thread_messages_all(self, request, org_id, channelmessage_id):
-        """Retrieve all replies to message
-
-        ```bash
-        curl -X GET "{{baseUrl}}/v1/{{org_id}}/messages/{{channelmessage_id}}/threads/" -H  "accept: application/json"
-        ```
-        """
-
-        data = {"channelmessage_id": channelmessage_id}
-        data.update(self._clean_query_params(request))
-        result = Request.get(org_id, "thread", data) or []
-        status_code = status.HTTP_404_NOT_FOUND
-        if isinstance(result, list):
-            result = self.perform_ordering(request, result)
-            status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
-
 
 thread_views = ThreadViewset.as_view(
     {
         "get": "thread_message_all",
-        "get": "thread_messages_all",
         "post": "thread_message",
     }
 )
