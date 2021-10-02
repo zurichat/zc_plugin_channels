@@ -17,6 +17,8 @@ import {
   SET_NOTIFICATION,
   USER_CAN_INPUT,
   GET_WORKSPACE_USERS,
+  SHOW_LOADER,
+  HIDE_LOADER,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -57,6 +59,20 @@ const _getUsers = (params) => async (dispatch) => {
   }
 };
 
+const _showLoader = () =>dispatch => {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    dispatch({ type: SHOW_LOADER });
+    // Result is sent to the store via dispatch (Pass payload if needed)
+};
+
+const _hideLoader = () =>dispatch => {
+  // Result comes from the endpoint
+  // Let's assume an array of objects is returned from the endpoint
+  dispatch({ type: HIDE_LOADER });
+  // Result is sent to the store via dispatch (Pass payload if needed)
+};
+
 const _getWorkspaceUsers = (params) => async (dispatch) => {
   try {
     // const res = await GetWorkspaceUser();
@@ -68,6 +84,8 @@ const _getWorkspaceUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
+  
+
 const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
   try {
     // Result comes from the endpoint
@@ -238,5 +256,8 @@ const appActions = {
   _setNotifications,
   _userCanInput,
   _getWorkspaceUsers,
+  _showLoader,
+  _hideLoader,
+
 };
 export default appActions;

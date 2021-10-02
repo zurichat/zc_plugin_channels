@@ -8,6 +8,9 @@ import {
   SET_NOTIFICATION,
   USER_CAN_INPUT,
   GET_WORKSPACE_USERS,
+  HIDE_LOADER,
+  SHOW_LOADER,
+
 } from "../actions/types";
 
 const initialState = {
@@ -21,6 +24,8 @@ const initialState = {
   renderedMessages: [],
   notificationSettings: [],
   userCanInput: true,
+  loading: false
+  
 };
 
 const appReducer = (state = initialState, action) => {
@@ -73,6 +78,16 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         sockets: payload,
+      };
+      case SHOW_LOADER:
+      return {
+        ...state,
+        loading: true,
+      };
+      case HIDE_LOADER:
+      return {
+        ...state,
+        loading: false ,
       };
     case SET_NOTIFICATION:
       return {

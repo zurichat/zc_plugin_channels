@@ -11,6 +11,7 @@ import ChannelHeader from "../shared/ChannelHeader";
 import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContainer";
 // import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
 import MessageInput from "../shared/MessageInput";
+import LoadingSpinner from "../shared/LoadingSpinner";
 // import Thread from "../thread/Thread";
 //import MessageOptionsPopUpMenu from "./subs/MessageOptionsPopUpMenu/MessageOptionsPopUpMenu";
 
@@ -88,7 +89,9 @@ const MessageBoardIndex = () => {
    }, [channelId]);
 
   return (
+
     <Box bg="#F9F9F9" m="5px" width="99%">
+      <LoadingSpinner/>
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} />

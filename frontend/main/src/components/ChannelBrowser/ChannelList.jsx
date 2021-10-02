@@ -3,6 +3,7 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 import ChannelContainer from "./ChannelContainer";
+import LoadingSpinner from "../shared/LoadingSpinner"
 
 const ChannelList = (props) => {
   const { channels } = useSelector((state) => state.appReducer);
@@ -13,6 +14,7 @@ const ChannelList = (props) => {
       spacing={0}
       align="stretch"
     >
+      <LoadingSpinner/>
       {/* Channels List Element */}
       {channels &&
         channels.map((chan) => (
