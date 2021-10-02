@@ -24,11 +24,11 @@ const ChannelContainer = (props) => {
   const history = useHistory();
 
   const { channelMember } = useSelector((state) => state.channelsReducer);
-  // useEffect(() => {
-  //   if (channelMember._id) {
-  //     history.push("/message-board/" + props.chan._id);
-  //   }
-  // }, [channelMember]);
+  useEffect(() => {
+    if (channelMember._id) {
+      history.push("/message-board/" + props.chan._id);
+    }
+  }, [channelMember]);
 
   const joinChannel = () => {
     // add member to channel after clickig on join
@@ -36,10 +36,10 @@ const ChannelContainer = (props) => {
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
     );
 
-    //direct to message board after user has been added
-    if (channelMember._id) {
-      history.push("/message-board/" + props.chan._id);
-    }
+    // //direct to message board after user has been added
+    // if (channelMember._id) {
+    //   history.push("/message-board/" + props.chan._id);
+    // }
   };
 
   return (
@@ -65,7 +65,7 @@ const ChannelContainer = (props) => {
             {users.hasOwnProperty(props.orgId._id) && (
               <>
                 <Text color="#00B87C" fontSize="12px" mr={4}>
-                  <CheckIcon />
+                  <CheckIcon mr={2} />
                   Joined
                 </Text>
                 <GiPlainCircle style={{ marginRight: "10px" }} fontSize="2px" />

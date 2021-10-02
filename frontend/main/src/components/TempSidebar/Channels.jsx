@@ -91,7 +91,6 @@ const Channels = () => {
             <Icon as={IoAddCircleOutline} fontSize="1.4rem" />
           </Link>
         </Flex>
-
         {channelsDropDown && (
           <Box marginLeft="5%">
             {channels.map((channel) => (
@@ -106,7 +105,6 @@ const Channels = () => {
                 </Link>
               </Flex>
             ))}
-
             {/* add channel btn */}
             <Flex cursor="pointer">
               <Link to="/add-channel">
@@ -125,7 +123,6 @@ const Channels = () => {
           </Box>
         )}
       </Box>
-
       {/* Direct messages section */}
       <Box width="75%" margin="1rem auto">
         <Flex cursor="pointer" color="#8B8B8B" marginBottom="0.5rem">
