@@ -24,6 +24,7 @@ import {
   DELETE_CHANNEL,
   GET_WORKSPACE_USERS,
   EDIT_CHANNEL_DESCRIPTION,
+  EDIT_CHANNEL_TOPIC,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -292,6 +293,15 @@ const _editChannelDescription = (org_id, channel_id, data) => async (dispatch) =
   }
 };
 
+const _editChannelTopic = (org_id, channel_id, data) => async (dispatch) => {
+  try {
+    const res = await APIService.updateChannel(org_id, channel_id, data);
+    dispatch({ type: EDIT_CHANNEL_TOPIC, payload: res.data });
+  } catch (err) {
+    _alert("error");
+  }
+};
+
 // Export functions here
 const appActions = {
   _alert,
@@ -316,5 +326,6 @@ const appActions = {
   _getFiles,
   _getWorkspaceUsers,
   _editChannelDescription,
+  _editChannelTopic,
 };
 export default appActions;

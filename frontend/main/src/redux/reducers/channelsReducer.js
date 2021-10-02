@@ -12,6 +12,7 @@ import {
   EDIT_MESSAGE,
   DELETE_MESSAGE,
   EDIT_CHANNEL_DESCRIPTION,
+  EDIT_CHANNEL_TOPIC,
 } from "../actions/types";
 
 const initialState = {
@@ -28,6 +29,7 @@ const initialState = {
   messages : [],
   isEditMode : false,
   editDescription: {},
+  editTopic: {},
 };
 
 const channelsReducer = (state = initialState, action) => {
@@ -102,6 +104,12 @@ const channelsReducer = (state = initialState, action) => {
       return {
         ...state,
         editDescription: action.payload
+      };
+
+    case EDIT_CHANNEL_TOPIC:
+      return {
+        ...state,
+        editTopic: action.payload
       };
 
     default:
