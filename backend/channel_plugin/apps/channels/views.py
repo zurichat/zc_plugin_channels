@@ -5,7 +5,7 @@ from django.http.response import JsonResponse
 from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, throttling
+from rest_framework import serializers, status, throttling
 from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -22,7 +22,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     NotificationsSettingSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
-    UserSerializer
+    UserSerializer,
 )
 
 # from rest_framework.filters
@@ -74,27 +74,133 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+            responses={
+                200: openapi.Response("Response", NotificationsSettingSerializer),
+                404: openapi.Response("Not Found"),
+            },
+            operation_id="retrieve-user-notifications",
+        )
+
+    @action(
+            methods=["GET"], detail=False, )
+
+    def retrieve_notification(self, request, org_id, channel_id, member_id):
+            """Retrieve user notification preferences for channel
+
+            ```bash
+            curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
+            ```
+            """  # noqa
+            channel = self.retrieve_channel(request, org_id, channel_id)
+            if channel.__contains__("_id"):
+                user_data = channel["users"].get(member_id)
+                if user_data:
+                    serializer = UserSerializer(data=user_data)
+                    serializer.is_valid(raise_exception=True)
+
+                    #an empty field will be returned for users that have not
+                # changed their settings.
+                    FACTORY_SETTINGS = {
+                        "web": "nothing",
+                        "mobile": "mentions",
+                        "same_for_mobile": False,
+                        "mute": False
+                    }
+
+                    settings = serializer.data.get("notifications", FACTORY_SETTINGS)
+                    return Response(settings, status=status.HTTP_200_OK)
+
+                return Response(
+                    {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+            return Response(
+                {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+    @swagger_auto_schema(
+            request_body=NotificationsSettingSerializer,
+            responses={
+                200: openapi.Response(
+                    "Response",
+                    NotificationsSettingSerializer,
+                )
+            },
+            operation_id="update-user-notifications",
+        )
+    @action(
+            methods=["PUT"],
+            detail=False,
+        )
+    def update_notification(self, request, org_id, channel_id, member_id):
+            """Update user notification preferences for a channel
+
+            ```bash
+            curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/"
+            -H  "accept: application/json"
+            -H  "Content-Type: application/json"
+            -d "{
+                    \"web\": \"all\",
+                    \"mobile\": \"all\",
+                    \"same_for_mobile\": true,
+                    \"mute\": true
+                }"
+            ```
+            """
+
+            channel = self.retrieve_channel(request, org_id, channel_id)
+            if channel.__contains__("_id"):
+                user_data = channel["users"].get(member_id)
+
+                if user_data:
+                    serializer = NotificationsSettingSerializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+
+                    # by default, users do not have a settings field
+                    # whether or not this user has a settings field,
+                    # make an update with the new settings
+                    notification_settings = dict(serializer.data)
+                    user_data.setdefault("notifications", {}).update(notification_settings)
+
+                    # push the updated user details to the channel object
+                    channel["users"].update({f"{member_id}": user_data})
+
+                    # remove channel id to avoid changing it
+                    channel.pop("_id", None)
+
+                    payload = {"users": channel["users"]}
+                    result = Request.put(
+                        org_id, "channel", payload=payload, object_id=channel_id
+                    )
+
+                    if result:
+                        if isinstance(result, dict):
+                            data = (
+                                notification_settings if not result.get("error") else result
+                            )
+                            status_code = (
+                                status.HTTP_201_CREATED
+                                if not result.get("error")
+                                else status.HTTP_400_BAD_REQUEST
+                            )
+
+                            return Response(data, status=status_code)
+                        else:
+                            return Response(result, status=result.status_code)
+
+                return Response(
+                    {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+            return Response(
+                {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+
+    @swagger_auto_schema(
         operation_id="retrieve-channels",
         responses={
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),
             404: openapi.Response("Error Response", ErrorSerializer),
         },
-        manual_parameters=[
-            openapi.Parameter(
-                "order_by",
-                openapi.IN_QUERY,
-                description="property to use for payload ordering",
-                required=False,
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                "ascending",
-                openapi.IN_QUERY,
-                description="direction to order payload ",
-                required=False,
-                type=openapi.TYPE_BOOLEAN,
-            ),
-        ],
     )
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
@@ -134,10 +240,9 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/files/" -H  "accept: application/json"
         ```
         """
-        data = {"channel_id": channel_id, "has_files": "yes", "type": "message"}
+        data = {"channel_id": channel_id, "has_files": True, "type": "message"}
         data.update(dict(request.query_params))
         result = {}
-        flag = 0
         result_message = Request.get(org_id, "channelmessage", data) or []
         result_thread = Request.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
@@ -159,18 +264,14 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
                 for i in result_thread:
                     thread_response.append(
                         {
-                            "timestamp": i["timestamp"],
-                            "files": i["files"],
-                            "message_id": i["_id"],
-                            "user_id": i["user_id"],
-                        }
-                    )
-                    flag = 1
+                            "timestamp":i["timestamp"],
+                            "files":i["files"],
+                            "message_id":i["_id"],
+                            "user_id":i["user_id"]
+                            }
+                            )    
             result.update(
                 {
-                    "message": "Successfully Retrieved"
-                    if flag == 1
-                    else "There are no files in this channel",
                     "channelfiles": message_response
                     if isinstance(message_response, list)
                     else [],
@@ -228,7 +329,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\",  \"starred\": false}"
+        -d "{  \"name\": \"channel name\",  \"description\": \"channel description\",  \"private\": false,  \"archived\": false,  \"topic\": \"channel topic\"}"
         ```
         """  # noqa
         serializer = ChannelUpdateSerializer(
@@ -360,8 +461,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             )
 
 
-
-
 channel_list_create_view = ChannelViewset.as_view(
     {
         "get": "channel_all",
@@ -404,51 +503,51 @@ class ChannelMemberViewset(ViewSet):
             return result
         return {}
 
-    # def prepare_params(self):
-    #     param_checkers = {
-    #         "__starts": "$",
-    #         "__ends": "#",
-    #         "__contains": "*",
-    #         "__gt": ">",
-    #         "__lt": "<",
-    #     }
+    def prepare_params(self):
+        param_checkers = {
+            "__starts": "$",
+            "__ends": "#",
+            "__contains": "*",
+            "__gt": ">",
+            "__lt": "<",
+        }
 
-    #     params = dict(self.request.query_params)
+        params = dict(self.request.query_params)
 
-    #     """
-    #         Note if your planing to use the filterwrapper class
-    #         you have to convert the values of your query_parameter
-    #         to a python value by using json.loads
-    #     """
+        """
+            Note if your planing to use the filterwrapper class
+            you have to convert the values of your query_parameter
+            to a python value by using json.loads
+        """
 
-    #     for key in self.request.query_params.keys():
-    #         try:
-    #             params[key] = json.loads(params.get(key)[0])
-    #         except:  # noqa
-    #             params[key] = params.get(key)[0]
+        for key in self.request.query_params.keys():
+            try:
+                params[key] = json.loads(params.get(key)[0])
+            except:  # noqa
+                params[key] = params.get(key)[0]
 
-    #         for chk in param_checkers:
-    #             if key.endswith(chk):
-    #                 p = param_checkers[chk] + key.replace(chk, "")
+            for chk in param_checkers:
+                if key.endswith(chk):
+                    p = param_checkers[chk] + key.replace(chk, "")
 
-    #                 try:
-    #                     params[p] = json.loads(params.get(key))
-    #                 except:  # noqa
-    #                     params[p] = params.get(key)
-    #                 params.pop(key)
-    #     return params
+                    try:
+                        params[p] = json.loads(params.get(key))
+                    except:  # noqa
+                        params[p] = params.get(key)
+                    params.pop(key)
+        return params
 
-    # def filter_objects(self, data: list, serializer: serializers.Serializer):
-    #     # method  applies filteration to user list
-    #     output = []
+    def filter_objects(self, data: list, serializer: serializers.Serializer):
+        # method  applies filteration to user list
+        output = []
 
-    #     params = self.prepare_params()
-    #     params = FilterWrapper.filter_params(
-    #         allowed=list(serializer().get_fields().keys()), params=params
-    #     )
+        params = self.prepare_params()
+        params = FilterWrapper.filter_params(
+            allowed=list(serializer().get_fields().keys()), params=params
+        )
 
-    #     output = FilterWrapper.filter_objects(data, params)
-    #     return output
+        output = FilterWrapper.filter_objects(data, params)
+        return output
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -692,9 +791,13 @@ class ChannelMemberViewset(ViewSet):
         channel = self.retrieve_channel(request, org_id, channel_id)
 
         if channel.__contains__("_id"):
-            users = list(channel.get("users", {}).values())
-            serializer = UserSerializer(data=users, many=True)
+            # apply filters to user list
+            users = self.filter_objects(
+                list(channel["users"].values()),
+                UserSerializer,
+            )
 
+            serializer = UserSerializer(data=users, many=True)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -869,8 +972,9 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user=user_data.copy(),
+                            user=user_data,
                         )
+
                     status_code = (
                         status.HTTP_204_NO_CONTENT
                         if not result.get("error")
@@ -885,128 +989,10 @@ class ChannelMemberViewset(ViewSet):
             {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
-    @swagger_auto_schema(
-        responses={
-            200: openapi.Response("Response", NotificationsSettingSerializer),
-            404: openapi.Response("Not Found"),
-        },
-        operation_id="retrieve-user-notifications",
-    )
-    @action(
-        methods=["GET"],
-        detail=False,
-    )
-    def notification_retrieve(self, request, org_id, channel_id, member_id):
-        """Retrieve user notification preferences for channel
-
-        ```bash
-        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
-        ```
-        """  # noqa
-        channel = self.retrieve_channel(request, org_id, channel_id)
-        if channel.__contains__("_id"):
-            user_data = channel["users"].get(member_id)
-            if user_data:
-                serializer = UserSerializer(data=user_data)
-                serializer.is_valid(raise_exception=True)
-
-                # an empty field will be returned for users that have not
-                # changed their settings.
-                # DEFAULT_SETTINGS = {
-                #     "web": "nothing",
-                #     "mobile": "mentions",
-                #     "same_for_mobile": False,
-                #     "mute": False
-                # }
-
-                settings = serializer.data.get("notifications", {})
-                return Response(settings, status=status.HTTP_200_OK)
-
-            return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        return Response(
-            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
-        )
-
-    @swagger_auto_schema(
-        request_body=NotificationsSettingSerializer,
-        responses={
-            200: openapi.Response(
-                "Response",
-                NotificationsSettingSerializer,
-            )
-        },
-        operation_id="update-user-notifications",
-    )
-    @action(
-        methods=["PUT"],
-        detail=False,
-    )
-    def notification_update(self, request, org_id, channel_id, member_id):
-        """Update user notification preferences for a channel
-
-        ```bash
-        curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/"
-        -H  "accept: application/json"
-        -H  "Content-Type: application/json"
-        -d "{
-                \"web\": \"all\",
-                \"mobile\": \"all\",
-                \"same_for_mobile\": true,
-                \"mute\": true
-            }"
-        ```
-        """
-
-        channel = self.retrieve_channel(request, org_id, channel_id)
-        if channel.__contains__("_id"):
-            user_data = channel["users"].get(member_id)
-
-            if user_data:
-                serializer = NotificationsSettingSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-
-                # by default, users do not have a settings field
-                # whether or not this user has a settings field,
-                # make an update with the new settings
-                notification_settings = dict(serializer.data)
-                user_data.setdefault("notifications", {}).update(notification_settings)
-
-                # push the updated user details to the channel object
-                channel["users"].update({f"{member_id}": user_data})
-
-                # remove channel id to avoid changing it
-                channel.pop("_id", None)
-
-                payload = {"users": channel["users"]}
-                result = Request.put(
-                    org_id, "channel", payload=payload, object_id=channel_id
-                )
-
-                if result:
-                    if isinstance(result, dict):
-                        data = (
-                            notification_settings if not result.get("error") else result
-                        )
-                        status_code = (
-                            status.HTTP_201_CREATED
-                            if not result.get("error")
-                            else status.HTTP_400_BAD_REQUEST
-                        )
-
-                        return Response(data, status=status_code)
-                    else:
-                        return Response(result, status=result.status_code)
-
-            return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        return Response(
-            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
-        )
-
-
+    
+    
+        
+        
 channel_members_can_input_view = ChannelMemberViewset.as_view(
     {
         "post": "can_input",
@@ -1026,5 +1012,5 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 )
 
 notification_views = ChannelMemberViewset.as_view(
-    {"get": "notification_retrieve", "put": "notification_update"}
+    {"get": "retrieve_notification", "put": "update_notification"}
 )
