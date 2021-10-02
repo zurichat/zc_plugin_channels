@@ -17,72 +17,114 @@ import MessageInput from "../shared/MessageInput";
 import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
-import Centrifuge from 'centrifuge';
+import Centrifuge from "centrifuge";
 
-import { SubscribeToChannel } from '@zuri/control'
+import { SubscribeToChannel } from "@zuri/control";
 
-
-
-
-const MessageBoardIndex = () => {
-
+const MessageBoardIndex = ({ allUsers }) => {
   const { channelId } = useParams();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
-  const canInput = channelDetails.allow_members_inpu
+  const { channelMessages, sockets, renderedMessages, users } = useSelector(
+    (state) => state.appReducer
+  );
+  const { _getChannelMessages, _getSocket } = bindActionCreators(
+    appActions,
+    dispatch
+  );
+  const canInput = channelDetails.allow_members_inpu;
 
-  let socketUrl
+  // We will attempt to connect only when we are certain that the state has been updated
+  // so we first check that sockets.socket_name is not undefined
 
-  if (window.location.hostname == "127.0.0.1") {
-    socketUrl = "ws://localhost:8000/connection/websocket";
+  const socketName = sockets.socket_name;
+
+  if (socketName) {
+    try {
+      console.log("we have succesfully fetched the socket_name: ", socketName);
+      SubscribeToChannel(socketName, function (messageCtx) {
+        console.log("\n\n\n From centrifugo", messageCtx);
+        const action = messageCtx.event.action;
+        switch (action) {
+          case "join:channel" || "leave:channel" || "create:message": {
+            dispatch({
+              type: GET_CHANNELMESSAGES,
+              payload: [...channelMessages, messageCtx.data],
+            });
+            break;
+          }
+
+          case "update:message": {
+            const messageId = messageCtx._id;
+            const channelMessagesCopy = [...channelMessages];
+            channelMessagesCopy.find((o, i) => {
+              if (o._id === messageId) {
+                channelMessagesCopy[i] = messageCtx;
+                return true; // stop searching
+              }
+            });
+
+            dispatch({
+              type: GET_CHANNELMESSAGES,
+              payload: channelMessagesCopy,
+            });
+            break;
+          }
+
+          case "delete:message": {
+            const messageId = messageCtx._id;
+            const channelMessagesCopy = [...channelMessages];
+            channelMessagesCopy.find((o, i) => {
+              if (o._id === messageId) {
+                channelMessagesCopy.splice(i, 1);
+                return true; // stop searching
+              }
+            });
+
+            dispatch({
+              type: GET_CHANNELMESSAGES,
+              payload: channelMessagesCopy,
+            });
+            break;
+          }
+
+          default: {
+            dispatch({
+              type: GET_CHANNELMESSAGES,
+              payload: [...channelMessages, messageCtx.data],
+            });
+          }
+        }
+        console.log("\n\n\nfrom centrifugo: ", messageCtx, "\n\n\n");
+        dispatch({
+          type: GET_CHANNELMESSAGES,
+          payload: [...channelMessages, messageCtx.data],
+        });
+      });
+    } catch (err) {
+      console.log(
+        "\n\n\n we tried to subcribe to zuri main RTC, but got this error: \n",
+        err,
+        "\n\n\n\n"
+      );
+    }
   } else {
-    socketUrl = "wss://realtime.zuri.chat/connection/websocket";
+    console.log("\n\n\n\nwe have not been able to fetch the socket\n\n\n");
   }
 
-
-  try {
-    console.log('\n\n\nThe socket details:\n', sockets, '\n\n\n')
-    SubscribeToChannel(sockets.socket_name, function (messageCtx) {
-      console.log("\n\n\nfrom centrifugo: ", messageCtx, '\n\n\n');
-      dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-      console.log("\n\n\nTesting rendered messages: ", renderedMessages);
-    })
-  }
-
-  catch (err) {
-    console.log('\n\n\n we tried to subcribe, got this error: \n', err, '\n\n\n\n')
-  }
-
-
-
-
-
+  //The useEffect runs once chanelId has changed,
+  //and this is when channels has been switched. The channelId is then
+  //used to fetch the new socket details. Once the state is updated, the subscribeToChannel
+  //function runs again to update the centrifugo
   useEffect(() => {
-
-    async function subscribe() {
-
-      await _getSocket("614679ee1a5607b13c00bcb7", channelId)
-      console.log("We've gotten the socket details")
-      // const { sockets, } = useSelector((state) => state.appReducer)
-
-
-
-      //   console.log('\n\n\nAbout to do the conecdtion\n\n\n')
-      //   await centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-      //   console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
-      //   dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-      //   console.log("\n\n\nTesting rendered messages: ", renderedMessages);
-      // })
-
-
+    async function updateSocketName() {
+      await _getSocket("614679ee1a5607b13c00bcb7", channelId);
+      console.log("We've gotten the socket details");
     }
 
-    subscribe()
-
+    updateSocketName();
   }, [channelId]);
 
   return (
@@ -104,9 +146,13 @@ const MessageBoardIndex = () => {
               },
             }}
           >
-            <MessageCardContainer channelId={channelId} />
+            <MessageCardContainer channelId={channelId} allUsers={allUsers} />
           </Box>
-          {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
+          {channelDetails.allow_members_input ? (
+            <MessageInput channelId={channelId} />
+          ) : (
+            <DisabledInput />
+          )}
         </Box>
         {/* <Box>
           <Thread/>

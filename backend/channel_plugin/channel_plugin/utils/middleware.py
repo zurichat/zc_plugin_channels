@@ -1,6 +1,8 @@
 # from django import http
 # from django.conf import settings
-# from django.http import JsonResponse
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.response import Response
 import logging
 
 
@@ -9,6 +11,9 @@ class AuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if "Authorization" not in request.headers:
+            print({"message": "This user is not authenticated"})
+
         response = self.get_response(request)
         return response
 
