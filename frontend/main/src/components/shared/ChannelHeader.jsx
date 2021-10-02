@@ -43,7 +43,7 @@ const ChannelHeader = ({ channelId }) => {
   const dispatch = useDispatch();
 
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch); //extract redux function
-  //.......getting pinned messages...........//
+  
   const { pinnedMessages } = useSelector((state) => state.channelsReducer);
   console.log("Number of pinned messages = " + pinnedMessages);
 
