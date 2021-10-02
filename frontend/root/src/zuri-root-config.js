@@ -1,5 +1,6 @@
 import { registerApplication, start } from "single-spa";
 
+
 // registerApplication({
 //   name: "@single-spa/welcome",
 //   app: () =>
@@ -25,3 +26,4 @@ registerApplication({
 start({
   urlRerouteOnly: true,
 });
+

@@ -10,6 +10,7 @@ import CreateChannelModal from "../createChannel/createChannelModal";
 import TopSearch from "../createChannel/TopSearch";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Icon } from "@chakra-ui/icon";
+import MoreNotificationModal from "../shared/MoreNotificationModal";
 
 const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,6 +63,7 @@ const Home = () => {
         borderRadius="2px"
       >
         {/* Mount your component here and unmount when done */}
+        <MoreNotificationModal />
       </Box>
     </Box>
   );

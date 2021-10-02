@@ -14,26 +14,34 @@ import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from "../redux/actions/app";
 
-
 const routes = () => {
-
   const dispatch = useDispatch();
-  const { _getUsers } = bindActionCreators(appActions, dispatch);
+  const { _getUsers, _getWorkspaceUsers } = bindActionCreators(
+    appActions,
+    dispatch
+  );
 
   const loadData = async () => {
     await _getUsers();
   };
 
-  useEffect( async () => {
-    loadData()
-  }, [])
+  const loadUsers = async () => {
+    await _getWorkspaceUsers();
+  };
 
+  useEffect(async () => {
+    loadData();
+    loadUsers();
+  }, []);
 
   return (
     <Switch>
       <Route exact path="/">
         <ChannelBrowser />
       </Route>
+      {/* <Route exact path="/home">
+        <Home />
+      </Route> */}
       <Route path="/create-channel">
         <CreateChannel />
       </Route>

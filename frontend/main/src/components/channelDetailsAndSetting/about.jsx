@@ -16,7 +16,6 @@ const About = (index) => {
   //For edit details modal
   const [modalValue, setModalValue] = useState({})
   const [isOpen, setIsOpen] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
 
   const base_url = 'https://channels.zuri.chat';
   const org_id = '1';
@@ -95,11 +94,7 @@ const About = (index) => {
     setModalValue(name, description)
     console.log(name, description)
   }
-
-  const handleEdit = () => {
-      setOpenEditModal(true);
-  }
-
+  
   function saveDescription(description){
     console.log(description);
     //call api and dispatch
