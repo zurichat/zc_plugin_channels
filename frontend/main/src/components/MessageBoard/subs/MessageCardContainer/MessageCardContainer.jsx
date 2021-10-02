@@ -48,8 +48,7 @@ const MessageCardContainer = ({ channelId }) => {
                     inline: 'nearest'
                 })
         }
-    },
-        [channelMessages])
+    })
 
     useEffect(() => {
         console.log("\n\n\nUseEffect works\n\n\n");
@@ -58,7 +57,6 @@ const MessageCardContainer = ({ channelId }) => {
         }
         loadData()
     }, [channelId]);
-
 
 
     return (
