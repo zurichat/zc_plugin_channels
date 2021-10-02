@@ -12,7 +12,8 @@ class AuthenticationMiddleware:
 
     def __call__(self, request):
         if "Authorization" not in request.headers:
-            return JsonResponse({"message": "This user is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+            print({"message": "This user is not authenticated"})
+
         response = self.get_response(request)
         return response
 
