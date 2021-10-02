@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import APIservice from "../../utils/api";
-import { USER_CAN_INPUT , GET_CHANNELMESSAGES } from "../../redux/actions/types";
+import { USER_CAN_INPUT, GET_CHANNELMESSAGES } from "../../redux/actions/types";
 
 import ChannelHeader from "../shared/ChannelHeader";
 // import ChannelNameBanner from "../admin/subs/ChannelNameBanner/ChannelNameBanner";
@@ -25,6 +25,7 @@ import { SubscribeToChannel } from '@zuri/control'
 
 
 const MessageBoardIndex = () => {
+
   const { channelId } = useParams();
   const dispatch = useDispatch()
 
@@ -105,7 +106,6 @@ const MessageBoardIndex = () => {
 
 
 
-   
 
 
   //The useEffect runs once chanelId has changed, 
@@ -124,10 +124,10 @@ const MessageBoardIndex = () => {
     
     updateSocketName()
 
-   }, [channelId]);
+  }, [channelId]);
 
   return (
-    <Box bg="#F9F9F9" m="5px" width="99%">
+    <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} />
@@ -135,7 +135,7 @@ const MessageBoardIndex = () => {
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["73vh", "75vh", "60vh", "58vh"]}
+            height={["83vh", "85vh", "70vh", "68vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",
@@ -145,7 +145,7 @@ const MessageBoardIndex = () => {
               },
             }}
           >
-          <MessageCardContainer channelId={channelId} />
+            <MessageCardContainer channelId={channelId} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
