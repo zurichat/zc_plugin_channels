@@ -68,6 +68,17 @@ const MessageCard = ({
     }
   });
 
+  // const [userDetails, setUserDetails] = useState({})
+  let empty = [];
+  const res = _.findKey(allUsers, function (item) {
+    if (item._id === user_id) {
+      empty.push(item);
+      // setUserDetails(item)
+    } else {
+      console.log("No");
+    }
+  });
+
   // console.log(empty)
   // const userDisplay = empty ? (empty.user_name === "" ? user.user_name : user_id) : user_id;
 
