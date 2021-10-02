@@ -24,11 +24,9 @@ import { FaRegBell } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { FaHashtag } from "react-icons/fa";
-
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-
 import OrganisationMembersList from "./organisationMembersList";
 import About from "./about";
 import FileList from "./fileList";
