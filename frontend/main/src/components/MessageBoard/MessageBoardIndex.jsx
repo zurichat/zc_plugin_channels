@@ -116,6 +116,7 @@ const MessageBoardIndex = () => {
 
     async function updateSocketName(){
 
+      
       await _getSocket("614679ee1a5607b13c00bcb7", channelId)
       console.log("We've gotten the socket details")
       
