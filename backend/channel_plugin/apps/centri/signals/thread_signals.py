@@ -36,7 +36,11 @@ def CreateThreadSignal(sender, **kwargs):
             "action": "create:thread"
         }
 
-        try: 
+        try:
+            print("\n")
+            print(payload)
+            print("\n")
+
             CLIENT.publish(room_name, payload)
         except CentException:
             pass
@@ -59,6 +63,10 @@ def EditThreadSignal(sender, **kwargs):
         }
 
         try:
+            print("\n")
+            print(payload)
+            print("\n")
+
             CLIENT.publish(room_name, payload)
         except CentException:
             pass
@@ -81,7 +89,11 @@ def DeleteThreadSignal(sender, **kwargs):
             "action": "delete:thread"
         }
 
-        try: 
+        try:
+            print("\n")
+            print(payload)
+            print("\n")
+
             CLIENT.publish(room_name, payload)
         except CentException:
             pass

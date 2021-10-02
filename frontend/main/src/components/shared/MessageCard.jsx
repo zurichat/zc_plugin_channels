@@ -8,12 +8,12 @@ import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
 import appActions from "../../redux/actions/app"
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import instance from '../../utils/utils';
 import { useDisclosure } from "@chakra-ui/react";
 
+import _ from 'lodash';
 
 const threadReply = [
   { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -24,7 +24,7 @@ const threadReply = [
 ];
 
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, onOpen }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers, onOpen }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
@@ -38,9 +38,22 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, onOpe
     _pinMessage(orgId, channelId, userId, messageId)
   }
 
-  // const actions = {
-  //   pinMessage
-  // }
+  // const [userDetails, setUserDetails] = useState({})
+  let empty = [];
+  const res = _.findKey(allUsers, function (item) {
+    if (item._id === user_id) {
+      empty.push(item)
+      // setUserDetails(item)
+    }
+    else {
+      console.log("No")
+    }
+  })
+
+  // console.log(empty)
+  // const userDisplay = empty ? (empty.user_name === "" ? user.user_name : user_id) : user_id;
+
+
   return (
     <Box
       position="relative"
@@ -51,12 +64,12 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, onOpe
       <HoverOptions show={showOptions} actions={pinMessage} onOpen={onOpen} />
       <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
         <Box>
-          <Avatar name={user_id} src={icon} w="36px" h="36px" borderRadius="4px" />
+          <Avatar name={empty && empty.length > 0 ? empty[0].user_name : user_id} src={empty && empty.length > 0 ? empty[0].image_url : ""} w="36px" h="36px" borderRadius="4px" />
         </Box>
         <Flex flexDir="column">
           <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
             <Text fontSize="16px" fontWeight="900">
-              {user_id}
+              {empty && empty.length > 0 ? empty[0].user_name : "External User "}
             </Text>
             <Text fontSize="13px" color="#616061">
               {formattedTime}
