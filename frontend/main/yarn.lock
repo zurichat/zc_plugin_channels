@@ -1760,7 +1760,7 @@
     "@chakra-ui/utils" "1.8.2"
     "@chakra-ui/visually-hidden" "1.0.14"
 
-"@chakra-ui/transition@1.3.4":
+"@chakra-ui/transition@1.3.4", "@chakra-ui/transition@^1.3.4":
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/@chakra-ui/transition/-/transition-1.3.4.tgz#36d610e98913a371dcea0ac248ad09bf6b34535d"
   integrity sha512-FYBJzTKEUoozoSfOGruPuv1/GBL0mZniBPh+wjHYcXbIJdp8S2gbPFlHPN+4S9NDXz+c9p+OLHZAEEv3Vcvt7A==
