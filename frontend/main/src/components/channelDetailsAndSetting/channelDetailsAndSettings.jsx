@@ -71,7 +71,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
         size="lg"
       >
         <ModalOverlay />
-        <ModalContent p={0} mt="8rem" maxW="824px" height="834px">
+        <ModalContent p={0} mt="8rem" maxW="700px" height="834px">
           <Tabs colorScheme="" borderBottomColor="green" color="#fff">
             <ModalHeader
               pt={3}
