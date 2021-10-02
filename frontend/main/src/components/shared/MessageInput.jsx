@@ -24,6 +24,7 @@ import { useParams } from "react-router";
 const MessageInput = ({ channelId }) => {
 
   const { users } = useSelector((state) => state.appReducer)
+  const [orgId, setOrgId] = useState([]);
 
   const textRef = useRef(null);
   const [data, setData] = useState('');
@@ -37,8 +38,14 @@ const MessageInput = ({ channelId }) => {
 
   let newChannelId = channelId
 
+  useEffect(() => {
+    if (users) {
+      setOrgId(users[0]);
+    }
+  }, [users]);
+
   const datas = {
-    user_id: users ? users._id : "61468abd1a5607b13c00bd4f",
+    user_id: orgId?._id,
     content: data
   }
   //For Post Request
@@ -47,10 +54,11 @@ const MessageInput = ({ channelId }) => {
 
   const { sendMessages } = useSelector((state) => state.channelsReducer)
 
-  const loadData = () => {
+  const loadData = async () => {
     const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
     const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
-    _sendMessage(org_id, channel_id, datas)
+    await _sendMessage(org_id, channel_id, datas)
+    console.log(data, channel_id, datas.user_id)
     setData('');
   }
 

@@ -11,6 +11,7 @@ import { useBreakpointValue } from "@chakra-ui/media-query";
 import Members from "./Members";
 import { useSelector } from "react-redux";
 import UtilityService from "../../utils/utils";
+import { Center } from "@chakra-ui/react"
 
 const EmptyStateComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -29,55 +30,47 @@ const EmptyStateComponent = () => {
   return (
     <Box width="100%" m="auto" fontSize="16px">
       <AddPeopleModal isOpen={isOpen} onClose={onClose} />
-
-      <Flex mt="2rem" px={isMobile ? "24px" : "0"}>
-        {!isMobile && (
-          <IconButton
-            bg="#E7E7E7"
-            aria-label="Call Sage"
-            fontSize="20px"
-            icon={<FiHash color="black" />}
-            mx={5}
-          />
-        )}
-
-        <Box mb="5px" fontSize="15px">
-          <Text color="black">
+      <Center fontSize={{ base: "14px", md: "14px", lg: "15px" }} p={[2, 7, 6, 0]}>
+        <HStack direction={["column", "row"]}>
+          <Text color="#2B2B2B" fontweight='700' fontSize="15px" lineHeight='30px' paddingTop='18px'>
             This is the very beginning of the{" "}
             <Link
               color="#0562ed"
-              fontWeight="bold"
-              mr="0.3rem"
+              fontWeight="700"
+              mr="0.1rem"
               textTransform="capitalize"
+              fontSize='15px'
             >
               #{channelDetails.name}
             </Link>
             channel
-          </Text>
-          <Text color="grey">
-            <Link color="#0562ed" fontWeight="bold" textTransform="capitalize">
+            <Link color="#0562ed" ml='2px' fontWeight="700" fontweight='700' textTransform="capitalize">
               @{channelDetails.owner}
             </Link>{" "}
             created this channel on{" "}
             {UtilityService.formatDate(channelDetails.created_on, "MMM Do")}.
           </Text>
-
-          <HStack mt="6">
-            <Circle
-              cursor="pointer"
-              bg="#00B87C"
-              color="white"
-              size="35px"
-              onClick={onOpen}
-            >
-              <Icon as={BiUserPlus} />
-            </Circle>
-            <Text cursor="pointer" onClick={onOpen}>
+        </HStack>
+      </Center>
+      <Center color="white" >
+        <Box w={['40%', '30%', '30%', '15%']}
+          mt={['0', '-4%', '0 ', '5%']}
+          mb={['5%', '5%', '5%', '1%']}
+          height='40px'
+          border="1px solid #00B87C"
+          marginTop='30px'>
+          <HStack direction={["column", "row"]}
+            spacing="4px"
+            padding='10px'
+            justifyContent='center'
+            margin='auto'>
+            <Icon as={BiUserPlus} color='#00B87C' />
+            <Text cursor="pointer" color='#00B87C' onClick={onOpen} fontSize='12px' fontWeight='700'>
               Add Members
             </Text>
           </HStack>
         </Box>
-      </Flex>
+      </Center>
     </Box>
   );
 };

@@ -45,7 +45,7 @@ const MessageCardContainer = ({ channelId }) => {
     }
     loadData()
     setLoading(false)
-  }, [channelId]);
+  }, [channelId, renderedMessages]);
 
   return (
     loading ?
