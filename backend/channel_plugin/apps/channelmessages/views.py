@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request, search_db
+from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
@@ -539,3 +539,31 @@ def search_messages(request, org_id, channel_id):
 
 
 search_channelmessage = search_messages
+
+@api_view(["GET","POST"])
+def paginate_messages(request, org_id, channel_id):
+    DEFAULT_PAGE_SIZE = 10
+    page = int(request.GET.get("page", 1))
+    last_timestamp = request.GET.get("last_timestamp", None)
+    page_size = int(request.GET.get("page_size", DEFAULT_PAGE_SIZE))
+    user_id = request.GET.get("user_id", "error")
+
+    if user_id == "error":
+        response = {"status":True, "message":"Please pass a user_id as a param"}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    # Remove whitespace as a result of '+' conversion to ' '
+    # last_timestamp = "+".join(last_timestamp.split(" "))
+    data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
+    response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size)
+    
+    # if response['data']:
+    #     payload = {
+    #         "user_id": user_id,
+    #         "last_timestamp": response['data'][-1]['timestamp']
+    #     }
+
+    #     save_response = save_last_message_user(org_id, "userscroll", payload)
+
+    
+    return Response(response, status=status.HTTP_200_OK)
+
