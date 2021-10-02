@@ -47,6 +47,47 @@ const MessageBoardIndex = () => {
     try{
         console.log('we have succesfully fetched the socket_name: ',socketName)
         SubscribeToChannel(socketName, function(messageCtx) {
+          console.log('\n\n\n From centrifugo', messageCtx)
+          const action = messageCtx.event.action
+          switch(action){
+
+            case 'join:channel' || 'leave:channel' || 'create:message' :{
+              dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+              break;
+            }
+
+            case 'update:message':{
+              const messageId = messageCtx._id
+              const channelMessagesCopy = [...channelMessages]
+              channelMessagesCopy.find((o, i) => {
+                if (o._id === messageId) {
+                    channelMessagesCopy[i] = messageCtx;
+                    return true; // stop searching
+                        }
+                    });
+              
+              dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
+              break;
+            }
+
+            case 'delete:message':{
+              const messageId = messageCtx._id
+              const channelMessagesCopy = [...channelMessages]
+              channelMessagesCopy.find((o, i) => {
+                if (o._id === messageId) {
+                    channelMessagesCopy.splice(i,1);
+                    return true; // stop searching
+                        }
+                    });
+              
+              dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
+              break;
+            }
+
+            default:{
+              dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+            }
+          }
         console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
         dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
         
