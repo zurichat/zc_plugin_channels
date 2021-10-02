@@ -233,8 +233,8 @@ def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
     else:
         prev_link = None
     try:
-        if data["data"]:
-            # next_link =
+        if not data["data"]:
+            next_link = None
             pass
         else:
             next_link = new_url + f"?page={cur_page + 1}&page_size={page_size}"
@@ -263,19 +263,17 @@ def save_last_message_user(org_id, collection_name, payload):
         requests.post(write, data=json.dumps(data))
         print("Created new")
 
-
-def find_match_in_db(org_id, collection_name, param, value, return_data=False):
-    match = find_match_in_db2(org_id, collection_name, "user_id", param["user_id"])
+    match = find_match_in_db(org_id, collection_name, "user_id", payload["user_id"])
     if match is None:
         requests.post(write, data=json.dumps(data))
         print("Created new")
     else:
-        data.update({"object_id": param["user_id"]})
+        data.update({"object_id": payload["user_id"]})
         requests.put(read, data=json.dumps(data))
         print("Updated")
 
 
-def find_match_in_db2(org_id, collection_name, param, value):
+def find_match_in_db(org_id, collection_name, param, value, return_data=False):
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -300,13 +298,31 @@ def find_match_in_db2(org_id, collection_name, param, value):
     except:  # noqa
         print("No match")
         return None
-    response = requests.get(read, data=json.dumps(data))
-    response_data = response
-    print(response_data)
-    if response.ok:
-        print("We made a match")
-        return True
 
-    else:
-        print("No match")
-        return None
+def get_thread_from_message(org_id, collection_name, channelmessage_id, page, page_size):
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channelmessage_id": {"$eq": channelmessage_id}},
+            ]
+        },
+
+        "options" : {
+
+        }
+    }
+
+    skips = page_size * (page - 1)
+
+    data["options"].update({
+        "skip" : skips,
+        "limit" : page_size,
+        })
+    
+    response = requests.post(read, data=json.dumps(data))
+
+    return response.json()
+
