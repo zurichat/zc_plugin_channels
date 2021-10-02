@@ -7,6 +7,7 @@ import {
   GET_RENDEREDMESSAGES,
   SET_NOTIFICATION,
   USER_CAN_INPUT,
+  GET_FILES,
   GET_WORKSPACE_USERS,
 } from "../actions/types";
 
@@ -21,6 +22,7 @@ const initialState = {
   renderedMessages: [],
   notificationSettings: [],
   userCanInput: true,
+   channelsFiles:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -55,6 +57,12 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         userCanInput: payload,
+      };
+
+      case GET_FILES:
+      return {
+        ...state,
+        channelsFiles: payload,
       };
 
     // Default state is returned
