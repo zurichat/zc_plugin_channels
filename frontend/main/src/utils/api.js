@@ -46,6 +46,10 @@ class APIServices {
   async retrieveMessage(org_id, msg_id) {
     return api.get(`/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`);
   }
+  
+  async sendEmojis(msg_id,org_id,user_id,channel_id,data){
+    return api.post(`/${org_id}/messages/${msg_id}/reactions/?user_id=${user_id}&channel_id=${channel_id}/`,data);
+  }
 
   async updateMessage(org_id, channel_id, user_id, msg_id, data) {
     return api.put(`/${org_id}/messages/${msg_id}/`, data, {

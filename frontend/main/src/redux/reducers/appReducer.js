@@ -8,6 +8,7 @@ import {
   SET_NOTIFICATION,
   USER_CAN_INPUT,
   GET_WORKSPACE_USERS,
+  SEND_EMOJI
 } from "../actions/types";
 
 const initialState = {
@@ -21,6 +22,7 @@ const initialState = {
   renderedMessages: [],
   notificationSettings: [],
   userCanInput: true,
+  emojiStorage:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -41,6 +43,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         workspace_users: payload,
       };
+    case SEND_EMOJI:
+      return {
+        ...state,
+        emojiStorage:payload
+      }
     case GET_CHANNELMESSAGES:
       return {
         ...state,

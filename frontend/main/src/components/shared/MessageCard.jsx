@@ -8,9 +8,10 @@ import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
 import appActions from "../../redux/actions/app"
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Picker from "emoji-picker-react";
+import { useParams } from "react-router";
 
 import instance from '../../utils/utils';
 
@@ -22,7 +23,11 @@ const threadReply = [
   { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
 ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited,_id }) => {
+
+  const { channelMessages } = useSelector((state) => state.appReducer)
+
+
   const [showOptions, setShowOptions] = useState(false)
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const [emoji,setEmoji]=useState([])
@@ -38,29 +43,61 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
     _pinMessage(orgId, channelId, userId, messageId)
   }
 
+  const {channelId}= useParams()
+  const {users}=useSelector((state)=>state.appReducer)
+  const {_sendEmojis} = bindActionCreators(appActions,dispatch);
+
   const onEmojiClick = (e, emojiObject) => {
-    // setChosenEmoji(emojiObject);
-      setEmoji([...emoji,emojiObject])
-      const mappedEmoji=Object.entries(emoji).map(([index,data])=>({index,data}))
-      function similarEmoji(objectArray,property){
-        return objectArray.reduce(function(acc,obj){
-          let key=obj[property]
-          if(!acc[key]){
-            acc[key]=[]
-          }
-          acc[key].push(obj) 
-          return acc
-        },{})
+    const datas={
+      title: "smily face",
+      user_id: users ? users._id : "614f06e6e35bb73a77bc2aa3",
+    }
+    // for(var i=0;i<channelMessages_id;i++){
+    //   let clickedChannelMessages=channelMessages[i]
+    //   console.log(clickedChannelMessages)
+    // }
+
+    const userId = users ? users._id : "614f06e6e35bb73a77bc2aa3"
+    const orgId = users ? users.org_id : '614679ee1a5607b13c00bcb7' // Hardcoded value to for channelId in org with id 1
+    const messageId = _id
+
+      if(emoji.length < 1){
+        setEmoji([{...emojiObject,count:1}])
       }
-      // let keeper=mappedEmoji.map(singleData=>singleData.data.unified)
-      let similarKeeps=similarEmoji(mappedEmoji,'emoji')
-      console.log(similarKeeps)
+      else{
+        const emojiIndex=emoji.map(el=>el.unified).indexOf(emojiObject.unified)
+        if(emojiIndex===-1){
+          setEmoji((prevState)=>[...prevState,{...emojiObject,count:1}])
+        }
+        else{
+          const newObj=emoji[emojiIndex]
+          const newObjs={...newObj,count:newObj.count + 1}
+          const filterEmoji=emoji.map((el,id)=>{
+            if(id===emojiIndex){
+              return newObjs
+            }else{
+              return el
+            }
+          })
+          setEmoji(()=>filterEmoji)
+        }
+      }
+
+      _sendEmojis(orgId,messageId,userId,channelId,datas)
   }
+
+  
+  const EmojisCounter=emoji.map(emoji=>{
+    return (emoji.count)
+  })
+  const Emojis=emoji.map(emoji=>{
+    return (emoji.emoji)
+  })
   // const actions = {
   //   pinMessage
   // }
   // useEffect(()=>{
-  //   console.log()
+  //   console.log(emoji)
   // },[emoji])
   return (
     <Box
@@ -70,7 +107,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
       onMouseLeave={() => setShowOptions(false)}
     >
       {
-        chosenEmoji &&  <Picker onEmojiClick={onEmojiClick} />
+        chosenEmoji &&  <Picker onEmojiClick={onEmojiClick} pickerStyle={{ width: '50%',position:"absolute",zIndex:'10' }}/>
       }
       <HoverOptions show={showOptions} actions={pinMessage} onEmojiClick={onEmojiClick} 
       setChosenEmoji={setChosenEmoji} chosenEmoji={chosenEmoji}/>
@@ -90,6 +127,14 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
           <Box m="0px">
             <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
           </Box>
+          {/* {
+            emoji !=={} && emoji.length > 0 && 
+            emoji.map(e=>(
+                <Box>{e.count}</Box>
+            ))
+          } */}
+            <Box>{Emojis}</Box>
+            <Box>{EmojisCounter}</Box>
           {replies !== 0 && (
             <HStack spacing="5px" mt="5px">
               {
