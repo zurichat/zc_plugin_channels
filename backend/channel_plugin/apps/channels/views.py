@@ -869,9 +869,8 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=user_data["_id"],
+                            user=user_data.copy(),
                         )
-
                     status_code = (
                         status.HTTP_204_NO_CONTENT
                         if not result.get("error")

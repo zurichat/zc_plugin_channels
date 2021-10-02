@@ -10,7 +10,6 @@ import CreateChannelModal from "../createChannel/createChannelModal";
 import TopSearch from "../createChannel/TopSearch";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Icon } from "@chakra-ui/icon";
-
 import MoreNotificationModal from "../shared/MoreNotificationModal";
 
 const Home = () => {
