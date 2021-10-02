@@ -35,7 +35,6 @@ const MessageBoardIndex = ({allUsers}) => {
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
 
-  const [orgId, setOrgId] = useState("");
   
 
 
@@ -106,16 +105,10 @@ const MessageBoardIndex = ({allUsers}) => {
    
 
 
-  //This runs to update the organization Id
-  useEffect(() => {
-    if (users) {
-      setOrgId(users[0]);
-    }
-  }, [users]);
 
 
 
-  //This useEffect runs once chanelId has changed, 
+  //The useEffect runs once chanelId has changed, 
   //and this is when channels has been switched. The channelId is then 
   //used to fetch the new socket details. Once the state is updated, the subscribeToChannel
   //function runs again to update the centrifugo
@@ -123,17 +116,16 @@ const MessageBoardIndex = ({allUsers}) => {
 
     async function updateSocketName(){
 
-      if(orgId){
-        await _getSocket(orgId, channelId)
-        console.log("We've gotten the socket details")
-      }
+      
+      await _getSocket("614679ee1a5607b13c00bcb7", channelId)
+      console.log("We've gotten the socket details")
+      
+      
     }
     
     updateSocketName()
 
   }, [channelId]);
-
-  
 
   return (
     <Box bg="#F9F9F9" width="99%">
