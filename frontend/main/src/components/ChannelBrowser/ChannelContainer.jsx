@@ -24,17 +24,22 @@ const ChannelContainer = (props) => {
   const history = useHistory();
 
   const { channelMember } = useSelector((state) => state.channelsReducer);
-  useEffect(() => {
-    if (channelMember._id) {
-      history.push("/message-board/" + props.chan._id);
-    }
-  }, [channelMember]);
+  // useEffect(() => {
+  //   if (channelMember._id) {
+  //     history.push("/message-board/" + props.chan._id);
+  //   }
+  // }, [channelMember]);
 
   const joinChannel = () => {
     // add member to channel after clickig on join
     dispatch(
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
     );
+
+    //direct to message board after user has been added
+    if (channelMember._id) {
+      history.push("/message-board/" + props.chan._id);
+    }
   };
 
   return (
