@@ -3,18 +3,20 @@ import { FiEdit } from 'react-icons/fi';
 import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import instance from './../../utils/api';
-import moment from 'moment'
+import moment from 'moment';
+import EditDescriptionModal from "../EditDescriptionModal";
 
 const About = (index) => {
 
   const [topic, setTopic] = useState("Add a topic");
-  const [description, setDescription] = useState("Add description");
+  // const [description, setDescription] = useState("Add description");
   const [owner, setOwner] = useState("owner");
   const [created_on, setCreatedOn] = useState("August 28, 2021");
 
   //For edit details modal
   const [modalValue, setModalValue] = useState({})
   const [isOpen, setIsOpen] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const base_url = 'https://channels.zuri.chat';
   const org_id = '1';
@@ -94,23 +96,35 @@ const About = (index) => {
     console.log(name, description)
   }
 
+  const handleEdit = () => {
+      setOpenEditModal(true);
+  }
+
+  function saveDescription(description){
+    console.log(description);
+    //call api and dispatch
+    setOpenEditModal(false);
+  }
+
   return (
 
-    <List >
-      <Stack
-        direction='column'
-        my='1.2rem'
-        spacing={3}
+    <>
+      <List >
+        <Stack
+          direction='column'
+          my='1.2rem'
+          spacing={3}
 
 
+        >
 
-      >
-
-        <Info title='Topic' placeholder={topic} edit={<Edit clickHandler={clickHandler} />} />
-        <Info title='Description' placeholder={description} edit={<Edit clickHandler={clickHandler} />} />
-        <Info title='Created by' placeholder={`${owner} on ${moment(created_on).format('MMMM Do, YYYY')}`} />
-      </Stack>
-    </List>
+          <Info title='Topic' placeholder={topic} edit={<Edit clickHandler={clickHandler} />} />
+          <Info title='Description' placeholder={description} edit={<Edit clickHandler={clickHandler} />} />
+          <Info title='Created by' placeholder={`${owner} on ${moment(created_on).format('MMMM Do, YYYY')}`} />
+        </Stack>
+      </List>
+      <EditDescriptionModal openEditModal saveDescription />
+    </>
 
 
 
@@ -174,7 +188,7 @@ const Edit = ({ clickHandler }) => {
       )}
     >
 
-      <HStack>
+      <HStack onClick={handleEdit}>
         <FiEdit mx={2} size={16} />
         <Text
           pt='2px'
