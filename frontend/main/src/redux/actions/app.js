@@ -188,7 +188,7 @@ const _pinMessage =
         channel_id,
         user_id,
         message_id,
-        { pinned: "True" }
+        { "pinned" : "True" }
       );
       dispatch({ type: PIN_MESSAGE, payload: res.data });
     } catch (err) {
