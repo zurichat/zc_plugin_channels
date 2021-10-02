@@ -56,20 +56,24 @@ const NewChannelHeader = ({channelId}) => {
     ], //Replace with images of users
     userCount: channelDetails.members, //User count on header
     eventTitle: () => {
-      <ChannelDetails isOpen={isOpen} onClose={onClose} />//Block of code to be triggered on title click
+      onOpen()
+      // <ChannelDetails isOpen={isOpen} onClose={onClose} />
     },
     eventThumbnail: () => {
-      <ChannelDetails isOpen={isOpen} onClose={onClose} />//Block of code to be triggered on thumbnail click
+      onOpen()
     },
     hasThumbnail: true, //set false if you don't want thumbnail on the header
   };
   return (
+    <>
     <Parcel
       config={pluginHeader}
       wrapWith="div"
       wrapStyle={{ width: "100%" }}
       headerConfig={pluginConfig}
     />
+    <ChannelDetails isOpen={isOpen} onClose={onClose} />
+</>
   );
 };
 
