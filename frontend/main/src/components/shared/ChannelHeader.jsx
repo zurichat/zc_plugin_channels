@@ -34,13 +34,14 @@ const ChannelHeader = ({channelId}) => {
   console.log(channel_id);
   const dispatch = useDispatch();
 
-  const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);//extract redux function
+  const { _getPinnedMessages } = bindActionCreators(appActions, dispatch); //extract redux function
   //.......getting pinned messages...........//
-  const { pinnedMessages } = useSelector((state) => state.channelsReducer)
-  console.log('Number of pinned messages = ' + pinnedMessages)
-  
-  // useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
- 
+  const { pinnedMessages } = useSelector((state) => state.channelsReducer);
+  console.log("Number of pinned messages = " + pinnedMessages);
+
+  useEffect(() => {
+    _getPinnedMessages(org_id, channel_id);
+  }, []); // get pinned messages
   return (
     <Box width="99.9%">
 
