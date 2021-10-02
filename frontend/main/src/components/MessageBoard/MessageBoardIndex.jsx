@@ -34,28 +34,42 @@ const MessageBoardIndex = () => {
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
 
-  let socketUrl
+  
+  const socketName = sockets.socket_name
 
-  if (window.location.hostname == "127.0.0.1")
-  {
-    socketUrl = "ws://localhost:8000/connection/websocket";
-  } else {
-    socketUrl = "wss://realtime.zuri.chat/connection/websocket";
+  if(socketName){
+    console.log('\n\n\n\n we have a valid socket name now \n\n\n')
+    try{    
+      SubscribeToChannel(sockets.socket_name, function(messageCtx) {
+        console.log('\n\n\n From Centrifugo', messageCtx )
+
+        // Check the type of event from centrifugo
+        const event = messageCtx.event.action
+        switch(event){
+          case 'join:channel':{
+            dispatch({})
+            break;
+          }
+
+
+          default:{
+            dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+          }
+
+        }
+        dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+        console.log("\n\n\nTesting rendered messages: ", renderedMessages);
+        })
+    }
+
+    catch(err){
+      console.log('\n\n\n we tried to subcribe, got this error: \n',err,'\n\n\n\n')
+    }
   }
-
-
-  try{
-    console.log('\n\n\nThe socket details:\n',sockets,'\n\n\n')
-    SubscribeToChannel(sockets.socket_name, function(messageCtx) {
-    console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
-    dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-    console.log("\n\n\nTesting rendered messages: ", renderedMessages);
-  })
+  else{
+    console.log('We have not fetched the socket name')
   }
-
-  catch(err){
-    console.log('\n\n\n we tried to subcribe, got this error: \n',err,'\n\n\n\n')
-  }
+  
    
 
 
@@ -69,17 +83,7 @@ const MessageBoardIndex = () => {
 
       await _getSocket("614679ee1a5607b13c00bcb7", channelId)
       console.log("We've gotten the socket details")
-      // const { sockets, } = useSelector((state) => state.appReducer)
-      
-
-
-    //   console.log('\n\n\nAbout to do the conecdtion\n\n\n')
-    //   await centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
-    //   console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
-    //   dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-    //   console.log("\n\n\nTesting rendered messages: ", renderedMessages);
-    // })
-      
+     
 
     }
     
