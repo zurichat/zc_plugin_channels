@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import Request , get_thread_from_message
 from channel_plugin.utils.wrappers import OrderMixin
 
 from django.utils.timezone import datetime
@@ -17,7 +17,7 @@ from django.core.signals import request_finished
 
 from .permissions import CanReply, IsMember, IsOwner
 from .serializers import ThreadSerializer, ThreadUpdateSerializer, ReactionSerializer
-
+from rest_framework.decorators import api_view
 
 class ThreadViewset(ThrottledViewSet, OrderMixin):
 
@@ -433,3 +433,19 @@ thread_views_group = ThreadViewset.as_view(
         "delete": "thread_message_delete",
     }
 )
+
+
+@api_view(["GET","POST"])
+def paginate_threads_messages(request, org_id, channel_id):
+    DEFAULT_PAGE_SIZE = 10
+    page = int(request.GET.get("page", 1))
+    last_timestamp = request.GET.get("last_timestamp", None)
+    page_size = int(request.GET.get("page_size", DEFAULT_PAGE_SIZE))
+    user_id = request.GET.get("user_id", "error")
+
+    
+    data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
+    response = get_thread_from_message(org_id, "thread", channel_id, page, page_size)
+    
+    
+    return Response(response, status=status.HTTP_200_OK)
