@@ -298,3 +298,31 @@ def find_match_in_db(org_id, collection_name, param, value, return_data=False):
     except:  # noqa
         print("No match")
         return None
+
+def get_thread_from_message(org_id, collection_name, channelmessage_id, page, page_size):
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channelmessage_id": {"$eq": channelmessage_id}},
+            ]
+        },
+
+        "options" : {
+
+        }
+    }
+
+    skips = page_size * (page - 1)
+
+    data["options"].update({
+        "skip" : skips,
+        "limit" : page_size,
+        })
+    
+    response = requests.post(read, data=json.dumps(data))
+
+    return response.json()
+
