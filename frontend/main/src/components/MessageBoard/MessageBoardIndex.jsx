@@ -11,10 +11,9 @@ import ChannelHeader from "../shared/ChannelHeader";
 import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContainer";
 // import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
 import MessageInput from "../shared/MessageInput";
-import Thread from "../thread/Thread";
+// import Thread from "../thread/Thread";
 //import MessageOptionsPopUpMenu from "./subs/MessageOptionsPopUpMenu/MessageOptionsPopUpMenu";
-import { Collapse } from "@chakra-ui/transition";
-import { useDisclosure } from "@chakra-ui/react";
+
 import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
@@ -128,8 +127,6 @@ const MessageBoardIndex = ({allUsers}) => {
 
   }, [channelId]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
     <Box bg="#F9F9F9" width="99%">
       <Flex>
@@ -149,19 +146,13 @@ const MessageBoardIndex = ({allUsers}) => {
               },
             }}
           >
-<<<<<<< HEAD
-            <MessageCardContainer channelId={channelId} onOpen={onOpen} />
-=======
             <MessageCardContainer channelId={channelId} allUsers={allUsers} />
->>>>>>> 6c92ae332cac296aaf5ab6c174e48ba60e0493af
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
-        <Collapse in={isOpen}>
-          <Box>
-            <Thread onClose={onClose} />
-          </Box>
-        </Collapse>
+        {/* <Box>
+          <Thread/>
+        </Box> */}
       </Flex>
     </Box>
   );
