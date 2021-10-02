@@ -16,6 +16,7 @@ const initialState = {
   // Default State
   users: [],
   workspace_users: [],
+  workspace_users_object: {},
   channelMessages: [],
   channels: [],
   sockets: [],
@@ -39,9 +40,16 @@ const appReducer = (state = initialState, action) => {
       };
 
     case GET_WORKSPACE_USERS:
+      const workspace_users = payload;
+      const workspace_users_object = {};
+      Object.values(workspace_users).forEach((user) => {
+        workspace_users_object[user._id] = user
+      });
+      console.log("workspace_users_object", workspace_users_object)
       return {
         ...state,
-        workspace_users: payload,
+        workspace_users,
+        workspace_users_object
       };
     case GET_CHANNELMESSAGES:
       return {
