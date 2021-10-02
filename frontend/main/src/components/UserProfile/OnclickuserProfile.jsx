@@ -12,7 +12,9 @@ import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import { FiPhoneCall } from "react-icons/fi";
 import { CgMore } from "react-icons/cg";
-import smileEmoji from '../images/emoji-smile.png'
+import smileEmoji from '../images/emoji-smile.png';
+import Picker from "emoji-picker-react";
+
 // import UserProfileOnHover  from "./UserProfileOnHover";
 
 const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
@@ -29,6 +31,16 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
   };
 
   const [toggle, setToggle] = useState(false)
+
+  const [showPicker, setShowPicker] = useState(false);
+  const [chosenEmoji, setChosenEmoji] = useState();
+
+  const handleStatus = () => {
+    setShowPicker(!showPicker)
+  };
+  const onEmojiClick = (event, emojiObject) => {
+    setChosenEmoji(emojiObject);
+  };
 
   return (
     <>
@@ -64,7 +76,10 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                 {/* Users' Status detail */}
                 <Text alignSelf='center' fontSize='.96rem' pos='absolute' m='0'  top='15.4rem'  color='gray' >{data.statusDetail}</Text>
                 {/* Users' Image */}
-                <Image src={smileEmoji}  pos='absolute' left='10rem'  top='17.8rem'  h='25px' w='25px' />
+                <Box onClick={handleStatus} cursor="pointer">
+                    {chosenEmoji ? chosenEmoji.emoji :<Image src={smileEmoji}  h='25px' w='25px' />}
+                    {showPicker && <Picker onEmojiClick={onEmojiClick} /> }
+                </Box>
                 
                 <Box pos="relative" left="0.5rem" top="-15.5rem">
                   <Box

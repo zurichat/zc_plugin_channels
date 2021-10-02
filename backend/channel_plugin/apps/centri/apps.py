@@ -6,7 +6,12 @@ class CentriConfig(AppConfig):
 
     def ready(self) -> None:
         try:
-            import apps.centri.signals
+            from apps.centri.signals import( 
+                channel_signals,
+                thread_signals,
+                message_signals,
+                central_signals
+            )
         except ImportError:
             pass
 

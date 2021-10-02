@@ -7,6 +7,7 @@ import {
   PIN_MESSAGE,
   SEND_MESSAGES,
   ADD_CHANNEL_MEMBER,
+  DELETE_CHANNEL,
 } from "../actions/types";
 
 const initialState = {
@@ -61,6 +62,13 @@ const channelsReducer = (state = initialState, action) => {
       return {
         ...state,
         channelDetails: { ...payload },
+      };
+    }
+
+    case DELETE_CHANNEL: {
+      return {
+        ...state,
+        channelDetails: {  },
       };
     }
     default:
