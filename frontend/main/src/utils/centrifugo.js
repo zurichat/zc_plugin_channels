@@ -9,17 +9,23 @@ class Centrifugo {
         this.init()
     }
 
-    async init(socket) {
+    async init() {
         const { org_id } = (await GetUserInfo())["0"]
         this.org_id = org_id
         this.subscribeToAllEvents();
+    }
+
+    async initForMessage(socket) {
+        if (!this.org_id) {
+            const { org_id } = (await GetUserInfo())["0"]
+            this.org_id = org_id
+        }
         if (socket) {
             this.subscribeToMessageEvents(socket);
         }
     }
 
     subscribeToAllEvents() {
-        console.log("centrifugo org_id ==", this.org_id)
         SubscribeToChannel(`organizations_${this.org_id}`, (ctx) => {
             this.listenToEvents(ctx)
         })
@@ -38,9 +44,8 @@ class Centrifugo {
     }
 
     listenToEvents(ctx) {
-        console.log("centrifugo ctx ==", ctx)
         const { event, id, type } = ctx.data
-        console.log("event", event)
+        console.log("centrifugo ctx ==", ctx + "for event == " + event)
         if (this.listeners[event]) {
             this.listeners[event](id, type, this.org_id)
         }
