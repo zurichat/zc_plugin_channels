@@ -23,6 +23,7 @@ import {
   GET_FILES,
   DELETE_CHANNEL,
   GET_WORKSPACE_USERS,
+  EDIT_CHANNEL_DESCRIPTION,
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -235,7 +236,7 @@ const _deleteMessage = (org_id, msg_id) => async (dispatch) => {
 };
 
 const _editMessage = (data) => async (dispatch) => {
-  dispatch({ type:EDIT_MESSAGE, payload: data});
+  dispatch({ type: EDIT_MESSAGE, payload: data});
   dispatch({ type: isEditMode, payload: true});
 };
 
@@ -282,6 +283,15 @@ const _deleteChannel = (org_id, channel_id) => async (dispatch) => {
   }
 };
 
+const _editChannelDescription = (org_id, channel_id, data) => async (dispatch) => {
+  try {
+    const res = await APIService.updateChannel(org_id, channel_id, data);
+    dispatch({ type: EDIT_CHANNEL_DESCRIPTION, payload: res.data });
+  } catch (err) {
+    _alert("error");
+  }
+};
+
 // Export functions here
 const appActions = {
   _alert,
@@ -305,5 +315,6 @@ const appActions = {
   _deleteChannel,
   _getFiles,
   _getWorkspaceUsers,
+  _editChannelDescription,
 };
 export default appActions;

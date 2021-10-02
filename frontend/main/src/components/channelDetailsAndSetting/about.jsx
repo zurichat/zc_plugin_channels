@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { FiEdit } from 'react-icons/fi';
 import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
 import axios from 'axios';
-import instance from './../../utils/api';
+//import instance from './../../utils/api';
 import moment from 'moment';
 import EditDescriptionModal from "../EditDescriptionModal";
+import { _editChannel } from "../../redux/actions/app";
 
 const About = (index) => {
 
@@ -96,8 +97,9 @@ const About = (index) => {
   }
   
   function saveDescription(description){
-    console.log(description);
-    //call api and dispatch
+    //console.log(description);
+    _editChannel(org_id, channel_id, data);
+    setDescription("");
     setOpenEditModal(false);
   }
 

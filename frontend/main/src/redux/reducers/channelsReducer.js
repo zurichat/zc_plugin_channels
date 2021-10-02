@@ -11,6 +11,7 @@ import {
   UPDATE_MESSAGE,
   EDIT_MESSAGE,
   DELETE_MESSAGE,
+  EDIT_CHANNEL_DESCRIPTION,
 } from "../actions/types";
 
 const initialState = {
@@ -26,6 +27,7 @@ const initialState = {
   editMessage: {},
   messages : [],
   isEditMode : false,
+  editDescription: {},
 };
 
 const channelsReducer = (state = initialState, action) => {
@@ -95,6 +97,13 @@ const channelsReducer = (state = initialState, action) => {
         channelDetails: {  },
       };
     }
+
+    case EDIT_CHANNEL_DESCRIPTION:
+      return {
+        ...state,
+        editDescription: action.payload
+      };
+
     default:
       return state;
   }

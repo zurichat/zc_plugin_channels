@@ -39,11 +39,6 @@ has clicked save. A sample of such function is shown below
     const [description, setDescription] = useState('');
 
 
-    // function saveDescription(description){
-    //   console.log(description);
-    // }
-
-
     //handles text area change event
     function onTextAreaChange(e){
         setDescription(e.target.value);
