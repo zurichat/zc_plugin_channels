@@ -14,6 +14,7 @@ import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import PinnedMessages from "./PinnedMessages";
 import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSettings";
+import NewChannelHeader from "./pluginHeader";
 
 import { useParams } from "react-router";
 
@@ -33,25 +34,30 @@ const ChannelHeader = ({channelId}) => {
   console.log(channel_id);
   const dispatch = useDispatch();
 
-  const { _getPinnedMessages, _getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
+  const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);//extract redux function
   //.......getting pinned messages...........//
   const { pinnedMessages } = useSelector((state) => state.channelsReducer)
   console.log('Number of pinned messages = ' + pinnedMessages)
   
   // useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
-
-  //-------getting channel details.........//
-  const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
-  console.log(channelDetails.name, channelDetails.members, channelDetails.private);//to see what kind of data I'm actually getting
-  const loadChannelDetails = async () => { await _getChannelDetails(org_id, channel_id);};
-  useEffect(() => { loadChannelDetails(); }, [channelId]);
-  
-  const isPrivate = channelDetails.private;// to check if channel is private or not
-  //const users = [channelDetails.users]; //to get users of a channel
-  
+ 
   return (
     <Box width="99.9%">
-      <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="47px" boxShadow="xs" maxWidth='100%' w="100%" display={['none','flex']}>
+
+      <NewChannelHeader channelId = {channelId}  />
+      {/* Section that holds the pinned and bookmark buttons  */}
+      <Box ml='1px' display={['none','flex']}>
+        <Flex w='100%' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='33px' > 
+          {pinnedMessages > 0 && (
+              <PinnedMessages>
+                <Button mr='10px' {...pinnedAndBookmarkButtonStyle} textColor='#B0AFB0' leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button>
+              </PinnedMessages>
+          )}
+          <IconButton {...pinnedAndBookmarkButtonStyle} width='33px' icon={<Icon w={5} h={4} as={AiOutlineStar}/>}></IconButton>        
+        </Flex>
+      </Box> 
+
+      {/* <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="47px" boxShadow="xs" maxWidth='100%' w="100%" display={['none','flex']}>
         <> 
           <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} _active={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='20%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} onClick={onOpen}>
             {isPrivate === true ? <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> :<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />  }       
@@ -68,22 +74,13 @@ const ChannelHeader = ({channelId}) => {
                 return <Avatar name={avatar.name} borderRadius="5px" borderWidth='2px' borderColor='#01D892' height='31px' width='31px' />;
               })}
             </AvatarGroup> */}
-            <Box as="span" fontWeight='medium' mr='8px' ml='5px' textColor='#ffffff' fontWeight="semi-bold" >{channelDetails.members}</Box>
+            {/* <Box as="span" fontWeight='medium' mr='8px' ml='5px' textColor='#ffffff' fontWeight="semi-bold" >{channelDetails.members}</Box>
           </Button>
-          </Flex></Link>
-      </Flex>
-      <Box ml='1px' display={['none','flex']}>
-        <Flex w='100%' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='33px' > 
-          {pinnedMessages && (
-              <PinnedMessages>
-                <Button mr='10px' {...pinnedAndBookmarkButtonStyle} textColor='#B0AFB0' leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button>
-              </PinnedMessages>
-          )}
-          <IconButton {...pinnedAndBookmarkButtonStyle} width='33px' icon={<Icon w={5} h={4} as={AiOutlineStar}/>}></IconButton>        
-        </Flex>
-      </Box> 
+          </Flex></Link> */}
+      {/* </Flex> */} 
+     
       {/*Mobile responsive version */}
-      <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex','none']}>
+      {/* <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex','none']}>
         <Icon as={ BiChevronLeft } color="#ffffff" h={10} w={10} ml={2}  />
           <Link to='/channel-detail'><Flex ml={1}  alignContent='center' flexDir='column'>
             <Flex align='center' flexDir='row'>
@@ -100,7 +97,7 @@ const ChannelHeader = ({channelId}) => {
             <IconButton variant='unstyled' size='sm' icon={<Image src={searchImage}  color='#ffffff'/>} aria-label="search"></IconButton>
            <Link to="/channel-detail"><IconButton variant='unstyled' size='sm' icon={<Image src={infoImage}  color='#ffffff'/>} aria-label='channel-details' color='#ffffff' /></Link></HStack>
           </Flex>
-      </Flex> 
+      </Flex>  */}
     </Box> 
   );
 };

@@ -1,5 +1,5 @@
-import { Avatar} from "@chakra-ui/react";
-import {  Input } from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
+import { Input } from "@chakra-ui/react";
 import { HStack } from "@chakra-ui/layout";
 import React from "react";
 import { AvatarBadge } from "@chakra-ui/avatar";
@@ -15,7 +15,6 @@ const TopSearch = () => {
         size="md"
         w="34%"
       />
-
       <HStack spacing={4}>
         {/* <Icon boxSize="1.3rem" color="#2b2b2b" as={FiSettings} /> */}
         <Avatar
