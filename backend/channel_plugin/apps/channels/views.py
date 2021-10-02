@@ -22,7 +22,8 @@ from .serializers import (  # SearchMessageQuerySerializer,
     NotificationsSettingSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
-    UserSerializer
+    UserSerializer,
+    ChannelStarUpdateSerializer
 )
 
 # from rest_framework.filters
@@ -249,6 +250,47 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="star-channel",
+        request_body=ChannelStarUpdateSerializer,
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(
+        methods=["PUT"],
+        detail=False,
+    )
+
+    def star_channel(self, request, org_id, channel_id):
+        """Star or unstar a channel
+
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"starred\": true | false}"
+        ```
+        """  # noqa
+        serializer = ChannelStarUpdateSerializer(
+            data=request.data, context={"org_id": org_id, "_id": channel_id}
+        )
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.data
+        result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
+        status_code = status.HTTP_404_NOT_FOUND
+        if (
+            result.__contains__("_id")
+            or isinstance(result, dict)
+            and not result.__contains__("error")
+        ):
+            if result.__contains__("_id"):
+                result.update({"members": len(result["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
+
+
+    @swagger_auto_schema(
         operation_id="delete-channel",
         responses={
             204: openapi.Response("Channel deleted successfully"),
@@ -259,6 +301,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["DELETE"],
         detail=False,
     )
+
     def channel_delete(self, request, org_id, channel_id):
         """Delete a channel
 
@@ -386,7 +429,7 @@ user_channel_list = ChannelViewset.as_view(
 )
 
 channel_socket_view = ChannelViewset.as_view({"get": "get_channel_socket_name"})
-
+starred_channel_view = ChannelViewset.as_view({"put": "star_channel"})
 
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):

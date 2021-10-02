@@ -1,3 +1,4 @@
+import re
 from django.utils.text import slugify
 from rest_framework import serializers
 
@@ -148,7 +149,12 @@ class ChannelUpdateSerializer(serializers.Serializer):
             return data
         return super().to_representation(instance)
 
-
+class ChannelStarUpdateSerializer(serializers.Serializer):
+    starred = serializers.BooleanField(
+        required=True,
+        help_text="Set to true or false"
+    )
+  
 class SearchMessageQuerySerializer(serializers.Serializer):
     value = serializers.CharField(max_length=100)
 
