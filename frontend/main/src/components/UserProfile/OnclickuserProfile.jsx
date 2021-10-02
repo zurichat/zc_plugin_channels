@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+// import Picker from "emoji-picker-react";
+
 import {
   Box,
   IconButton,
@@ -10,9 +12,11 @@ import {
 } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
-import { FiPhoneCall } from "react-icons/fi";
+import { IoNotificationsOffOutline } from "react-icons/io";
 import { CgMore } from "react-icons/cg";
 import smileEmoji from '../images/emoji-smile.png'
+// import UserStatusSettings from './UserStatusSettings'
+
 // import UserProfileOnHover  from "./UserProfileOnHover";
 
 const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
@@ -30,9 +34,14 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
 
   const [toggle, setToggle] = useState(false)
 
+  // handleClick = ()=>{
+
+
+  // }
+
   return (
     <>
-      {showProfile &&  <Container    >
+      {/* {showProfile &&  <Container    >
             <Box  pos='relative'  left='41.9rem' top='3rem' zIndex='2' 
               bgColor='#00B87C' display="flex" borderRadius='1px'
                 justifyContent="space-between" w='23rem' fontWeight="700" pl="14px" pr="10px">
@@ -64,7 +73,13 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                 {/* Users' Status detail */}
                 <Text alignSelf='center' fontSize='.96rem' pos='absolute' m='0'  top='15.4rem'  color='gray' >{data.statusDetail}</Text>
                 {/* Users' Image */}
-                <Image src={smileEmoji}  pos='absolute' left='10rem'  top='17.8rem'  h='25px' w='25px' />
+                {/* <Box onClick={} ></BOX> */}
+                {/* <Box onClick={handleClick} cursor="pointer">
+      {chosenEmoji ? chosenEmoji.emoji : <Image src={smileEmoji} alt={imageAlt} /> }
+      {showPicker && <Picker onEmojiClick={onEmojiClick} /> 
+      }
+    </Box>
+                <Image src={UserStatusSettings}  pos='absolute' left='10rem'  top='17.8rem'  h='25px' w='25px' />
                 
                 <Box pos="relative" left="0.5rem" top="-15.5rem">
                   <Box
@@ -101,7 +116,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                     <IconButton
                       pos="relative"
                       left={-7}
-                      icon={<FiPhoneCall />}
+                      icon={<IoNotificationsOffOutline />}
                       background="#F0FDF9"
                       width="40px"
                       height="40px"
@@ -113,8 +128,8 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                     <Text pos="relative" left={3}>
                       Call
                     </Text>
-                  </Box>
-                     <Box  pos='absolute' transform='scale(0.8)' top='19.8rem' left='9rem' display='flex' flexDir='column'>
+                  </Box> */}
+                     {/* <Box  pos='absolute' transform='scale(0.8)' top='19.8rem' left='9rem' display='flex' flexDir='column'>
                       <IconButton pos='relative' left={-7}
                         icon={<FiPhoneCall />}
                         background="#F0FDF9"
@@ -123,9 +138,9 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                         borderRadius="12px"
                         ml="24px"
                         _hover='none'
-                      />
-                          <Text pos='relative' left={3} >Call</Text>
-                          </Box>
+                      /> */}
+                          {/* <Text pos='relative' left={3} >Call</Text> */}
+                          {/* </Box>
                       
                     <Box pos='absolute' justifyContent='center' transform='scale(0.8)' top='19.8rem' left='15rem' display='flex' flexDir='column'>
                       <IconButton pos='relative' left={-10}
@@ -148,12 +163,13 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                     
                     <Text pl='2rem'  alignSelf='left' fontSize='11px' pt='28px' color='#828282' fontWeight='700' >Email</Text>
                     <Text pl='2rem' alignSelf='left' fontWeight='900' fontSize='15px' color='#1264A3' >{data.email}</Text>
-                </Box>
-            </Box>
-            </Stack>
-           </Box> 
-           {toggle && MoreBtnOnHover()}
-      </Container> }  
+                </Box> */}
+            {/* </Box> */}
+            {/* </Stack> */}
+            {/* </Box> */}
+           {/* </Box>  */}
+           {/* {toggle && MoreBtnOnHover()} */}
+      {/* // </Container> }   */} 
      </>
   ); 
 }
