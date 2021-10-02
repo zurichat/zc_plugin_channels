@@ -86,7 +86,7 @@ const MessageBoardIndex = () => {
   }, [channelId]);
 
   return (
-    <Box bg="#F9F9F9" m="5px" width="99%">
+    <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} />
@@ -94,7 +94,7 @@ const MessageBoardIndex = () => {
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["73vh", "75vh", "60vh", "58vh"]}
+            height={["83vh", "85vh", "70vh", "68vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",

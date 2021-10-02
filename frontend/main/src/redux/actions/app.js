@@ -61,11 +61,10 @@ const _getUsers = (params) => async (dispatch) => {
 
 const _getWorkspaceUsers = (params) => async (dispatch) => {
   try {
-    // const res = await GetWorkspaceUser();
-    // dispatch({ type: GET_WORKSPACE_USERS, payload: res });
-    GetWorkspaceUsers().then((res) => {
-      dispatch({ type: GET_WORKSPACE_USERS, payload: res });
-    });
+    // GetWorkspaceUsers().then((res) => {
+    const res = await GetWorkspaceUsers();
+    dispatch({ type: GET_WORKSPACE_USERS, payload: res });
+    // });
   } catch (error) {
     console.log(error);
   }
@@ -108,18 +107,24 @@ const _getSocket = (org_id, channel_id) => async (dispatch) => {
     console.log(error);
   }
 };
-const _setNotifications = (org_id, channel_id, member_id, data) => async (dispatch) => {
-  try {
-    // Result comes from the endpoint
-    // Let's assume an array of objects is returned from the endpoint
-    const res = await APIService.setNotification(org_id, channel_id, member_id, data);
-    // Result is sent to the store via dispatch (Pass payload if needed)
-    dispatch({ type: SET_NOTIFICATION, payload: res.data });
-  } catch (error) {
-    // Handle exceptions here
-    console.log(error);
-  }
-};
+const _setNotifications =
+  (org_id, channel_id, member_id, data) => async (dispatch) => {
+    try {
+      // Result comes from the endpoint
+      // Let's assume an array of objects is returned from the endpoint
+      const res = await APIService.setNotification(
+        org_id,
+        channel_id,
+        member_id,
+        data
+      );
+      // Result is sent to the store via dispatch (Pass payload if needed)
+      dispatch({ type: SET_NOTIFICATION, payload: res.data });
+    } catch (error) {
+      // Handle exceptions here
+      console.log(error);
+    }
+  };
 const _getChannel_Thread_Messages =
   (org_id, channel_id) => async (dispatch) => {
     try {
