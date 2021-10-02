@@ -1,5 +1,3 @@
-import json
-
 from apps.centri.helperfuncs import build_room_name
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
@@ -7,14 +5,14 @@ from django.http.response import JsonResponse
 from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers, status, throttling
+from rest_framework import status, throttling
 from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request
-from channel_plugin.utils.wrappers import FilterWrapper, OrderMixin
+from channel_plugin.utils.wrappers import OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
@@ -24,7 +22,8 @@ from .serializers import (  # SearchMessageQuerySerializer,
     NotificationsSettingSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
-    UserSerializer
+    UserSerializer,
+    ChannelStarUpdateSerializer
 )
 
 # from rest_framework.filters
@@ -60,7 +59,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
-        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false,  \"topic\": \"channel topic\"}"
+        -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false, \"default\":false,  \"topic\": \"channel topic\"}"
         ```
 
         """  # noqa
@@ -150,31 +149,35 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
                 for i in result_message:
                     message_response.append(
                         {
-                            "timestamp":i["timestamp"],
-                            "files":i["files"],
-                            "message_id":i["_id"],
-                            "user_id":i["user_id"]
-                            }
-                        )
+                            "timestamp": i["timestamp"],
+                            "files": i["files"],
+                            "message_id": i["_id"],
+                            "user_id": i["user_id"],
+                        }
+                    )
                     flag = 1
             if result_thread:
                 for i in result_thread:
                     thread_response.append(
                         {
-                            "timestamp":i["timestamp"],
-                            "files":i["files"],
-                            "message_id":i["_id"],
-                            "user_id":i["user_id"]
-                            }
-                            )
-                    flag = 1    
+                            "timestamp": i["timestamp"],
+                            "files": i["files"],
+                            "message_id": i["_id"],
+                            "user_id": i["user_id"],
+                        }
+                    )
+                    flag = 1
             result.update(
                 {
-                    "message": "Successfully Retrieved" if flag == 1 else "There are no files in this channel",
+                    "message": "Successfully Retrieved"
+                    if flag == 1
+                    else "There are no files in this channel",
                     "channelfiles": message_response
                     if isinstance(message_response, list)
                     else [],
-                    "threadfiles": thread_response if isinstance(thread_response, list) else [],
+                    "threadfiles": thread_response
+                    if isinstance(thread_response, list)
+                    else [],
                 }
             )
             status_code = status.HTTP_200_OK
@@ -247,6 +250,47 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
+        operation_id="star-channel",
+        request_body=ChannelStarUpdateSerializer,
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(
+        methods=["PUT"],
+        detail=False,
+    )
+
+    def star_channel(self, request, org_id, channel_id):
+        """Star or unstar a channel
+
+        ```bash
+        curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
+        -H  "accept: application/json"
+        -H  "Content-Type: application/json"
+        -d "{  \"starred\": true | false}"
+        ```
+        """  # noqa
+        serializer = ChannelStarUpdateSerializer(
+            data=request.data, context={"org_id": org_id, "_id": channel_id}
+        )
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.data
+        result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
+        status_code = status.HTTP_404_NOT_FOUND
+        if (
+            result.__contains__("_id")
+            or isinstance(result, dict)
+            and not result.__contains__("error")
+        ):
+            if result.__contains__("_id"):
+                result.update({"members": len(result["users"].keys())})
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
+
+
+    @swagger_auto_schema(
         operation_id="delete-channel",
         responses={
             204: openapi.Response("Channel deleted successfully"),
@@ -257,6 +301,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["DELETE"],
         detail=False,
     )
+
     def channel_delete(self, request, org_id, channel_id):
         """Delete a channel
 
@@ -384,7 +429,7 @@ user_channel_list = ChannelViewset.as_view(
 )
 
 channel_socket_view = ChannelViewset.as_view({"get": "get_channel_socket_name"})
-
+starred_channel_view = ChannelViewset.as_view({"put": "star_channel"})
 
 class ChannelMemberViewset(ViewSet):
     def validate_name(self, name):
@@ -867,9 +912,8 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            user_id=user_data["_id"],
+                            user=user_data.copy(),
                         )
-
                     status_code = (
                         status.HTTP_204_NO_CONTENT
                         if not result.get("error")

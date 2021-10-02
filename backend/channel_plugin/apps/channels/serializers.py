@@ -1,3 +1,4 @@
+import re
 from django.utils.text import slugify
 from rest_framework import serializers
 
@@ -25,10 +26,6 @@ class ChannelSerializer(serializers.Serializer):
     default = serializers.BooleanField(
         default=False,
         help_text="Default: false. True if this channel is a default channel for an organization.",
-    )
-    starred = serializers.BooleanField(
-        default=False,
-        help_text="Default: false. True if this channel is starred."
     )
 
     def validate_name(self, name):
@@ -89,9 +86,13 @@ class ChannelGetSerializer(serializers.Serializer):
         required=False,
         help_text="List of users in the channel",
     )
+    default = serializers.BooleanField(
+        default=False,
+        help_text="Default: false. True if this channel is a default channel for an organization.",
+    )
     starred = serializers.BooleanField(
         required=False,
-        help_text="Default: false. True if this channel has been set to starred."
+        help_text="Default: false. True if this channel has been set to starred.",
     )
 
 
@@ -115,7 +116,7 @@ class ChannelUpdateSerializer(serializers.Serializer):
     )
     starred = serializers.BooleanField(
         required=False,
-        help_text="Default: false. True if this channel has been starred."
+        help_text="Default: false. True if this channel has been starred.",
     )
 
     def validate_name(self, name):
@@ -148,7 +149,12 @@ class ChannelUpdateSerializer(serializers.Serializer):
             return data
         return super().to_representation(instance)
 
-
+class ChannelStarUpdateSerializer(serializers.Serializer):
+    starred = serializers.BooleanField(
+        required=True,
+        help_text="Set to true or false"
+    )
+  
 class SearchMessageQuerySerializer(serializers.Serializer):
     value = serializers.CharField(max_length=100)
 

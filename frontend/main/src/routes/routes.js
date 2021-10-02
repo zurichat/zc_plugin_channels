@@ -39,6 +39,9 @@ const routes = () => {
       <Route exact path="/">
         <ChannelBrowser />
       </Route>
+      {/* <Route exact path="/home">
+        <Home />
+      </Route> */}
       <Route path="/create-channel">
         <CreateChannel />
       </Route>

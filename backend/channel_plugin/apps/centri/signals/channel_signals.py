@@ -5,12 +5,10 @@ from django.conf import settings
 
 from cent import CentException
 
-from .centwrapper import CentClient
+from apps.centri.centwrapper import CentClient
 from apps.channels.views import ChannelMemberViewset
-from apps.channelmessages.views import ChannelMessageViewset
 from apps.channelmessages.serializers import ChannelMessageSerializer
-from .helperfuncs import build_room_name
-
+from apps.centri.helperfuncs import build_room_name
 
 
 CLIENT = CentClient(
@@ -21,7 +19,6 @@ CLIENT = CentClient(
 )
 
 
-# >>>>>>>>>>> channel member signals <<<<<<<<<<<<<<<<<<
 @receiver(request_finished, sender=ChannelMemberViewset)
 def JoinedChannelSignal(sender, **kwargs):
     
@@ -112,70 +109,3 @@ def LeftChannelSignal(sender, **kwargs):
         except:
             pass
 
-# >>>>>>>>>>> channelmessages signals <<<<<<<<<<<<<<<<<< 
-@receiver(request_finished, sender=ChannelMessageViewset)
-def CreateMessageSignal(sender, **kwargs):
-    uid = kwargs.get("dispatch_uid")
-    
-    if uid == "CreateMessageSignal":
-        org_id = kwargs.get("org_id")
-        channel_id = kwargs.get("channel_id")
-
-        room_name = build_room_name(org_id, channel_id)
-        
-        # send notification to channel that has created a new message
-        payload = kwargs.get("data", {})
-
-        payload["event"] = {
-            "action": "create:message"
-        }
-
-        try: 
-            CLIENT.publish(room_name, payload)
-        except CentException:
-            pass
-
-@receiver(request_finished, sender=ChannelMessageViewset)
-def EditMessageSignal(sender, **kwargs):
-    uid = kwargs.get("dispatch_uid")
-    
-    if uid == "EditMessageSignal":
-        org_id = kwargs.get("org_id")
-        channel_id = kwargs.get("channel_id")
-
-        room_name = build_room_name(org_id, channel_id)
-        
-        # send message to channel that user has edited a message
-        payload = kwargs.get("data", {})
-
-        payload["event"] = {
-            "action": "update:message"
-        }
-
-        try:
-            CLIENT.publish(room_name, payload)
-        except CentException:
-            pass
-
-@receiver(request_finished, sender=ChannelMessageViewset)
-def DeleteMessageSignal(sender, **kwargs):
-    uid = kwargs.get("dispatch_uid")
-    
-    if uid == "DeleteMessageSignal":
-        org_id = kwargs.get("org_id")
-        channel_id = kwargs.get("channel_id")
-
-        room_name = build_room_name(org_id, channel_id)
-
-        # send notification to channel that user has joined
-        payload = kwargs.get("data", {})
-        payload["can_reply"] = False
-        
-        payload["event"] = {
-            "action": "delete:message"
-        }
-
-        try: 
-            CLIENT.publish(room_name, payload)
-        except CentException:
-            pass
