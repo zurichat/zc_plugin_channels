@@ -95,7 +95,7 @@ class Request:
             if object_id is None:
                 return {"error": "Object ID must be set for multiple payload"}
             data.update({"object_id": object_id})
-
+        print(data)
         response = requests.put(write, data=json.dumps(data))
         if response.status_code >= 200 and response.status_code < 300:
             if not bulk_write:

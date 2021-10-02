@@ -70,6 +70,12 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             result.update({"members": len(result["users"].keys())})
+            request_finished.send(
+                sender=None,
+                dispatch_uid="UpdateSidebarSignal",
+                org_id=org_id,
+                user_id=result.get("owner"),
+            )
             status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code)
 
@@ -245,6 +251,14 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         ):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
+                #TODO: make this block asynchronus
+                # for user_id in result["users"].keys():
+                #     request_finished.send(
+                #         sender=None,
+                #         dispatch_uid="UpdateSidebarSignal",
+                #         org_id=org_id,
+                #         user_id=user_id,
+                #     )
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -254,6 +268,15 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             204: openapi.Response("Channel deleted successfully"),
             404: openapi.Response("Not found"),
         },
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="User ID (owner of message)",
+                required=True,
+                type=openapi.TYPE_STRING,
+            )
+        ],
     )
     @action(
         methods=["DELETE"],
@@ -272,6 +295,13 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
 
         # delete relationships
         if result.get("status") == 200:
+            request_finished.send(
+                sender=None,
+                dispatch_uid="UpdateSidebarSignal",
+                org_id=org_id,
+                user_id=request.query_params.get("user_id", None),
+            )
+
             if result.get("data", {}).get("deleted_count") > 0:
                 Request.delete(
                     org_id, "channelmessage", data_filter={"channel_id": channel_id}
@@ -403,52 +433,6 @@ class ChannelMemberViewset(ViewSet):
         if result.__contains__("_id") and isinstance(result, dict):
             return result
         return {}
-
-    # def prepare_params(self):
-    #     param_checkers = {
-    #         "__starts": "$",
-    #         "__ends": "#",
-    #         "__contains": "*",
-    #         "__gt": ">",
-    #         "__lt": "<",
-    #     }
-
-    #     params = dict(self.request.query_params)
-
-    #     """
-    #         Note if your planing to use the filterwrapper class
-    #         you have to convert the values of your query_parameter
-    #         to a python value by using json.loads
-    #     """
-
-    #     for key in self.request.query_params.keys():
-    #         try:
-    #             params[key] = json.loads(params.get(key)[0])
-    #         except:  # noqa
-    #             params[key] = params.get(key)[0]
-
-    #         for chk in param_checkers:
-    #             if key.endswith(chk):
-    #                 p = param_checkers[chk] + key.replace(chk, "")
-
-    #                 try:
-    #                     params[p] = json.loads(params.get(key))
-    #                 except:  # noqa
-    #                     params[p] = params.get(key)
-    #                 params.pop(key)
-    #     return params
-
-    # def filter_objects(self, data: list, serializer: serializers.Serializer):
-    #     # method  applies filteration to user list
-    #     output = []
-
-    #     params = self.prepare_params()
-    #     params = FilterWrapper.filter_params(
-    #         allowed=list(serializer().get_fields().keys()), params=params
-    #     )
-
-    #     output = FilterWrapper.filter_objects(data, params)
-    #     return output
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -587,6 +571,17 @@ class ChannelMemberViewset(ViewSet):
                             channel_id=channel_id,
                             user=output,
                         )
+                    
+                        try:
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                user_id=user.get("_id"),
+                            )
+                        except:
+                            pass
+
                     else:
                         # when output is a list multiple users where added
                         request_finished.send(
@@ -871,6 +866,16 @@ class ChannelMemberViewset(ViewSet):
                             channel_id=channel_id,
                             user=user_data.copy(),
                         )
+                        try:
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                user_id=user_data.get("_id"),
+                            )
+                        except:
+                            pass
+
                     status_code = (
                         status.HTTP_204_NO_CONTENT
                         if not result.get("error")
