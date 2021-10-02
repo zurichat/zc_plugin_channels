@@ -30,7 +30,7 @@ const ChannelContainer = (props) => {
     dispatch(
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
     );
-    if (channelMember) {
+    if (channelMember._id) {
       history.push("/message-board/" + props.chan._id);
     }
   };
