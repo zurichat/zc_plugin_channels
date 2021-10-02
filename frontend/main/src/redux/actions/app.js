@@ -89,6 +89,7 @@ const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
     console.log(res.data);
     // Result is sent to the store via dispatch (Pass payload if needed)
     dispatch({ type: GET_CHANNELMESSAGES, payload: res.data });
+    return res.data
   } catch (error) {
     // Handle exceptions here
     console.log(error);
