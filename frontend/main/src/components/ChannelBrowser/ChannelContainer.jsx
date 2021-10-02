@@ -26,7 +26,7 @@ const ChannelContainer = (props) => {
   const { channelMember } = useSelector((state) => state.channelsReducer);
 
   const joinChannel = () => {
-    // add member to channel after clickig on join
+    // add member to channel after clicking on join
     dispatch(
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
     );
@@ -47,7 +47,7 @@ const ChannelContainer = (props) => {
         <Box className="MenuOpt">
           <Heading
             size="md"
-            fontSize="18px"
+            fontSize={{ base: "15px", md: "18px", lg: "18px" }}
             fontWeight={600}
             textTransform="capitalize"
           >
@@ -58,7 +58,7 @@ const ChannelContainer = (props) => {
             {users.hasOwnProperty(props.orgId._id) && (
               <>
                 <Text color="#00B87C" fontSize="12px" mr={4}>
-                  <CheckIcon mr={2} />
+                  <CheckIcon mr={2} h={2} w={2} />
                   Joined
                 </Text>
                 <GiPlainCircle style={{ marginRight: "10px" }} fontSize="2px" />
@@ -84,7 +84,7 @@ const ChannelContainer = (props) => {
             <HStack p={2}>
               {users.hasOwnProperty(props.orgId._id) ? (
                 <Button
-                  width="147px"
+                  width={{ base: "70px", md: "120px", lg: "147px" }}
                   bgColor="#00B87C"
                   color="white"
                   borderRadius="0"
@@ -96,7 +96,7 @@ const ChannelContainer = (props) => {
                 <>
                   <Link to={"/message-board/" + props.chan._id}>
                     <Button
-                      width="147px"
+                      width={{ base: "60px", md: "120px", lg: "147px" }}
                       bgColor="unset"
                       border="1px solid #00B87C"
                       color="#00B87C"
@@ -108,7 +108,7 @@ const ChannelContainer = (props) => {
                   </Link>
 
                   <Button
-                    width="147px"
+                    width={{ base: "60px", md: "120px", lg: "147px" }}
                     bgColor="#00B87C"
                     color="white"
                     borderRadius="0"
