@@ -5,9 +5,9 @@ from django.conf import settings
 
 from cent import CentException
 
-from channel_plugin.apps.centri.centwrapper import CentClient
-from channel_plugin.apps.channelmessages.views import ChannelMessageViewset
-from channel_plugin.apps.centri.helperfuncs import build_room_name
+from apps.centri.centwrapper import CentClient
+from apps.channelmessages.views import ChannelMessageViewset
+from apps.centri.helperfuncs import build_room_name
 
 CLIENT = CentClient(
     address=settings.CENTRIFUGO_URL,
