@@ -1,21 +1,17 @@
+from apps.centri.centwrapper import CentClient
+from apps.centri.helperfuncs import build_room_name
+from apps.channelmessages.serializers import ChannelMessageSerializer
+from apps.channels.views import ChannelMemberViewset
+from cent import CentException
+from django.conf import settings
 from django.core.signals import request_finished
 from django.dispatch import receiver
-from django.utils import timezone
-from django.conf import settings
-
-from cent import CentException
-
-from apps.centri.centwrapper import CentClient
-from apps.channels.views import ChannelMemberViewset
-from apps.channelmessages.serializers import ChannelMessageSerializer
-from apps.centri.helperfuncs import build_room_name
-
 
 CLIENT = CentClient(
     address=settings.CENTRIFUGO_URL,
     api_key=settings.CENTRIFUGO_API_KEY,
     timeout=3,
-    verify=True
+    verify=True,
 )
 
 
@@ -27,7 +23,7 @@ def JoinedChannelSignal(sender, **kwargs):
     if uid == "JoinedChannelSignal":
         org_id = kwargs.get("org_id")
         channel_id = kwargs.get("channel_id")
-        user = kwargs.get("user")
+        user = kwargs.get("user", kwargs.get("added"))
 
         room_name = build_room_name(org_id, channel_id)
         
@@ -73,8 +69,9 @@ def JoinedChannelSignal(sender, **kwargs):
             print(result)
             print("\n")
             CLIENT.publish(room_name, result)
-        except:
+        except:  # noqa
             pass
+
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def LeftChannelSignal(sender, **kwargs):
@@ -93,20 +90,12 @@ def LeftChannelSignal(sender, **kwargs):
         except CentException:
             print("client removal failed because channel is not active")
 
-        data = {
-            "user_id": user.get("_id"),
-            "content": "event",
-            "files": []
-        }
+        data = {"user_id": user.get("_id"), "content": "event", "files": []}
 
-        event = {
-            "action": "leave:channel",
-            "recipients": kwargs.get("removed", [user])
-        }
+        event = {"action": "leave:channel", "recipients": kwargs.get("removed", [user])}
 
         serializer = ChannelMessageSerializer(
-            data=data,
-            context={"channel_id": channel_id, "org_id": org_id}
+            data=data, context={"channel_id": channel_id, "org_id": org_id}
         )
 
         serializer.is_valid(raise_exception=True)
@@ -123,5 +112,5 @@ def LeftChannelSignal(sender, **kwargs):
             print(result)
             print("\n")
             CLIENT.publish(room_name, result)
-        except:
+        except:  # noqa
             pass

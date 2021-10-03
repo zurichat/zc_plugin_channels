@@ -9,6 +9,7 @@ import {
   USER_CAN_INPUT,
   GET_FILES,
   GET_WORKSPACE_USERS,
+  SEND_EMOJI
 } from "../actions/types";
 
 const initialState = {
@@ -24,6 +25,7 @@ const initialState = {
   notificationSettings: [],
   userCanInput: true,
    channelsFiles:[],
+  emojiStorage:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -56,6 +58,11 @@ const appReducer = (state = initialState, action) => {
         ...state,
         channelMessages: payload,
       };
+      case SEND_EMOJI:
+        return {
+          ...state,
+          emojiStorage: payload,
+        };
     case GET_RENDEREDMESSAGES:
       return {
         ...state,

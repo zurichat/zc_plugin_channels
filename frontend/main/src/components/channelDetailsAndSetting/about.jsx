@@ -5,7 +5,7 @@ import axios from 'axios';
 //import instance from './../../utils/api';
 import moment from 'moment';
 import EditDescriptionModal from "../EditDescriptionModal";
-import { _editChannel } from "../../redux/actions/app";
+// import { _editChannel } from "../../redux/actions/app";
 
 const About = (index) => {
 
@@ -98,7 +98,7 @@ const About = (index) => {
   
   function saveDescription(description){
     //console.log(description);
-    _editChannel(org_id, channel_id, data);
+    // _editChannel(org_id, channel_id, data);
     setDescription("");
     setOpenEditModal(false);
   }
