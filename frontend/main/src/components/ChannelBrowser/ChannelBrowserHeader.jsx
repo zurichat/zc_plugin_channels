@@ -37,6 +37,7 @@ const ChannelBrowserHeader = () => {
         >
           Channel Browser
         </Box>
+
         <Spacer />
         <Button
           onClick={onOpen}

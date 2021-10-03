@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {connect} from "react-redux"
 import { useHistory } from "react-router";
 import { FiHash } from "react-icons/fi";
 import { GiPlainCircle } from "react-icons/gi";
@@ -12,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { __ } from "lodash";
 import { CheckIcon } from "@chakra-ui/icons";
-import LoadingSpinner from "../shared/LoadingSpinner";
 
 const ChannelContainer = (props) => {
   const [open, setOpen] = useState(false);
@@ -32,30 +30,12 @@ const ChannelContainer = (props) => {
     }
   }, [channelMember]);
 
-  const { channelMessages } = useSelector((state) => state.channelsReducer);
-  useEffect(() => {
-    if (channelMessages._id) {
-      history.push("/message-board/" + props.chan._id);
-    }
-  }, [channelMessages]);
-
   const joinChannel = () => {
     // add member to channel after clickig on join
     dispatch(
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
     );
   };
-  
-  viewChannel = () => {
-     this.props.dispatch(showLoader())
-     dispatch(
-      appActions._getChannelMessages(props.orgId.org_id, props.chan._id, userData)
-      )
-      .then(res => {
-        console.log( res );
-      this.props.dispatch(hideLoader())
-    }) 
-  }
 
   return (
     <Box
@@ -124,11 +104,9 @@ const ChannelContainer = (props) => {
                       color="#00B87C"
                       borderRadius="0"
                       _hover={{ bg: "#ebedf0" }}
-                      onClick={this.viewChannel}
                     >
                       View
                     </Button>
-                    <LoadingSpinner/>
                   </Link>
 
                   <Button
@@ -150,6 +128,5 @@ const ChannelContainer = (props) => {
     </Box>
   );
 };
- 
 
 export default ChannelContainer;
