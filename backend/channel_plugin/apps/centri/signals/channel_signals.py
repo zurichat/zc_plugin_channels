@@ -21,24 +21,8 @@ CLIENT = CentClient(
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def JoinedChannelSignal(sender, **kwargs):
-<<<<<<< HEAD
-
-    uid = kwargs.get("dispatch_uid")
-
-    if uid == "JoinedChannelSignal":
-        org_id = kwargs.get("org_id")
-        channel_id = kwargs.get("channel_id")
-        user = kwargs.get("user", kwargs.get("added"))
-
-        room_name = build_room_name(org_id, channel_id)
-
-        data = {"user_id": user.get("_id"), "content": "event", "files": []}
-
-        event = {"action": "join:channel", "recipients": kwargs.get("added", [user])}
-
         serializer = ChannelMessageSerializer(
             data=data, context={"channel_id": channel_id, "org_id": org_id}
-=======
     
     uid = kwargs.get("dispatch_uid")
     
@@ -63,43 +47,30 @@ def JoinedChannelSignal(sender, **kwargs):
         serializer = ChannelMessageSerializer(
             data=data, 
             context={"channel_id": channel_id, "org_id": org_id}
->>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
         )
 
         serializer.is_valid(raise_exception=True)
         channelmessage = serializer.data.get("channelmessage")
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
         # required
         channelmessage.type = "event"
         channelmessage.event = event
         channelmessage.can_reply = False
-
-        try:
-            result = channelmessage.create(org_id)
-<<<<<<< HEAD
-            print("\n")
-            print(result)
-            print("\n")
-            CLIENT.publish(room_name, result)
-        except:  # noqa
-            pass
-
-
-@receiver(request_finished, sender=ChannelMemberViewset)
-def LeftChannelSignal(sender, **kwargs):
-    uid = kwargs.get("dispatch_uid")
-
-    if uid == "LeftChannelSignal":
-
-        org_id = kwargs.get("org_id")
-        channel_id = kwargs.get("channel_id")
-        user = kwargs.get("user")
-
 =======
+        try:
+            serializer = ChannelMessageSerializer(
+                data=data, context={"channel_id": channel_id, "org_id": org_id}
+            )
+
+            serializer.is_valid(raise_exception=True)
+            channelmessage = serializer.data.get("channelmessage")
+            channelmessage.type = "event"
+            channelmessage.event = event
+            channelmessage.can_reply = False
+>>>>>>> 83443824799f880c1d34fec26578e5cd8da4f730
+
+            # required
+            result = channelmessage.create(org_id)
             CLIENT.publish(room_name, result)
         except:
             pass
@@ -115,22 +86,12 @@ def LeftChannelSignal(sender, **kwargs):
         channel_id = kwargs.get("channel_id")
         user = kwargs.get("user")
         
->>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
         room_name = build_room_name(org_id, channel_id)
 
         try:
             CLIENT.unsubscribe(user.get("_id"), room_name)
         except CentException:
             print("client removal failed because channel is not active")
-<<<<<<< HEAD
-
-        data = {"user_id": user.get("_id"), "content": "event", "files": []}
-
-        event = {"action": "leave:channel", "recipients": kwargs.get("removed", [user])}
-
-        serializer = ChannelMessageSerializer(
-            data=data, context={"channel_id": channel_id, "org_id": org_id}
-=======
         
         data = {
             "user_id": user.get("_id"),
@@ -146,16 +107,11 @@ def LeftChannelSignal(sender, **kwargs):
         serializer = ChannelMessageSerializer(
             data=data, 
             context={"channel_id": channel_id, "org_id": org_id}
->>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
         )
 
         serializer.is_valid(raise_exception=True)
         channelmessage = serializer.data.get("channelmessage")
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
         # required
         channelmessage.type = "event"
         channelmessage.event = event
@@ -163,16 +119,7 @@ def LeftChannelSignal(sender, **kwargs):
 
         try:
             result = channelmessage.create(org_id)
-<<<<<<< HEAD
-            print("\n")
-            print(result)
-            print("\n")
-            CLIENT.publish(room_name, result)
-        except:  # noqa
-            pass
-=======
             CLIENT.publish(room_name, result)
         except:
             pass
 
->>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73

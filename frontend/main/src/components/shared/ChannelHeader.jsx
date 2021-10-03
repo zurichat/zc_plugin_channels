@@ -28,25 +28,27 @@ const avatars = [
 ];
 
 
-const ChannelHeader = ({channelId}) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const ChannelHeader = ({channelId, org_id}) => {
   // const { channelId } = useParams()//dynamic channel id
-  const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
+  // const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
   const channel_id = channelId; //assigning dynamic channel id to channel_id
   console.log(channel_id);
   const dispatch = useDispatch();
 
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);//extract redux function
   //.......getting pinned messages...........//
-  const { pinnedMessages } = useSelector((state) => state.channelsReducer)
-  console.log('Number of pinned messages = ' + pinnedMessages)
-  
-  // useEffect(() => {_getPinnedMessages(org_id, channel_id); }, [])// get pinned messages
- 
+  const { pinnedMessages } = useSelector((state) => state.channelsReducer);
+  const { users } = useSelector((state) => state.appReducer);
+  console.log("Number of pinned messages = " + pinnedMessages);
+
+  useEffect(() => {
+    _getPinnedMessages(org_id, channel_id);
+  }, []); // get pinned messages
   return (
     <Box width="99.9%">
 
-      <NewChannelHeader channelId = {channelId}  />
+      <NewChannelHeader channelId = {channelId} org_id={org_id} />
+      
       {/* Section that holds the pinned and bookmark buttons  */}
       <Box ml='1px' display={['none','flex']}>
         <Flex w='100%' alignItems='center' justifyContent='flex-start' flexDir='row' p={4} bgColor="#E1FDF4" height='33px' > 

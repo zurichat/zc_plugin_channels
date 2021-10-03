@@ -26,7 +26,8 @@ import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
 
-const MessageCardContainer = ({ channelId }) => {
+
+const MessageCardContainer = ({ channelId,allUsers }) => {
 
     const dispatch = useDispatch()
     const history = useHistory()
@@ -38,7 +39,7 @@ const MessageCardContainer = ({ channelId }) => {
     const noOfMessages = 20;
 
     const messageRef = useRef();
-
+    
     if(Notification.permission === "default"){
         Notification.requestPermission()
     }
@@ -59,7 +60,7 @@ const MessageCardContainer = ({ channelId }) => {
     useEffect(() => {
         console.log("\n\n\nUseEffect works\n\n\n");
         const loadData = async () => {
-            _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
+            _getChannelMessages(users.currentWorkspace, channelId)
         }
         loadData()
     }, [channelId]);
@@ -77,7 +78,7 @@ const MessageCardContainer = ({ channelId }) => {
                             channelMessages.map((message) => {
                                 return (
                                     message === [] ? <Text textAlign="center">Loading...</Text> :
-                                        <MessageCard {...message} key={message._id} />
+                                        <MessageCard {...message} key={message._id} allUsers={allUsers} />
                                 )
                             })
                         }
