@@ -1,4 +1,5 @@
-import cancelIcon from '../../assets/cancel_icon.png';
+import cancelIcon from '../../assets/cancel_icon.png'
+
 import {
     Modal,
     ModalOverlay,
@@ -15,7 +16,7 @@ import {
     Center,
     Box,
   } from "@chakra-ui/react"
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 
 /*
@@ -27,21 +28,24 @@ the modal requires saveDescription prop which should be implemented as a
 function that receives 'description' as parameter. 
 The description parameter is the content of the text area after the user
 has clicked save. A sample of such function is shown below
+
+function saveDescription(description){
+    console.log(description)
+  }
 */
   export default function EditDescriptionModal(props) {
 
     //picking up the prop
-    const {saveDescription, openEditModal} = props;
+    const {saveDescription} = props
 
     //Chakra specific hook for handling modal opening and closing
     const { isOpen, onOpen, onClose } = useDisclosure()
     const initialRef = React.useRef()
-    const [description, setDescription] = useState('');
-
+    const [description, setDescription] = useState('')
 
     //handles text area change event
-    function onTextAreaChange(e){
-        setDescription(e.target.value);
+    function onTextAreaChange(event){
+        setDescription(event.target.value)
     }
 
 
@@ -49,9 +53,9 @@ has clicked save. A sample of such function is shown below
       <>
 
         {/* The button is what get's rendered when this component is mounted */}
-        {/* <Button onClick={onOpen}>Edit Description</Button> */}
+        <Button onClick={onOpen}>Edit Description</Button>
 
-        <Modal isOpen={openEditModal} onClose={onClose}
+        <Modal isOpen={isOpen} onClose={onClose}
                initialFocusRef={initialRef}
                isCentered
             >
