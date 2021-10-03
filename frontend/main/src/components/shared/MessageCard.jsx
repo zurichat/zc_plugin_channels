@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { Box, Flex, Text, Link, HStack, Square } from "@chakra-ui/layout";
 import { Avatar } from "@chakra-ui/avatar";
@@ -43,6 +43,15 @@ const MessageCard = ({
   const dispatch = useDispatch();
   const { _pinMessage } = bindActionCreators(appActions, dispatch);
   const { channelId } = useParams();
+  const { users } = useSelector((state) => state.appReducer);
+  let _users;
+  let orgId;
+
+  useEffect(() => {
+    _users = users;
+    orgId = _users.currentWorkspace;
+    console.log("this is the orgId", orgId);
+  });
 
   const pinMessage = () => {
     //const orgId = 1 // Hardcoded value to for channelId in org with id 1
@@ -52,21 +61,22 @@ const MessageCard = ({
     const message_Id = _id;
     const channel_id = channelId;
     const userId = user_id;
-    const orgId = "614679ee1a5607b13c00bcb7";
-    console.log("This is the orgId", orgId);
+    // const orgId = "614679ee1a5607b13c00bcb7";
+
+    console.log("Parameters", orgId, channel_id, userId, message_Id);
     _pinMessage(orgId, channel_id, userId, message_Id);
   };
 
-  // const [userDetails, setUserDetails] = useState({})
-  let empty = [];
-  const res = _.findKey(allUsers, function (item) {
-    if (item._id === user_id) {
-      empty.push(item);
-      // setUserDetails(item)
-    } else {
-      console.log("No");
-    }
-  });
+  // // const [userDetails, setUserDetails] = useState({})
+  // let empty = [];
+  // const res = _.findKey(allUsers, function (item) {
+  //   if (item._id === user_id) {
+  //     empty.push(item);
+  //     // setUserDetails(item)
+  //   } else {
+  //     console.log("No");
+  //   }
+  // });
 
   // const [userDetails, setUserDetails] = useState({})
   let empty = [];

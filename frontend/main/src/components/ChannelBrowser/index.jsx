@@ -15,6 +15,7 @@ const ChannelBrowser = () => {
   const dispatch = useDispatch();
   const [orgId, setOrgId] = useState("");
   const { _getChannels } = bindActionCreators(appActions, dispatch);
+ 
 
   const loadChannels = async () => {
     await _getChannels(orgId.org_id);
