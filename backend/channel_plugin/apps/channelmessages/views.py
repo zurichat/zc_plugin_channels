@@ -579,13 +579,13 @@ def paginate_messages(request, org_id, channel_id):
     data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
     response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size)
     
-    if response['data']:
-        payload = {
-            "user_id": user_id,
-            "last_timestamp": response['data'][-1]['timestamp']
-        }
+    # if response['data']:
+    #     payload = {
+    #         "user_id": user_id,
+    #         "last_timestamp": response['data'][-1]['timestamp']
+    #     }
 
-        save_response = save_last_message_user(org_id, "userscroll", payload)
+    #     save_response = save_last_message_user(org_id, "userscroll", payload)
 
     
     return Response(response, status=status.HTTP_200_OK)
