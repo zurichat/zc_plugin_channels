@@ -21,6 +21,7 @@ export const USER_CAN_INPUT = "USER_CAN_INPUT";
 export const GET_FILES = "GET_FILES";
 export const DELETE_CHANNEL = "DELETE_CHANNEL";
 export const GET_WORKSPACE_USERS = "GET_WORKSPACE_USERS";
+export const SEND_EMOJI='SEND_EMOJI';
 export const EDIT_CHANNEL_DESCRIPTION = "EDIT_CHANNEL_DESCRIPTION";
 export const EDIT_CHANNEL_TOPIC = "EDIT_CHANNEL_TOPIC";
 export const isEditMode = "isEditMode";

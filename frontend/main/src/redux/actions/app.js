@@ -25,6 +25,7 @@ import {
   GET_WORKSPACE_USERS,
   EDIT_CHANNEL_DESCRIPTION,
   EDIT_CHANNEL_TOPIC,
+  SEND_EMOJI
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -75,6 +76,17 @@ const _getWorkspaceUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
+
+const _sendEmojis=(org_id,msg_id,user_id,channel_id,data)=>async (dispatch)=>{
+  try {
+    const res = await APIService.sendEmojis(org_id,msg_id,user_id,channel_id,data);
+    // console.log(res.data)
+    dispatch({ type: SEND_EMOJI, payload: res.data });
+  } catch (err) {
+    console.log("Oops something went wrong", err.message);
+  }
+};
+
 const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
   try {
     // Result comes from the endpoint
@@ -327,5 +339,6 @@ const appActions = {
   _getWorkspaceUsers,
   _editChannelDescription,
   _editChannelTopic,
+  _sendEmojis
 };
 export default appActions;
