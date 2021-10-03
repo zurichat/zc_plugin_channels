@@ -213,17 +213,9 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         if result.__contains__("_id") or isinstance(result, dict):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-                if result.__contains__("_id"):
-                    # call signal here
-                    request_finished.send(
-                        sender=self.__class__,
-                        dispatch_uid="ChannelUpdateSignal",
-                        org_id=org_id,
-                        channel_id=channel_id,
-                        data=result.copy(),
-                    )
-                    status_code = status.HTTP_201_CREATED
-                return Response(result, status=status_code)
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
+
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
@@ -261,15 +253,14 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         ):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-                # TODO: make this block asynchronus
-                # for user_id in result["users"].keys():
-                #     request_finished.send(
-                #         sender=None,
-                #         dispatch_uid="UpdateSidebarSignal",
-                #         org_id=org_id,
-                #         user_id=user_id,
-                #     )
-            status_code = status.HTTP_200_OK
+                request_finished.send(
+                    sender = self.__class__,
+                    dispatch_uid="ChannelUpdateSignal",
+                    org_id=org_id,
+                    channel_id=channel_id,
+                    data=result.copy()
+                )
+            status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
