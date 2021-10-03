@@ -82,7 +82,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             )
             status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code)
-    
+
     @swagger_auto_schema(
         operation_id="create-room",
         request_body=RoomSerializer,
@@ -101,7 +101,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         serializer.is_valid(raise_exception=True)
         channel_serializer = serializer.convert_to_channel_serializer()
         channel_serializer.is_valid()
-        print(channel_serializer)
         channel = channel_serializer.data.get("channel")
         result = channel.create(serializer.data.get("ord_id"))
         status_code = status.HTTP_404_NOT_FOUND
@@ -117,7 +116,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             return Response(serializer.data, status=status_code)
         else:
             return Response(result, status=status_code)
-
 
     @swagger_auto_schema(
         operation_id="create-room",
@@ -781,7 +779,9 @@ class ChannelMemberViewset(ViewSet):
                             # added_by=request.query_params.get("user_id"),
                             added=output,
                         )
-                    status_code = status.HTTP_201_CREATED if output else status.HTTP_200_OK
+                    status_code = (
+                        status.HTTP_201_CREATED if output else status.HTTP_200_OK
+                    )
                     return Response(output, status=status_code)
                 else:
                     return Response(
@@ -964,6 +964,9 @@ class ChannelMemberViewset(ViewSet):
                 for key in user_data.keys():
                     if key != "_id":
                         user_data[key] = request.data.get(key, user_data[key])
+
+                if "starred" not in user_data.keys():
+                    user_data["starred"] = request.data.get("starred", False)
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
