@@ -74,7 +74,7 @@ const _getWorkspaceUsers = (params) => async (dispatch) => {
 const _sendEmojis=(org_id,msg_id,user_id,channel_id,data)=>async (dispatch)=>{
   try {
     const res = await APIService.sendEmojis(org_id,msg_id,user_id,channel_id,data);
-    console.log(res.data)
+    // console.log(res.data)
     dispatch({ type: SEND_EMOJI, payload: res.data });
   } catch (err) {
     console.log("Oops something went wrong", err.message);

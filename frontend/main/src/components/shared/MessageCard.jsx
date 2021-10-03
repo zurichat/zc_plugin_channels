@@ -25,24 +25,13 @@ const threadReply = [
 
 const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers,_id }) => {
   const [showOptions, setShowOptions] = useState(false)
-  const formattedTime = instance.formatDate(timestamp, 'LT')
-  const dispatch = useDispatch();
-  const { _pinMessage } = bindActionCreators(appActions, dispatch);
-
-  const pinMessage = () => {
-    const orgId = 1 // Hardcoded value to for channelId in org with id 1
-    const messageId = "61413e736173056af01b4d31"
-    const userId = "cephas"
-    const channelId = "613f70bd6173056af01b4aba"
-    _pinMessage(orgId, channelId, userId, messageId)
-  }
-
-  const [showOptions, setShowOptions] = useState(false)
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const [emoji,setEmoji]=useState([])
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
   const { _pinMessage } = bindActionCreators(appActions, dispatch);
+
+
 
   const pinMessage = () => {
     const orgId = 1 // Hardcoded value to for channelId in org with id 1

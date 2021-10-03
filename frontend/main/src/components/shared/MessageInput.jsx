@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { Divider, Flex } from "@chakra-ui/layout";
 import { Box, Button, Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
