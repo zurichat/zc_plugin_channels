@@ -21,8 +21,9 @@ CLIENT = CentClient(
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def JoinedChannelSignal(sender, **kwargs):
-        serializer = ChannelMessageSerializer(
-            data=data, context={"channel_id": channel_id, "org_id": org_id}
+    serializer = ChannelMessageSerializer(
+        data=data, context={"channel_id": channel_id, "org_id": org_id}
+    )
     
     uid = kwargs.get("dispatch_uid")
     
@@ -56,7 +57,6 @@ def JoinedChannelSignal(sender, **kwargs):
         channelmessage.type = "event"
         channelmessage.event = event
         channelmessage.can_reply = False
-=======
         try:
             serializer = ChannelMessageSerializer(
                 data=data, context={"channel_id": channel_id, "org_id": org_id}
@@ -67,7 +67,6 @@ def JoinedChannelSignal(sender, **kwargs):
             channelmessage.type = "event"
             channelmessage.event = event
             channelmessage.can_reply = False
->>>>>>> 83443824799f880c1d34fec26578e5cd8da4f730
 
             # required
             result = channelmessage.create(org_id)
