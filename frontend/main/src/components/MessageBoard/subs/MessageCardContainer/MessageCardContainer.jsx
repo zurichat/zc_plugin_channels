@@ -86,4 +86,3 @@ const MessageCardContainer = ({ channelId,allUsers, org_id }) => {
 
 export default MessageCardContainer;
 
-
