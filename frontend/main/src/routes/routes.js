@@ -13,6 +13,7 @@ import MessageBoardEmpty from "../components/MessageBoard/subs/EmptyMessageBoard
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from "../redux/actions/app";
+import centrifugo from "../utils/centrifugo";
 
 const routes = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,10 @@ const routes = () => {
   useEffect(async () => {
     loadData();
     loadUsers();
+    
+    centrifugo.addListener("UpdateOrganizationMemberProfile", () => {
+      _getWorkspaceUsers()
+    })
   }, []);
 
   const { workspace_users } = useSelector((state) => state.appReducer);

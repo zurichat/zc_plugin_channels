@@ -299,6 +299,33 @@ def find_match_in_db(org_id, collection_name, param, value, return_data=False):
         print("No match")
         return None
 
+def manage_channel_permissions(org_id, channel_id, payload):
+
+
+    collection_name = "channelpermissions"
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
+        "bulk_write": False,
+        "payload": payload
+    }    
+
+    if find_match_in_db(org_id, "channelpermissions", "channel_id", channel_id):
+        data['bulk_write'] = True
+        response = requests.put(write, data= json.dumps(data))
+        return response.json()
+    response = requests.post(write, data= json.dumps(data))
+    return response.json()
+
+def get_channel_permissions(org_id, channel_id):
+    pass    
+
 def get_thread_from_message(org_id, collection_name, channelmessage_id, page, page_size):
     data = {
         "plugin_id": settings.PLUGIN_ID,
@@ -306,23 +333,33 @@ def get_thread_from_message(org_id, collection_name, channelmessage_id, page, pa
         "collection_name": collection_name,
         "filter": {
             "$and": [
-                {"channelmessage_id": {"$eq": channelmessage_id}},
+                {"channel_id": {"$eq": channel_id}},
             ]
         },
-
-        "options" : {
-
-        }
+        "options": {},
     }
 
     skips = page_size * (page - 1)
 
-    data["options"].update({
-        "skip" : skips,
-        "limit" : page_size,
-        })
-    
+    data["options"].update(
+        {
+            "skip": skips,
+            "limit": page_size,
+        }
+    )
+
     response = requests.post(read, data=json.dumps(data))
 
-    return response.json()
+    data = response.json()
+    pg_links = gen_page_links(org_id, "userscroll", channel_id, page, page_size)
 
+    for i in pg_links:
+        if pg_links[i] is not None:
+            try:
+                pg_links[i] = site_host + pg_links[i]
+            except:  # noqa
+                pass
+
+    data["links"] = pg_links
+
+    return data

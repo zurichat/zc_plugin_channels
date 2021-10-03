@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
-import { IoNotificationsOffOutline } from "react-icons/io";
+// import { IoNotificationsOffCircleOutline } from "react-icons/io";
+import { MdNotificationsOff } from "react-icons/md";
 import { CgMore } from "react-icons/cg";
 import smileEmoji from '../images/emoji-smile.png';
 import Picker from "emoji-picker-react";
@@ -127,7 +128,7 @@ const OnClickUserProfile = ({showProfile ,setShowProfile }) => {
                     <IconButton
                       pos="relative"
                       left={-7}
-                      icon={<IoNotificationsOffOutline />}
+                      icon={<MdNotificationsOff />}
                       background="#F0FDF9"
                       width="40px"
                       height="40px"
