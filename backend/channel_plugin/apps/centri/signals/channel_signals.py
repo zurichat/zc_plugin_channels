@@ -23,16 +23,12 @@ def JoinedChannelSignal(sender, **kwargs):
     if uid == "JoinedChannelSignal":
         org_id = kwargs.get("org_id")
         channel_id = kwargs.get("channel_id")
-        user = kwargs.get("user", kwargs.get("added"))
+        user = kwargs.get("user")
 
         room_name = build_room_name(org_id, channel_id)
-        
+
         if user:
-            data = {
-                "user_id": user.get("_id"),
-                "content": "event",
-                "files": []
-            }
+            data = {"user_id": user.get("_id"), "content": "event", "files": []}
         else:
             if not kwargs.get("added"):
                 return None
@@ -41,20 +37,16 @@ def JoinedChannelSignal(sender, **kwargs):
                     data = {
                         "user_id": kwargs.get("added")[0].get("_id"),
                         "content": "event",
-                        "files": []
+                        "files": [],
                     }
-                except:
+                except:  # noqa
                     return None
 
-        event = {
-            "action": "join:channel",
-            "recipients": kwargs.get("added", [user])
-        }
-        
+        event = {"action": "join:channel", "recipients": kwargs.get("added", [user])}
+
         try:
             serializer = ChannelMessageSerializer(
-                data=data,
-                context={"channel_id": channel_id, "org_id": org_id}
+                data=data, context={"channel_id": channel_id, "org_id": org_id}
             )
 
             serializer.is_valid(raise_exception=True)
@@ -62,7 +54,7 @@ def JoinedChannelSignal(sender, **kwargs):
             channelmessage.type = "event"
             channelmessage.event = event
             channelmessage.can_reply = False
-            
+
             # required
             result = channelmessage.create(org_id)
             print("\n")
