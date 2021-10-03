@@ -20,6 +20,7 @@ import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 import Centrifuge from 'centrifuge';
 
 import { SubscribeToChannel } from '@zuri/control'
+import Linkify from 'react-linkify'
 
 
 
@@ -128,6 +129,7 @@ const MessageBoardIndex = ({allUsers}) => {
   }, [channelId]);
 
   return (
+    <Linkify>
     <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
@@ -156,6 +158,7 @@ const MessageBoardIndex = ({allUsers}) => {
         </Box> */}
       </Flex>
     </Box>
+    </Linkify>
   );
 };
 

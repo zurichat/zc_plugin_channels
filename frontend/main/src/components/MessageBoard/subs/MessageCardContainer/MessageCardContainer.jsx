@@ -23,7 +23,7 @@ import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
 //centrifuge
 import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
-
+import Linkify from 'react-linkify'
 
 const MessageCardContainer = ({ channelId,allUsers }) => {
 
@@ -62,6 +62,7 @@ const MessageCardContainer = ({ channelId,allUsers }) => {
 
     return (
         <>
+        <linkify>
             <Box overflowY='scroll'
                 height='100%'
                 position='relative'>
@@ -80,6 +81,7 @@ const MessageCardContainer = ({ channelId,allUsers }) => {
                 }
                 <Box />
             </Box>
+            </linkify>
         </>
     )
 }
