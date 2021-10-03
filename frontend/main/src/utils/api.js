@@ -135,6 +135,10 @@ class APIServices {
     return api.get(`/${org_id}/channels/${channel_id}/media/?format=json`);
   }
 
+  async sendEmojis(msg_id,org_id,user_id,channel_id,data){
+    return api.post(`/${org_id}/messages/${msg_id}/reactions/?user_id=${user_id}&channel_id=${channel_id}/`,data);
+  }
+
 
   async userCanInput(org_id, channel_id, data) {
     return api.post(

@@ -10,6 +10,8 @@ import { CgMoreVertical } from "react-icons/cg"
 import appActions from "../../redux/actions/app"
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Picker from "emoji-picker-react";
+import { useParams } from "react-router";
 
 import instance from '../../utils/utils';
 
@@ -23,6 +25,8 @@ const threadReply = [
 
 const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => {
   const [showOptions, setShowOptions] = useState(false)
+  const [chosenEmoji, setChosenEmoji] = useState(null);
+  const [emoji,setEmoji]=useState([])
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
   const { _pinMessage } = bindActionCreators(appActions, dispatch);
@@ -35,6 +39,57 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
     _pinMessage(orgId, channelId, userId, messageId)
   }
 
+  const {channelId}= useParams()
+  const {users}=useSelector((state)=>state.appReducer)
+  const {_sendEmojis} = bindActionCreators(appActions,dispatch);
+
+  const onEmojiClick = (e, emojiObject) => {
+    const datas={
+      title: "smily face",
+      user_id: users ? users._id : "614f06e6e35bb73a77bc2aa3",
+    }
+    // for(var i=0;i<channelMessages_id;i++){
+    //   let clickedChannelMessages=channelMessages[i]
+    //   console.log(clickedChannelMessages)
+    // }
+
+    const userId = users ? users._id : "614f06e6e35bb73a77bc2aa3"
+    const orgId = users ? users.org_id : '614679ee1a5607b13c00bcb7' // Hardcoded value to for channelId in org with id 1
+    const messageId = _id
+
+      if(emoji.length < 1){
+        setEmoji([{...emojiObject,count:1}])
+      }
+      else{
+        const emojiIndex=emoji.map(el=>el.unified).indexOf(emojiObject.unified)
+        if(emojiIndex===-1){
+          setEmoji((prevState)=>[...prevState,{...emojiObject,count:1}])
+        }
+        else{
+          const newObj=emoji[emojiIndex]
+          const newObjs={...newObj,count:newObj.count + 1}
+          const filterEmoji=emoji.map((el,id)=>{
+            if(id===emojiIndex){
+              return newObjs
+            }else{
+              return el
+            }
+          })
+          setEmoji(()=>filterEmoji)
+        }
+      }
+
+      _sendEmojis(orgId,messageId,userId,channelId,datas)
+  }
+
+  
+  const EmojisCounter=emoji.map(emoji=>{
+    return (emoji.count)
+  })
+  const Emojis=emoji.map(emoji=>{
+    return (emoji.emoji)
+  })
+
   // const actions = {
   //   pinMessage
   // }
@@ -45,7 +100,11 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
         onMouseEnter={() => setShowOptions(true)}
         onMouseLeave={() => setShowOptions(false)}
       >
-        <HoverOptions show={showOptions} actions={pinMessage} />
+              {
+                chosenEmoji &&  <Picker onEmojiClick={onEmojiClick} pickerStyle={{ width: '50%',position:"absolute",zIndex:'10' }}/>
+              }
+        <HoverOptions show={showOptions} actions={pinMessage} onEmojiClick={onEmojiClick} 
+      setChosenEmoji={setChosenEmoji} chosenEmoji={chosenEmoji}/>
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
             <Avatar name={user_id} src={icon} w="36px" h="36px" borderRadius="4px" />
@@ -62,6 +121,8 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
             <Box m="0px">
               <Text pr="40px" fontSize={["12px", "15px"]} display="inline-flex" justifyItems="baseline">{content} {edited && <Text fontSize="8px" display="contents">{"(edited)"}</Text>}</Text>
             </Box>
+            <Box>{Emojis}</Box>
+            <Box>{EmojisCounter}</Box>
             {replies !== 0 && (
               <HStack spacing="5px" mt="5px">
                 {
@@ -91,7 +152,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
   );
 };
 
-const HoverOptions = ({ show, actions }) => {
+const HoverOptions = ({ show, actions,chosenEmoji,setChosenEmoji }) => {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -117,7 +178,7 @@ const HoverOptions = ({ show, actions }) => {
       display={show || isMenuOpen ? "flex" : "none"}
     >
       <Square {...commonOptionStyle}>
-        <HiOutlineEmojiHappy />
+        <HiOutlineEmojiHappy onClick={() => setChosenEmoji(!chosenEmoji)}/>
       </Square>
       <Square {...commonOptionStyle}>
         <FaRegCommentDots />

@@ -19,6 +19,7 @@ import {
   GET_FILES,
   DELETE_CHANNEL,
   GET_WORKSPACE_USERS,
+  SEND_EMOJIS
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -80,6 +81,17 @@ const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
     console.log(error); // Handle exceptions here
   }
 };
+
+  const _sendEmojis=(msg_id,org_id,user_id,channel_id,data)=>async (dispatch) =>{
+    try{
+      const res=await APIService.sendEmojis(msg_id,org_id,user_id,channel_id,data);
+      console.log(res.data)
+      dispatch({type:SEND_EMOJIS,payload:res.data})
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
 const _getChannelMessages = (org_id, channel_id) => async (dispatch) => {
   try {
     // Result comes from the endpoint
@@ -288,5 +300,6 @@ const appActions = {
   _getFiles,
   _getWorkspaceUsers,
   _getNotifications,
+  _sendEmojis
 };
 export default appActions;
