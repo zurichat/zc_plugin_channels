@@ -13,12 +13,8 @@ import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSetting
 import hashImage from "./assets/default.png";
 
 
-
 const NewChannelHeader = ({channelId}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
- // const {channelId} = useParams();
-  //console.log("This is a test",channelId)
 
   const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
   const channel_id = channelId; //assigning dynamic channel id to channel_id
@@ -41,7 +37,7 @@ const NewChannelHeader = ({channelId}) => {
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
   console.log(channelDetails);//to see what kind of data I'm actually getting
 
-  const isPrivate = channelDetails.private;// to check if channel is private or not
+  // const isPrivate = channelDetails.private;// to check if channel is private or not
 
   const icon = hashImage;
   // {isPrivate ? icon = <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> : icon = <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />};
@@ -57,7 +53,6 @@ const NewChannelHeader = ({channelId}) => {
     userCount: channelDetails.members, //User count on header
     eventTitle: () => {
       onOpen()
-      // <ChannelDetails isOpen={isOpen} onClose={onClose} />
     },
     eventThumbnail: () => {
       onOpen()
