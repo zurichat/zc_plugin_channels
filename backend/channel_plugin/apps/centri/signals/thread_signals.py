@@ -5,9 +5,9 @@ from django.conf import settings
 
 from cent import CentException
 
-from apps.centri.centwrapper import CentClient
-from apps.threads.views import ThreadViewset
-from apps.centri.helperfuncs import build_room_name
+from channel_plugin.apps.centri.centwrapper import CentClient
+from channel_plugin.apps.threads.views import ThreadViewset
+from channel_plugin.apps.centri.helperfuncs import build_room_name
 
 
 CLIENT = CentClient(
