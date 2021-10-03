@@ -4,7 +4,7 @@ const mainMessage = {
   name: "Sammy Hunter",
   time: "10:30 am",
   message:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis. Volutpat tempus egestas donec pretium.",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis.",
   avatar: "https://bit.ly/dan-abramov",
   replies: 20,
 };

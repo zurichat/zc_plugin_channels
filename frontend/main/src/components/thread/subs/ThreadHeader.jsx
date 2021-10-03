@@ -3,35 +3,37 @@ import { Box, Container, CloseButton } from "@chakra-ui/react";
 import appActions from "../../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
+import { pluginHeader } from "@zuri/plugin-header";
 
 
 function ThreadHeader({channelId, onClose}) {
   // const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
 
-  const { users } = useSelector((state) => state.appReducer);
-  console.log(users);
+  // const { users } = useSelector((state) => state.appReducer);
+  // console.log(users);
 
-  const org_id = users.org_id;
-  const channel_id = channelId; //assigning dynamic channel id to channel_id
+  // const org_id = users.org_id;
+  // const channel_id = channelId; //assigning dynamic channel id to channel_id
 
-  const dispatch = useDispatch();
-  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
+  // const dispatch = useDispatch();
+  // const { _getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
 
-  const loadChannelDetails = async () => {
+  // const loadChannelDetails = async () => {
 
-    await _getChannelDetails(org_id, channel_id);
+  //   await _getChannelDetails(org_id, channel_id);
 
-  };
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    loadChannelDetails();
+  //   loadChannelDetails();
 
-  }, [channelId]);
+  // }, [channelId]);
 
-  const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
-  console.log(channelDetails); // to extract name
+  // const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
+  // console.log(channelDetails); // to extract name
 
+ 
   return (
     <Container
       alignItems="center"
@@ -43,9 +45,9 @@ function ThreadHeader({channelId, onClose}) {
         #00B87C"
       w="100%"
     >
-      <Box fontSize="18px" margin="13px" fontWeight="bold">
+      <Box fontSize="md" margin="13px" fontWeight="bold">
         Thread
-        <Text fontSize="sm">#{channelDetails.name}</Text>
+        {/* <Text fontSize="sm">#{channelDetails.name}</Text> */}
       </Box>
       <CloseButton borderWidth="0" bg="none" margin="12px" onClick={onClose} />
     </Container>
