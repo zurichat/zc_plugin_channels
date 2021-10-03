@@ -123,7 +123,7 @@ console.log("\n\n Workspace users: \n\n",workspace_users)
     async function updateSocketName(){
 
       
-      await _getSocket(users.currentWorkspace, channelId)
+      await _getSocket(org_id, channelId)
       console.log("We've gotten the socket details")
       
       
