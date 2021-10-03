@@ -25,7 +25,7 @@ import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
-const MessageCardContainer = ({ channelId,allUsers }) => {
+const MessageCardContainer = ({ channelId,allUsers, org_id }) => {
 
     const dispatch = useDispatch()
     const history = useHistory()
@@ -54,7 +54,7 @@ const MessageCardContainer = ({ channelId,allUsers }) => {
     useEffect(() => {
         console.log("\n\n\nUseEffect works\n\n\n");
         const loadData = async () => {
-            _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
+            _getChannelMessages(users.currentWorkspace, channelId)
         }
         loadData()
     }, [channelId]);
@@ -65,7 +65,7 @@ const MessageCardContainer = ({ channelId,allUsers }) => {
             <Box overflowY='scroll'
                 height='100%'
                 position='relative'>
-                <EmptyStateComponent />
+                <EmptyStateComponent org_id={org_id} />
                 {channelMessages && channelMessages.length > 0 &&
                     <Box ref={messageRef}>
                         {channelMessages && channelMessages.length > 0 &&
@@ -85,5 +85,4 @@ const MessageCardContainer = ({ channelId,allUsers }) => {
 }
 
 export default MessageCardContainer;
-
 
