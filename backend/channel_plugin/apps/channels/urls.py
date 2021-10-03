@@ -8,6 +8,7 @@ from apps.channels.views import (
     channel_socket_view,
     user_channel_list_delete,
     notification_views,
+    channel_list_zc_main_views,
     handle_channel_permissions,
 )
 from django.urls import path
@@ -15,6 +16,7 @@ from django.urls import path
 app_name = "channels"
 
 urlpatterns = [
+    path("channels/", channel_list_zc_main_views),
     path("<str:org_id>/channels/", channel_list_create_view),
     path("<str:org_id>/channels/<str:channel_id>/files/", channel_media_all_view),
     path(
