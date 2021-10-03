@@ -8,4 +8,5 @@ urlpatterns = [
     path("<str:org_id>/messages/<str:msg_id>/reactions/", views.channelmessage_reactions),
     path("<str:org_id>/channels/<str:channel_id>/search_messages/", views.search_channelmessage),
     path("<str:org_id>/channels/<str:channel_id>/messages/paginated/", views.paginate_messages),
+    path("<str:org_id>/channels/<str:channel_id>/messages/cursor/", views.get_user_cursor),
 ]

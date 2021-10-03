@@ -2,6 +2,7 @@ from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from django.utils.timezone import datetime
+from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
@@ -10,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user
+from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user, find_match_in_db
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
@@ -546,24 +547,40 @@ def paginate_messages(request, org_id, channel_id):
     page = int(request.GET.get("page", 1))
     last_timestamp = request.GET.get("last_timestamp", None)
     page_size = int(request.GET.get("page_size", DEFAULT_PAGE_SIZE))
-    user_id = request.GET.get("user_id", "error")
+    user_id = request.GET.get("user_id", None)
 
-    if user_id == "error":
-        response = {"status":True, "message":"Please pass a user_id as a param"}
+    if not user_id:
+        response = {"status":False, "message":"Please pass a user_id as a param"}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
     # Remove whitespace as a result of '+' conversion to ' '
     # last_timestamp = "+".join(last_timestamp.split(" "))
     data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
     response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size)
     
-    # if response['data']:
-    #     payload = {
-    #         "user_id": user_id,
-    #         "last_timestamp": response['data'][-1]['timestamp']
-    #     }
+    payload = {
+            "user_id": user_id,
+            "last_page": page,
+            "page_size": page_size,
+            "date":timezone.now().isoformat()
+        }
 
-    #     save_response = save_last_message_user(org_id, "userscroll", payload)
+    save_response = save_last_message_user(org_id, "userscroll", payload)
 
     
     return Response(response, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_user_cursor(request, org_id, channel_id):
+    DEFAULT_PAGE_SIZE = 10
+    user_id = request.GET.get("user_id", None)
+    if user_id == None:
+        response = {"message":"Pass a user_id as a url param", "status":False}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    data = find_match_in_db(org_id, "userscroll", "user_id", user_id, return_data=True)
+    response = {"data":data, "status":True, "message":"Last message lookup location"}
+
+    return Response(response, status=status.HTTP_200_OK) 
+    
 

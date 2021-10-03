@@ -196,16 +196,21 @@ def save_last_message_user(org_id, collection_name, payload):
             "payload": payload,
         }
 
-    match = find_match_in_db(org_id, collection_name, "user_id", payload['user_id'])
-    if match == None:
+    if find_match_in_db(org_id, collection_name, "user_id", payload['user_id']):
+        data["bulk_write"]= True
+        data.update({"filter": {"user_id": 
+                                            {"$eq": payload["user_id"]}
+                                   }
+                        })
+        r = requests.put(write, data= json.dumps(data))
+        print("UPDATED")
+    
+    else:
+
         r = requests.post(write, data = json.dumps(data))
         print("Created new")
-    else:
-        data.update({"object_id":payload['user_id']})
-        r = requests.put(read, data= json.dumps(data))
-        print("Updated")
-
-def find_match_in_db(org_id, collection_name, param, value):
+    
+def find_match_in_db(org_id, collection_name, param, value, return_data=False):
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -217,15 +222,16 @@ def find_match_in_db(org_id, collection_name, param, value):
         },
     }
 
-    response = requests.get(read, data=json.dumps(data))
-    response_data = response
+    response = requests.post(read, data=json.dumps(data))
+    response_data = response.json()
     print(response_data)
-    if response.ok:
-        print("We made a match")
-        return True
+    try:
+        if return_data:
+            return response_data['data']
+        if response_data['data'] != None:
+            print("We made a match")
+            return True
 
-    else:
+    except:
         print("No match")
         return None
-
-
