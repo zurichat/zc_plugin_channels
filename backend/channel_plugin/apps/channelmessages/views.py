@@ -9,6 +9,7 @@ from rest_framework import status, throttling
 from rest_framework.decorators import action, api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
+from django.urls import reverse
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user, find_match_in_db
@@ -543,6 +544,8 @@ search_channelmessage = search_messages
 
 @api_view(["GET","POST"])
 def paginate_messages(request, org_id, channel_id):
+    SITE_HOST = request.get_host()
+
     DEFAULT_PAGE_SIZE = 10
     page = int(request.GET.get("page", 1))
     last_timestamp = request.GET.get("last_timestamp", None)
@@ -554,8 +557,9 @@ def paginate_messages(request, org_id, channel_id):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
     # Remove whitespace as a result of '+' conversion to ' '
     # last_timestamp = "+".join(last_timestamp.split(" "))
-    data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
-    response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size)
+    # data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
+
+    response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size, site_host= SITE_HOST)
     
     payload = {
             "user_id": user_id,
