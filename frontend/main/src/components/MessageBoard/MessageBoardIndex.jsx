@@ -123,7 +123,7 @@ const MessageBoardIndex = () => {
     async function updateSocketName(){
 
       
-      await _getSocket(users.currentWorkspace, channelId)
+      await _getSocket(org_id, channelId)
       console.log("We've gotten the socket details")
       
       
@@ -150,6 +150,8 @@ const MessageBoardIndex = () => {
   })
 
   return (
+    <>
+    {Object.keys(workspace_users).length > 0 ?
     <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
@@ -178,6 +180,9 @@ const MessageBoardIndex = () => {
         </Box> */}
       </Flex>
     </Box>
+    : <Text textAlign="center" fontSize="5rem" color="green">Loading...</Text>}
+    </>
+
   );
 };
 
