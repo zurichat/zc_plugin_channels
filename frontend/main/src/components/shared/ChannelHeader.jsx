@@ -15,7 +15,7 @@ import NewChannelHeader from "./pluginHeader";
 import _ from "lodash";
 import MoreNotificationModal from "./MoreNotificationModal";
 
-const ChannelHeader = ({channelId, org_id}) => {
+const ChannelHeader = ({channelId}) => {
   const { users } = useSelector(state => state.appReducer)
   let _users;
   let orgId;
@@ -30,6 +30,7 @@ const ChannelHeader = ({channelId, org_id}) => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const dispatch = useDispatch();
    //.......getting pinned messages from redux store...........//
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch); //extract redux function
   const { pinnedMessages } = useSelector((state) => state.channelsReducer);
@@ -60,48 +61,6 @@ const ChannelHeader = ({channelId, org_id}) => {
           <MoreNotificationModal isOpen={isOpen} onClose={onClose} />
         </Flex>
       </Box> 
-
-      {/* <Flex flexShrink={0} ml="1px" align="center" bgColor="#00B87C" height="47px" boxShadow="xs" maxWidth='100%' w="100%" display={['none','flex']}>
-        <> 
-          <Button size='sm' bgColor='#00B87C' _focus={{ bg: "#00C384" }} _active={{ bg: "#00C384" }} flexShrink={0} borderRadius="6px" ml={5} width='20%' height='30px' p="4" align="center" _hover={{ bg: "#00C384" }} onClick={onOpen}>
-            {isPrivate === true ? <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> :<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />  }       
-            <Box as="span" letterSpacing='wide' lineHeight='32px' fontSize="17.5px" color="#ffffff" fontWeight="medium" mr={1}>{channelDetails.name}</Box> 
-            <Icon as={BiChevronDown} color="#ffffff" w={6} h={5} />
-          </Button>
-          <ChannelDetails isOpen={isOpen} onClose={onClose} />
-        </> 
-        <Spacer />
-        <Link to="/channel-detail"><Flex p="4"><Spacer/>
-          <Button variant='ghost' bgColor='#01D892' _hover={{ bg: "#01D892" }} _focus={{ bg: "#01D892" }} _active={{ bg: "#01D892" }} size='sm' width="85%" borderRadius='4px'  height='33px' mr='0.5%'>
-            {/* <AvatarGroup ml='0.1px' size="sm" max={3} spacing='-2' >
-              {avatars.map((avatar) => {
-                return <Avatar name={avatar.name} borderRadius="5px" borderWidth='2px' borderColor='#01D892' height='31px' width='31px' />;
-              })}
-            </AvatarGroup> */}
-            {/* <Box as="span" fontWeight='medium' mr='8px' ml='5px' textColor='#ffffff' fontWeight="semi-bold" >{channelDetails.members}</Box>
-          </Button>
-          </Flex></Link> */}
-      {/* </Flex> */} 
-     
-      {/*Mobile responsive version */}
-      {/* <Flex ml="3px" align="center" bgColor="#00B87C" height="75.92px" boxShadow="xs" maxWidth='1172px' w="100%" display={['flex','none']}>
-        <Icon as={ BiChevronLeft } color="#ffffff" h={10} w={10} ml={2}  />
-          <Link to='/channel-detail'><Flex ml={1}  alignContent='center' flexDir='column'>
-            <Flex align='center' flexDir='row'>
-            {isPrivate === true ? <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> :<Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />  }
-              <Box as="span" letterSpacing='wide'  fontSize="18px" color="#ffffff" fontWeight="501" mr={1} >
-                {channelDetails.name}
-              </Box>
-            </Flex>
-            <Box as='span' fontSize='12px' fontWeight='500' ml='2%' color='#ffffff'>{channelDetails.members} members</Box>
-          </Flex></Link> 
-          <Spacer /> 
-          <Flex p="4" align='center'>
-            <HStack spacing='10px' justifyContent='space-between'>
-            <IconButton variant='unstyled' size='sm' icon={<Image src={searchImage}  color='#ffffff'/>} aria-label="search"></IconButton>
-           <Link to="/channel-detail"><IconButton variant='unstyled' size='sm' icon={<Image src={infoImage}  color='#ffffff'/>} aria-label='channel-details' color='#ffffff' /></Link></HStack>
-          </Flex>
-      </Flex>  */}
     </Box> 
   );
 };
