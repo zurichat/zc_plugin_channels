@@ -25,6 +25,7 @@ import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
+
 const MessageCardContainer = ({ channelId }) => {
 
     const dispatch = useDispatch()
@@ -37,6 +38,10 @@ const MessageCardContainer = ({ channelId }) => {
     const noOfMessages = 20;
 
     const messageRef = useRef();
+
+    if(Notification.permission === "default"){
+        Notification.requestPermission()
+    }
 
     useEffect(() => {
         if (messageRef.current) {

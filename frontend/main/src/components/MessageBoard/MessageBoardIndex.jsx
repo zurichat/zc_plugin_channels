@@ -21,6 +21,9 @@ import Centrifuge from 'centrifuge';
 
 import { SubscribeToChannel } from '@zuri/control'
 
+//notifications
+import notificationsManager from "./subs/Centrifugo/NotificationsManager";
+
 
 
 
@@ -32,8 +35,10 @@ const MessageBoardIndex = () => {
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
   const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
+  const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
+
+  const [ orgId, setOrgId ] = useState()
 
   
 
@@ -54,6 +59,7 @@ const MessageBoardIndex = () => {
 
             case 'join:channel' || 'leave:channel' || 'create:message' :{
               dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+              notificationsManager(messageCtx.data.content)
               break;
             }
 
@@ -126,6 +132,22 @@ const MessageBoardIndex = () => {
 
   }, [channelId]);
 
+  useEffect(() => {
+    if(users){
+      setOrgId(users[0])
+    }
+  }, [])
+
+   const retrieveNotificationSettings = () =>{
+     _getNotifications(orgId?.org_id, channelId, orgId?._id)
+  }
+
+  useEffect(() =>{
+    if(orgId){
+      retrieveNotificationSettings()
+    }
+  })
+
   return (
     <Box bg="#F9F9F9" width="99%">
       <Flex>
@@ -135,7 +157,7 @@ const MessageBoardIndex = () => {
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["83vh", "85vh", "70vh", "68vh"]}
+            height={["83vh", "85vh", "65vh", "58vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",

@@ -125,6 +125,23 @@ const _setNotifications =
       console.log(error);
     }
   };
+const _getNotifications =
+  (org_id, channel_id, member_id, data) => async (dispatch) => {
+    try {
+      // Result comes from the endpoint
+      // Let's assume an array of objects is returned from the endpoint
+      const res = await APIService.getNotification(
+        org_id,
+        channel_id,
+        member_id
+      );
+      // Result is sent to the store via dispatch (Pass payload if needed)
+      dispatch({ type: SET_NOTIFICATION, payload: res.data });
+    } catch (error) {
+      // Handle exceptions here
+      console.log(error);
+    }
+  };
 const _getChannel_Thread_Messages =
   (org_id, channel_id) => async (dispatch) => {
     try {
@@ -270,5 +287,6 @@ const appActions = {
   _deleteChannel,
   _getFiles,
   _getWorkspaceUsers,
+  _getNotifications,
 };
 export default appActions;

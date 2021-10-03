@@ -3,6 +3,7 @@ import { Box, HStack } from "@chakra-ui/layout";
 import { Flex, Spacer, Avatar, AvatarGroup, Button, IconButton, Image, useDisclosure } from "@chakra-ui/react";
 import { BiChevronDown, BiChevronLeft, BiLockAlt } from "react-icons/bi";
 import { AiOutlineStar } from 'react-icons/ai';
+import { ImNotification } from "react-icons/im";
 import { Icon } from "@chakra-ui/icon";
 import { FiHash } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -17,6 +18,7 @@ import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSetting
 import NewChannelHeader from "./pluginHeader";
 
 import { useParams } from "react-router";
+import MoreNotificationModal from "./MoreNotificationModal";
 
 //avatar details(Just a placeholder)
 const avatars = [
@@ -54,6 +56,8 @@ const ChannelHeader = ({channelId}) => {
               </PinnedMessages>
           )}
           <IconButton {...pinnedAndBookmarkButtonStyle} width='33px' icon={<Icon w={5} h={4} as={AiOutlineStar}/>}></IconButton>        
+          <IconButton {...pinnedAndBookmarkButtonStyle} width='33px' icon={<Icon w={5} h={4} as={ImNotification} onClick={onOpen}/> }></IconButton>        
+          <MoreNotificationModal isOpen={isOpen} onClose={onClose} />
         </Flex>
       </Box> 
 

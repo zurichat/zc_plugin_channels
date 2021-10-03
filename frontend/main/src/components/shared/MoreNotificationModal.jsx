@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -16,95 +16,122 @@ import {
 import { VStack, Button } from "@chakra-ui/react";
 import { Checkbox } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import appActions from '../../redux/actions/app';
 import { bindActionCreators } from 'redux';
+import { useParams } from 'react-router';
 
 
-const MoreNotificationModal = () => {
+const MoreNotificationModal = ({ isOpen, onClose }) => {
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [value, setValue] = useState("1")
-  const [webSetting, setWebSetting] = useState(1)
+  // const { isOpen, onOpen, onClose } = useDisclosure();
+  // const [value, setValue] = useState("1")
+  const [ userSetting, setUserSetting] = useState()
+  const [ orgId, setOrgId ] = useState()
+
+
+  const [allMessages, setAllMessages] = useState()
+  const [Mentions, setMentions] = useState()
+  const [muteChannel, setMuteChannel] = useState(false)
 
   const [checked, setChecked] = useState("");
 
   const dispatch = useDispatch()
 
+  const { channelId } = useParams()
+
   const { _setNotifications } = bindActionCreators(appActions, dispatch);
 
-  const handleChange = (e) => {
-    setChecked(e.target.checked)
-    setWebSetting(e.target.value)
-    console.log(e.target.value, webSetting);
-    switch (webSetting) {
-      case "1":
-        console.log(webSetting, "all setting clicked");
-        break;
-      case "2":
-        console.log("Mention setting clicked");
-        break;
-      case "3":
-        console.log("Nothing setting clicked");
-        break;
-    
-      default:
-        console.log(webSetting, "no input");
-        break;
+  const { users } = useSelector(state => state.appReducer)
+
+  useEffect(() =>{
+    if(users){
+      setOrgId(users[0])
     }
+  }, [])
+
+
+  // useEffect(() =>{
+  //   if(orgId){
+
+  //   }
+  // })
+
+
+
+  let webSetting
+  let muteChannelOption
+
+  const handleAllMessages = (e) =>{
+    setChecked(e.target.checked)
+    setAllMessages(e.target.checked)
   }
+  const handleMentions = (e) =>{
+    setChecked(e.target.checked)
+    setMentions(e.target.checked)
+  }
+  const handleMuteChannel = (e) =>{
+    setChecked(e.target.checked)
+    muteChannelOption = e.target.checked
+    setMuteChannel(muteChannelOption)
+  }
+
+  useEffect(() =>{
+    if(allMessages){
+      webSetting = "all"
+      setUserSetting(webSetting)
+    }else if(allMessages && Mentions){
+      webSetting = "all"
+      setUserSetting(webSetting)
+    }else if(!allMessages && Mentions){
+      webSetting = "mentions"
+      setUserSetting(webSetting)
+    }else if(!allMessages && !Mentions){
+      webSetting = "nothing"
+      setUserSetting(webSetting)
+    }else{
+      null
+    }
+
+    console.log("Web setting is: ", userSetting);
+  }, [allMessages, Mentions])
+
+  
   
   const datas ={
-          "web": "all",
+          "web": userSetting,
           "mobile": "all",
           "same_for_mobile": true,
-          "mute": true
+          "mute": muteChannel
   }
 
 
+  const saveUserNotificationSettings = () => {
+    _setNotifications("614679ee1a5607b13c00bcb7", "615064306dc33f65ab425514", "614f06e6e35bb73a77bc2aa3", datas)
+    console.log(datas);
+  }
 
 
   return (
     <>
-    <Text onClick={onOpen}>Open Modal</Text>
+
     <Modal onClose={onClose} isOpen={isOpen}>
       <ModalOverlay />
       <ModalContent pb={5}>
-        <ModalHeader>Notifications</ModalHeader>
+        <ModalHeader>Send a notification for</ModalHeader>
         <ModalCloseButton />
         <ModalBody>          
-          <VStack alignItems="flex-start" borderBottom= "1px solid #EBEBEB">
-          <Text fontSize="15px" fontWeight="bold">Send a notification for</Text>
-          <RadioGroup onChange={setValue} value={value} name="web-setting">
-            <Stack direction="column" mb="24px">
-              <Radio colorScheme="green" onChange={handleChange} value="1">All messages</Radio>
-              <Radio colorScheme="green" onChange={handleChange} value="2">Mentions</Radio>
-              <Radio colorScheme="green" onChange={handleChange} value="3">Mute Channel</Radio>
-            </Stack>
-          </RadioGroup>
+          <VStack alignItems="flex-start">
+          <Checkbox paddingTop="1rem" colorScheme="green" onChange={handleAllMessages}>
+            All messages
+          </Checkbox>
+          <Checkbox paddingTop="1rem" colorScheme="green" onChange={handleMentions}>
+            Mentions
+          </Checkbox>
+          <Checkbox paddingTop="1rem" colorScheme="green" onChange={handleMuteChannel}>
+            Mute Channel
+          </Checkbox>
           </VStack>
-
-          <Stack dir="column" mt="24px" fontSize="15px" fontWeight="bold" borderBottom= "1px solid #EBEBEB">
-            <Checkbox colorScheme="green">
-              Use different settings for mobile devices
-            </Checkbox>
-            <RadioGroup name="mobile-setting">
-              <Stack direction="column" mb="24px" ml="20px">
-                <Radio colorScheme="green" value="4">All messages</Radio>
-                <Radio colorScheme="green" value="5">Mentions</Radio>
-                <Radio colorScheme="green" value="6">Mute Channel</Radio>
-              </Stack>
-          </RadioGroup>
-          </Stack>
-
-          <Box mt="24px">
-            <Checkbox colorScheme="green" fontStyle="15px" fontWeight="bold">
-              Mute Channel
-            </Checkbox>
-            <Text fontSize="15px" ml="20px">
-            Muted channels are greyed out at the bottom of your channel list. You’ll still see a badge in the sidebar if you’ve been mentioned.
-            </Text>
-          </Box>
           
         </ModalBody>
         <ModalFooter>
@@ -137,7 +164,8 @@ const MoreNotificationModal = () => {
                 color: "#ffffff",
                 backgroundColor:"00B87C"
               }}
-              disabled={!checked}
+              // disabled={!checked}
+              onClick={saveUserNotificationSettings}
             >
               Save Changes
           </Button>
