@@ -79,7 +79,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
         }
       }
 
-      _sendEmojis(orgId,messageId,userId,channelId,datas)
+      _sendEmojis(messageId,orgId,userId,channelId,datas)
   }
 
   
