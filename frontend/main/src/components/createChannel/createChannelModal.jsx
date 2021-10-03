@@ -18,7 +18,7 @@ import { HStack, Text } from "@chakra-ui/layout";
 import React, { useRef } from "react";
 import { FormHelperText } from "@chakra-ui/form-control";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import { useHistory } from "react-router-dom";
@@ -26,21 +26,24 @@ import { useHistory } from "react-router-dom";
 const CreateChannelModal = ({ onClose, isOpen }) => {
   const initialRef = useRef();
   const history = useHistory();
+  const { users } = useSelector((state) => state.appReducer)
 
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [priva, setPriva] = useState(true);
-  const [owner, setOwner] = useState("61468abd1a5607b13c00bd4f");
+  // const [owner, setOwner] = useState("61468abd1a5607b13c00bd4f");
   const data = {
     name: name,
-    owner: owner,
+    owner: users[0]?._id,
     description: description,
     private: priva
   }
   const { _createChannel } = bindActionCreators(appActions, dispatch);
+
+
   const newChannel = async () => {
-    await _createChannel("614679ee1a5607b13c00bcb7", data);
+    await _createChannel(users.currentWorkspace, data);
   };
   
    const handleSubmit = () => {

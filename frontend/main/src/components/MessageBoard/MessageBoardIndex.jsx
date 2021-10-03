@@ -145,7 +145,7 @@ const MessageBoardIndex = ({allUsers}) => {
 
             <MessageCardContainer channelId={channelId}  allUsers={allUsers} />
           </Box>
-          {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
+          {channelDetails.allow_members_input ? <MessageInput channelId={channelId} org_id={users.currentWorkspace} /> : <DisabledInput />}
         </Box>
         {/* <Box>
           <Thread/>
