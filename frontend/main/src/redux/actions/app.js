@@ -23,8 +23,6 @@ import {
   GET_FILES,
   DELETE_CHANNEL,
   GET_WORKSPACE_USERS,
-  SHOW_LOADER,
-  HIDE_LOADER,
   EDIT_CHANNEL_DESCRIPTION,
   EDIT_CHANNEL_TOPIC,
 } from "./types";
@@ -67,20 +65,6 @@ const _getUsers = (params) => async (dispatch) => {
   }
 };
 
-const _showLoader = () =>dispatch => {
-    // Result comes from the endpoint
-    // Let's assume an array of objects is returned from the endpoint
-    dispatch({ type: SHOW_LOADER });
-    // Result is sent to the store via dispatch (Pass payload if needed)
-};
-
-const _hideLoader = () =>dispatch => {
-  // Result comes from the endpoint
-  // Let's assume an array of objects is returned from the endpoint
-  dispatch({ type: HIDE_LOADER });
-  // Result is sent to the store via dispatch (Pass payload if needed)
-};
-
 const _getWorkspaceUsers = (params) => async (dispatch) => {
   try {
     // GetWorkspaceUsers().then((res) => {
@@ -91,8 +75,6 @@ const _getWorkspaceUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
-  
-
 const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
   try {
     // Result comes from the endpoint
@@ -343,9 +325,6 @@ const appActions = {
   _deleteChannel,
   _getFiles,
   _getWorkspaceUsers,
-  _showLoader,
-  _hideLoader,
-
   _editChannelDescription,
   _editChannelTopic,
 };
