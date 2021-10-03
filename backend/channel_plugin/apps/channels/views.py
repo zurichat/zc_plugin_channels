@@ -6,12 +6,12 @@ from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
-from rest_framework.decorators import action, throttle_classes
+from rest_framework.decorators import action, throttle_classes, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import Request, find_match_in_db, manage_channel_permissions, get_channel_permissions
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
@@ -23,6 +23,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
+    ChannelPermissions,
 )
 
 # from rest_framework.filters
@@ -1030,3 +1031,20 @@ channel_members_list_create_views = ChannelMemberViewset.as_view(
 channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
+
+
+@api_view(["POST","GET"])
+# @permission_classes(["IsAdmin"])
+def handle_channel_permissions(request, org_id, channel_id):
+    if request.method == "GET":
+        data = find_match_in_db(org_id, "channelpermissions", "channel_id", channel_id,return_data=True)
+        return Response(data, status=status.HTTP_200_OK)
+    serializer = ChannelPermissions(data = request.data)
+    if serializer.is_valid():
+        payload = dict(serializer.validated_data)
+        payload.update({"channel_id":channel_id})
+        data = manage_channel_permissions(org_id, channel_id, payload)
+        response = payload
+
+        return Response(data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
