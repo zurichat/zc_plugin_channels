@@ -25,8 +25,7 @@ import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
-
-const MessageCardContainer = ({ channelId, allUsers, onOpen }) => {
+const MessageCardContainer = ({ channelId,allUsers }) => {
 
     const dispatch = useDispatch()
     const history = useHistory()
@@ -73,7 +72,7 @@ const MessageCardContainer = ({ channelId, allUsers, onOpen }) => {
                             channelMessages.map((message) => {
                                 return (
                                     message === [] ? <Text textAlign="center">Loading...</Text> :
-                                        <MessageCard {...message} key={message._id} allUsers={allUsers} onOpen={onOpen} />
+                                        <MessageCard {...message} key={message._id} allUsers={allUsers} />
                                 )
                             })
                         }

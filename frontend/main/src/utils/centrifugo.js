@@ -26,7 +26,9 @@ class Centrifugo {
     }
 
     subscribeToAllEvents() {
+        console.log("centrifuge subscribe to all event", `organizations_${this.org_id}`)
         SubscribeToChannel(`organizations_${this.org_id}`, (ctx) => {
+            console.log("centrifugo ctx == ", ctx)
             this.listenToEvents(ctx)
         })
     }
@@ -36,6 +38,7 @@ class Centrifugo {
     }
 
     addListener(event, callback) {
+        console.log("add listener == ", event)
         this.listeners[event] = callback
     }
 
