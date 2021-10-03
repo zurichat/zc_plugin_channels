@@ -68,6 +68,7 @@ const MessageBoardIndex = ({allUsers}) => {
                         }
                     });
                
+                    
               dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
               break;
             }
