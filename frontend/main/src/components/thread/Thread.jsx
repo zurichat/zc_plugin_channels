@@ -5,11 +5,11 @@ import ThreadReplies from "./subs/ThreadReplies";
 import MessageInput from "../shared/MessageInput";
 import { Container, Box } from "@chakra-ui/react";
 
-function Thread() {
+function Thread({channelId, onClose}) {
   return (
-    <Container maxW="40vw" minW="20vw" bg="#f9f9f9" m="5px" p="0px">
+    <Container maxW="40vw" minW="20vw" bg="#f9f9f9" ml="5px" p="0px">
       <Box width="100%">
-          <ThreadHeader />
+          <ThreadHeader channelId={channelId} onClose={onClose} />
       </Box>      
       <MainMessage />
         <Box width="95%" overflowY="scroll" 

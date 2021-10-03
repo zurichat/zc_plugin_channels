@@ -37,7 +37,7 @@ const replies = [
     name: "Sammy Hunter",
     time: "15 mins ago",
     message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     avatar: "https://bit.ly/dan-abramov",
     id: 1,
   },
@@ -45,7 +45,7 @@ const replies = [
     name: "Detty Brymz",
     time: "10 mins ago",
     message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     avatar: "https://bit.ly/code-beast",
     id: 2,
   },
@@ -53,7 +53,7 @@ const replies = [
     name: "Ekun Omo",
     time: "7 mins ago",
     message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     avatar: "https://bit.ly/ryan-florence",
     id: 3,
   },
@@ -61,7 +61,7 @@ const replies = [
     name: "Dan Abrahmov",
     time: "10:10pm",
     message:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     avatar: "https://bit.ly/dan-abramov",
     id: 4,
   },

@@ -23,7 +23,7 @@ const threadReply = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers, onOpen}) => {
   const [showOptions, setShowOptions] = useState(false)
   const [chosenEmoji, setChosenEmoji] = useState(null);
   const [emoji,setEmoji]=useState([])
@@ -117,7 +117,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
                 chosenEmoji &&  <Picker onEmojiClick={onEmojiClick} pickerStyle={{ width: '50%',position:"absolute",zIndex:'10' }}/>
               }
         <HoverOptions show={showOptions} actions={pinMessage} onEmojiClick={onEmojiClick} 
-      setChosenEmoji={setChosenEmoji} chosenEmoji={chosenEmoji}/>
+      setChosenEmoji={setChosenEmoji} chosenEmoji={chosenEmoji} onCommentClick={onOpen}/>
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
             <Avatar name={empty && empty.length > 0 ? empty[0].user_name : user_id } src={empty && empty.length > 0 ? empty[0].image_url : ""} w="36px" h="36px" borderRadius="4px" />
@@ -165,7 +165,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
   );
 };
 
-const HoverOptions = ({ show, actions,chosenEmoji,setChosenEmoji }) => {
+const HoverOptions = ({ show, actions,chosenEmoji,setChosenEmoji, onCommentClick }) => {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const menuItemImpl = useMemo(() => [
     { label: "Turn off notifications for replies" },
@@ -194,7 +194,7 @@ const HoverOptions = ({ show, actions,chosenEmoji,setChosenEmoji }) => {
         <HiOutlineEmojiHappy onClick={() => setChosenEmoji(!chosenEmoji)}/>
       </Square>
       <Square {...commonOptionStyle}>
-        <FaRegCommentDots />
+        <FaRegCommentDots onClick={onCommentClick} />
       </Square>
       <Square {...commonOptionStyle}>
         <FiCornerUpRight />

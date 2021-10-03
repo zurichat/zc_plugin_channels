@@ -11,7 +11,9 @@ import ChannelHeader from "../shared/ChannelHeader";
 import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContainer";
 // import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
 import MessageInput from "../shared/MessageInput";
-// import Thread from "../thread/Thread";
+import Thread from "../thread/Thread";
+import { Collapse } from "@chakra-ui/transition";
+import { useDisclosure } from "@chakra-ui/hooks";
 //import MessageOptionsPopUpMenu from "./subs/MessageOptionsPopUpMenu/MessageOptionsPopUpMenu";
 
 import { useParams } from "react-router";
@@ -127,6 +129,9 @@ const MessageBoardIndex = ({allUsers}) => {
 
   }, [channelId]);
 
+  // Thread to display when comment icon is clicked
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box bg="#F9F9F9" width="99%">
       <Flex>
@@ -147,13 +152,15 @@ const MessageBoardIndex = ({allUsers}) => {
             }}
           >
 
-            <MessageCardContainer channelId={channelId}  allUsers={allUsers} />
+            <MessageCardContainer channelId={channelId}  allUsers={allUsers} onOpen={onOpen} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
-        {/* <Box>
-          <Thread/>
-        </Box> */}
+        <Box>
+          <Collapse in={isOpen}>
+            <Box><Thread channelId={channelId} onClose={onClose}/></Box>
+          </Collapse>
+        </Box>
       </Flex>
     </Box>
   );
