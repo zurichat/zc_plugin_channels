@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Box, Text, Flex } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
 import { FaCaretDown } from "react-icons/fa";
 import { useParams } from "react-router";
 import { useHistory } from "react-router";
+import { Image } from "@chakra-ui/react";
+import Spinner from "../../../../../src/assets/spinner.gif";
 
 import APIService from "../../../../utils/api";
 
@@ -50,7 +52,7 @@ const MessageCardContainer = ({ channelId, allUsers }) => {
   useEffect(() => {
     console.log("\n\n\nUseEffect works\n\n\n");
     const loadData = async () => {
-      _getChannelMessages("614679ee1a5607b13c00bcb7", channelId);
+      _getChannelMessages(users.currentWorkspace, channelId);
     };
     loadData();
   }, [channelId]);

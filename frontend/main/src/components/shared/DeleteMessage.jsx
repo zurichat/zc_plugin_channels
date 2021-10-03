@@ -13,6 +13,7 @@ import {
     Box,
     Image
   } from "@chakra-ui/react"
+  import {_deleteMessage} from "../../redux/actions/app";
   
   function DeleteMessage() {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -105,7 +106,7 @@ import {
                 >
                   Cancel
                 </Button>
-                <Button /*onClick={deleteMessage}*/
+                <Button onClick={_deleteMessage}
                 borderRadius="10px"
                 bg="#E23434"
                 color="#ffffff"

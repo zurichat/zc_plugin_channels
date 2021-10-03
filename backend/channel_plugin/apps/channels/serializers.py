@@ -47,6 +47,28 @@ class ChannelSerializer(serializers.Serializer):
         return data
 
 
+class RoomSerializer(serializers.Serializer):
+
+    room_name = serializers.CharField(
+        max_length=100, required=True, help_text="Channel name"
+    )
+
+    room_members_ids = serializers.ListField()
+    ord_id = serializers.CharField(max_length=200, required=True)
+    private = serializers.BooleanField(default=False)
+
+    def convert_to_channel_serializer(self) -> serializers.Serializer :
+        self.is_valid(raise_exception=True)
+
+        data = {
+            'name' : self.data.get("room_name"),
+            'owner': self.data.get("room_members_ids", ["1"])[0],
+            "private": self.data.get("private")
+        }
+
+        return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
+
+
 class UserSerializer(serializers.Serializer):
 
     _id = serializers.CharField(max_length=30, required=True, help_text="User ID")
@@ -210,3 +232,22 @@ class ThreadFilesSerializer(serializers.ListField):
 class ChannelAllFilesSerializer(serializers.Serializer):
     channelmessage = MessageFilesSerializer()
     thread = ThreadFilesSerializer()
+
+
+class ChannelPermissions(serializers.Serializer):
+    archive_channel = serializers.BooleanField(required=False)
+    mention_channel = serializers.BooleanField(required=False)
+    add_members = serializers.BooleanField(required=False)
+    remove_members = serializers.BooleanField(required=False)
+    send_images = serializers.BooleanField(required=False)
+    send_videos = serializers.BooleanField(required=False)
+    add_bots = serializers.BooleanField(required=False)
+    send_messages = serializers.BooleanField(required=False)
+    delete_messages = serializers.BooleanField(required=False)
+    send_stickers = serializers.BooleanField(required=False)
+    create_threads = serializers.BooleanField(required=False)
+    send_files = serializers.BooleanField(required=False)
+    pin_messages = serializers.BooleanField(required=False)
+    
+
+    roles = serializers.ListField(child=serializers.CharField(max_length=30), required=False)
