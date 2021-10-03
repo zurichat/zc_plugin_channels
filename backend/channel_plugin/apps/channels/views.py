@@ -605,6 +605,15 @@ class ChannelMemberViewset(ViewSet):
             404: openapi.Response("Collection Not Found"),
         },
         operation_id="add-channel-members",
+        # manual_parameters=[
+        #     openapi.Parameter(
+        #         "user_id",
+        #         openapi.IN_QUERY,
+        #         description="User ID (id of active user)",
+        #         required=True,
+        #         type=openapi.TYPE_STRING,
+        #     ),
+        # ],
     )
     @action(
         methods=["POST"],
@@ -691,7 +700,7 @@ class ChannelMemberViewset(ViewSet):
                 # add all users not in group
                 for user in user_list:
                     if channel["users"].get(user["_id"]):
-                        user_list.pop(user)
+                        user_list.remove(user)
                     else:
                         channel["users"].update({f"{user['_id']}": user})
 
@@ -752,10 +761,11 @@ class ChannelMemberViewset(ViewSet):
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
                             channel_id=channel_id,
-                            added_by="logged-in-user_id",
+                            # added_by=request.query_params.get("user_id"),
                             added=output,
                         )
-                    return Response(output, status=status.HTTP_201_CREATED)
+                    status_code = status.HTTP_201_CREATED if output else status.HTTP_200_OK
+                    return Response(output, status=status_code)
                 else:
                     return Response(
                         result.get("error"), status=status.HTTP_400_BAD_REQUEST
