@@ -118,41 +118,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             return Response(result, status=status_code)
 
     @swagger_auto_schema(
-        operation_id="create-room",
-        request_body=RoomSerializer,
-        responses={
-            201: openapi.Response("Response", RoomSerializer),
-            404: openapi.Response("Error Response", ErrorSerializer),
-        },
-    )
-    @throttle_classes([throttling.AnonRateThrottle])
-    @action(
-        methods=["POST"],
-        detail=False,
-    )
-    def create_room(self, request):
-        serializer = RoomSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        channel_serializer = serializer.convert_to_channel_serializer()
-        channel_serializer.is_valid()
-        print(channel_serializer)
-        channel = channel_serializer.data.get("channel")
-        result = channel.create(serializer.data.get("ord_id"))
-        status_code = status.HTTP_404_NOT_FOUND
-
-        if result.__contains__("_id"):
-            request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=channel_serializer.data.get("ord_id"),
-                user_id=result.get("owner"),
-            )
-            status_code = status.HTTP_201_CREATED
-            return Response(serializer.data, status=status_code)
-        else:
-            return Response(result, status=status_code)
-
-    @swagger_auto_schema(
         operation_id="retrieve-channels",
         responses={
             200: openapi.Response("Response", ChannelGetSerializer(many=True)),

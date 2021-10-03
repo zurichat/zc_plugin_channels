@@ -34,7 +34,7 @@ const routes = () => {
     loadUsers();
   }, []);
 
-  const { workspace_users, users } = useSelector((state) => state.appReducer);
+  const { workspace_users } = useSelector((state) => state.appReducer);
   const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const routes = () => {
         <MessageBoardEmpty />
       </Route>
       <Route exact path="/message-board/:channelId">
-        <MessageBoardIndex allUsers={allUsers} org_id={users.currentWorkspace}/>
+        <MessageBoardIndex allUsers={allUsers} />
       </Route>
       <Route path="/channel-detail">
         <ChannelDetailsAndSetting />
