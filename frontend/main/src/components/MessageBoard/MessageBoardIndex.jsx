@@ -18,7 +18,7 @@ import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 import Centrifuge from 'centrifuge';
-
+import { useDisclosure } from "@chakra-ui/hooks";
 import { SubscribeToChannel } from '@zuri/control'
 
 
@@ -34,6 +34,10 @@ const MessageBoardIndex = ({allUsers}) => {
   const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
+  const { onOpen } = useDisclosure()
+  
+
+
 
   // We will attempt to connect only when we are certain that the state has been updated
   // so we first check that sockets.socket_name is not undefined

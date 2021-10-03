@@ -18,6 +18,7 @@ import MultimediaSharingModal from "./MultimediaSharingModal";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { useParams } from "react-router";
 import AddEmojiModal from "./addEmojiModal"
+import _ from "lodash";
 
 
 const MessageInput = ({channelId}) =>{
@@ -58,8 +59,16 @@ const MessageInput = ({channelId}) =>{
     const {sendMessages} = useSelector((state)=>state.channelsReducer)
     // console.log(sendMessages);
 
+  let _users;
+  let org_id;
+
+  useEffect(() => {
+    _users = users;
+    org_id = _users.currentWorkspace;
+    console.log("this is the orgId message input", org_id);
+  });
+
     const loadData= async ()=>{
-      const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
       const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
       console.log(data, channel_id, datas.user_id)
@@ -145,15 +154,15 @@ const MessageInput = ({channelId}) =>{
       boxShadow= "-1px 4px 7px rgba(0, 0, 0, 0.1)"
         bg="#F9F9F9"
         textAlign="left"
-        maxWidth="350px" alignContent='center' style={{position:'absolute', top: '9.5rem',
+        maxWidth="300px" style={{position:'absolute', top: '10rem',
     right: '2rem'}}>
         <Picker
           pickerStyle={{
-            width: '350px', height: 300, Searchbar: {
+            width: '300px', height: 300, Searchbar: {
               borderRadius: 20
             }, fontSize: 10
           }} onEmojiClick={onEmojiClick} />
-        <Container p="18px">
+        <Container p="18px" alignSelf='center'>
           <Text 
           alignItems='center'
           mt="10px"
