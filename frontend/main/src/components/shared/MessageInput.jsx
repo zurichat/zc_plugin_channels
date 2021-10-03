@@ -21,7 +21,8 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { useParams } from "react-router";
 
 
-const MessageInput = ({ channelId }) => {
+
+const MessageInput = ({channelId, org_id}) =>{
 
     const { users } = useSelector((state) => state.appReducer)
     const [orgId, setOrgId] = useState([]);
@@ -54,12 +55,12 @@ const MessageInput = ({ channelId }) => {
 
     const { sendMessages } = useSelector((state) => state.channelsReducer)
 
-    const loadData = async () => {
-        const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
-        const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
-        _sendMessage(org_id, channel_id, datas)
-        console.log(data, channel_id, datas.user_id)
-        setData('');
+    const loadData= async ()=>{
+      // const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
+      const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
+      await _sendMessage(org_id,channel_id,datas)
+      console.log(data, channel_id, datas.user_id)
+      setData('');
     }
 
     const addTag = () => {
