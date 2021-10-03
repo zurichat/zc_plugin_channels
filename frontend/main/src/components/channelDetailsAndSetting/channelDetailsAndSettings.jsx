@@ -24,11 +24,9 @@ import { FaRegBell } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { FaHashtag } from "react-icons/fa";
-
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-
 import OrganisationMembersList from "./organisationMembersList";
 import About from "./about";
 import FileList from "./fileList";
@@ -71,7 +69,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
         size="lg"
       >
         <ModalOverlay />
-        <ModalContent p={0} mt="8rem" maxW="824px" height="834px">
+        <ModalContent p={0} mt="8rem" maxW="700px" height="834px">
           <Tabs colorScheme="" borderBottomColor="green" color="#fff">
             <ModalHeader
               pt={3}

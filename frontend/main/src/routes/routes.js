@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
 import Home from "../components/home/Home";
 import Admin from "../components/admin/index";
@@ -10,9 +10,10 @@ import Thread from "../components/thread/Thread";
 import ChannelBrowser from "../components/ChannelBrowser";
 import MessageBoardEmpty from "../components/MessageBoard/subs/EmptyMessageBoard/MessageBoardEmpty";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import appActions from "../redux/actions/app";
+import centrifugo from "../utils/centrifugo";
 
 const routes = () => {
   const dispatch = useDispatch();
@@ -32,7 +33,20 @@ const routes = () => {
   useEffect(async () => {
     loadData();
     loadUsers();
+    
+    centrifugo.addListener("UpdateOrganizationMemberProfile", () => {
+      _getWorkspaceUsers()
+    })
   }, []);
+
+  const { workspace_users } = useSelector((state) => state.appReducer);
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    if (workspace_users) {
+      setAllUsers(workspace_users);
+    }
+  }, [workspace_users]);
 
   return (
     <Switch>
@@ -52,7 +66,7 @@ const routes = () => {
         <MessageBoardEmpty />
       </Route>
       <Route exact path="/message-board/:channelId">
-        <MessageBoardIndex />
+        <MessageBoardIndex allUsers={allUsers} />
       </Route>
       <Route path="/channel-detail">
         <ChannelDetailsAndSetting />
