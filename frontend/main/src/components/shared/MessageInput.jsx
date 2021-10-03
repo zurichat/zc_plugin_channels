@@ -20,7 +20,7 @@ import { useParams } from "react-router";
 import AddEmojiModal from "./addEmojiModal"
 
 
-const MessageInput = ({channelId}) =>{
+const MessageInput = ({channelId, org_id}) =>{
 
   const {
     channelsReducer: { channelDetails },
@@ -59,7 +59,7 @@ const MessageInput = ({channelId}) =>{
     // console.log(sendMessages);
 
     const loadData= async ()=>{
-      const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
+      // const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
       const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
       await _sendMessage(org_id,channel_id,datas)
       console.log(data, channel_id, datas.user_id)
