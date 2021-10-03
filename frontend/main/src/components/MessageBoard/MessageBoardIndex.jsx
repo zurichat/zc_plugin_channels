@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Flex } from "@chakra-ui/layout";
+import { Box, Flex, Text } from "@chakra-ui/layout";
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
@@ -27,21 +27,21 @@ import notificationsManager from "./subs/Centrifugo/NotificationsManager";
 
 
 
-const MessageBoardIndex = () => {
+const MessageBoardIndex = ({allUsers, org_id}) => {
 
   const { channelId } = useParams();
   const dispatch = useDispatch()
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
 
   const [ orgId, setOrgId ] = useState()
 
   
-
+console.log("\n\n Workspace users: \n\n",workspace_users)
 
 
   // We will attempt to connect only when we are certain that the state has been updated
@@ -147,10 +147,12 @@ const MessageBoardIndex = () => {
     if(orgId){
       retrieveNotificationSettings()
     }
-  })
+  }, [])
 
   return (
-    <Box bg="#F9F9F9" width="99%">
+    <>
+    {Object.keys(workspace_users).length > 0 ?  
+      <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
           <ChannelHeader channelId={channelId} org_id={users.currentWorkspace} />
@@ -169,7 +171,7 @@ const MessageBoardIndex = () => {
             }}
           >
 
-            <MessageCardContainer channelId={channelId}  allUsers={allUsers} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId}  allUsers={allUsers} org_id={org_id} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
@@ -178,6 +180,9 @@ const MessageBoardIndex = () => {
         </Box> */}
       </Flex>
     </Box>
+    : <Text textAlign="center" fontSize="5rem" color="red">Loading...</Text>}
+    
+    </>
   );
 };
 

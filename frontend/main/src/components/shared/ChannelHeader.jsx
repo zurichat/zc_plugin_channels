@@ -34,6 +34,8 @@ const ChannelHeader = ({channelId, org_id}) => {
   console.log(channel_id);
   const dispatch = useDispatch();
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch);//extract redux function
   //.......getting pinned messages...........//
   const { pinnedMessages } = useSelector((state) => state.channelsReducer);
