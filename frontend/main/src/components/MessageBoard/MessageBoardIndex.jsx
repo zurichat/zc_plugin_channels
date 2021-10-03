@@ -180,7 +180,7 @@ console.log("\n\n Workspace users: \n\n",workspace_users)
         </Box> */}
       </Flex>
     </Box>
-    : <Text textAlign="center" fontSize="5rem" color="red">Loading...</Text>}
+    : <Text textAlign="center" fontSize="5rem" color="green">Loading...</Text>}
     
     </>
   );
