@@ -24,7 +24,7 @@ import { SubscribeToChannel } from '@zuri/control'
 
 
 
-const MessageBoardIndex = ({allUsers}) => {
+const MessageBoardIndex = () => {
 
   const { channelId } = useParams();
   const dispatch = useDispatch()
@@ -66,7 +66,7 @@ const MessageBoardIndex = ({allUsers}) => {
                     return true; // stop searching
                         }
                     });
-               
+              
               dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
               break;
             }
@@ -116,7 +116,6 @@ const MessageBoardIndex = ({allUsers}) => {
 
     async function updateSocketName(){
 
-      
       await _getSocket("614679ee1a5607b13c00bcb7", channelId)
       console.log("We've gotten the socket details")
       
@@ -146,8 +145,7 @@ const MessageBoardIndex = ({allUsers}) => {
               },
             }}
           >
-
-            <MessageCardContainer channelId={channelId}  allUsers={allUsers} />
+            <MessageCardContainer channelId={channelId} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>

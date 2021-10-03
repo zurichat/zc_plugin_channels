@@ -9,7 +9,6 @@ import {
   USER_CAN_INPUT,
   GET_FILES,
   GET_WORKSPACE_USERS,
-  SEND_EMOJI
 } from "../actions/types";
 
 const initialState = {
@@ -17,7 +16,6 @@ const initialState = {
   // Default State
   users: [],
   workspace_users: [],
-  workspace_users_object: {},
   channelMessages: [],
   channels: [],
   sockets: [],
@@ -25,7 +23,6 @@ const initialState = {
   notificationSettings: [],
   userCanInput: true,
    channelsFiles:[],
-  emojiStorage:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -42,6 +39,7 @@ const appReducer = (state = initialState, action) => {
       };
 
     case GET_WORKSPACE_USERS:
+<<<<<<< HEAD
       const workspace_users = payload;
       const workspace_users_object = {};
       Object.values(workspace_users).forEach((user) => {
@@ -52,17 +50,25 @@ const appReducer = (state = initialState, action) => {
         ...state,
         workspace_users,
         workspace_users_object
+=======
+      return {
+        ...state,
+        workspace_users: payload,
+>>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
       };
     case GET_CHANNELMESSAGES:
       return {
         ...state,
         channelMessages: payload,
       };
+<<<<<<< HEAD
       case SEND_EMOJI:
         return {
           ...state,
           emojiStorage: payload,
         };
+=======
+>>>>>>> 7d4c2b16d954c7f927c5755fc64e46ec7d8cad73
     case GET_RENDEREDMESSAGES:
       return {
         ...state,
