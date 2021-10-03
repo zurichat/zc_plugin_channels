@@ -24,8 +24,8 @@ const initialState = {
   renderedMessages: [],
   notificationSettings: [],
   userCanInput: true,
-  emojiStorage:[],
    channelsFiles:[],
+  emojiStorage:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -53,16 +53,16 @@ const appReducer = (state = initialState, action) => {
         workspace_users,
         workspace_users_object
       };
-    case SEND_EMOJI:
-      return {
-        ...state,
-        emojiStorage:payload
-      }
     case GET_CHANNELMESSAGES:
       return {
         ...state,
         channelMessages: payload,
       };
+      case SEND_EMOJI:
+        return {
+          ...state,
+          emojiStorage: payload,
+        };
     case GET_RENDEREDMESSAGES:
       return {
         ...state,
