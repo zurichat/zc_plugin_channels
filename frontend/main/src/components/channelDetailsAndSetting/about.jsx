@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text, Link } from '@chakra-ui/react';
+import { FiEdit } from 'react-icons/fi';
+import { Stack, StackDivider, Spacer, Flex, HStack, List, ListItem, Heading, Box, Text } from '@chakra-ui/react';
 import axios from 'axios';
-import instance from './../../utils/api';
-import moment from 'moment'
-import Edit from "../channelDetailsAndSetting/Edit"
+//import instance from './../../utils/api';
+import moment from 'moment';
+import EditDescriptionModal from "../EditDescriptionModal";
+import { _editChannel } from "../../redux/actions/app";
 
 const About = (index) => {
 
   const [topic, setTopic] = useState("Add a topic");
-  const [description, setDescription] = useState("Add description");
+  // const [description, setDescription] = useState("Add description");
   const [owner, setOwner] = useState("owner");
   const [created_on, setCreatedOn] = useState("August 28, 2021");
 
@@ -93,31 +95,40 @@ const About = (index) => {
     setModalValue(name, description)
     console.log(name, description)
   }
+  
+  function saveDescription(description){
+    //console.log(description);
+    _editChannel(org_id, channel_id, data);
+    setDescription("");
+    setOpenEditModal(false);
+  }
 
   return (
 
-    <List >
-      <Stack
-        direction='column'
-        my='1.2rem'
-        spacing={3}
+    <>
+      <List >
+        <Stack
+          direction='column'
+          my='1.2rem'
+          spacing={3}
 
 
+        >
 
-      >
-
-        <Info title='Topic' placeholder={topic} edit={<Edit clickHandler={clickHandler} />} />
-        <Info title='Description' placeholder={description} edit={<Edit clickHandler={clickHandler} />} />
-        <Info title='Created by' placeholder={`${owner} on ${moment(created_on).format('MMMM Do, YYYY')}`} />
-      </Stack>
-    </List>
+          <Info title='Topic' placeholder={topic} edit={<Edit clickHandler={clickHandler} />} />
+          <Info title='Description' placeholder={description} edit={<Edit clickHandler={clickHandler} />} />
+          <Info title='Created by' placeholder={`${owner} on ${moment(created_on).format('MMMM Do, YYYY')}`} />
+        </Stack>
+      </List>
+      <EditDescriptionModal openEditModal saveDescription />
+    </>
 
 
 
   );
 }
 
-const Info = ({ title, placeholder, edit, index }) => {
+const Info = ({ title, placeholder, index }) => {
   return (
     <ListItem key={index}>
       <>
@@ -159,6 +170,31 @@ const Info = ({ title, placeholder, edit, index }) => {
     </ListItem>
 
   )
+}
+
+const Edit = ({ clickHandler }) => {
+  return (
+    <Link
+      _hover={{
+        textDecoration: 'none',
+        // color: 'gray' 
+      }}
+      color='#1264A3'
+      onClick={() => clickHandler(
+        //data params
+      )}
+    >
+
+      <HStack onClick={handleEdit}>
+        <FiEdit mx={2} size={16} />
+        <Text
+          pt='2px'
+          fontFamily='Roboto, sans-serif'
+          fontSize={14}>Edit</Text>
+      </HStack>
+    </Link >
+  )
+
 }
 
 export default About;

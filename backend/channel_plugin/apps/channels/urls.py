@@ -8,7 +8,7 @@ from apps.channels.views import (
     channel_socket_view,
     user_channel_list,
     notification_views,
-    starred_channel_view
+    handle_channel_permissions,
 )
 from django.urls import path
 
@@ -37,7 +37,8 @@ urlpatterns = [
         "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/",
         channel_members_update_retrieve_views,
     ),
-    path("<str:org_id>/channels/<str:channel_id>/starred/", starred_channel_view),
+    # path("<str:org_id>/channels/<str:channel_id>/starred/", starred_channel_view),
     path("<str:org_id>/channels/users/<str:user_id>/", user_channel_list),
+    path("<str:org_id>/channels/<str:channel_id>/manage_permissions/", handle_channel_permissions, name='change_channel_permissions')
     
 ]
