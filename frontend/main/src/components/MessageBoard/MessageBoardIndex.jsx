@@ -27,7 +27,7 @@ import notificationsManager from "./subs/Centrifugo/NotificationsManager";
 
 
 
-const MessageBoardIndex = ({allUsers}) => {
+const MessageBoardIndex = () => {
 
   const { channelId } = useParams();
   const dispatch = useDispatch()
