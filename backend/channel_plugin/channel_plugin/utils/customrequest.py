@@ -222,7 +222,7 @@ def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
     response = requests.post(read, data=json.dumps(data))
     data =  response.json()
     if cur_page >= 1:
-        prev_link = f"?page={cur_page - 1}&?page_size={page_size}"
+        prev_link = new_url + f"?page={cur_page - 1}&?page_size={page_size}"
         pass
     else:
         prev_link = None
@@ -231,7 +231,7 @@ def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
             # next_link = 
             pass
         else:
-            next_link = f"?page={cur_page + 1}&?page_size={page_size}"
+            next_link = new_url + f"?page={cur_page + 1}&?page_size={page_size}"
     except:
         print("Error RetrIEVEING DATA")
         pass
