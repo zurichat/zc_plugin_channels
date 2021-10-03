@@ -6,25 +6,29 @@ from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
-from rest_framework.decorators import action, throttle_classes, api_view, permission_classes
+from rest_framework.decorators import action, api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request, find_match_in_db, manage_channel_permissions, get_channel_permissions
+from channel_plugin.utils.customrequest import (
+    Request,
+    find_match_in_db,
+    manage_channel_permissions,
+)
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
     ChannelGetSerializer,
+    ChannelPermissions,
     ChannelSerializer,
     ChannelUpdateSerializer,
     NotificationsSettingSerializer,
+    RoomSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
-    RoomSerializer,
-    ChannelPermissions,
 )
 
 # from rest_framework.filters
@@ -116,6 +120,41 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         else:
             return Response(result, status=status_code)
 
+
+    @swagger_auto_schema(
+        operation_id="create-room",
+        request_body=RoomSerializer,
+        responses={
+            201: openapi.Response("Response", RoomSerializer),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @throttle_classes([throttling.AnonRateThrottle])
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    def create_room(self, request):
+        serializer = RoomSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        channel_serializer = serializer.convert_to_channel_serializer()
+        channel_serializer.is_valid()
+        print(channel_serializer)
+        channel = channel_serializer.data.get("channel")
+        result = channel.create(serializer.data.get("ord_id"))
+        status_code = status.HTTP_404_NOT_FOUND
+
+        if result.__contains__("_id"):
+            request_finished.send(
+                sender=None,
+                dispatch_uid="UpdateSidebarSignal",
+                org_id=channel_serializer.data.get("ord_id"),
+                user_id=result.get("owner"),
+            )
+            status_code = status.HTTP_201_CREATED
+            return Response(serializer.data, status=status_code)
+        else:
+            return Response(result, status=status_code)
 
     @swagger_auto_schema(
         operation_id="retrieve-channels",
@@ -289,7 +328,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         ):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-                #TODO: make this block asynchronus
+                # TODO: make this block asynchronus
                 # for user_id in result["users"].keys():
                 #     request_finished.send(
                 #         sender=None,
@@ -435,11 +474,9 @@ channel_list_create_view = ChannelViewset.as_view(
     }
 )
 
-channel_list_zc_main_views = ChannelViewset.as_view(
-    {
-        "post": "create_room"
-    }
-)
+
+channel_list_zc_main_views = ChannelViewset.as_view({"post": "create_room"})
+
 
 channel_retrieve_update_delete_view = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}
@@ -743,7 +780,7 @@ class ChannelMemberViewset(ViewSet):
                             channel_id=channel_id,
                             user=output,
                         )
-                    
+
                         try:
                             request_finished.send(
                                 sender=None,
@@ -751,7 +788,7 @@ class ChannelMemberViewset(ViewSet):
                                 org_id=org_id,
                                 user_id=user.get("_id"),
                             )
-                        except:
+                        except:  # noqa
                             pass
 
                     else:
@@ -1046,7 +1083,7 @@ class ChannelMemberViewset(ViewSet):
                                 org_id=org_id,
                                 user_id=user_data.get("_id"),
                             )
-                        except:
+                        except:  # noqa
                             pass
 
                     status_code = (
@@ -1086,18 +1123,19 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 )
 
 
-@api_view(["POST","GET"])
+@api_view(["POST", "GET"])
 # @permission_classes(["IsAdmin"])
 def handle_channel_permissions(request, org_id, channel_id):
     if request.method == "GET":
-        data = find_match_in_db(org_id, "channelpermissions", "channel_id", channel_id,return_data=True)
+        data = find_match_in_db(
+            org_id, "channelpermissions", "channel_id", channel_id, return_data=True
+        )
         return Response(data, status=status.HTTP_200_OK)
-    serializer = ChannelPermissions(data = request.data)
+    serializer = ChannelPermissions(data=request.data)
     if serializer.is_valid():
         payload = dict(serializer.validated_data)
-        payload.update({"channel_id":channel_id})
+        payload.update({"channel_id": channel_id})
         data = manage_channel_permissions(org_id, channel_id, payload)
-        response = payload
 
         return Response(data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

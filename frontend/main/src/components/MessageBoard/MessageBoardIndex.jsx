@@ -35,10 +35,6 @@ const MessageBoardIndex = ({allUsers}) => {
   const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
 
-  
-
-
-
   // We will attempt to connect only when we are certain that the state has been updated
   // so we first check that sockets.socket_name is not undefined
 
@@ -117,7 +113,7 @@ const MessageBoardIndex = ({allUsers}) => {
     async function updateSocketName(){
 
       
-      await _getSocket("614679ee1a5607b13c00bcb7", channelId)
+      await _getSocket(users.currentWorkspace, channelId)
       console.log("We've gotten the socket details")
       
       
@@ -131,7 +127,7 @@ const MessageBoardIndex = ({allUsers}) => {
     <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
-          <ChannelHeader channelId={channelId} />
+          <ChannelHeader channelId={channelId} org_id={users.currentWorkspace} />
           <Box
             m="5px"
             bg="white"
@@ -147,7 +143,7 @@ const MessageBoardIndex = ({allUsers}) => {
             }}
           >
 
-            <MessageCardContainer channelId={channelId} onOpen={onOpen}  allUsers={allUsers} />
+            <MessageCardContainer channelId={channelId}  allUsers={allUsers} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
