@@ -232,3 +232,22 @@ class ThreadFilesSerializer(serializers.ListField):
 class ChannelAllFilesSerializer(serializers.Serializer):
     channelmessage = MessageFilesSerializer()
     thread = ThreadFilesSerializer()
+
+
+class ChannelPermissions(serializers.Serializer):
+    archive_channel = serializers.BooleanField(required=False)
+    mention_channel = serializers.BooleanField(required=False)
+    add_members = serializers.BooleanField(required=False)
+    remove_members = serializers.BooleanField(required=False)
+    send_images = serializers.BooleanField(required=False)
+    send_videos = serializers.BooleanField(required=False)
+    add_bots = serializers.BooleanField(required=False)
+    send_messages = serializers.BooleanField(required=False)
+    delete_messages = serializers.BooleanField(required=False)
+    send_stickers = serializers.BooleanField(required=False)
+    create_threads = serializers.BooleanField(required=False)
+    send_files = serializers.BooleanField(required=False)
+    pin_messages = serializers.BooleanField(required=False)
+    
+
+    roles = serializers.ListField(child=serializers.CharField(max_length=30), required=False)
