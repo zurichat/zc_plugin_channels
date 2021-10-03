@@ -31,7 +31,7 @@ const SelectUser = ({user}) => (
   </HStack>
 )
 
-const AddPeopleModal = ({ isOpen, onClose }) => {
+const AddPeopleModal = ({ isOpen, onClose, org_id }) => {
 
   const [users, setUsers] = useState([])
   const [value, setValue] = useState('') 
@@ -56,7 +56,7 @@ const AddPeopleModal = ({ isOpen, onClose }) => {
   }
  
   const { channelId } = useParams()//dynamic channel id
-  const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
+  // const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
   const channel_id = channelId; //assigning dynamic channel id to channel_id
   const dispatch = useDispatch();
   // channel members
