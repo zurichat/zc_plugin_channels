@@ -26,6 +26,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelPermissions,
 )
 
+
 # from rest_framework.filters
 
 
@@ -33,7 +34,6 @@ from .serializers import (  # SearchMessageQuerySerializer,
 
 
 class ChannelViewset(ThrottledViewSet, OrderMixin):
-
     OrderingFields = {"members": int, "created_on": datetime.fromisoformat}
 
     @swagger_auto_schema(
@@ -213,8 +213,17 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         if result.__contains__("_id") or isinstance(result, dict):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-            status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+                if result.__contains__("_id"):
+                    # call signal here
+                    request_finished.send(
+                        sender=self.__class__,
+                        dispatch_uid="ChannelUpdateSignal",
+                        org_id=org_id,
+                        channel_id=channel_id,
+                        data=result.copy(),
+                    )
+                    status_code = status.HTTP_201_CREATED
+                return Response(result, status=status_code)
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
@@ -246,13 +255,13 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if (
-            result.__contains__("_id")
-            or isinstance(result, dict)
-            and not result.__contains__("error")
+                result.__contains__("_id")
+                or isinstance(result, dict)
+                and not result.__contains__("error")
         ):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-                #TODO: make this block asynchronus
+                # TODO: make this block asynchronus
                 # for user_id in result["users"].keys():
                 #     request_finished.send(
                 #         sender=None,
@@ -355,6 +364,21 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
 
         return Response(result, status=status_code)
 
+    @action(methods=["DELETE"], detail=False)
+    def remove_from_channels(self, request, org_id, user_id):
+        """Deletes a user from a list of channels  they belong to
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/users/{{user_id}}/" -H  "accept: application/json"
+        ```
+        """
+        data = {"_id": user_id}
+        response = Request.delete(org_id, "channel", data) or []
+        if status.HTTP_200_OK:
+            return response
+        else:
+            return {"message": "member not found"}
+
     @swagger_auto_schema(
         responses={
             200: openapi.Response("Response", SocketSerializer()),
@@ -408,9 +432,9 @@ channel_media_all_view = ChannelViewset.as_view(
     }
 )
 
-user_channel_list = ChannelViewset.as_view(
+user_channel_list_delete = ChannelViewset.as_view(
     {
-        "get": "user_channel_retrieve",
+        "get": "user_channel_retrieve", "delete": "remove_from_channels"
     }
 )
 
@@ -542,10 +566,18 @@ class ChannelMemberViewset(ViewSet):
                             if not result.get("error")
                             else status.HTTP_400_BAD_REQUEST
                         )
+                        if result.__contains__("_id") or isinstance(result, dict):
+                            # put signal here also
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="channelUpdateSignal",
+                                org_id=org_id,
+                                channel_id=result.get("channel_id"),
+                                data=result.copy(),
+                            )
 
-                        return Response(data, status=status_code)
-                    else:
-                        return Response(result, status=result.status_code)
+                            status_code = status.HTTP_200_OK
+                        return Response(result, status=status_code)
 
             return Response(
                 {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
@@ -691,7 +723,7 @@ class ChannelMemberViewset(ViewSet):
                             channel_id=channel_id,
                             user=output,
                         )
-                    
+
                         try:
                             request_finished.send(
                                 sender=None,
