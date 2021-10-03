@@ -326,9 +326,12 @@ def get_channel_permissions(org_id, channel_id):
     pass
 
 
-# def get_thread_from_message(
-#     org_id, collection_name, channelmessage_id, page, page_size
-# ):
+def get_thread_from_message(
+    org_id, collection_name, channelmessage_id, page, page_size
+):
+    pass
+
+
 #     data = {
 #         "plugin_id": settings.PLUGIN_ID,
 #         "organization_id": org_id,
