@@ -54,7 +54,7 @@ const MessageCardContainer = ({ channelId,allUsers }) => {
     useEffect(() => {
         console.log("\n\n\nUseEffect works\n\n\n");
         const loadData = async () => {
-            _getChannelMessages("614679ee1a5607b13c00bcb7", channelId)
+            _getChannelMessages(users.currentWorkspace, channelId)
         }
         loadData()
     }, [channelId]);
