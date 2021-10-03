@@ -13,10 +13,10 @@ import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSetting
 import hashImage from "./assets/default.png";
 
 
-const NewChannelHeader = ({channelId}) => {
+const NewChannelHeader = ({channelId, org_id}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const org_id = '614679ee1a5607b13c00bcb7';//Test value for org id
+  // const org_id = org_id;//Test value for org id
   const channel_id = channelId; //assigning dynamic channel id to channel_id
 
   const dispatch = useDispatch();
