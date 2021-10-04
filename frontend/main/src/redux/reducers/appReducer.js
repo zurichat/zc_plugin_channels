@@ -9,6 +9,7 @@ import {
   USER_CAN_INPUT,
   GET_FILES,
   GET_WORKSPACE_USERS,
+  GET_NOTIFICATION_SETTINGS,
 } from "../actions/types";
 
 const initialState = {
@@ -16,11 +17,13 @@ const initialState = {
   // Default State
   users: [],
   workspace_users: [],
+  workspace_users_object: {},
   channelMessages: [],
   channels: [],
   sockets: [],
   renderedMessages: [],
   notificationSettings: [],
+  userNotificationSettings: [],
   userCanInput: true,
    channelsFiles:[],
 };
@@ -39,9 +42,16 @@ const appReducer = (state = initialState, action) => {
       };
 
     case GET_WORKSPACE_USERS:
+      const workspace_users = payload;
+      const workspace_users_object = {};
+      Object.values(workspace_users).forEach((user) => {
+        workspace_users_object[user._id] = user
+      });
+      console.log("workspace_users_object", workspace_users_object)
       return {
         ...state,
-        workspace_users: payload,
+        workspace_users,
+        workspace_users_object
       };
     case GET_CHANNELMESSAGES:
       return {
@@ -86,6 +96,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         notificationSettings: payload,
+      };
+    case GET_NOTIFICATION_SETTINGS:
+      return {
+        ...state,
+        userNotificationSettings: payload,
       };
 
     default:

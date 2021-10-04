@@ -21,19 +21,24 @@ import Centrifuge from 'centrifuge';
 
 import { SubscribeToChannel } from '@zuri/control'
 
+//notifications
+import notificationsManager from "./subs/Centrifugo/NotificationsManager";
 
 
 
-const MessageBoardIndex = ({allUsers}) => {
+
+const MessageBoardIndex = () => {
 
   const { channelId } = useParams();
   const dispatch = useDispatch()
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
+  const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
+  const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
+
+  const [ orgId, setOrgId ] = useState()
 
   
 
@@ -54,6 +59,7 @@ const MessageBoardIndex = ({allUsers}) => {
 
             case 'join:channel' || 'leave:channel' || 'create:message' :{
               dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+              notificationsManager(messageCtx.data.content)
               break;
             }
 
@@ -117,7 +123,7 @@ const MessageBoardIndex = ({allUsers}) => {
     async function updateSocketName(){
 
       
-      await _getSocket("614679ee1a5607b13c00bcb7", channelId)
+      await _getSocket(users.currentWorkspace, channelId)
       console.log("We've gotten the socket details")
       
       
@@ -127,16 +133,32 @@ const MessageBoardIndex = ({allUsers}) => {
 
   }, [channelId]);
 
+  useEffect(() => {
+    if(users){
+      setOrgId(users[0])
+    }
+  }, [])
+
+   const retrieveNotificationSettings = () =>{
+     _getNotifications(orgId?.org_id, channelId, orgId?._id)
+  }
+
+  useEffect(() =>{
+    if(orgId){
+      retrieveNotificationSettings()
+    }
+  })
+
   return (
     <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
-          <ChannelHeader channelId={channelId} />
+          <ChannelHeader channelId={channelId} org_id={users.currentWorkspace} />
           <Box
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["83vh", "85vh", "70vh", "68vh"]}
+            height={["83vh", "85vh", "65vh", "58vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",
@@ -146,7 +168,8 @@ const MessageBoardIndex = ({allUsers}) => {
               },
             }}
           >
-            <MessageCardContainer channelId={channelId} allUsers={allUsers} />
+
+            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
