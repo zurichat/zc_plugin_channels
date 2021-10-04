@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from "react";
 import { Box, Flex, Text, Link, HStack, Square } from "@chakra-ui/layout";
 import { Avatar } from "@chakra-ui/avatar";
 import { Menu, MenuItem, MenuButton, MenuList, MenuDivider } from "@chakra-ui/menu"
@@ -8,8 +8,9 @@ import { FaRegCommentDots } from "react-icons/fa"
 import { HiOutlineEmojiHappy } from "react-icons/hi"
 import { CgMoreVertical } from "react-icons/cg"
 import appActions from "../../redux/actions/app"
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector  } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { useParams } from "react-router";
 
 import instance from '../../utils/utils';
 
@@ -21,19 +22,36 @@ const threadReply = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, _id }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
   const { _pinMessage } = bindActionCreators(appActions, dispatch);
 
+  const { channelId } = useParams();
+  const { users } = useSelector((state) => state.appReducer);
+  let _users;
+  let orgId;
+
+  useEffect(() => {
+    _users = users;
+    orgId = _users.currentWorkspace;
+    console.log("this is the orgId", orgId);
+  });
+
   const pinMessage = () => {
-    const orgId = 1 // Hardcoded value to for channelId in org with id 1
-    const messageId = "61413e736173056af01b4d31"
-    const userId = "cephas"
-    const channelId = "613f70bd6173056af01b4aba"
-    _pinMessage(orgId, channelId, userId, messageId)
-  }
+    //const orgId = 1 // Hardcoded value to for channelId in org with id 1
+    //const messageId = "6154aeac7f0874785c51ccb7";
+    // const userId = "cephas"
+    // const channelId = "613f70bd6173056af01b4aba"
+    const message_Id = _id;
+    const channel_id = channelId;
+    const userId = user_id;
+    // const orgId = "614679ee1a5607b13c00bcb7";
+
+    console.log("Parameters", orgId, channel_id, userId, message_Id);
+    _pinMessage(orgId, channel_id, userId, message_Id);
+  };
 
   // const actions = {
   //   pinMessage
@@ -84,6 +102,7 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => 
                   <Text fontSize={["8px", "12px"]} color="#616061" cursor="pointer">View threads</Text>
                 </HStack>
               </HStack>
+            </HStack>
           )}
         </Flex>
       </Flex>
@@ -106,13 +125,17 @@ const HoverOptions = ({ show, actions }) => {
     { label: "Pin to channel", command: "P", onClick: actions },
     { label: "Edit Message", command: "E" }, 
   ], [])
+
   return (
-    <HStack 
-      px="9px" py="7px" 
-      spacing="6px" 
-      position="absolute" 
-      top="-20px" right="10px" 
-      border="1px solid #EBEBEB" borderRadius="3px" 
+    <HStack
+      px="9px"
+      py="7px"
+      spacing="6px"
+      position="absolute"
+      top="-20px"
+      right="10px"
+      border="1px solid #EBEBEB"
+      borderRadius="3px"
       bg="white"
       display={show || isMenuOpen ? "flex" : "none"}
     >
@@ -129,7 +152,13 @@ const HoverOptions = ({ show, actions }) => {
         <FiBookmark />
       </Square>
       <Square {...commonOptionStyle}>
-        <Menu placement="auto-end" isLazy lazyBehavior="unmount" onOpen={() => setMenuOpen(true)} onClose={() => setMenuOpen(false)}>
+        <Menu
+          placement="auto-end"
+          isLazy
+          lazyBehavior="unmount"
+          onOpen={() => setMenuOpen(true)}
+          onClose={() => setMenuOpen(false)}
+        >
           <MenuButton
             as={IconButton}
             aria-label="More"
@@ -139,38 +168,45 @@ const HoverOptions = ({ show, actions }) => {
             _focus={{ outline: "none" }}
             sx={{
               "&[data-active]": {
-                background: "transparent"
-              }
+                background: "transparent",
+              },
             }}
           />
           <MenuList border="0.5px solid #8B8B8B">
-            {
-              menuItemImpl.map(({ label, divider=false, ...rest }, index) => (
-                <React.Fragment key={`menu-item-${index}`}>
-                  { !divider ? <MenuItem {...rest} {...commonMoreOptionStyle}>{ label }</MenuItem> : <MenuDivider /> }
-                </React.Fragment>
-              ))
-            }
-            <MenuItem command="delete" {...deleteMoreOptionStyle}>Delete message</MenuItem>
+            {menuItemImpl.map(({ label, divider = false, ...rest }, index) => (
+              <React.Fragment key={`menu-item-${index}`}>
+                {!divider ? (
+                  <MenuItem {...rest} {...commonMoreOptionStyle}>
+                    {label}
+                  </MenuItem>
+                ) : (
+                  <MenuDivider />
+                )}
+              </React.Fragment>
+            ))}
+            <MenuItem command="delete" {...deleteMoreOptionStyle}>
+              Delete message
+            </MenuItem>
           </MenuList>
         </Menu>
       </Square>
     </HStack>
-)}
+  );
+};
 const commonOptionStyle = {
-  size: "24px" ,
+  size: "24px",
   cursor: "pointer",
   borderRadius: "2px",
-  _hover: { bg: "#E7E7E7" }
-}
+  _hover: { bg: "#E7E7E7" },
+};
 const commonMoreOptionStyle = {
   _hover: { bg: "#00B87C", color: "white" },
-  _focus: { bg: "#00B87C", color: "white" }
-}
+  _focus: { bg: "#00B87C", color: "white" },
+};
 const deleteMoreOptionStyle = {
   _hover: { bg: "#ED5564", color: "white" },
   _focus: { bg: "#ED5564", color: "white" },
-  color: "#ED5564"
-}
+  color: "#ED5564",
+};
 
 export default MessageCard;

@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from 'react'
 import { Box, Text, Flex } from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
