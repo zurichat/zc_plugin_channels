@@ -32,7 +32,7 @@ const EmptyStateComponent = ({org_id}) => {
       <AddPeopleModal isOpen={isOpen} onClose={onClose} org_id={org_id}/>
       <Center fontSize={{ base: "14px", md: "14px", lg: "15px" }} p={[2, 7, 6, 0]}>
         <HStack direction={["column", "row"]}>
-          <Text color="#2B2B2B" fontweight='700' fontSize="15px" lineHeight='30px' paddingTop='18px'>
+          <Text color="#2B2B2B" fontWeight='700' fontSize="15px" lineHeight='30px' paddingTop='18px'>
             This is the very beginning of the{" "}
             <Link
               color="#0562ed"
@@ -44,7 +44,7 @@ const EmptyStateComponent = ({org_id}) => {
               #{channelDetails.name}
             </Link>
             channel
-            <Link color="#0562ed" ml='2px' fontWeight="700" fontweight='700' textTransform="capitalize">
+            <Link color="#0562ed" ml='2px' fontWeight="700" textTransform="capitalize">
               @{channelDetails.owner}
             </Link>{" "}
             <Box as="span" color="#B0AFB0" fontSize="13px">

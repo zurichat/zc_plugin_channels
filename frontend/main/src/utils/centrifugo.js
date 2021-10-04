@@ -16,19 +16,16 @@ class Centrifugo {
 
     subscribeToAllEvents() {
         SubscribeToChannel(`organizations_${this.org_id}`, (ctx) => {
-            console.log("centrifugo ctx == ", ctx)
             this.listenToEvents(ctx)
         })
     }
 
     addListener(event, callback) {
-        console.log("add listener == ", event)
         this.listeners[event] = callback
     }
 
     listenToEvents(ctx) {
         const { event, id, type } = ctx.data
-        console.log("centrifugo ctx ==", ctx + "for event == " + event)
         if (this.listeners[event]) {
             this.listeners[event](id, type, this.org_id)
         }

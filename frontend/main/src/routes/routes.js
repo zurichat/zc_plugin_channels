@@ -34,6 +34,7 @@ const routes = () => {
     loadData();
     loadUsers();
     centrifugo.addListener("UpdateOrganizationMemberProfile", () => {
+      console.log("reacting to UpdateOrganizationMemberProfile")
       _getWorkspaceUsers()
     })
   }, []);
