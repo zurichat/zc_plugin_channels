@@ -158,7 +158,7 @@ const MessageBoardIndex = () => {
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["83vh", "85vh", "65vh", "58vh"]}
+            height={["93vh", "95vh", "75vh", "68vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",
