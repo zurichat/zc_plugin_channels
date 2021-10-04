@@ -49,12 +49,12 @@ const MessageCard = ({ _id, user_id, channel_id, timestamp, content, icon, repli
         <HoverOptions show={showOptions} actions={pinMessage} />
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
-            <Avatar name={user.display_name} src={user.image_url} w="36px" h="36px" borderRadius="4px" />
+            <Avatar name={user.user_name} src={user.image_url} w="36px" h="36px" borderRadius="4px" />
           </Box>
           <Flex flexDir="column">
             <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
               <Text fontSize="16px" fontWeight="900">
-                {user.display_name}
+                {user.user_name || user.email || "External User"}
               </Text>
               <Text fontSize="13px" color="#616061">
                 {formattedTime}
