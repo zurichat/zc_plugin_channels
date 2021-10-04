@@ -306,4 +306,3 @@ const ResizableInput = ({
     );
 }
 export default MessageInput;
-

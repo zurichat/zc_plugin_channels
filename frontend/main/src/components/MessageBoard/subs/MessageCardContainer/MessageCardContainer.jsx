@@ -25,7 +25,7 @@ import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
 
 
-const MessageCardContainer = ({ channelId,allUsers, org_id }) => {
+const MessageCardContainer = ({ channelId, allUsers, org_id }) => {
 
     const dispatch = useDispatch()
     const history = useHistory()
@@ -85,4 +85,3 @@ const MessageCardContainer = ({ channelId,allUsers, org_id }) => {
 }
 
 export default MessageCardContainer;
-
