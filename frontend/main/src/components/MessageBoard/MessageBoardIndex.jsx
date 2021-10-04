@@ -34,7 +34,7 @@ const MessageBoardIndex = () => {
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
 
@@ -169,7 +169,7 @@ const MessageBoardIndex = () => {
             }}
           >
 
-            <MessageCardContainer channelId={channelId}  allUsers={allUsers} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>

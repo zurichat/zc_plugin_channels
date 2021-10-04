@@ -21,7 +21,7 @@ const threadReply = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited }) => {
+const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
