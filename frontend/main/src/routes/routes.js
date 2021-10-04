@@ -32,6 +32,9 @@ const routes = () => {
   useEffect(async () => {
     loadData();
     loadUsers();
+    centrifugo.addListener("UpdateOrganizationMemberProfile", () => {
+      _getWorkspaceUsers()
+    })
   }, []);
 
   const { workspace_users } = useSelector((state) => state.appReducer);
