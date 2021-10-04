@@ -162,6 +162,8 @@ def search_db(org_id, channel_id, collection_name, **params):
 def get_messages_from_page(
     org_id, collection_name, channel_id, page, page_size, site_host=None
 ):
+    if site_host == None:
+        site_host = "https://channels.zuri.chat"
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -186,7 +188,7 @@ def get_messages_from_page(
     response = requests.post(read, data=json.dumps(data))
 
     data = response.json()
-    pg_links = gen_page_links(org_id, "userscroll", channel_id, page, page_size)
+    pg_links = gen_page_links(org_id, "channelmessage", channel_id, page, page_size)
 
     for i in pg_links:
         if pg_links[i] is not None:
