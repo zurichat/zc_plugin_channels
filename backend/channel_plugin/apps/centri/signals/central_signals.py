@@ -17,7 +17,6 @@ CLIENT = CentClient(
 
 @receiver(request_finished, sender=None)
 def UpdateSidebarSignal(sender, **kwargs):
-
     uid = kwargs.get("dispatch_uid")
 
     if uid == "UpdateSidebarSignal":
