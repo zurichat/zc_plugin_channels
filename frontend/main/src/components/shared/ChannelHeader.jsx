@@ -27,7 +27,7 @@ const ChannelHeader = ({channelId}) => {
   });
   const channel_id = channelId; //assigning dynamic channel id to channel_id
   console.log(channel_id);
-
+  const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const dispatch = useDispatch();

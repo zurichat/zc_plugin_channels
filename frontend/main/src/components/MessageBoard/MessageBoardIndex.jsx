@@ -33,7 +33,7 @@ const MessageBoardIndex = ({allUsers}) => {
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
 
@@ -161,7 +161,7 @@ const MessageBoardIndex = ({allUsers}) => {
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["83vh", "85vh", "65vh", "58vh"]}
+            height={["93vh", "95vh", "75vh", "68vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",
@@ -172,7 +172,7 @@ const MessageBoardIndex = ({allUsers}) => {
             }}
           >
 
-            <MessageCardContainer channelId={channelId}  allUsers={allUsers} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
