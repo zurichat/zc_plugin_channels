@@ -16,7 +16,18 @@ import hashImage from "./assets/default.png";
 const NewChannelHeader = ({channelId, org_id}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // const org_id = org_id;//Test value for org id
+  const { users } = useSelector(state => state.appReducer)
+  let _users;
+  let orgId;
+
+  useEffect(() => {
+    _users = users;
+    orgId = _users.currentWorkspace;
+    console.log("this is the orgId plugin hheader", orgId);
+  });
+
+  console.log("This is the orgId plugin header", orgId)
+
   const channel_id = channelId; //assigning dynamic channel id to channel_id
 
   const dispatch = useDispatch();
@@ -24,7 +35,7 @@ const NewChannelHeader = ({channelId, org_id}) => {
 
   const loadChannelDetails = async () => { 
 
-    await _getChannelDetails(org_id, channel_id);
+    await _getChannelDetails(orgId, channel_id);
 
   };
 
