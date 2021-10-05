@@ -10,8 +10,8 @@ import { CgMoreVertical } from "react-icons/cg"
 import appActions from "../../redux/actions/app"
 import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
 import instance from '../../utils/utils';
-import _ from 'lodash';
 
 const threadReply = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/dan-abramov", index: 1 },
@@ -21,36 +21,24 @@ const threadReply = [
     { name: "Dan Abramov", profilePic: "https://bit.ly/sage-adebayo", index: 5 },
   ];
 
-const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUsers }) => {
+const MessageCard = ({ _id, user_id, channel_id, timestamp, content, icon, replies, edited }) => {
   const [showOptions, setShowOptions] = useState(false)
   const formattedTime = instance.formatDate(timestamp, 'LT')
   const dispatch = useDispatch();
   const { _pinMessage } = bindActionCreators(appActions, dispatch);
+  const {  workspace_users_object, users: authUser } = useSelector(state => state.appReducer);
+  const user = workspace_users_object[user_id] || {
+    display_name: user_id,
+    image_url: ""
+  };
 
   const pinMessage = () => {
-    const orgId = 1 // Hardcoded value to for channelId in org with id 1
-    const messageId = "61413e736173056af01b4d31"
-    const userId = "cephas"
-    const channelId = "613f70bd6173056af01b4aba"
-    _pinMessage(orgId, channelId, userId, messageId)
+    _pinMessage(authUser.org_id, channel_id, user_id, _id)
   }
 
-  // const [userDetails, setUserDetails] = useState({})
-  let empty = [];
-  const res = _.findKey(allUsers, function(item){
-    if (item._id === user_id){
-      empty.push(item)
-      // setUserDetails(item)
-    }
-    else{
-      console.log("No")
-    }
-  })
-
-  // console.log(empty)
-  // const userDisplay = empty ? (empty.user_name === "" ? user.user_name : user_id) : user_id;
-
-  
+  // const actions = {
+  //   pinMessage
+  // }
     return (
       <Box 
         position="relative" 
@@ -61,12 +49,12 @@ const MessageCard = ({ user_id, timestamp, content, icon, replies, edited, allUs
         <HoverOptions show={showOptions} actions={pinMessage} />
         <Flex flexWrap="nowrap" flexDir="row" p="15px" gridGap="10px">
           <Box>
-            <Avatar name={empty && empty.length > 0 ? empty[0].user_name : user_id } src={empty && empty.length > 0 ? empty[0].image_url : ""} w="36px" h="36px" borderRadius="4px" />
+            <Avatar name={user.user_name} src={user.image_url} w="36px" h="36px" borderRadius="4px" />
           </Box>
           <Flex flexDir="column">
             <HStack flexWrap="nowrap" flexDir="row" spacing="8px">
               <Text fontSize="16px" fontWeight="900">
-                {empty && empty.length > 0 ? empty[0].user_name : "External User "}
+                {user.user_name || user.email || "External User"}
               </Text>
               <Text fontSize="13px" color="#616061">
                 {formattedTime}

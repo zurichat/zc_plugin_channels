@@ -21,6 +21,9 @@ CLIENT = CentClient(
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def JoinedChannelSignal(sender, **kwargs):
+  
+    serializer = ChannelMessageSerializer(
+            data=data, context={"channel_id": channel_id, "org_id": org_id})
     
     uid = kwargs.get("dispatch_uid")
     
@@ -42,24 +45,6 @@ def JoinedChannelSignal(sender, **kwargs):
             "recipients": kwargs.get("added", [user])
         }
 
-        serializer = ChannelMessageSerializer(
-            data=data, 
-            context={"channel_id": channel_id, "org_id": org_id}
-        )
-
-        serializer.is_valid(raise_exception=True)
-        channelmessage = serializer.data.get("channelmessage")
-        
-        # required
-        channelmessage.type = "event"
-        channelmessage.event = event
-        channelmessage.can_reply = False
-
-        try:
-            result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
-        except:
-            pass
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def LeftChannelSignal(sender, **kwargs):
@@ -89,26 +74,7 @@ def LeftChannelSignal(sender, **kwargs):
             "action": "leave:channel",
             "recipients": kwargs.get("removed", [user])
         }
-
-        serializer = ChannelMessageSerializer(
-            data=data, 
-            context={"channel_id": channel_id, "org_id": org_id}
-        )
-
-        serializer.is_valid(raise_exception=True)
-        channelmessage = serializer.data.get("channelmessage")
-        
-        # required
-        channelmessage.type = "event"
-        channelmessage.event = event
-        channelmessage.can_reply = False
-
-        try:
-            result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
-        except:
-            pass
-
+          
 @receiver(request_finished, sender=ChannelViewset)
 def ChannelUpdateSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import { Box } from "@chakra-ui/layout";
 import {
   Text,
@@ -6,7 +6,6 @@ import {
   Image, Link, Button
 } from "@chakra-ui/react";
 import smileEmoji from '../images/emoji-smile.png'
-// import UserStatusSettings from './UserStatusSettings'
 
 
 
@@ -22,16 +21,6 @@ import smileEmoji from '../images/emoji-smile.png'
     details: "View full profile",
     statusDetail: "Product Designer",
     time: "10:00AM",
-  };
-
-   const [showPicker, setShowPicker] = useState(false);
-  const [chosenEmoji, setChosenEmoji] = useState();
-
-  const handleStatus = () => {
-    setShowPicker(!showPicker)
-  };
-  const onEmojiClick = (event, emojiObject) => {
-    setChosenEmoji(emojiObject);
   };
 
   
@@ -67,12 +56,7 @@ import smileEmoji from '../images/emoji-smile.png'
 
                     
             <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='20rem' >Status</Text>
-            {/* <Image src={smileEmoji}  pos='absolute' left='2rem'  top='22rem'  h='25px' w='25px' /> */}
-             <Box onClick={handleStatus} cursor="pointer">
-      {chosenEmoji ? chosenEmoji.emoji : <Image src={smileEmoji} alt={imageAlt} /> }
-      {showPicker && <Picker onEmojiClick={onEmojiClick} /> 
-      }
-      </Box>
+            <Image src={smileEmoji}  pos='absolute' left='2rem'  top='22rem'  h='25px' w='25px' />
             <Text fontSize='.96rem' fontStyle='Lato' color='gray'  pos='absolute' pl='.5rem' top='25rem' >Local Time</Text>
             <Text fontSize='.96rem' fontStyle='Lato' fontWeight='bold' color='gray'  pos='absolute' pl='.5rem' top='26.8rem' >{data.time}</Text>
             <Box display='flex' pos='absolute'   w='240px'  top='30.4rem'  >

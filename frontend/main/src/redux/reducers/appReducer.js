@@ -9,6 +9,7 @@ import {
   USER_CAN_INPUT,
   GET_FILES,
   GET_WORKSPACE_USERS,
+  GET_NOTIFICATION_SETTINGS,
 } from "../actions/types";
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
   sockets: [],
   renderedMessages: [],
   notificationSettings: [],
+  userNotificationSettings: [],
   userCanInput: true,
    channelsFiles:[],
 };
@@ -94,6 +96,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         notificationSettings: payload,
+      };
+    case GET_NOTIFICATION_SETTINGS:
+      return {
+        ...state,
+        userNotificationSettings: payload,
       };
 
     default:
