@@ -14,6 +14,7 @@ import PinnedMessages from "./PinnedMessages";
 import NewChannelHeader from "./pluginHeader";
 import _ from "lodash";
 import MoreNotificationModal from "./MoreNotificationModal";
+import { useDisclosure } from "@chakra-ui/hooks";
 
 const ChannelHeader = ({channelId}) => {
   const { users } = useSelector(state => state.appReducer)
@@ -30,7 +31,6 @@ const ChannelHeader = ({channelId}) => {
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const dispatch = useDispatch();
    //.......getting pinned messages from redux store...........//
   const { _getPinnedMessages } = bindActionCreators(appActions, dispatch); //extract redux function
   const { pinnedMessages } = useSelector((state) => state.channelsReducer);

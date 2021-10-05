@@ -25,7 +25,7 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import AddEmojiModal from "./addEmojiModal";
 import _ from "lodash";
 
-const MessageInput = ({ channelId, org_id }) => {
+const MessageInput = ({ channelId}) => {
   const {
     channelsReducer: { channelDetails },
   } = useSelector((state) => state);
@@ -80,7 +80,7 @@ const MessageInput = ({ channelId, org_id }) => {
   });
 
   const loadData = async () => {
-    const channel_id = newChannelId; // Hardcoded value to for channel_id in org with id 1
+    const channel_id = newChannelId; 
     await _sendMessage(org_id, channel_id, datas);
     console.log(data, channel_id, datas.user_id);
     setData("");
