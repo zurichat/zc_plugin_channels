@@ -51,6 +51,8 @@ class UserSerializer(serializers.Serializer):
 
     _id = serializers.CharField(max_length=30, required=True, help_text="User ID")
     role_id = serializers.CharField(max_length=30, required=False, help_text="Role ID")
+    
+    starred = serializers.BooleanField(default=False, help_text= "Default: false. True if the channel is starred by user.")
     is_admin = serializers.BooleanField(
         default=False, help_text="Default: false. True if the member is an admin"
     )

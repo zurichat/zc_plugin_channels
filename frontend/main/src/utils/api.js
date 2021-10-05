@@ -145,6 +145,9 @@ class APIServices {
   async setNotification(org_id, channel_id, member_id, data) {
     return api.put(`/${org_id}/channels/${channel_id}/members/${member_id}/notifications/`, data);
 }
+  async getNotification(org_id, channel_id, member_id) {
+    return api.put(`/${org_id}/channels/${channel_id}/members/${member_id}/notifications/`);
+}
 
 async userCanInput(org_id, channel_id, data) {
   return api.post(`/${org_id}/channels/${channel_id}/members/can-input`, data );

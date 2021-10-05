@@ -109,6 +109,7 @@ class GetInfoViewset(ViewSet):
         data = {
             "name": "Channels Plugin",
             "description": description,
+            "button_url": "/channels",
             "plugin_id": settings.PLUGIN_ID,
         }
         if org_id is not None and user_id is not None:
