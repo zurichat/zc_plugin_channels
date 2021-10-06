@@ -193,7 +193,7 @@ const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
     const data = res.data.data || [];
     dispatch({ type: GET_PINNED_MESSAGES, payload: data });
   } catch (err) {
-    _alert("error");
+    console.log(err);
   }
 };
 

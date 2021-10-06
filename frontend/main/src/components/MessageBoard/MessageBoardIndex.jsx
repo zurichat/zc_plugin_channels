@@ -18,7 +18,6 @@ import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
 import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
 import Centrifuge from 'centrifuge';
-
 import { SubscribeToChannel } from '@zuri/control'
 
 //notifications
@@ -34,9 +33,13 @@ const MessageBoardIndex = () => {
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_inpu
+
+  
+
+
 
   const [ orgId, setOrgId ] = useState()
 
@@ -159,7 +162,7 @@ const MessageBoardIndex = () => {
             m="5px"
             bg="white"
             overflowY="scroll"
-            height={["83vh", "85vh", "65vh", "58vh"]}
+            height={["93vh", "95vh", "75vh", "68vh"]}
             css={{
               "&::-webkit-scrollbar": {
                 width: "0",
@@ -170,7 +173,7 @@ const MessageBoardIndex = () => {
             }}
           >
 
-            <MessageCardContainer channelId={channelId}  allUsers={allUsers} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
           </Box>
           {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
