@@ -57,48 +57,47 @@ const MessageBoardIndex = () => {
         console.log('we have succesfully fetched the socket_name: ',socketName)
         SubscribeToChannel(socketName, function(messageCtx) {
           console.log('\n\n\n From centrifugo', messageCtx)
-          const action = messageCtx.event.action
-          console.log("\n\n\n", messageCtx.event)
+          const action = messageCtx.data.event.action
 
-          // switch(action){
-          //   case 'join:channel' || 'leave:channel' || 'create:message' :{
-          //     dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-          //     notificationsManager(messageCtx.data.content)
-          //     break;
-          //   }
+          switch(action){
+            case 'join:channel' || 'leave:channel' || 'create:message' :{
+              dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+              notificationsManager(messageCtx.data.content)
+              break;
+            }
 
-          //   case 'update:message':{
-          //     const messageId = messageCtx._id
-          //     const channelMessagesCopy = [...channelMessages]
-          //     channelMessagesCopy.find((o, i) => {
-          //       if (o._id === messageId) {
-          //           channelMessagesCopy[i] = messageCtx;
-          //           return true; // stop searching
-          //               }
-          //           });
+            case 'update:message':{
+              const messageId = messageCtx.data._id
+              const channelMessagesCopy = [...channelMessages]
+              channelMessagesCopy.find((o, i) => {
+                if (o._id === messageId) {
+                    channelMessagesCopy[i] = messageCtx.data;
+                    return true; // stop searching
+                        }
+                    });
               
-          //     dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
-          //     break;
-          //   }
+              dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
+              break;
+            }
 
-          //   case 'delete:message':{
-          //     const messageId = messageCtx._id
-          //     const channelMessagesCopy = [...channelMessages]
-          //     channelMessagesCopy.find((o, i) => {
-          //       if (o._id === messageId) {
-          //           channelMessagesCopy.splice(i,1);
-          //           return true; // stop searching
-          //               }
-          //           });
+            case 'delete:message':{
+              const messageId = messageCtx.data._id
+              const channelMessagesCopy = [...channelMessages]
+              channelMessagesCopy.find((o, i) => {
+                if (o._id === messageId) {
+                    channelMessagesCopy.splice(i,1);
+                    return true; // stop searching
+                        }
+                    });
               
-          //     dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
-          //     break;
-          //   }
+              dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
+              break;
+            }
 
-          //   default:{
-          //     dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-          //   }
-          // }
+            default:{
+              dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
+            }
+          }
 
         console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
         
