@@ -41,14 +41,10 @@ class CorsMiddleware:
             except:  # noqa
                 pass
 
-        # else:
-        #     response.__dict__["_headers"]["access-control-allow-origin"] = (
-        #         "Access-Control-Allow-Origin",
-        #         "*",
-        #     )
-        #     response.__dict__["_headers"]["content-type"] = (
-        #         "Content-Type",
-        #         "text/plain",
-        #     )
+        else:
+            response.__dict__["_headers"]["access-control-allow-origin"] = (
+                "Access-Control-Allow-Origin",
+                "*",
+            )
 
         return response
