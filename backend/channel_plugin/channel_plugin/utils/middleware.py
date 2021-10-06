@@ -1,7 +1,9 @@
 # from django import http
 # from django.conf import settings
 # from django.http import JsonResponse
-import logging
+# import logging
+
+from sentry_sdk import capture_message
 
 
 class AuthenticationMiddleware:
@@ -31,7 +33,9 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             response = self.process_response(request, response)
-            logging.info(f"Response (production) - {response.__dict__['_headers']}")
+            capture_message(
+                f"Response (production) - {response.__dict__['_headers']}", level="info"
+            )
         return response
 
     def process_response(self, request, response):
