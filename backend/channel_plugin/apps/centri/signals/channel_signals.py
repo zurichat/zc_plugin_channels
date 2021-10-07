@@ -1,4 +1,3 @@
-from django.core.signals import request_finished
 from django.dispatch import receiver
 from django.utils import timezone
 from django.conf import settings
@@ -6,10 +5,12 @@ from django.conf import settings
 from cent import CentException
 
 from apps.centri.centwrapper import CentClient
-from apps.channels.views import ChannelMemberViewset
+from apps.channels.views import ChannelMemberViewset, ChannelViewset
 from apps.channelmessages.serializers import ChannelMessageSerializer
 from apps.centri.helperfuncs import build_room_name
+import asyncio
 
+from apps.centri.signals.async_signal import request_finished
 
 CLIENT = CentClient(
     address = settings.CENTRIFUGO_URL,
@@ -20,7 +21,7 @@ CLIENT = CentClient(
 
 
 @receiver(request_finished, sender=ChannelMemberViewset)
-def JoinedChannelSignal(sender, **kwargs):
+async def JoinedChannelSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
     
     if uid == "JoinedChannelSignal":
@@ -64,7 +65,7 @@ def JoinedChannelSignal(sender, **kwargs):
             pass
 
 @receiver(request_finished, sender=ChannelMemberViewset)
-def LeftChannelSignal(sender, **kwargs):
+async def LeftChannelSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
     
     if uid == "LeftChannelSignal":
