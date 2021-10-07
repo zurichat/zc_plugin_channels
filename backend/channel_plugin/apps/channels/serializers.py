@@ -234,3 +234,4 @@ class RoomSerializer(serializers.Serializer):
         }
 
         return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
+

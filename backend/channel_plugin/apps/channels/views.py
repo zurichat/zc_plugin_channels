@@ -27,6 +27,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
+    RoomSerializer
 )
 
 # from rest_framework.filters
