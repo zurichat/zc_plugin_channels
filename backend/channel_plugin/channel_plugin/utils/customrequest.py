@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
+from django.urls import reverse
 
 logger = logging.getLogger("sentry_sdk")
 
@@ -97,8 +98,7 @@ class Request:
         else:
             if object_id is None:
                 return {"error": "Object ID must be set for multiple payload"}
-            data.update({"object_id": object_id})
-
+            data.update({"filter": {"_id": object_id}})
         response = requests.put(write, data=json.dumps(data))
         if response.status_code >= 200 and response.status_code < 300:
             if not bulk_write:
@@ -159,7 +159,11 @@ def search_db(org_id, channel_id, collection_name, **params):
     return {"error": response.json()}
 
 
-def get_messages_from_page(org_id, collection_name, channel_id, page, page_size):
+def get_messages_from_page(
+    org_id, collection_name, channel_id, page, page_size, site_host=None
+):  
+    if site_host == None:
+        site_host = "https://channels.zuri.chat"
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -169,43 +173,107 @@ def get_messages_from_page(org_id, collection_name, channel_id, page, page_size)
                 {"channel_id": {"$eq": channel_id}},
             ]
         },
-
-        "options" : {
-
-        }
+        "options": {},
     }
 
     skips = page_size * (page - 1)
 
-    data["options"].update({
-        "skip" : skips,
-        "limit" : page_size,
-        })
-    
+    data["options"].update(
+        {
+            "skip": skips,
+            "limit": page_size,
+        }
+    )
+
     response = requests.post(read, data=json.dumps(data))
 
-    return response.json()
+    data = response.json()
+    pg_links = gen_page_links(org_id, "channelmessage", channel_id, page, page_size)
+
+    for i in pg_links:
+        if pg_links[i] is not None:
+            try:
+                pg_links[i] = site_host + pg_links[i]
+            except:  # noqa
+                pass
+
+    data["links"] = pg_links
+
+    return data
+
+
+def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
+    new_url = reverse(
+        "paginate_messages", kwargs={"org_id": org_id, "channel_id": channel_id}
+    )
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
+        "options": {},
+    }
+
+    skips = page_size * (cur_page - 1) + 1
+
+    data["options"].update(
+        {
+            "skip": skips,
+            "limit": page_size,
+        }
+    )
+
+    response = requests.post(read, data=json.dumps(data))
+    data = response.json()
+    if cur_page > 1:
+        prev_link = f"{new_url}?page={cur_page - 1}&?page_size={page_size}"
+    else:
+        prev_link = None
+    try:
+        if not data["data"]:
+            next_link = None
+        else:
+            next_link = f"{new_url}?page={cur_page + 1}&page_size={page_size}"
+    except:  # noqa
+        print("Error RetrIEVEING DATA")
+        pass
+    data_links = {"prev": prev_link, "next": next_link}
+    return data_links
 
 
 def save_last_message_user(org_id, collection_name, payload):
-    data = { 
-            "plugin_id": settings.PLUGIN_ID,
-            "organization_id": org_id,
-            "collection_name": collection_name,
-            "bulk_write": False,
-            "payload": payload,
-        }
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "bulk_write": False,
+        "payload": payload,
+    }
+    if find_match_in_db(org_id, collection_name, "user_id", payload["user_id"]):
+        data["bulk_write"] = True
+        data.update({"filter": {"user_id": {"$eq": payload["user_id"]}}})
+        requests.put(write, data=json.dumps(data))
+        print("UPDATED")
 
-    match = find_match_in_db(org_id, collection_name, "user_id", payload['user_id'])
-    if match == None:
-        r = requests.post(write, data = json.dumps(data))
+    else:
+        requests.post(write, data=json.dumps(data))
+        print("Created new")
+
+    match = find_match_in_db(org_id, collection_name, "user_id", payload["user_id"])
+    if match is None:
+        requests.post(write, data=json.dumps(data))
         print("Created new")
     else:
-        data.update({"object_id":payload['user_id']})
-        r = requests.put(read, data= json.dumps(data))
+        data.update({"object_id": payload["user_id"]})
+        requests.put(read, data=json.dumps(data))
         print("Updated")
 
-def find_match_in_db(org_id, collection_name, param, value):
+
+def find_match_in_db(org_id, collection_name, param, value, return_data=False):
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -217,15 +285,89 @@ def find_match_in_db(org_id, collection_name, param, value):
         },
     }
 
-    response = requests.get(read, data=json.dumps(data))
-    response_data = response
+    response = requests.post(read, data=json.dumps(data))
+    response_data = response.json()
     print(response_data)
-    if response.ok:
-        print("We made a match")
-        return True
+    try:
+        if response_data:
+            return response_data["data"]
+        if response_data["data"] is not None:
+            print("We made a match")
+            return True
 
-    else:
+    except:  # noqa
         print("No match")
         return None
 
+
+def manage_channel_permissions(org_id, channel_id, payload):
+
+    collection_name = "channelpermissions"
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {"channel_id": {"$eq": channel_id}},
+            ]
+        },
+        "bulk_write": False,
+        "payload": payload,
+    }
+
+    if find_match_in_db(org_id, "channelpermissions", "channel_id", channel_id):
+        data["bulk_write"] = True
+        response = requests.put(write, data=json.dumps(data))
+        return response.json()
+    response = requests.post(write, data=json.dumps(data))
+    return response.json()
+
+
+def get_channel_permissions(org_id, channel_id):
+    pass
+
+
+def get_thread_from_message(
+    org_id, collection_name, channelmessage_id, page, page_size
+):
+    pass
+
+
+#     data = {
+#         "plugin_id": settings.PLUGIN_ID,
+#         "organization_id": org_id,
+#         "collection_name": collection_name,
+#         "filter": {
+#             "$and": [
+#                 {"channelmessage_id": {"$eq": channelmessage_id}},
+#             ]
+#         },
+#         "options": {},
+#     }
+
+#     skips = page_size * (page - 1)
+
+#     data["options"].update(
+#         {
+#             "skip": skips,
+#             "limit": page_size,
+#         }
+#     )
+
+#     response = requests.post(read, data=json.dumps(data))
+
+#     data = response.json()
+#     pg_links = gen_page_links(org_id, "userscroll", channel_id, page, page_size)
+
+#     for i in pg_links:
+#         if pg_links[i] is not None:
+#             try:
+#                 pg_links[i] = site_host + pg_links[i]
+#             except:  # noqa
+#                 pass
+
+#     data["links"] = pg_links
+
+#     return data
 

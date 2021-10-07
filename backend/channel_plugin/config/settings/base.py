@@ -79,6 +79,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "channel_plugin.users.apps.UsersConfig",
+    "apps.googlemeet",
     # Your stuff: custom apps go here
     "apps.centri.apps.CentriConfig",
 ]
