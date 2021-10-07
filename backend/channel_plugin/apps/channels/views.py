@@ -741,7 +741,7 @@ class ChannelMemberViewset(ViewSet):
                 if not result.get("error"):
                     if isinstance(output, dict):
                         # when only one user is added
-                        request_finished.send(
+                        await request_finished.send(
                             sender=self.__class__,
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
@@ -750,7 +750,7 @@ class ChannelMemberViewset(ViewSet):
                         )
 
                         try:
-                            request_finished.send(
+                            await request_finished.send(
                                 sender=None,
                                 dispatch_uid="UpdateSidebarSignal",
                                 org_id=org_id,
@@ -761,7 +761,7 @@ class ChannelMemberViewset(ViewSet):
 
                     else:
                         # when output is a list multiple users where added
-                        request_finished.send(
+                        await request_finished.send(
                             sender=self.__class__,
                             dispatch_uid="JoinedChannelSignal",
                             org_id=org_id,
@@ -1040,7 +1040,7 @@ class ChannelMemberViewset(ViewSet):
 
                     if not result.get("error"):
                         # when only one user is removed
-                        request_finished.send(
+                        await request_finished.send(
                             sender=self.__class__,
                             dispatch_uid="LeftChannelSignal",
                             org_id=org_id,
@@ -1048,7 +1048,7 @@ class ChannelMemberViewset(ViewSet):
                             user=user_data.copy(),
                         )
                         try:
-                            request_finished.send(
+                            await request_finished.send(
                                 sender=None,
                                 dispatch_uid="UpdateSidebarSignal",
                                 org_id=org_id,
