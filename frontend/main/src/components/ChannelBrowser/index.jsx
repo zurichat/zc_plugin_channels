@@ -32,6 +32,83 @@ const ChannelBrowser = () => {
     }
   }, [orgId]);
 
+  let originalchannel = useSelector((state) => state.appReducer).channels;
+ const [channels, setChannel] = useState([...originalchannel]);
+
+  useEffect(() => {
+    setChannel([...originalchannel])
+  }, [originalchannel.length])
+  
+  const searchChannel= param =>{
+    if (!channels) return
+    param = param.trim()
+    if(param){
+      setChannel(originalchannel.filter((chan) => (chan.name.includes(param) || chan.description.includes(param))))
+    }
+    else{
+      setChannel([...originalchannel])
+    }
+    
+  }
+
+  const sortBy = param =>{
+    if (!channels) return
+    const newChannel = channels.sort((chan1, chan2)=>{
+      let prop1=0
+      let prop2 =0
+
+      switch (param) {
+        case "recommended":
+          prop1 = chan1._id
+          prop2 = chan2._id
+          break;
+      
+        case "newest":
+          prop1 = new Date(chan1.created_on).getTime()
+          prop2 = new Date(chan2.created_on).getTime()
+          break;
+        
+        case "oldest":
+          prop1 = new Date(chan2.created_on).getTime()
+          prop2 = new Date(chan1.created_on).getTime()
+          break;
+        
+        case "leastMembers":
+          prop1 = chan1.members
+          prop2 = chan2.members
+          break;
+        
+        case "mostMembers":
+          prop1 = chan2.members
+          prop2 = chan1.members
+          break;
+        
+        case "name":
+          prop1 = chan1.name
+          prop2 = chan2.name
+          break;
+        
+        case "nameReverse":
+          prop1 = chan2.name
+          prop2 = chan1.name
+          break;
+        
+        default:
+          prop1 = chan1._id 
+          prop2 = chan2._id 
+          break;
+      }
+      if(typeof prop1 == "number"){
+        return prop1 - prop2
+      }
+      else{
+        return prop1 > prop2?1:prop1==prop2?0:-1 
+      }
+      
+      
+    })
+    setChannel([...newChannel])
+  }
   return (
     <Box mt="0" bgColor="#E5E5E5" height="100vh">
       {/* <ChannelBrowserHeader /> */}
@@ -44,8 +121,8 @@ const ChannelBrowser = () => {
         pt="16px"
         sx={{ "@media screen and (max-width: 768.5px)": { marginRight: "0" } }}
       >
-        <SearchMenu />
-        <ChannelList orgId={orgId} />
+        <SearchMenu channels={channels} sortBy={sortBy} searchChannel={searchChannel}/>
+        <ChannelList orgId={orgId} channels={channels}/>
       </Box>
 
       {/* Mobile View to Add Channel */}
