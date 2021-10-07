@@ -4,9 +4,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import ChannelContainer from "./ChannelContainer";
 
-const ChannelList = (props) => {
-  const { channels } = useSelector((state) => state.appReducer);
-
+const ChannelList = ({orgId, channels}) => {
+  
   return (
     <VStack
       divider={<StackDivider borderColor="gray.200" />}
@@ -16,7 +15,7 @@ const ChannelList = (props) => {
       {/* Channels List Element */}
       {channels &&
         channels.map((chan) => (
-          <ChannelContainer key={chan._id} chan={chan} orgId={props.orgId} />
+          <ChannelContainer key={chan._id} chan={chan} orgId={orgId} />
         ))}
     </VStack>
   );

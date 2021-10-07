@@ -33,8 +33,8 @@ const routes = () => {
   useEffect(async () => {
     loadData();
     loadUsers();
-    
     centrifugo.addListener("UpdateOrganizationMemberProfile", () => {
+      console.log("reacting to UpdateOrganizationMemberProfile")
       _getWorkspaceUsers()
     })
   }, []);
@@ -53,9 +53,9 @@ const routes = () => {
       <Route exact path="/">
         <ChannelBrowser />
       </Route>
-      {/* <Route exact path="/home">
+      <Route exact path="/home">
         <Home />
-      </Route> */}
+      </Route>
       <Route path="/create-channel">
         <CreateChannel />
       </Route>

@@ -9,7 +9,7 @@ import {
   USER_CAN_INPUT,
   GET_FILES,
   GET_WORKSPACE_USERS,
-  SEND_EMOJI
+  GET_NOTIFICATION_SETTINGS,
 } from "../actions/types";
 
 const initialState = {
@@ -23,9 +23,9 @@ const initialState = {
   sockets: [],
   renderedMessages: [],
   notificationSettings: [],
+  userNotificationSettings: [],
   userCanInput: true,
    channelsFiles:[],
-  emojiStorage:[],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -58,11 +58,6 @@ const appReducer = (state = initialState, action) => {
         ...state,
         channelMessages: payload,
       };
-      case SEND_EMOJI:
-        return {
-          ...state,
-          emojiStorage: payload,
-        };
     case GET_RENDEREDMESSAGES:
       return {
         ...state,
@@ -101,6 +96,11 @@ const appReducer = (state = initialState, action) => {
       return {
         ...state,
         notificationSettings: payload,
+      };
+    case GET_NOTIFICATION_SETTINGS:
+      return {
+        ...state,
+        userNotificationSettings: payload,
       };
 
     default:

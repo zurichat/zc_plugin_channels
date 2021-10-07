@@ -21,11 +21,9 @@ from channel_plugin.utils.wrappers import OrderMixin
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
     ChannelGetSerializer,
-    ChannelPermissions,
     ChannelSerializer,
     ChannelUpdateSerializer,
     NotificationsSettingSerializer,
-    RoomSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
@@ -59,14 +57,12 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         """
         This creates a channel for a
         particular organization identified by ID and creates corresponding Centrifugo room
-
         ```bash
         curl -X POST "{baseUrl}/v1/{org_id}/channels/"
         -H  "accept: application/json"
         -H  "Content-Type: application/json"
         -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false, \"default\":false,  \"topic\": \"channel topic\"}"
         ```
-
         """  # noqa
 
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
@@ -84,41 +80,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             )
             status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code)
-    
-    @swagger_auto_schema(
-        operation_id="create-room",
-        request_body=RoomSerializer,
-        responses={
-            201: openapi.Response("Response", RoomSerializer),
-            404: openapi.Response("Error Response", ErrorSerializer),
-        },
-    )
-    @throttle_classes([throttling.AnonRateThrottle])
-    @action(
-        methods=["POST"],
-        detail=False,
-    )
-    def create_room(self, request):
-        serializer = RoomSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        channel_serializer = serializer.convert_to_channel_serializer()
-        channel_serializer.is_valid()
-        print(channel_serializer)
-        channel = channel_serializer.data.get("channel")
-        result = channel.create(serializer.data.get("ord_id"))
-        status_code = status.HTTP_404_NOT_FOUND
-
-        if result.__contains__("_id"):
-            request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=channel_serializer.data.get("ord_id"),
-                user_id=result.get("owner"),
-            )
-            status_code = status.HTTP_201_CREATED
-            return Response(serializer.data, status=status_code)
-        else:
-            return Response(result, status=status_code)
 
 
     @swagger_auto_schema(
@@ -182,7 +143,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     @action(methods=["GET"], detail=False)
     def channel_all(self, request, org_id):
         """Get all channels in the organization
-
         ```bash
         curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
         ```
@@ -209,10 +169,8 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     @action(methods=["GET"], detail=False)
     def channel_media_all(self, request, org_id, channel_id):
         """Retrieve all files in channel
-
         This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
         Response is split into `channelmessage` and `thread` objects
-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/files/" -H  "accept: application/json"
         ```
@@ -278,7 +236,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     )
     def channel_retrieve(self, request, org_id, channel_id):
         """Get channel details
-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
         ```
@@ -306,7 +263,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     )
     def channel_update(self, request, org_id, channel_id):
         """Update channel details
-
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/"
         -H  "accept: application/json"
@@ -361,9 +317,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     )
     def channel_delete(self, request, org_id, channel_id):
         """Delete a channel
-
         This endpoint deletes a channel and its related objects: messages, roles and threads
-
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
         ```
@@ -399,7 +353,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     @action(methods=["GET"], detail=False)
     def user_channel_retrieve(self, request, org_id, user_id):
         """Retrieve list of channels a user belongs to
-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/users/{{user_id}}/" -H  "accept: application/json"
         ```
@@ -445,7 +398,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
     def get_channel_socket_name(self, request, org_id, channel_id):
         """
         Retrieve Centrifugo socket channel name based on organisation and channel IDs
-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
         ```
@@ -526,10 +478,8 @@ class ChannelMemberViewset(ViewSet):
     )
     def retrieve_notification(self, request, org_id, channel_id, member_id):
         """Retrieve user notification preferences for channel
-
         bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/" -H  "accept: application/json"
-
         """  # noqa
         channel = self.retrieve_channel(request, org_id, channel_id)
         if channel.__contains__("_id"):
@@ -573,7 +523,6 @@ class ChannelMemberViewset(ViewSet):
     )
     def update_notification(self, request, org_id, channel_id, member_id):
         """Update user notification preferences for a channel
-
         bash
         curl -X PUT "{{baseUrl}}v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/notifications/"
         -H  "accept: application/json"
@@ -584,7 +533,6 @@ class ChannelMemberViewset(ViewSet):
                 \"same_for_mobile\": true,
                 \"mute\": true
             }"
-
         """
 
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -659,9 +607,7 @@ class ChannelMemberViewset(ViewSet):
     def add_member(self, request, org_id, channel_id):
         """
         This method adds one or more users to a channel
-
         A JOIN event is published to Centrifugo when users are added to the channel
-
         **Add one user**
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
@@ -678,9 +624,7 @@ class ChannelMemberViewset(ViewSet):
                 }
             }"
         ```
-
         **Add multiple users**
-
         ```bash
         curl -X POST "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -719,7 +663,6 @@ class ChannelMemberViewset(ViewSet):
                 ...
             ]"
         ```
-
         """
         # get the channel from zc-core
         channel = self.retrieve_channel(request, org_id, channel_id)
@@ -801,7 +744,9 @@ class ChannelMemberViewset(ViewSet):
                             # added_by=request.query_params.get("user_id"),
                             added=output,
                         )
-                    status_code = status.HTTP_201_CREATED if output else status.HTTP_200_OK
+                    status_code = (
+                        status.HTTP_201_CREATED if output else status.HTTP_200_OK
+                    )
                     return Response(output, status=status_code)
                 else:
                     return Response(
@@ -827,12 +772,9 @@ class ChannelMemberViewset(ViewSet):
     )
     def can_input(self, request, org_id, channel_id):
         """Check if input is enabled for users
-
         This checks if a user input should be disabled or enabled, i.e \
         should users be able to send messages in the channel or not.
-
         (incomplete doc)
-
         ```bash
         curl -X POST "{{baseUrl}}/api/v1/{{org_id}}/channels/{{channel_id}}/members/can_input/"
         -H  "accept: application/json"
@@ -887,7 +829,6 @@ class ChannelMemberViewset(ViewSet):
         """
         This method gets all members for a
         channel identified by ID
-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/" -H  "accept: application/json"
         ```
@@ -920,7 +861,6 @@ class ChannelMemberViewset(ViewSet):
     )
     def get_member(self, request, org_id, channel_id, member_id):
         """Get details of a channel member
-
         ```bash
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
         ```
@@ -959,7 +899,6 @@ class ChannelMemberViewset(ViewSet):
     )
     def update_member(self, request, org_id, channel_id, member_id):
         """Update channel member details
-
         ```bash
         curl -X PUT "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/"
         -H  "accept: application/json"
@@ -990,6 +929,9 @@ class ChannelMemberViewset(ViewSet):
                 for key in user_data.keys():
                     if key != "_id":
                         user_data[key] = request.data.get(key, user_data[key])
+
+                if "starred" not in user_data.keys():
+                    user_data["starred"] = request.data.get("starred", False)
 
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
@@ -1039,7 +981,6 @@ class ChannelMemberViewset(ViewSet):
     )
     def remove_member(self, request, org_id, channel_id, member_id):
         """Remove member from a channel
-
         ```bash
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/members/{{member_id}}/" -H  "accept: application/json"
         ```

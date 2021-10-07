@@ -16,7 +16,18 @@ import hashImage from "./assets/default.png";
 const NewChannelHeader = ({channelId, org_id}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // const org_id = org_id;//Test value for org id
+  const { users } = useSelector(state => state.appReducer)
+  let _users;
+  let orgId;
+
+  useEffect(() => {
+    _users = users;
+    orgId = _users.currentWorkspace;
+    console.log("this is the orgId plugin hheader", orgId);
+  });
+
+  console.log("This is the orgId plugin header", orgId)
+
   const channel_id = channelId; //assigning dynamic channel id to channel_id
 
   const dispatch = useDispatch();
@@ -24,7 +35,7 @@ const NewChannelHeader = ({channelId, org_id}) => {
 
   const loadChannelDetails = async () => { 
 
-    await _getChannelDetails(org_id, channel_id);
+    await _getChannelDetails(orgId, channel_id);
 
   };
 
@@ -37,7 +48,7 @@ const NewChannelHeader = ({channelId, org_id}) => {
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
   console.log(channelDetails);//to see what kind of data I'm actually getting
 
-  // const isPrivate = channelDetails.private;// to check if channel is private or not
+  const isPrivate = channelDetails.private;// to check if channel is private or not
 
   const icon = hashImage;
   // {isPrivate ? icon = <Icon as={ BiLockAlt } color="#ffffff" h={5} w={5} mr={2}  /> : icon = <Icon as={ FiHash } color="#ffffff" h={5} w={5} mr={2} />};
@@ -53,6 +64,7 @@ const NewChannelHeader = ({channelId, org_id}) => {
     userCount: channelDetails.members, //User count on header
     eventTitle: () => {
       onOpen()
+      // <ChannelDetails isOpen={isOpen} onClose={onClose} />
     },
     eventThumbnail: () => {
       onOpen()

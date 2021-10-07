@@ -13,19 +13,12 @@ import {
   GET_CHANNELS,
   CREATE_CHANNELS,
   GET_SOCKETS,
-  EDIT_MESSAGE,
-  DELETE_MESSAGE,
-  UPDATE_MESSAGE,
-  isEditMode,
   ADD_CHANNEL_MEMBER,
   SET_NOTIFICATION,
   USER_CAN_INPUT,
   GET_FILES,
   DELETE_CHANNEL,
   GET_WORKSPACE_USERS,
-  EDIT_CHANNEL_DESCRIPTION,
-  EDIT_CHANNEL_TOPIC,
-  SEND_EMOJI
 } from "./types";
 
 // Redux actions are called here with an underscore before the name (convention)
@@ -76,17 +69,6 @@ const _getWorkspaceUsers = (params) => async (dispatch) => {
     console.log(error);
   }
 };
-
-const _sendEmojis=(org_id,msg_id,user_id,channel_id,data)=>async (dispatch)=>{
-  try {
-    const res = await APIService.sendEmojis(org_id,msg_id,user_id,channel_id,data);
-    // console.log(res.data)
-    dispatch({ type: SEND_EMOJI, payload: res.data });
-  } catch (err) {
-    console.log("Oops something went wrong", err.message);
-  }
-};
-
 const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
   try {
     // Result comes from the endpoint
@@ -135,6 +117,23 @@ const _setNotifications =
         channel_id,
         member_id,
         data
+      );
+      // Result is sent to the store via dispatch (Pass payload if needed)
+      dispatch({ type: SET_NOTIFICATION, payload: res.data });
+    } catch (error) {
+      // Handle exceptions here
+      console.log(error);
+    }
+  };
+const _getNotifications =
+  (org_id, channel_id, member_id, data) => async (dispatch) => {
+    try {
+      // Result comes from the endpoint
+      // Let's assume an array of objects is returned from the endpoint
+      const res = await APIService.getNotification(
+        org_id,
+        channel_id,
+        member_id
       );
       // Result is sent to the store via dispatch (Pass payload if needed)
       dispatch({ type: SET_NOTIFICATION, payload: res.data });
@@ -194,7 +193,7 @@ const _getPinnedMessages = (org_id, channel_id) => async (dispatch) => {
     const data = res.data.data || [];
     dispatch({ type: GET_PINNED_MESSAGES, payload: data });
   } catch (err) {
-    _alert("error");
+    console.log(err);
   }
 };
 
@@ -236,34 +235,6 @@ const _createChannel = (org_id, data) => async (dispatch) => {
   }
 };
 
-const _deleteMessage = (org_id, msg_id) => async (dispatch) => {
-  try {
-      await APIService.deleteMessage(org_id, msg_id, {
-      delete: "True",
-    });
-    dispatch({ type: DELETE_MESSAGE, payload: msg_id });
-    _alert("success", "Message successfully deleted");
-  } catch (err) {
-    _alert("error");
-  }
-};
-
-const _editMessage = (data) => async (dispatch) => {
-  dispatch({ type: EDIT_MESSAGE, payload: data});
-  dispatch({ type: isEditMode, payload: true});
-};
-
-const _updateMessage = (org_id, channel_id, user_id, msg_id, data) => async (dispatch) => {
-  try {
-    const res = await APIService.updateMessage(org_id, channel_id, user_id, msg_id, data);
-    dispatch({ type: UPDATE_MESSAGE, payload : res.data})
-    dispatch({ type: isEditMode, payload: false});
-    dispatch({ type: EDIT_MESSAGE, payload: {}});
-  } catch (error) {
-    _alert("error");
-  }
-}
-
 const _userCanInput = (org_id, data) => async (dispatch) => {
   try {
     const res = await APIService.userCanInput(org_id, data);
@@ -296,24 +267,6 @@ const _deleteChannel = (org_id, channel_id) => async (dispatch) => {
   }
 };
 
-const _editChannelDescription = (org_id, channel_id, data) => async (dispatch) => {
-  try {
-    const res = await APIService.updateChannel(org_id, channel_id, data);
-    dispatch({ type: EDIT_CHANNEL_DESCRIPTION, payload: res.data });
-  } catch (err) {
-    _alert("error");
-  }
-};
-
-const _editChannelTopic = (org_id, channel_id, data) => async (dispatch) => {
-  try {
-    const res = await APIService.updateChannel(org_id, channel_id, data);
-    dispatch({ type: EDIT_CHANNEL_TOPIC, payload: res.data });
-  } catch (err) {
-    _alert("error");
-  }
-};
-
 // Export functions here
 const appActions = {
   _alert,
@@ -328,17 +281,12 @@ const appActions = {
   _getChannels,
   _createChannel,
   _getSocket,
-  _editMessage,
-  _deleteMessage,
-  _updateMessage,
   _addChannelMember,
   _setNotifications,
   _userCanInput,
   _deleteChannel,
   _getFiles,
   _getWorkspaceUsers,
-  _editChannelDescription,
-  _editChannelTopic,
-  _sendEmojis
+  _getNotifications,
 };
 export default appActions;
