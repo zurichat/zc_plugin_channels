@@ -21,9 +21,6 @@ CLIENT = CentClient(
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def JoinedChannelSignal(sender, **kwargs):
-    serializer = ChannelMessageSerializer(
-            data=data, context={"channel_id": channel_id, "org_id": org_id})
-    
     uid = kwargs.get("dispatch_uid")
     
     if uid == "JoinedChannelSignal":
@@ -32,17 +29,23 @@ def JoinedChannelSignal(sender, **kwargs):
         user = kwargs.get("user")
 
         room_name = build_room_name(org_id, channel_id)
-        
-        data = {
-            "user_id": user.get("_id"),
-            "content": "event",
-            "files": []
-        }
 
-        event = {
-            "action": "join:channel",
-            "recipients": kwargs.get("added", [user])
-        }
+        if user:
+            data = {"user_id": user.get("_id"), "content": "event", "files": []}
+        else:
+            if not kwargs.get("added"):
+                return None
+            else:
+                try:
+                    data = {
+                        "user_id": kwargs.get("added")[0].get("_id"),
+                        "content": "event",
+                        "files": [],
+                    }
+                except:  # noqa
+                    return None
+
+        event = {"action": "join:channel", "recipients": kwargs.get("added", [user])}
 
         try:
             serializer = ChannelMessageSerializer(
@@ -54,7 +57,6 @@ def JoinedChannelSignal(sender, **kwargs):
             channelmessage.type = "event"
             channelmessage.event = event
             channelmessage.can_reply = False
-
             # required
             result = channelmessage.create(org_id)
             CLIENT.publish(room_name, result)
