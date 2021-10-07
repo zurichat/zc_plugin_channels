@@ -1,9 +1,9 @@
 # from django import http
 # from django.conf import settings
-from django.http import JsonResponse
-from rest_framework import status
-from rest_framework.response import Response
-import logging
+# from django.http import JsonResponse
+# import logging
+
+from sentry_sdk import capture_message
 
 
 class AuthenticationMiddleware:
@@ -11,9 +11,6 @@ class AuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if "Authorization" not in request.headers:
-            print({"message": "This user is not authenticated"})
-
         response = self.get_response(request)
         return response
 
@@ -36,11 +33,16 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             response = self.process_response(request, response)
-            logging.info(f"Response (production) - {response.__dict__['_headers']}")
+
+            if request.method in ["POST", "PUT", "DELETE"]:
+                capture_message(
+                    f"Response (production) - {response.__dict__['_headers']}",
+                    level="info",
+                )
         return response
 
     def process_response(self, request, response):
-        if request.method.upper() in ["GET", "POST", "PUT", "DELETE "]:
+        if request.method.upper() in ["GET"]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except:  # noqa
@@ -50,10 +52,6 @@ class CorsMiddleware:
         #     response.__dict__["_headers"]["access-control-allow-origin"] = (
         #         "Access-Control-Allow-Origin",
         #         "*",
-        #     )
-        #     response.__dict__["_headers"]["content-type"] = (
-        #         "Content-Type",
-        #         "text/plain",
         #     )
 
         return response

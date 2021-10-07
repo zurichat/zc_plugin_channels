@@ -17,7 +17,6 @@ from django.core.signals import request_finished
 
 from .permissions import CanReply, IsMember, IsOwner
 from .serializers import ThreadSerializer, ThreadUpdateSerializer, ReactionSerializer
-from rest_framework.decorators import api_view
 
 class ThreadViewset(ThrottledViewSet, OrderMixin):
 

@@ -63,7 +63,8 @@ urlpatterns += [
     path("api/v1/", include("apps.channelmessages.urls")),
     path("api/v1/", include("apps.roles.urls")),
     path("api/v1/", include("apps.threads.urls")),
-    path("api/v1/", include("apps.centri.urls"))
+    path("api/v1/", include("apps.googlemeet.urls")),
+    path("api/v1/", include("apps.centri.urls")),
     # DRF auth token
     # path("auth-token/", obtain_auth_token),
 ]

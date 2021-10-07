@@ -5,12 +5,12 @@ import { Heading, HStack } from "@chakra-ui/layout";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import { BiSort } from "react-icons/bi";
 import { GoSettings } from "react-icons/go";
-import React from "react";
+import {React, useState} from "react";
 import { useSelector } from "react-redux";
+// import { sortBy } from "lodash";
 
-const SearchMenu = () => {
-  const { channels } = useSelector((state) => state.appReducer);
-
+const SearchMenu = ({ sortBy, searchChannel, channels}) => {
+  const [sortButtonTitle, setSortButtonTitle] = useState("Most recommended")
   return (
     <>
       <HStack
@@ -33,6 +33,7 @@ const SearchMenu = () => {
             color="#A1A1A1"
             size="md"
             w="100%"
+            onChange={e =>searchChannel(e.target.value)}
           />
         </InputGroup>
       </HStack>
@@ -43,21 +44,21 @@ const SearchMenu = () => {
         sx={{ "@media screen and (max-width: 768.5px)": { display: "none" } }}
       >
         <Heading size="md" fontSize="18px" fontWeight={700}>
-          {channels && channels.length } recommended results
+          {channels.length } recommended results
         </Heading>
         <HStack spacing="10px">
           <Menu isLazy>
             <MenuButton fontSize="17px">
-              <Icon as={BiSort} mr={1} w="14px" /> Sort: Most recommended
+              <Icon as={BiSort} mr={1} w="14px" /> Sort: {sortButtonTitle}
             </MenuButton>
             <MenuList>
-              <MenuItem>Most recommended</MenuItem>
-              <MenuItem>Newest Channel</MenuItem>
-              <MenuItem>Oldest Channel</MenuItem>
-              <MenuItem>Most Members</MenuItem>
-              <MenuItem>Fewset Members</MenuItem>
-              <MenuItem>A to Z</MenuItem>
-              <MenuItem>Z to A</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("Most recommended"); sortBy("recommended"); }}>Most recommended</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("Newest Channel"); sortBy("newest")}}>Newest Channel</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("Oldest Channel"); sortBy("oldest")}}>Oldest Channel</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("Least Members"); sortBy("leastMembers") }}>Least Members</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("Most Members"); sortBy("mostMembers") }}>Most Members</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("A to Z"); sortBy("name")}}>A to Z</MenuItem>
+              <MenuItem onClick={() => { setSortButtonTitle("Z to A"); sortBy("nameReverse")}}>Z to A</MenuItem>
             </MenuList>
           </Menu>
 
