@@ -21,6 +21,7 @@ CLIENT = CentClient(
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def JoinedChannelSignal(sender, **kwargs):
+  
     serializer = ChannelMessageSerializer(
             data=data, context={"channel_id": channel_id, "org_id": org_id})
     
@@ -44,22 +45,6 @@ def JoinedChannelSignal(sender, **kwargs):
             "recipients": kwargs.get("added", [user])
         }
 
-        try:
-            serializer = ChannelMessageSerializer(
-                data=data, context={"channel_id": channel_id, "org_id": org_id}
-            )
-
-            serializer.is_valid(raise_exception=True)
-            channelmessage = serializer.data.get("channelmessage")
-            channelmessage.type = "event"
-            channelmessage.event = event
-            channelmessage.can_reply = False
-
-            # required
-            result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
-        except:
-            pass
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 def LeftChannelSignal(sender, **kwargs):
@@ -89,23 +74,31 @@ def LeftChannelSignal(sender, **kwargs):
             "action": "leave:channel",
             "recipients": kwargs.get("removed", [user])
         }
+          
+@receiver(request_finished, sender=ChannelViewset)
+def ChannelUpdateSignal(sender, **kwargs):
+    uid = kwargs.get("dispatch_uid")
 
-        serializer = ChannelMessageSerializer(
-            data=data, 
-            context={"channel_id": channel_id, "org_id": org_id}
-        )
+    if uid == "ChannelUpdateSignal":
+        org_id = kwargs.get("org_id")
+        channel_id = kwargs.get("channel_id")
 
-        serializer.is_valid(raise_exception=True)
-        channelmessage = serializer.data.get("channelmessage")
-        
-        # required
-        channelmessage.type = "event"
-        channelmessage.event = event
-        channelmessage.can_reply = False
+        room_name = build_room_name(org_id, channel_id)
+
+        # send message to channel that user has edited a message
+        payload = kwargs.get("data", {})
+
+        payload["event"] = {
+            "action": "update:changes has been made to channel details"
+        }
 
         try:
-            result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
-        except:
+            print("\n")
+            print(payload)
+            print("\n")
+
+            CLIENT.publish(room_name, payload)
+        except CentException:
             pass
+
 
