@@ -98,7 +98,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         detail=False,
     )
     @to_async
-    async def create_room(self, request):
+    async def create_room(self, request, org_id=None):
         serializer = RoomSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         channel_serializer = serializer.convert_to_channel_serializer()
@@ -425,9 +425,7 @@ channel_list_create_view = ChannelViewset.as_view(
     }
 )
 
-
-channel_list_zc_main_views = ChannelViewset.as_view({"post": "create_room"})
-
+create_room_view = ChannelViewset.as_view({"post": "create_room"})
 
 channel_retrieve_update_delete_view = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}

@@ -8,12 +8,15 @@ from apps.channels.views import (
     channel_socket_view,
     user_channel_list,
     notification_views,
+    create_room_view,
+    
 )
 from django.urls import path
 
 app_name = "channels"
 
 urlpatterns = [
+    path("<str:org_id>/rooms/", create_room_view),
     path("<str:org_id>/channels/", channel_list_create_view),
     path("<str:org_id>/channels/<str:channel_id>/files/", channel_media_all_view),
     path(
