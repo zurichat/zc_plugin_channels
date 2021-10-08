@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from urllib.parse import urlencode
 
 import requests
+import aiohttp
 from django.conf import settings
 from django.urls import reverse
 
@@ -131,6 +132,123 @@ class Request:
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()
         return {"error": response}
+
+
+
+@dataclass
+class AsyncRequest:
+
+    Session = aiohttp.ClientSession
+
+    @staticmethod
+    async def get(org_id, collection_name, params={}):
+        data = {"plugin_id": settings.PLUGIN_ID}
+        url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
+        if params:
+            if "_id" not in params.keys():
+                _filter = {}
+                tmp = []
+                data.update(
+                    {
+                        "organization_id": org_id,
+                        "collection_name": collection_name,
+                    }
+                )
+                for k, v in params.items():
+                    if isinstance(v, list):
+                        v = v[0]
+                    if v.lower() in ["true", "false"]:
+                        v = True if v.lower() == "true" else False
+                    tmp.append({k: {"$eq": v}})
+                _filter.update({"$and": tmp})
+
+                data.update(
+                    {
+                        "filter": _filter,
+                    }
+                )
+                data.pop("object_id", None)
+                response = await AsyncRequest.Session().post(url=read, data=json.dumps(data))
+            else:
+                url += f"?{urlencode(params)}"
+                response = await AsyncRequest.Session().get(url=url)
+
+        else:
+            response = await AsyncRequest.Session().get(url=url)
+        if response.status >= 200 and response.status < 300:
+            return (await response.json())["data"]
+        return {"error": (await response.json())}
+
+    @staticmethod
+    async def post(org_id, collection_name, payload):
+        data = {"plugin_id": settings.PLUGIN_ID}
+        data.update(
+            {
+                "organization_id": org_id,
+                "collection_name": collection_name,
+                "bulk_write": check_payload(payload),
+                "payload": payload,
+            }
+        )
+        response = await AsyncRequest.Session().post(url=write, data=json.dumps(data))
+        if response.status >= 200 and response.status < 300:
+            payload.update({"_id": (await response.json()).get("data", {}).get("object_id")})
+            return payload
+        return {"error": await response.json()}
+
+    @staticmethod
+    async def put(org_id, collection_name, payload, data_filter=None, object_id=None):
+        data = {"plugin_id": settings.PLUGIN_ID}
+        data.update(
+            {
+                "organization_id": org_id,
+                "collection_name": collection_name,
+                "bulk_write": check_payload(payload),
+                "payload": payload,
+            }
+        )
+        bulk_write = data.get("bulk_write")
+        if bulk_write:
+            if data_filter is None:
+                return {"error": "Filter must be set for multiple payload"}
+            data.update({"filter": data_filter})
+        else:
+            if object_id is None:
+                return {"error": "Object ID must be set for multiple payload"}
+            data.update({"filter": {"_id": object_id}})
+        response = await AsyncRequest.Session().put(write, data=json.dumps(data))
+        if response.status >= 200 and response.status < 300:
+            if not bulk_write:
+                tmp = {"_id": object_id}
+                response = await AsyncRequest.get(org_id, collection_name, tmp)
+                return response
+            else:
+                response = await AsyncRequest.get(org_id, collection_name)
+                return response
+        return {"error": response}
+
+    @staticmethod
+    async def delete(org_id, collection_name, data_filter=None, object_id=None):
+        data = {"plugin_id": settings.PLUGIN_ID}
+        data.update(
+            {
+                "organization_id": org_id,
+                "collection_name": collection_name,
+            }
+        )
+        if data_filter is not None:
+            data.update({"filter": data_filter, "bulk_delete": True})
+        else:
+            if object_id is None:
+                return {"error": "Object ID or Filter must be set"}
+            data.update({"object_id": object_id})
+
+        response = await AsyncRequest.Session().post(delete, data=json.dumps(data))
+
+        if response.status >= 200 and response.status < 300:
+            return (await response.json())
+        return {"error": (await response.json())}
+
 
 
 def search_db(org_id, channel_id, collection_name, **params):

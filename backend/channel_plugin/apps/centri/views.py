@@ -41,3 +41,4 @@ def socket_admin(request):
             
         return JsonResponse(data=json.dumps(data), safe=False)
         
+
