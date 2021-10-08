@@ -16,6 +16,7 @@ from channel_plugin.utils.customrequest import (
     Request,
     find_match_in_db,
     manage_channel_permissions,
+    AsyncRequest,
 )
 from channel_plugin.utils.wrappers import OrderMixin
 from channel_plugin.utils.decorators import to_async
@@ -33,11 +34,7 @@ from .serializers import (  # SearchMessageQuerySerializer,
 )
 
 
-# from rest_framework.filters
-
-
 # Create your views here.
-
 
 class ChannelViewset(ThrottledViewSet, OrderMixin):
 
@@ -73,11 +70,11 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
-        result = channel.create(org_id)
+        result = await channel.create(org_id)
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             result.update({"members": len(result["users"].keys())})
-            request_finished.send(
+            await request_finished.send(
                 sender=None,
                 dispatch_uid="UpdateSidebarSignal",
                 org_id=org_id,
@@ -107,11 +104,11 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         channel_serializer = serializer.convert_to_channel_serializer()
         channel_serializer.is_valid()
         channel = channel_serializer.data.get("channel")
-        result = channel.create(serializer.data.get("ord_id"))
+        result = await channel.create(serializer.data.get("ord_id"))
         status_code = status.HTTP_404_NOT_FOUND
 
         if result.__contains__("_id"):
-            request_finished.send(
+            await request_finished.send(
                 sender=None,
                 dispatch_uid="UpdateSidebarSignal",
                 org_id=channel_serializer.data.get("ord_id"),
@@ -155,7 +152,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         """
         data = {}
         data.update(self._clean_query_params(request))
-        result = Request.get(org_id, "channel", data) or []
+        result = await AsyncRequest.get(org_id, "channel", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
             if result:
@@ -186,8 +183,8 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         data.update(dict(request.query_params))
         result = {}
         flag = 0
-        result_message = Request.get(org_id, "channelmessage", data) or []
-        result_thread = Request.get(org_id, "thread", data)
+        result_message = await AsyncRequest.get(org_id, "channelmessage", data) or []
+        result_thread = await AsyncRequest.get(org_id, "thread", data)
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result_message, list) or isinstance(result_thread, list):
             message_response = []
@@ -249,7 +246,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         ```
         """
         data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data) or {}
+        result = await AsyncRequest.get(org_id, "channel", data) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
             if result.__contains__("_id"):
@@ -284,7 +281,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         )
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("channel")
-        result = Request.put(org_id, "channel", payload, object_id=channel_id) or {}
+        result = await AsyncRequest.put(org_id, "channel", payload, object_id=channel_id) or {}
         status_code = status.HTTP_404_NOT_FOUND
         if (
             result.__contains__("_id")
@@ -293,14 +290,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         ):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-                # TODO: make this block asynchronus
-                # for user_id in result["users"].keys():
-                #     request_finished.send(
-                #         sender=None,
-                #         dispatch_uid="UpdateSidebarSignal",
-                #         org_id=org_id,
-                #         user_id=user_id,
-                #     )
             status_code = status.HTTP_200_OK
         return Response(result, status=status_code)
 
@@ -332,11 +321,11 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X DELETE "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/" -H  "accept: application/json"
         ```
         """
-        result = Request.delete(org_id, "channel", object_id=channel_id)
+        result = await AsyncRequest.delete(org_id, "channel", object_id=channel_id)
 
         # delete relationships
         if result.get("status") == 200:
-            request_finished.send(
+            await request_finished.send(
                 sender=None,
                 dispatch_uid="UpdateSidebarSignal",
                 org_id=org_id,
@@ -344,11 +333,11 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
-                Request.delete(
+                await AsyncRequest.delete(
                     org_id, "channelmessage", data_filter={"channel_id": channel_id}
                 )
-                Request.delete(org_id, "thread", data_filter={"channel_id": channel_id})
-                Request.delete(org_id, "role", data_filter={"channel_id": channel_id})
+                await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
+                await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -370,7 +359,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         """
         data = {}
         data.update(dict(request.query_params))
-        response = Request.get(org_id, "channel", data) or []
+        response = await AsyncRequest.get(org_id, "channel", data) or []
         result = []
         status_code = status.HTTP_400_BAD_REQUEST
         if isinstance(response, list):
@@ -414,14 +403,12 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
         ```
         """
-        channel = ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
-
+        channel = await ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
+        data = {
+            "socket_name": build_room_name(org_id, channel_id),
+            "channel_id": channel_id,
+        }
         if channel:
-            data = {
-                "socket_name": build_room_name(org_id, channel_id),
-                "channel_id": channel_id,
-            }
-
             serializer = SocketSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             return JsonResponse(serializer.data, status=status.HTTP_200_OK)
@@ -472,7 +459,7 @@ class ChannelMemberViewset(ViewSet):
         from zc-core
         """
         data = {"_id": channel_id}
-        result = Request.get(org_id, "channel", data) or {}
+        result = await AsyncRequest.get(org_id, "channel", data) or {}
         if result.__contains__("_id") and isinstance(result, dict):
             return result
         return {}
@@ -739,15 +726,12 @@ class ChannelMemberViewset(ViewSet):
                             user=output,
                         )
 
-                        try:
-                            await request_finished.send(
-                                sender=None,
-                                dispatch_uid="UpdateSidebarSignal",
-                                org_id=org_id,
-                                user_id=user.get("_id"),
-                            )
-                        except:  # noqa
-                            pass
+                        await request_finished.send(
+                            sender=None,
+                            dispatch_uid="UpdateSidebarSignal",
+                            org_id=org_id,
+                            user_id=user.get("_id"),
+                        )
 
                     else:
                         # when output is a list multiple users where added
@@ -816,12 +800,13 @@ class ChannelMemberViewset(ViewSet):
 
                 if user_data:
                     # Check if user is an admin
-                    if user_data.is_admin:
-                        can_input = True
-                        return Response(can_input, status=status.HTTP_200_OK)
-                    else:
-                        can_input = False
-                        return Response(can_input, status=status.HTTP_200_OK)
+                    can_input = True if user_data.is_admin else False  
+                    # if user_data.is_admin:
+                    #     can_input = True
+                    #     return Response(can_input, status=status.HTTP_200_OK)
+                    # else:
+                    #     can_input = False
+                    return Response(can_input, status=status.HTTP_200_OK)
                 else:
                     return Response(
                         {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
@@ -963,7 +948,7 @@ class ChannelMemberViewset(ViewSet):
 
                 payload = {"users": channel["users"]}
 
-                result = Request.put(
+                result = await AsyncRequest.put(
                     org_id, "channel", payload=payload, object_id=channel_id
                 )
 
@@ -1021,7 +1006,7 @@ class ChannelMemberViewset(ViewSet):
 
                 payload = {"users": channel["users"]}
 
-                result = Request.put(
+                result = await AsyncRequest.put(
                     org_id, "channel", payload=payload, object_id=channel_id
                 )
 
@@ -1037,15 +1022,12 @@ class ChannelMemberViewset(ViewSet):
                             channel_id=channel_id,
                             user=user_data.copy(),
                         )
-                        try:
-                            await request_finished.send(
-                                sender=None,
-                                dispatch_uid="UpdateSidebarSignal",
-                                org_id=org_id,
-                                user_id=user_data.get("_id"),
-                            )
-                        except:  # noqa
-                            pass
+                        await request_finished.send(
+                            sender=None,
+                            dispatch_uid="UpdateSidebarSignal",
+                            org_id=org_id,
+                            user_id=user_data.get("_id"),
+                        )
 
                     status_code = (
                         status.HTTP_204_NO_CONTENT
