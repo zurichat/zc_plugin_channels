@@ -60,7 +60,7 @@ async def JoinedChannelSignal(sender, **kwargs):
             channelmessage.can_reply = False
             # required
             result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
+            await CLIENT.publish(room_name, result)
         except:
             pass
 
@@ -76,11 +76,6 @@ async def LeftChannelSignal(sender, **kwargs):
         user = kwargs.get("user")
         
         room_name = build_room_name(org_id, channel_id)
-
-        try:
-            CLIENT.unsubscribe(user.get("_id"), room_name)
-        except CentException:
-            print("client removal failed because channel is not active")
         
         data = {
             "user_id": user.get("_id"),
@@ -108,7 +103,7 @@ async def LeftChannelSignal(sender, **kwargs):
 
         try:
             result = channelmessage.create(org_id)
-            CLIENT.publish(room_name, result)
+            await CLIENT.publish(room_name, result)
         except:
             pass
 

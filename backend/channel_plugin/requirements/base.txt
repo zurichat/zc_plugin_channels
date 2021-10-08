@@ -9,6 +9,7 @@ swagger_spec_validator==2.7.3
 cent==4.0.1 #https://github.com/centrifugal/cent
 jsonschema==3.1.1
 sentry_sdk==1.4.3
+aiohttp==3.7.4
 
 # Django
 # ------------------------------------------------------------------------------

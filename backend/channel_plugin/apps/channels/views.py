@@ -1,9 +1,6 @@
-import asyncio
-from functools import wraps
-
 from apps.centri.helperfuncs import build_room_name
 from apps.utils.serializers import ErrorSerializer
-# from django.core.signals import request_finished
+from apps.centri.signals.async_signal import request_finished
 from django.http.response import JsonResponse
 from django.utils.timezone import datetime
 from drf_yasg import openapi
@@ -21,6 +18,7 @@ from channel_plugin.utils.customrequest import (
     manage_channel_permissions,
 )
 from channel_plugin.utils.wrappers import OrderMixin
+from channel_plugin.utils.decorators import to_async
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
@@ -34,19 +32,11 @@ from .serializers import (  # SearchMessageQuerySerializer,
     RoomSerializer
 )
 
-from apps.centri.signals.async_signal import request_finished
 
 # from rest_framework.filters
 
 
 # Create your views here.
-
-
-def to_async(blocking):
-    @wraps(blocking)
-    def run_wrapper(*args, **kwargs):
-        return asyncio.run(blocking(*args, **kwargs), debug=True)
-    return run_wrapper
 
 
 class ChannelViewset(ThrottledViewSet, OrderMixin):
