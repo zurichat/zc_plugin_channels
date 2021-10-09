@@ -9,6 +9,7 @@ from rest_framework.decorators import action, api_view, throttle_classes
 from apps.channels.custome_response import Response
 from rest_framework.viewsets import ViewSet
 
+
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import (
     Request,
@@ -805,11 +806,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 if user_data:
                     # Check if user is an admin
                     can_input = True if user_data.is_admin else False  
-                    # if user_data.is_admin:
-                    #     can_input = True
-                    #     return Response(can_input, status=status.HTTP_200_OK)
-                    # else:
-                    #     can_input = False
                     return Response(
                         can_input, status=status.HTTP_200_OK, 
                         request=request, view=self
@@ -1022,8 +1018,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 payload = {"users": channel["users"]}
 
                 result = await AsyncRequest.put(
-                    org_id, "channel", payload=payload, object_id=channel_id,
-                    request=request, view=self
+                    org_id, "channel", payload=payload, object_id=channel_id
                 )
 
                 if isinstance(result, dict):
