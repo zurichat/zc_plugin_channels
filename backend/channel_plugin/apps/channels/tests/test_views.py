@@ -7,13 +7,7 @@ ORG_ID = getattr(settings, "ORG_ID", "testorg")
 
 
 class TestChannelEndpoints:
-    def test_channel_create(self, api_client, reset_db):
-
-        confirmation = reset_db(
-            "channel"
-        )  # reset the collection in the db, can input multiple collection name
-        if not confirmation:
-            assert False
+    def test_channel_create(self, api_client):
 
         client = api_client()
         url = reverse("channels:list-create-channel", kwargs={"org_id": ORG_ID})

@@ -23,19 +23,40 @@ def create_channel():
     return res
 
 
-@pytest.fixture
-def reset_db():
-    def rd(*args):
-        for collection_name in args:
-            if collection_name in COLLECTIONS:
-                data = Request.get(ORG_ID, collection_name)
-                if isinstance(data, list):
-                    if len(data) > 0:
-                        res = Request.delete(ORG_ID, collection_name, data_filter={})
-                        if res.get("status") == 200:
-                            if res.get("data", {}).get("deleted_count") == len(data):
-                                return True
-                        return False
-        return True
+def rd():
+    flag = []
+    for collection_name in COLLECTIONS:
+        data = Request.get(ORG_ID, collection_name)
+        if isinstance(data, list) or data is None:
+            if isinstance(data, list):
+                if len(data) > 0:
+                    res = Request.delete(ORG_ID, collection_name, data_filter={})
+                    if res.get("status") == 200:
+                        if res.get("data", {}).get("deleted_count") == len(data):
+                            flag.append(True)
+                        else:
+                            flag.append(False)
+                    else:
+                        flag.append(False)
+            else:
+                flag.append(True)
+        else:
+            if isinstance(data, dict):
+                if data.get("error", {}).get("status") == 404:
+                    flag.append(True)
+                else:
+                    flag.append(False)
+            else:
+                flag.append(False)
+    return flag
 
-    return rd
+
+@pytest.fixture(autouse=True)
+def reset_db():
+
+    flags = rd()
+    if not all(flags):
+        assert False
+
+    yield
+    rd()
