@@ -1,4 +1,3 @@
-import pytest
 from django.conf import settings
 from django.urls import reverse
 from faker import Faker
@@ -7,7 +6,6 @@ fake = Faker()
 ORG_ID = getattr(settings, "ORG_ID", "testorg")
 
 
-@pytest.mark.asyncio
 class TestChannelEndpoints:
     def test_channel_create(self, api_client, reset_db):
 
