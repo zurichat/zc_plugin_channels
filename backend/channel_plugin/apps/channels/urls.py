@@ -6,10 +6,9 @@ from apps.channels.views import (
     channel_members_update_retrieve_views,
     channel_retrieve_update_delete_view,
     channel_socket_view,
-    user_channel_list,
-    notification_views,
     create_room_view,
-    
+    notification_views,
+    user_channel_list,
 )
 from django.urls import path
 
@@ -17,7 +16,9 @@ app_name = "channels"
 
 urlpatterns = [
     path("<str:org_id>/rooms/", create_room_view),
-    path("<str:org_id>/channels/", channel_list_create_view),
+    path(
+        "<str:org_id>/channels/", channel_list_create_view, name="list-create-channel"
+    ),
     path("<str:org_id>/channels/<str:channel_id>/files/", channel_media_all_view),
     path(
         "<str:org_id>/channels/<str:channel_id>/", channel_retrieve_update_delete_view
@@ -38,5 +39,8 @@ urlpatterns = [
         channel_members_update_retrieve_views,
     ),
     path("<str:org_id>/channels/users/<str:user_id>/", user_channel_list),
-    path("<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/notifications/", notification_views),
+    path(
+        "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/notifications/",
+        notification_views,
+    ),
 ]

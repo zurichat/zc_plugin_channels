@@ -39,3 +39,6 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+AFFIX_TEST = True
+ORG_ID = "testorg"
+BASE_URL = "http://127.0.0.1:8000"
