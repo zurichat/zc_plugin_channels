@@ -1,7 +1,6 @@
 # PRECAUTION: avoid production dependencies that aren't in development
 
 -r base.txt
-sentry-sdk==1.4.1
 gunicorn==20.1.0  # https://github.com/benoitc/gunicorn
 django-debug-toolbar==3.2.1  # https://github.com/jazzband/django-debug-toolbar
 

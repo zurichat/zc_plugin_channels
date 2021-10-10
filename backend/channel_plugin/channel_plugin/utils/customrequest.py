@@ -1,8 +1,10 @@
 import json
 import logging
 from dataclasses import dataclass
+from functools import wraps
 from urllib.parse import urlencode
 
+import aiohttp
 import requests
 from django.conf import settings
 from django.urls import reverse
@@ -22,9 +24,22 @@ def check_payload(payload):
     return False
 
 
+def change_collection_name(func):
+    @wraps(func)
+    def out(*args, **kwargs):
+        if getattr(settings, "AFFIX_TEST", False):
+            args = list(args)
+            args[1] = f"test_{args[1]}"
+            args = tuple(args)
+        return func(*args, **kwargs)
+
+    return out
+
+
 @dataclass
 class Request:
     @staticmethod
+    @change_collection_name
     def get(org_id, collection_name, params={}):
         data = {"plugin_id": settings.PLUGIN_ID}
         url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
@@ -63,6 +78,7 @@ class Request:
         return {"error": response.json()}
 
     @staticmethod
+    @change_collection_name
     def post(org_id, collection_name, payload):
         data = {"plugin_id": settings.PLUGIN_ID}
         data.update(
@@ -80,6 +96,7 @@ class Request:
         return {"error": response.json()}
 
     @staticmethod
+    @change_collection_name
     def put(org_id, collection_name, payload, data_filter=None, object_id=None):
         data = {"plugin_id": settings.PLUGIN_ID}
         data.update(
@@ -108,9 +125,10 @@ class Request:
             else:
                 response = Request.get(org_id, collection_name)
                 return response
-        return {"error": response}
+        return {"error": response.json()}
 
     @staticmethod
+    @change_collection_name
     def delete(org_id, collection_name, data_filter=None, object_id=None):
         data = {"plugin_id": settings.PLUGIN_ID}
         data.update(
@@ -130,9 +148,139 @@ class Request:
 
         if response.status_code >= 200 and response.status_code < 300:
             return response.json()
-        return {"error": response}
+        return {"error": response.json()}
 
 
+@dataclass
+class AsyncRequest:
+    @staticmethod
+    @change_collection_name
+    async def get(org_id, collection_name, params={}):
+
+        async with aiohttp.ClientSession() as Session:
+            data = {"plugin_id": settings.PLUGIN_ID}
+            url = f"{read}/{settings.PLUGIN_ID}/{collection_name}/{org_id}"
+            if params:
+                if "_id" not in params.keys():
+                    _filter = {}
+                    tmp = []
+                    data.update(
+                        {
+                            "organization_id": org_id,
+                            "collection_name": collection_name,
+                        }
+                    )
+                    for k, v in params.items():
+                        if isinstance(v, list):
+                            v = v[0]
+                        if v.lower() in ["true", "false"]:
+                            v = True if v.lower() == "true" else False
+                        tmp.append({k: {"$eq": v}})
+                    _filter.update({"$and": tmp})
+
+                    data.update(
+                        {
+                            "filter": _filter,
+                        }
+                    )
+                    data.pop("object_id", None)
+                    response = await Session.post(url=read, data=json.dumps(data))
+                else:
+                    url += f"?{urlencode(params)}"
+                    response = await Session.get(url=url)
+
+            else:
+                response = await Session.get(url=url)
+            if response.status >= 200 and response.status < 300:
+                return (await response.json())["data"]
+            return {"error": (await response.json())}
+
+    @staticmethod
+    @change_collection_name
+    async def post(org_id, collection_name, payload):
+
+        async with aiohttp.ClientSession() as Session:
+
+            data = {"plugin_id": settings.PLUGIN_ID}
+            data.update(
+                {
+                    "organization_id": org_id,
+                    "collection_name": collection_name,
+                    "bulk_write": check_payload(payload),
+                    "payload": payload,
+                }
+            )
+            response = await Session.post(url=write, data=json.dumps(data))
+            if response.status >= 200 and response.status < 300:
+                payload.update(
+                    {"_id": (await response.json()).get("data", {}).get("object_id")}
+                )
+                return payload
+            return {"error": await response.json()}
+
+    @staticmethod
+    @change_collection_name
+    async def put(org_id, collection_name, payload, data_filter=None, object_id=None):
+
+        async with aiohttp.ClientSession() as Session:
+
+            data = {"plugin_id": settings.PLUGIN_ID}
+            data.update(
+                {
+                    "organization_id": org_id,
+                    "collection_name": collection_name,
+                    "bulk_write": check_payload(payload),
+                    "payload": payload,
+                }
+            )
+            bulk_write = data.get("bulk_write")
+            if bulk_write:
+                if data_filter is None:
+                    return {"error": "Filter must be set for multiple payload"}
+                data.update({"filter": data_filter})
+            else:
+                if object_id is None:
+                    return {"error": "Object ID must be set for multiple payload"}
+                data.update({"filter": {"_id": object_id}})
+            response = await Session.put(write, data=json.dumps(data))
+            if response.status >= 200 and response.status < 300:
+                if not bulk_write:
+                    tmp = {"_id": object_id}
+                    response = await AsyncRequest.get(org_id, collection_name, tmp)
+                    return response
+                else:
+                    response = await AsyncRequest.get(org_id, collection_name)
+                    return response
+            return {"error": response}
+
+    @staticmethod
+    @change_collection_name
+    async def delete(org_id, collection_name, data_filter=None, object_id=None):
+
+        async with aiohttp.ClientSession() as Session:
+
+            data = {"plugin_id": settings.PLUGIN_ID}
+            data.update(
+                {
+                    "organization_id": org_id,
+                    "collection_name": collection_name,
+                }
+            )
+            if data_filter is not None:
+                data.update({"filter": data_filter, "bulk_delete": True})
+            else:
+                if object_id is None:
+                    return {"error": "Object ID or Filter must be set"}
+                data.update({"object_id": object_id})
+
+            response = await Session.post(delete, data=json.dumps(data))
+
+            if response.status >= 200 and response.status < 300:
+                return await response.json()
+            return {"error": (await response.json())}
+
+
+@change_collection_name
 def search_db(org_id, channel_id, collection_name, **params):
 
     data = {
@@ -159,10 +307,11 @@ def search_db(org_id, channel_id, collection_name, **params):
     return {"error": response.json()}
 
 
+@change_collection_name
 def get_messages_from_page(
     org_id, collection_name, channel_id, page, page_size, site_host=None
-):  
-    if site_host == None:
+):
+    if site_host is None:
         site_host = "https://channels.zuri.chat"
     data = {
         "plugin_id": settings.PLUGIN_ID,
@@ -202,6 +351,7 @@ def get_messages_from_page(
     return data
 
 
+@change_collection_name
 def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
     new_url = reverse(
         "paginate_messages", kwargs={"org_id": org_id, "channel_id": channel_id}
@@ -245,6 +395,7 @@ def gen_page_links(org_id, collection_name, channel_id, cur_page, page_size):
     return data_links
 
 
+@change_collection_name
 def save_last_message_user(org_id, collection_name, payload):
     data = {
         "plugin_id": settings.PLUGIN_ID,
@@ -273,6 +424,7 @@ def save_last_message_user(org_id, collection_name, payload):
         print("Updated")
 
 
+@change_collection_name
 def find_match_in_db(org_id, collection_name, param, value, return_data=False):
     data = {
         "plugin_id": settings.PLUGIN_ID,
@@ -300,6 +452,7 @@ def find_match_in_db(org_id, collection_name, param, value, return_data=False):
         return None
 
 
+@change_collection_name
 def manage_channel_permissions(org_id, channel_id, payload):
 
     collection_name = "channelpermissions"
@@ -370,4 +523,3 @@ def get_thread_from_message(
 #     data["links"] = pg_links
 
 #     return data
-
