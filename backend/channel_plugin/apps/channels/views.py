@@ -6,11 +6,14 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
 from rest_framework.decorators import action, api_view, throttle_classes
-from apps.channels.custome_response import Response
+
 from rest_framework.viewsets import ViewSet
 
+import asyncio
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
+from channel_plugin.utils.custome_response import Response
+
 from channel_plugin.utils.customrequest import (
     Request,
     find_match_in_db,
@@ -65,7 +68,6 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false, \"default\":false,  \"topic\": \"channel topic\"}"
         ```
         """  # noqa
-
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
@@ -73,11 +75,14 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             result.update({"members": len(result["users"].keys())})
-            await request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=org_id,
-                user_id=result.get("owner"),
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                request_finished.send(
+                    sender=None,
+                    dispatch_uid="UpdateSidebarSignal",
+                    org_id=org_id,
+                    user_id=result.get("owner"),
+                )
             )
             status_code = status.HTTP_201_CREATED
         return Response(result, status=status_code, request=request, view=self)
@@ -106,14 +111,18 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
 
         if result.__contains__("_id"):
-            await request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=channel_serializer.data.get("ord_id"),
-                user_id=result.get("owner"),
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                request_finished.send(
+                    sender=str,
+                    dispatch_uid="UpdateSidebarSignal",
+                    org_id=channel_serializer.data.get("ord_id"),
+                    user_id=result.get("owner"),
+                )
             )
+
             status_code = status.HTTP_201_CREATED
-            return Response(serializer.data, status=status_code)
+            return Response(serializer.data, status=status_code, request=request, view=self)
         else:
             return Response(result, status=status_code, request=request, view=self)
 
@@ -157,7 +166,6 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     result[i].update({"members": len(channel["users"].keys())})
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        # return Response(result, status=status_code)
         return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
@@ -319,20 +327,27 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
 
         # delete relationships
         if result.get("status") == 200:
-            await request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=org_id,
-                user_id=request.query_params.get("user_id", None),
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                request_finished.send(
+                    sender=None,
+                    dispatch_uid="UpdateSidebarSignal",
+                    org_id=org_id,
+                    user_id=request.query_params.get("user_id", None),
+                )
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
-                await AsyncRequest.delete(
-                    org_id, "channelmessage", data_filter={"channel_id": channel_id}
-                )
-                await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
-                await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
-
+                
+                async def delete():
+                    await AsyncRequest.delete(
+                        org_id, "channelmessage", data_filter={"channel_id": channel_id}
+                    )
+                    await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
+                    await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
+                
+                loop = asyncio.get_event_loop()
+                loop.create_task(delete())
         return Response(status=status.HTTP_204_NO_CONTENT, request=request, view=self)
 
     @swagger_auto_schema(
@@ -717,30 +732,38 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 if not result.get("error"):
                     if isinstance(output, dict):
                         # when only one user is added
-                        await request_finished.send(
-                            sender=self.__class__,
-                            dispatch_uid="JoinedChannelSignal",
-                            org_id=org_id,
-                            channel_id=channel_id,
-                            user=output,
-                        )
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_id=channel_id,
+                                user=output,
+                            )
 
-                        await request_finished.send(
-                            sender=None,
-                            dispatch_uid="UpdateSidebarSignal",
-                            org_id=org_id,
-                            user_id=user.get("_id"),
+                        )
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                user_id=user.get("_id"),
+                            )
                         )
 
                     else:
                         # when output is a list multiple users where added
-                        await request_finished.send(
-                            sender=self.__class__,
-                            dispatch_uid="JoinedChannelSignal",
-                            org_id=org_id,
-                            channel_id=channel_id,
-                            # added_by=request.query_params.get("user_id"),
-                            added=output,
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_id=channel_id,
+                                # added_by=request.query_params.get("user_id"),
+                                added=output,
+                            )
                         )
                     status_code = (
                         status.HTTP_201_CREATED if output else status.HTTP_200_OK
@@ -1026,18 +1049,24 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
 
                     if not result.get("error"):
                         # when only one user is removed
-                        await request_finished.send(
-                            sender=self.__class__,
-                            dispatch_uid="LeftChannelSignal",
-                            org_id=org_id,
-                            channel_id=channel_id,
-                            user=user_data.copy(),
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="LeftChannelSignal",
+                                org_id=org_id,
+                                channel_id=channel_id,
+                                user=user_data.copy(),
+                            )
+
                         )
-                        await request_finished.send(
-                            sender=None,
-                            dispatch_uid="UpdateSidebarSignal",
-                            org_id=org_id,
-                            user_id=user_data.get("_id"),
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                user_id=user_data.get("_id"),
+                            )
                         )
 
                     status_code = (
