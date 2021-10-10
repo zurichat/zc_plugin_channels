@@ -2,8 +2,11 @@
 # from django.conf import settings
 # from django.http import JsonResponse
 # import logging
+import re
 
 from sentry_sdk import capture_message
+
+host_regex = re.compile(r"(\d+\.\d+\.\d+\.\d+|localhost):[\d+]{4}")
 
 
 class AuthenticationMiddleware:
@@ -42,16 +45,18 @@ class CorsMiddleware:
         return response
 
     def process_response(self, request, response):
-        if request.method.upper() in ["GET"]:
+
+        result = host_regex.match(request.get_host())
+        if request.method in ["GET"]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except:  # noqa
                 pass
 
-        # else:
-        #     response.__dict__["_headers"]["access-control-allow-origin"] = (
-        #         "Access-Control-Allow-Origin",
-        #         "*",
-        #     )
+        if request.method in ["POST", "PUT", "DELETE"] and result:
+            response.__dict__["_headers"]["access-control-allow-origin"] = (
+                "Access-Control-Allow-Origin",
+                "*",
+            )
 
         return response
