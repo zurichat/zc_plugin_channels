@@ -6,7 +6,6 @@ from urllib.parse import urlencode
 
 import aiohttp
 import requests
-import aiohttp
 from django.conf import settings
 from django.urls import reverse
 
