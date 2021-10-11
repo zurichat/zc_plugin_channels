@@ -5,7 +5,7 @@ from functools import update_wrapper
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
 
-from apps.channels.custome_response import Response
+from channel_plugin.utils.custome_response import Response
 
 import asyncio
 
@@ -45,7 +45,7 @@ class AsycViewMixin:
 
             for key, value in self.headers.items():
                 response[key] = value
-
+        
         return response
 
 

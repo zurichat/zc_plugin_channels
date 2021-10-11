@@ -1,4 +1,6 @@
 import json
+import time
+import asyncio
 from django.http.response import JsonResponse
 
 from django.shortcuts import render
@@ -42,3 +44,22 @@ def socket_admin(request):
         return JsonResponse(data=json.dumps(data), safe=False)
         
 
+async def async_task():
+    for i in range(5):
+        await asyncio.sleep(1)
+        print(i)
+    return "done"
+
+def sync_task():
+    for i in range(5):
+        time.sleep(1)
+        print(i)
+
+async def async_test_view(request):
+    loop = asyncio.get_event_loop()
+    loop.create_task(async_task())
+    return JsonResponse({"done": True})
+
+def sync_test_view(request):
+    sync_task()
+    return JsonResponse({"done": True})
