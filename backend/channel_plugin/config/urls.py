@@ -47,8 +47,6 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
-    path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn +
@@ -69,14 +67,14 @@ urlpatterns += [
     # path("auth-token/", obtain_auth_token),
 ]
 
+handler500 = "rest_framework.exceptions.server_error"
+handler400 = "rest_framework.exceptions.bad_request"
+
 # FRONT END URLS
 urlpatterns += [
     re_path(r"^$", render_react),
     re_path(r"^(?:.*)/?$", render_react),
 ]
-
-handler500 = "rest_framework.exceptions.server_error"
-handler400 = "rest_framework.exceptions.bad_request"
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit

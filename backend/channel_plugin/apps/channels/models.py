@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from django.utils import timezone
 
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import Request, AsyncRequest
 
 
 @dataclass
@@ -26,9 +26,8 @@ class Channel:
     created_on: str = timezone.now().isoformat()
     # allow all members input/post messages
     allow_members_input: bool = True
-    starred: bool = False
 
-    def create(self, organization_id):
+    async def create(self, organization_id):
         payload = {
             "name": self.name.lower(),
             "slug": self.slug,
@@ -41,9 +40,8 @@ class Channel:
             "users": self.users,
             "created_on": self.created_on,
             "allow_members_input": self.allow_members_input,
-            "starred": self.starred
         }
-        response = Request.post(
+        response = await AsyncRequest.post(
             organization_id, self.__class__.__name__.lower(), payload
         )
         return response

@@ -51,6 +51,8 @@ class UserSerializer(serializers.Serializer):
 
     _id = serializers.CharField(max_length=30, required=True, help_text="User ID")
     role_id = serializers.CharField(max_length=30, required=False, help_text="Role ID")
+    
+    starred = serializers.BooleanField(default=False, help_text= "Default: false. True if the channel is starred by user.")
     is_admin = serializers.BooleanField(
         default=False, help_text="Default: false. True if the member is an admin"
     )
@@ -210,3 +212,26 @@ class ThreadFilesSerializer(serializers.ListField):
 class ChannelAllFilesSerializer(serializers.Serializer):
     channelmessage = MessageFilesSerializer()
     thread = ThreadFilesSerializer()
+
+
+class RoomSerializer(serializers.Serializer):
+
+    room_name = serializers.CharField(
+        max_length=100, required=True, help_text="Channel name"
+    )
+
+    room_members_ids = serializers.ListField()
+    ord_id = serializers.CharField(max_length=200, required=True)
+    private = serializers.BooleanField(default=False)
+
+    def convert_to_channel_serializer(self) -> serializers.Serializer :
+        self.is_valid(raise_exception=True)
+
+        data = {
+            'name' : self.data.get("room_name"),
+            'owner': self.data.get("room_members_ids", ["1"])[0],
+            "private": self.data.get("private")
+        }
+
+        return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
+

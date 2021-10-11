@@ -1,9 +1,8 @@
-from django.core.signals import request_finished
 from django.dispatch import receiver
 from django.conf import settings
 
 from apps.centri.centwrapper import CentClient
-from apps.channels.views import ChannelMemberViewset
+from apps.centri.signals.async_signal import request_finished
 
 from channel_plugin.utils.customrequest import Request
 
@@ -16,8 +15,7 @@ CLIENT = CentClient(
 
 
 @receiver(request_finished, sender=None)
-def UpdateSidebarSignal(sender, **kwargs):
-
+async def UpdateSidebarSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
 
     if uid == "UpdateSidebarSignal":
@@ -66,10 +64,10 @@ def UpdateSidebarSignal(sender, **kwargs):
 
             payload = {
                 "event": "sidebar_update",
-                "plugin_id": "channels.zuri.chat",
+                "plugin_id": settings.PLUGIN_ID,
                 "data": {
                     "name": "Channels Plugin",
-                    "group_name": "Channels",
+                    "group_name": "Channel",
                     "show_group": False,
                     "button_url": "/channels",
                     "public_rooms": public_rooms,
@@ -83,6 +81,6 @@ def UpdateSidebarSignal(sender, **kwargs):
             print("\n")
             print(payload)
             print("\n")
-            CLIENT.publish(room_name, payload)
+            await CLIENT.publish(room_name, payload)
         except:
             pass
