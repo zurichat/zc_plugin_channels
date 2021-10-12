@@ -1,6 +1,7 @@
 import asyncio
 
 from django.utils.timezone import datetime
+from django.shortcuts import render
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -341,7 +342,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     )
                     await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
                     await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
-                
+
                 loop = asyncio.get_event_loop()
                 loop.create_task(delete())
         return Response(status=status.HTTP_204_NO_CONTENT, request=request, view=self)
@@ -1170,3 +1171,29 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 
 #         return Response(data, status=status.HTTP_200_OK)
 #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def dms_test(request):
+    url = "https://dm.zuri.chat//dmapi/v1/ping"
+    try:
+        response = requests.get(url, headers={"Content-Type": "application/json"})
+        if response.status_code == 200:
+            dms_server = "Active"
+            return Response(data=server)
+        else:
+            dms_server = "Inactive"
+
+    except:
+        dms_server = "Inactive"
+    core_url = 'https://api.zuri.chat/health'
+    try:
+        response = requests.get(core_url, headers={"Content-Type": "application/json"})
+        if response.status_code in range(200,299):
+            core_server = "Active"
+            return Response(data=server)
+        else:
+            core_server = "Inactive"
+
+    except Exception:
+        core_server = "Inactive"
+
+    return render(request, 'dms_test.html', {'dms_server': dms_server, "core_server":core_server})
