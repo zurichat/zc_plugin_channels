@@ -1,8 +1,10 @@
+from django.http.response import HttpResponse
 from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from django.utils.timezone import datetime
 from django.utils import timezone
+from django.shortcuts import render
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
@@ -646,6 +648,7 @@ def search(request, org_id):
     # return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TestListView(ListView):
-
-  template_name = 'book_list.html'
+@api_view(["GET"])
+def test(request):
+    # return HttpResponse('helloo') 
+    return render(request,'tests/index.html')
