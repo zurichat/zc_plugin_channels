@@ -16,12 +16,6 @@ description = "The Channel Plugin is a feature\
     that helps users create spaces for\
     conversation and communication on zuri.chat."
 
-icons = [
-    "shovel",
-    "cdn.cloudflare.com/445345453345/hello.jpeg",
-    "spear",
-]
-
 
 class GetInfoViewset(ViewSet):
     def get_throttled_message(self, request):
