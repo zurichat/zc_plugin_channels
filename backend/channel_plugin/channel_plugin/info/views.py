@@ -105,7 +105,7 @@ class GetInfoViewset(ViewSet):
             "description": description,
             "button_url": "/channels",
             "plugin_id": settings.PLUGIN_ID,
-            "category": "group",
+            "category": "channels",
         }
         if org_id is not None and user_id is not None:
             channels = Request.get(org_id, "channel")
