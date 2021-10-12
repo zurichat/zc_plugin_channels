@@ -13,7 +13,6 @@ import json
 import requests
 
 # Create your views here.
-@api_view(["GET"])
 def test_channel_endpoints(request):
     TEST_CHANNEL_ID = "61643131b98946bd1943ba37"
     GET_VIEW_NAMES_ORG = [  
@@ -50,90 +49,6 @@ def test_channel_endpoints(request):
     ORG_TEST_PARAMS = {"org_id":"test"}
     CH_TEST_PARAMS = {"org_id":"test", "channel_id":TEST_CHANNEL_ID}
     status_codes = []
-    # responses =  [
-    #     {
-    #         "status": False,
-    #         "view_name": "Create Room View",
-    #         "status_code": 500,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": True,
-    #         "view_name": "List Create Channel",
-    #         "status_code": 200,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": True,
-    #         "view_name": "Channel Media All View",
-    #         "status_code": 200,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": True,
-    #         "view_name": "Channel Retrieve Update Delete View",
-    #         "status_code": 200,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": True,
-    #         "view_name": "Channel Socket View",
-    #         "status_code": 200,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": True,
-    #         "view_name": "Channel Members List",
-    #         "status_code": 200,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": False,
-    #         "view_name": "Channel Members Can Input",
-    #         "status_code": 500,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": False,
-    #         "view_name": "Channel Members Update Retrieve Views",
-    #         "status_code": 400,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "status": True,
-    #         "view_name": "Notification Views",
-    #         "status_code": 400,
-    #         "type": "Endpoint Status",
-    #         "method": "GET"
-    #     },
-    #     {
-    #         "server": True,
-    #         "status_code": 200,
-    #         "method": "GET",
-    #         "type": "Plugin Status"
-    #     },
-    #     {
-    #         "message": "Hello from server!",
-    #         "status_code": 200,
-    #         "method": "GET",
-    #         "type": "Plugin Status"
-    #     },
-    #     {
-    #         "success": True,
-    #         "status_code": 200,
-    #         "method": "GET",
-    #         "type": "Plugin Status"
-    #     }
-    # ]
-
     responses = []
     for view in GET_VIEW_NAMES_ORG:
         r = (test_view(view, params=ORG_TEST_PARAMS, method="get"))
