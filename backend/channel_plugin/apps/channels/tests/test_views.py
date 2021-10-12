@@ -10,7 +10,7 @@ class TestChannelEndpoints:
     def test_channel_create(self, api_client):
 
         client = api_client()
-        url = reverse("channels:list-create-channel", kwargs={"org_id": ORG_ID})
+        url = reverse("channels:list_create_channel", kwargs={"org_id": ORG_ID})
         data = {
             "name": fake.company(),
             "owner": "".join(fake.uuid4().split("-"))[
