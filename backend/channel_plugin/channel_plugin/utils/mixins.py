@@ -1,36 +1,28 @@
-
-from django.utils.decorators import classonlymethod
-from django.views.decorators.csrf import csrf_exempt
+import asyncio
 from functools import update_wrapper
+
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
-from rest_framework import exceptions, status
-from django.utils.cache import cc_delim_re, patch_vary_headers
+from django.utils.decorators import classonlymethod
+from django.views.decorators.csrf import csrf_exempt
 
 from channel_plugin.utils.custome_response import Response
 
-import asyncio
-
-
-
-
-
 
 class AsycViewMixin:
-
     def get_exception_response(self, exc, request):
+
         response = self.handle_exception(exc)
-        
-        if not getattr(request, 'accepted_renderer', None):
+
+        if not getattr(request, "accepted_renderer", None):
             neg = self.perform_content_negotiation(request, force=True)
             request.accepted_renderer, request.accepted_media_type = neg
 
-        response.accepted_renderer =  request.accepted_renderer
-        response.accepted_media_type =  request.accepted_media_type
+        response.accepted_renderer = request.accepted_renderer
+        response.accepted_media_type = request.accepted_media_type
         response.renderer_context = self.get_renderer_context()
 
         return response
-
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -39,32 +31,30 @@ class AsycViewMixin:
         if not asyncio.coroutines.iscoroutine(response):
             # Make the error obvious if a proper response is not returned
             assert isinstance(response, HttpResponseBase), (
-                'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
-                'to be returned from the view, but received a `%s`'
-                % type(response)
+                "Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` "
+                "to be returned from the view, but received a `%s`" % type(response)
             )
 
         if isinstance(response, Response):
-            if not getattr(request, 'accepted_renderer', None):
+            if not getattr(request, "accepted_renderer", None):
                 neg = self.perform_content_negotiation(request, force=True)
                 request.accepted_renderer, request.accepted_media_type = neg
 
-            setattr(response, "accepted_renderer",  request.accepted_renderer)
-            setattr(response, "accepted_media_type",  request.accepted_media_type)
-            setattr(response, "renderer_context",  self.get_renderer_context())
-        
+            setattr(response, "accepted_renderer", request.accepted_renderer)
+            setattr(response, "accepted_media_type", request.accepted_media_type)
+            setattr(response, "renderer_context", self.get_renderer_context())
+
         # Add new vary headers to the response instead of overwriting.
         if not asyncio.coroutines.iscoroutine(response):
-            vary_headers = self.headers.pop('Vary', None)
+            vary_headers = self.headers.pop("Vary", None)
 
             if vary_headers is not None:
                 patch_vary_headers(response, cc_delim_re.split(vary_headers))
 
             for key, value in self.headers.items():
                 response[key] = value
-        
-        return response
 
+        return response
 
     @classonlymethod
     def as_view(cls, actions=None, **initkwargs):
@@ -92,30 +82,36 @@ class AsycViewMixin:
 
         # actions must not be empty
         if not actions:
-            raise TypeError("The `actions` argument must be provided when "
-                            "calling `.as_view()` on a ViewSet. For example "
-                            "`.as_view({'get': 'list'})`")
+            raise TypeError(
+                "The `actions` argument must be provided when "
+                "calling `.as_view()` on a ViewSet. For example "
+                "`.as_view({'get': 'list'})`"
+            )
 
         # sanitize keyword arguments
         for key in initkwargs:
             if key in cls.http_method_names:
-                raise TypeError("You tried to pass in the %s method name as a "
-                                "keyword argument to %s(). Don't do that."
-                                % (key, cls.__name__))
+                raise TypeError(
+                    "You tried to pass in the %s method name as a "
+                    "keyword argument to %s(). Don't do that." % (key, cls.__name__)
+                )
             if not hasattr(cls, key):
-                raise TypeError("%s() received an invalid keyword %r" % (
-                    cls.__name__, key))
+                raise TypeError(
+                    "%s() received an invalid keyword %r" % (cls.__name__, key)
+                )
 
         # name and suffix are mutually exclusive
-        if 'name' in initkwargs and 'suffix' in initkwargs:
-            raise TypeError("%s() received both `name` and `suffix`, which are "
-                            "mutually exclusive arguments." % (cls.__name__))
+        if "name" in initkwargs and "suffix" in initkwargs:
+            raise TypeError(
+                "%s() received both `name` and `suffix`, which are "
+                "mutually exclusive arguments." % (cls.__name__)
+            )
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)
 
-            if 'get' in actions and 'head' not in actions:
-                actions['head'] = actions['get']
+            if "get" in actions and "head" not in actions:
+                actions["head"] = actions["get"]
 
             # We also store the mapping of request methods to actions,
             # so that we can later set the action attribute.
@@ -150,4 +146,3 @@ class AsycViewMixin:
         view.actions = actions
         view._is_coroutine = asyncio.coroutines._is_coroutine
         return csrf_exempt(view)
-
