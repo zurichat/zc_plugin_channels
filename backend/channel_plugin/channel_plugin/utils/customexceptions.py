@@ -61,3 +61,5 @@ class ThrottledViewSet(viewsets.ViewSet):
         for throttle in self.get_throttles():
             if not throttle.allow_request(request, self):
                 self.throttled(request, throttle.wait(), throttle_instance=throttle)
+
+
