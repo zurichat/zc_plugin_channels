@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from django.utils import timezone
 
-from channel_plugin.utils.customrequest import Request, AsyncRequest
+from channel_plugin.utils.customrequest import AsyncRequest
 
 
 @dataclass

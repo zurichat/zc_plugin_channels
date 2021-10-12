@@ -1179,12 +1179,8 @@ def dms_test(request):
         response = requests.get(url, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             dms_server = "Active"
-            print('try if')
-
         else:
             dms_server = "Inactive"
-            print('try else')
-
 
     except:
         dms_server = "Inactive"
@@ -1193,12 +1189,11 @@ def dms_test(request):
         response = requests.get(core_url, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             core_server = "Active"
-
-
         else:
             core_server = "Inactive"
 
     except Exception as e:
+
         core_server = "Inactive"
 
     return render(request, 'dms_test.html', {'dms_server': dms_server, "core_server":core_server})
