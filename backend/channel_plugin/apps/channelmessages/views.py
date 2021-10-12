@@ -3,6 +3,7 @@ from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
 from django.utils.timezone import datetime
 from django.utils import timezone
+from django.shortcuts import render
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
@@ -12,7 +13,7 @@ from rest_framework.throttling import AnonRateThrottle
 from django.urls import reverse
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user, find_match_in_db
+from channel_plugin.utils.customrequest import Request, search_channels,search_db, get_messages_from_page, save_last_message_user, find_match_in_db
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
@@ -602,4 +603,47 @@ def get_user_cursor(request, org_id, channel_id):
     response = {"data":data, "status":True, "message":"Last message lookup location"}
 
     return Response(response, status=status.HTTP_200_OK) 
-    
+
+
+@swagger_auto_schema(
+    method="GET",
+    request_body=ChannelMessageSearchSerializer,
+    responses={
+        200: openapi.Response(
+            "Response", ChannelMessageSearchResultSerializer(many=True)
+        ),
+        400: openapi.Response("Error Response", ErrorSerializer),
+    },
+    operation_id="search-channel-messages",
+)
+@api_view(["GET"])
+def search(request, org_id):
+    """Search channel messages based on content, pinned status, file attachments etc.
+
+    ```bash
+    curl -X POST "{{baseUrl}}/v1/{{org_id}}/search/"
+    -H  "accept: application/json"
+    -H  "Content-Type: application/json"
+    -d "{
+            \"user_id\": \"string\",
+            \"content\": \"string\",
+            \"has_files\": true,
+            \"pinned\": true
+        }"
+    ```
+    """
+    query = request.query_params.getlist("query", [])
+    # serializer = ChannelMessageSearchSerializer(data={"name":"name"})
+    # serializer.is_valid(raise_exception=True)
+    # data = serializer.data
+    result = search_channels(org_id, "channelmessage", query) or []
+    # if isinstance(result, list):
+    response = {"result": result, "query": query}
+    return Response(response, status=status.HTTP_200_OK)
+    # return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def test(request):
+    # return HttpResponse('helloo')
+    return render(request, 'index.html')

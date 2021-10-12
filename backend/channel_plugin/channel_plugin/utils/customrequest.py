@@ -307,6 +307,31 @@ def search_db(org_id, channel_id, collection_name, **params):
     return {"error": response.json()}
 
 
+
+@change_collection_name
+def search_channels(org_id, collection_name, params):
+    print(params)
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {},
+    }
+    liste = []
+    searchParam = params[0].split(',')
+    if len(searchParam) > 0:
+        for eachParams in searchParam:
+            liste.append({"content": {"$regex": eachParams, "$options": "i"}})
+            print(liste)
+
+            data['filter'] = {"$or": liste}
+
+    response = requests.post(read, data=json.dumps(data))
+    if response.status_code >= 200 and response.status_code < 300:
+        return response.json()["data"]
+    return {"error": response.json()}
+
+
 @change_collection_name
 def get_messages_from_page(
     org_id, collection_name, channel_id, page, page_size, site_host=None
