@@ -4,6 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from functools import update_wrapper
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
+from rest_framework import exceptions, status
+from django.utils.cache import cc_delim_re, patch_vary_headers
 
 from channel_plugin.utils.custome_response import Response
 
@@ -12,7 +14,22 @@ import asyncio
 
 
 
+
+
 class AsycViewMixin:
+
+    def get_exception_response(self, exc, request):
+        response = self.handle_exception(exc)
+        
+        if not getattr(request, 'accepted_renderer', None):
+            neg = self.perform_content_negotiation(request, force=True)
+            request.accepted_renderer, request.accepted_media_type = neg
+
+        response.accepted_renderer =  request.accepted_renderer
+        response.accepted_media_type =  request.accepted_media_type
+        response.renderer_context = self.get_renderer_context()
+
+        return response
 
 
     def finalize_response(self, request, response, *args, **kwargs):

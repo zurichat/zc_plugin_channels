@@ -6,8 +6,10 @@ from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
 from django.shortcuts import render
 from django.utils.timezone import datetime
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework import status, throttling
 from rest_framework.decorators import action, throttle_classes
 from rest_framework.viewsets import ViewSet
@@ -63,7 +65,11 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         ```
         """  # noqa
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
         channel = serializer.data.get("channel")
         result = await channel.create(org_id)
         status_code = status.HTTP_404_NOT_FOUND
@@ -338,7 +344,6 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
-
                 async def delete():
                     await AsyncRequest.delete(
                         org_id, "channelmessage", data_filter={"channel_id": channel_id}
