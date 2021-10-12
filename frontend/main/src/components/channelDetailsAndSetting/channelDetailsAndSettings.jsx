@@ -157,6 +157,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                     {/* <FileList /> */}
                   </TabPanel>
                   <TabPanel>
+                    {channelDetails.members}
                     {/* <OrganisationMembersList /> */}
                   </TabPanel>
                   <TabPanel>
