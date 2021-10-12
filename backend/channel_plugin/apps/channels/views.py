@@ -1,17 +1,14 @@
 import asyncio
 
-from django.utils.timezone import datetime
-
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-
-from rest_framework import status, throttling
-from rest_framework.decorators import action, throttle_classes
-from rest_framework.viewsets import ViewSet
-
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
+from django.utils.timezone import datetime
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status, throttling
+from rest_framework.decorators import action, throttle_classes
+from rest_framework.viewsets import ViewSet
 
 from channel_plugin.utils.custome_response import Response
 from channel_plugin.utils.customexceptions import ThrottledViewSet
@@ -99,7 +96,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         serializer = RoomSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         channel_serializer = serializer.convert_to_channel_serializer()
-        channel_serializer.is_valid()
+        channel_serializer.is_valid(raise_exception=True)
         channel = channel_serializer.data.get("channel")
         result = await channel.create(serializer.data.get("ord_id"))
         status_code = status.HTTP_404_NOT_FOUND
@@ -116,7 +113,9 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             status_code = status.HTTP_201_CREATED
-            return Response(serializer.data, status=status_code, request=request, view=self)
+            return Response(
+                serializer.data, status=status_code, request=request, view=self
+            )
         else:
             return Response(result, status=status_code, request=request, view=self)
 
@@ -335,13 +334,18 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
+
                 async def delete():
                     await AsyncRequest.delete(
                         org_id, "channelmessage", data_filter={"channel_id": channel_id}
                     )
-                    await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
-                    await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
-                
+                    await AsyncRequest.delete(
+                        org_id, "thread", data_filter={"channel_id": channel_id}
+                    )
+                    await AsyncRequest.delete(
+                        org_id, "role", data_filter={"channel_id": channel_id}
+                    )
+
                 loop = asyncio.get_event_loop()
                 loop.create_task(delete())
         return Response(status=status.HTTP_204_NO_CONTENT, request=request, view=self)
@@ -1098,7 +1102,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                                 channel_id=channel_id,
                                 user=user_data.copy(),
                             )
-
                         )
                         loop.create_task(
                             request_finished.send(
