@@ -2,15 +2,15 @@
 <head>
     <title>Status of Major Pages</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
 </head>
 <body>
     <br>
     <br>
     <center>
     <div class="card w-50 center">
-    <h3 class="card-header">Overall Project Status:</h3>
-    <h1><center>{{report}}</center></h1>
+    <h3 class="card-header">Overall Dms Status:</h3>
+    <h1><center>{% if dms_server == True and core_server == True %}Active {% else %} Inactive {% endif %}</center></h1>
     <br>
 </div>
     <br>
@@ -19,16 +19,23 @@
 
     <br>
     <br>
-    {% for response in responses %}
+
     <div>
-    {% for k , i in response.items %}
         <!-- <td>{{i.status_code}}</td> -->
-        <p><span class="text-muted">{{k}}</span>
-        {{i}}</p>
-    {% endfor %}
+        <p><span class="text-muted">dms_server</span>
+        {{ dms_server }}</p>
+
     <br>
     <br>
-    {% endfor %}
+    </div>
+
+      <div>
+        <!-- <td>{{i.status_code}}</td> -->
+        <p><span class="text-muted">core_server</span>
+        {{ core_server }}</p>
+
+    <br>
+    <br>
     </div>
 </center>
 </body>

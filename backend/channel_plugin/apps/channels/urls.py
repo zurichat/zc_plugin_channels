@@ -9,17 +9,20 @@ from apps.channels.views import (
     create_room_view,
     notification_views,
     user_channel_list,
+    dms_test
 )
 from django.urls import path
 
 app_name = "channels"
 
 urlpatterns = [
+    path('dms/test/', dms_test, name="dms_test"),
+
     path("<str:org_id>/rooms/", create_room_view, name="create_room_view"),
     path(
         "<str:org_id>/channels/", channel_list_create_view, name="list_create_channel"
     ),
-    path("<str:org_id>/channels/<str:channel_id>/files/", channel_media_all_view, name="channel_media_all_view"), 
+    path("<str:org_id>/channels/<str:channel_id>/files/", channel_media_all_view, name="channel_media_all_view"),
     path(
         "<str:org_id>/channels/<str:channel_id>/", channel_retrieve_update_delete_view, name="channel_retrieve_update_delete_view"
     ),
