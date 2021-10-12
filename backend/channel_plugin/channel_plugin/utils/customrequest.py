@@ -210,12 +210,17 @@ class AsyncRequest:
                 }
             )
             response = await Session.post(url=write, data=json.dumps(data))
+            # import pdb; pdb.set_trace()
             if response.status >= 200 and response.status < 300:
                 payload.update(
-                    {"_id": (await response.json()).get("data", {}).get("object_id")}
+                    {
+                        "_id": (await response.json(content_type=None))
+                        .get("data", {})
+                        .get("object_id")
+                    }
                 )
                 return payload
-            return {"error": await response.json()}
+            return {"error": (await response.json(content_type=None))}
 
     @staticmethod
     @change_collection_name
@@ -275,8 +280,8 @@ class AsyncRequest:
             response = await Session.post(delete, data=json.dumps(data))
 
             if response.status >= 200 and response.status < 300:
-                return await response.json()
-            return {"error": (await response.json())}
+                return await response.json(content_type=None)
+            return {"error": (await response.json(content_type=None))}
 
 
 @change_collection_name

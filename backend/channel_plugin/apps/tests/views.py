@@ -88,3 +88,7 @@ def test_channel_endpoints(request):
     context = {"responses": responses, "report": report}
 
     return render(request, "tests/main_test.html", context)
+
+def test_endpoints(request):
+    return render(request, "ajax_test.html")
+

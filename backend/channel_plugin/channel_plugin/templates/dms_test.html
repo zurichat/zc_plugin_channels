@@ -10,7 +10,8 @@
     <center>
     <div class="card w-50 center">
     <h3 class="card-header">Overall Dms Status:</h3>
-    <h1><center>{% if dms_server == True and core_server == True %}Active {% else %} Inactive {% endif %}</center></h1>
+    <h1><center>{% if dms_server and core_server %}Active {% else %} Inactive {% endif %}</center></h1>
+
     <br>
 </div>
     <br>
