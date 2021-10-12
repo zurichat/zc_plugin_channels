@@ -181,3 +181,11 @@ def test_channel_endpoints(request):
     context = {"responses":responses, "report":report}
     
     return render(request, "tests/main_test.html", context)
+
+def test_endpoints(request):
+    return render(request, "tests/ajax_test.html")
+
+@api_view(["GET","POST"])
+def ajax_query_handler(request):
+    data = {"you":["are", "welcome"]}
+    return Response(data)
