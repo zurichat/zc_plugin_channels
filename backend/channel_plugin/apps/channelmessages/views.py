@@ -12,9 +12,9 @@ from rest_framework.throttling import AnonRateThrottle
 from django.urls import reverse
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user, find_match_in_db
+from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user, find_match_in_db, search_channels
 from channel_plugin.utils.wrappers import OrderMixin
-
+from django.views.generic import ListView
 from .permissions import IsMember, IsOwner
 from .serializers import (
     ChannelMessageReactionSerializer,
@@ -24,6 +24,7 @@ from .serializers import (
     ChannelMessageUpdateSerializer,
 )
 
+# collection not found
 
 class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
 
@@ -137,6 +138,8 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         params = self._clean_query_params(request)
         data.update(params)
         result = Request.get(org_id, "channelmessage", data) or []
+        print(result)
+
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
             if len(result) > 0:
@@ -200,6 +203,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
+        print('here')
         return Response(result, status=status_code)
 
     @swagger_auto_schema(
@@ -603,3 +607,45 @@ def get_user_cursor(request, org_id, channel_id):
 
     return Response(response, status=status.HTTP_200_OK) 
     
+
+@swagger_auto_schema(
+    method="GET",
+    request_body=ChannelMessageSearchSerializer,
+    responses={
+        200: openapi.Response(
+            "Response", ChannelMessageSearchResultSerializer(many=True)
+        ),
+        400: openapi.Response("Error Response", ErrorSerializer),
+    },
+    operation_id="search-channel-messages",
+)
+@api_view(["GET"])
+def search(request, org_id):
+    """Search channel messages based on content, pinned status, file attachments etc.
+
+    ```bash
+    curl -X POST "{{baseUrl}}/v1/{{org_id}}/search/"
+    -H  "accept: application/json"
+    -H  "Content-Type: application/json"
+    -d "{
+            \"user_id\": \"string\",
+            \"content\": \"string\",
+            \"has_files\": true,
+            \"pinned\": true
+        }"
+    ```
+    """
+    query = request.query_params.getlist("query", [])
+    # serializer = ChannelMessageSearchSerializer(data={"name":"name"})
+    # serializer.is_valid(raise_exception=True)
+    # data = serializer.data
+    result = search_channels(org_id, "channelmessage", query) or []
+    # if isinstance(result, list):
+    response = {"result": result, "query": query}
+    return Response(response, status=status.HTTP_200_OK)
+    # return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TestListView(ListView):
+
+  template_name = 'book_list.html'

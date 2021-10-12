@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from .models import MESSAGE_TYPES, ChannelMessage
 
-
 class EventSerializer(serializers.Serializer):
     CHOICES = ("JOIN", "LEAVE")
     action = serializers.CharField(max_length=20, required=True)
