@@ -57,14 +57,13 @@ if settings.DEBUG:
 urlpatterns += [
     # API base url
     path("api/v1/", include("channel_plugin.info.urls")),
-    path("api/v1/", include("apps.channels.urls")),
-    path("api/v1/", include("apps.channelmessages.urls")),
-    path("api/v1/", include("apps.roles.urls")),
-    path("api/v1/", include("apps.threads.urls")),
-    path("api/v1/", include("apps.googlemeet.urls")),
-    path("api/v1/", include("apps.centri.urls")),
-    # DRF auth token
-    # path("auth-token/", obtain_auth_token),
+    path("api/v1/", include(("apps.channels.urls", "channels"))),
+    path("api/v1/", include(("apps.channelmessages.urls", "channelmessages"))),
+    path("api/v1/", include(("apps.roles.urls", "roles"))),
+    path("api/v1/", include(("apps.threads.urls", "threads"))),
+    path("api/v1/", include(("apps.googlemeet.urls", "googlemeet"))),
+    path("api/v1/", include(("apps.centri.urls", "centri"))),
+    path("", include(("apps.tests.urls", "test"))),
 ]
 
 handler500 = "rest_framework.exceptions.server_error"

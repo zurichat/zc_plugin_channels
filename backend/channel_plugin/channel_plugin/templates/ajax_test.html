@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<head>
+    <title>Status of Major Pages</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    
+</head>
+<body>
+    
+    <br>
+    <br>
+    <center>
+    <div class="card w-50 center">
+    <h3 class="card-header">Overall Project Status:</h3>
+    <h1 id="serverStatus"><center>Welcome</center></h1>    
+    <br>
+</div>
+    <br>
+    <br>
+    <h1>Breakdown of Reports</h1>
+    
+    <br>
+    <br>
+    <div id="Responses">
+        Loading Responses...
+    </div>
+    </div>
+</center>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script>
+     var endpoint = 'http://127.0.0.1:8000/ajax/tests/'
+        var EXTERNAL_SITES = [
+        "https://dm.zuri.chat/api/v1/ping",
+        "https://chess.zuri.chat/api/v1/ping",
+        "https://channels.zuri.chat/api/v1/ping",
+        "https://channels.zuri.chat/api/v1/1/channels",
+        "https://channels.zuri.chat/api/v1/1/channels/614fd08ccf2c0f1ad7585378/",
+        "https://channels.zuri.chat/api/v1/1/channels/614fd08ccf2c0f1ad7585378/messages"
+        ]
+        var good = {};
+        var fails = {};
+        var errors = {};
+        var server_status = "OK!";
+    $( document ).ready(function() {
+       
+        // let apiKey = '5b578yg9yvi8sogirbvegoiufg9v9g579gviuiub8'
+        
+        for(let i= 0; i < EXTERNAL_SITES.length; i++){
+            console.log(i);
+            
+
+        $.ajax({
+            
+            url: EXTERNAL_SITES[i] ,
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result){
+            cur_site = EXTERNAL_SITES[i];
+            good[cur_site] = "SUCCESS :" + JSON.stringify(result);
+            console.log(i +" SITE: "+ EXTERNAL_SITES[i]+ " RESULT");
+            console.log(result);
+            // good[cur_site] = jQuery.parseJSON(result);
+                    },
+            error: function(request,status,errorThrown) {
+                cur_site = EXTERNAL_SITES[i];
+                console.log(cur_site);
+                errors[cur_site] = "ERROR: " + errorThrown;
+                console.log(i +" SITE: "+ EXTERNAL_SITES[i]+ " RESULT")
+                console.log("STATUS: "+status + "  ERROR:" + errorThrown);
+            // Only use status and errorThrown.
+            // Chances are request will not have anything in it.
+    
+
+        }});
+
+        }
+        
+        
+    });
+    $(document).ajaxComplete(function(){
+        console.log("SUCESS "+ good);
+        errorLength = Object.keys(errors).length;
+        if (errorLength > 0){
+            server_status = "Some Errors are present and being resolved";
+        }
+        var out = '<center><table><tr><th>ENDPOINT</th><th>RESPONSE</th></tr>';
+        $.each(good, function( key, value ) {
+        out += '<tr><td class="text-primary">'+key+'</td><td class="text-primary">'+value+'</td></tr>';
+        });
+        $.each(errors, function( key, value ) {
+        out += '<tr><td class="text-muted">'+key+'</td><td class="text-muted">'+value+'</td></tr>';
+        });
+
+        out += '</table></center>';
+
+    //append out to your div
+        $("#Responses").html(out);
+        $("#serverStatus").html(server_status);
+    })
+</script>
+</body>
+
+</html>
