@@ -629,7 +629,7 @@ def get_user_cursor(request, org_id, channel_id):
         ),
         400: openapi.Response("Error Response", ErrorSerializer),
     },
-    operation_id="search-channel-messages",
+    operation_id="search-all-channel-messages",
 )
 @api_view(["GET"])
 def search(request, org_id):
