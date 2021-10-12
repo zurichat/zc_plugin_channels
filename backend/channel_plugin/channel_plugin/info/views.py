@@ -16,12 +16,6 @@ description = "The Channel Plugin is a feature\
     that helps users create spaces for\
     conversation and communication on zuri.chat."
 
-icons = [
-    "shovel",
-    "cdn.cloudflare.com/445345453345/hello.jpeg",
-    "spear",
-]
-
 
 class GetInfoViewset(ViewSet):
     def get_throttled_message(self, request):
@@ -111,6 +105,7 @@ class GetInfoViewset(ViewSet):
             "description": description,
             "button_url": "/channels",
             "plugin_id": settings.PLUGIN_ID,
+            "category": "channels",
         }
         if org_id is not None and user_id is not None:
             channels = Request.get(org_id, "channel")

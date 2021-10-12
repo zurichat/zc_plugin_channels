@@ -1,18 +1,25 @@
 from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
-from django.utils.timezone import datetime
+from django.shortcuts import render
 from django.utils import timezone
+from django.utils.timezone import datetime
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, throttling
 from rest_framework.decorators import action, api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
-from django.urls import reverse
 
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import Request, search_db, get_messages_from_page, save_last_message_user, find_match_in_db
+from channel_plugin.utils.customrequest import (
+    Request,
+    find_match_in_db,
+    get_messages_from_page,
+    save_last_message_user,
+    search_channels,
+    search_db,
+)
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
@@ -462,10 +469,15 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
 
                 obj_id = message.pop("_id")
 
-                result = Request.put(
-                    org_id=org_id,
-                    collection_name="channelmessage",
-                    payload={"emojis": message.get("emojis")}, object_id=obj_id) or {}
+                result = (
+                    Request.put(
+                        org_id=org_id,
+                        collection_name="channelmessage",
+                        payload={"emojis": message.get("emojis")},
+                        object_id=obj_id,
+                    )
+                    or {}
+                )
 
                 if isinstance(result, dict):
                     if result.__contains__("_id"):
@@ -542,43 +554,48 @@ def search_messages(request, org_id, channel_id):
 
 search_channelmessage = search_messages
 
-@api_view(["GET","POST"])
+
+@api_view(["GET", "POST"])
 def paginate_messages(request, org_id, channel_id):
     SITE_HOST = request.get_host()
     DEFAULT_PAGE_SIZE = 10
 
     page = int(request.GET.get("page", 1))
-    last_timestamp = request.GET.get("last_timestamp", None)
+    # last_timestamp = request.GET.get("last_timestamp", None)
     page_size = int(request.GET.get("page_size", DEFAULT_PAGE_SIZE))
     user_id = request.GET.get("user_id", None)
 
     if not user_id:
-        response = {"status":False, "message":"Please pass a user_id as a param"}
+        response = {"status": False, "message": "Please pass a user_id as a param"}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
     # Remove whitespace as a result of '+' conversion to ' '
     # last_timestamp = "+".join(last_timestamp.split(" "))
     # data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
 
-    response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size, site_host= SITE_HOST)
-    
-    payload = {
-            "user_id": user_id,
-            "last_page": page,
-            "page_size": page_size,
-            "date":timezone.now().isoformat()
-        }
+    response = get_messages_from_page(
+        org_id, "channelmessage", channel_id, page, page_size, site_host=SITE_HOST
+    )
 
-    save_response = save_last_message_user(org_id, "userscroll", payload)
+    payload = {
+        "user_id": user_id,
+        "last_page": page,
+        "page_size": page_size,
+        "date": timezone.now().isoformat(),
+    }
+
+    save_last_message_user(org_id, "userscroll", payload)
     user_id = request.GET.get("user_id", "error")
 
     if user_id == "error":
-        response = {"status":True, "message":"Please pass a user_id as a param"}
+        response = {"status": True, "message": "Please pass a user_id as a param"}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
     # Remove whitespace as a result of '+' conversion to ' '
     # last_timestamp = "+".join(last_timestamp.split(" "))
-    data = {"page": page, "last_timestamp": last_timestamp, "page_size":page_size}
-    response = get_messages_from_page(org_id, "channelmessage", channel_id, page, page_size)
-    
+    # data = {"page": page, "last_timestamp": last_timestamp, "page_size": page_size}
+    response = get_messages_from_page(
+        org_id, "channelmessage", channel_id, page, page_size
+    )
+
     # if response['data']:
     #     payload = {
     #         "user_id": user_id,
@@ -587,19 +604,42 @@ def paginate_messages(request, org_id, channel_id):
 
     #     save_response = save_last_message_user(org_id, "userscroll", payload)
 
-    
     return Response(response, status=status.HTTP_200_OK)
+
 
 @api_view(["GET"])
 def get_user_cursor(request, org_id, channel_id):
-    DEFAULT_PAGE_SIZE = 10
+    # DEFAULT_PAGE_SIZE = 10
     user_id = request.GET.get("user_id", None)
-    if user_id == None:
-        response = {"message":"Pass a user_id as a url param", "status":False}
+    if user_id is None:
+        response = {"message": "Pass a user_id as a url param", "status": False}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
-    
-    data = find_match_in_db(org_id, "userscroll", "user_id", user_id, return_data=True)
-    response = {"data":data, "status":True, "message":"Last message lookup location"}
 
-    return Response(response, status=status.HTTP_200_OK) 
-    
+    data = find_match_in_db(org_id, "userscroll", "user_id", user_id, return_data=True)
+    response = {"data": data, "status": True, "message": "Last message lookup location"}
+
+    return Response(response, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(
+    method="GET",
+    responses={
+        200: openapi.Response(
+            "Response", ChannelMessageSearchResultSerializer(many=True)
+        ),
+        400: openapi.Response("Error Response", ErrorSerializer),
+    },
+    operation_id="search-all-channel-messages",
+)
+@api_view(["GET"])
+def search(request, org_id):
+    """Search channel messages based on content, pinned status, file attachments etc."""
+    query = request.query_params.getlist("query", [])
+    result = search_channels(org_id, "channelmessage", query) or []
+    response = {"result": result, "query": query}
+    return Response(response, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def test(request):
+    return render(request, "index.html")
