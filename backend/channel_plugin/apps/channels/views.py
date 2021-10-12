@@ -1,14 +1,10 @@
 import asyncio
-<<<<<<< HEAD
-
-=======
 import requests
 
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
 from django.shortcuts import render
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
 from django.utils.timezone import datetime
 
 from drf_yasg import openapi
@@ -19,15 +15,7 @@ from rest_framework.decorators import action, throttle_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-<<<<<<< HEAD
-from apps.centri.helperfuncs import build_room_name
-from apps.centri.signals.async_signal import request_finished
-from apps.utils.serializers import ErrorSerializer
-
-from channel_plugin.utils.custome_response import Response
-=======
 from channel_plugin.utils.custome_response import Response as Custom_Response
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import AsyncRequest, Request
 from channel_plugin.utils.mixins import AsycViewMixin
@@ -78,7 +66,11 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         ```
         """  # noqa
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
         channel = serializer.data.get("channel")
         result = await channel.create(org_id)
         status_code = status.HTTP_404_NOT_FOUND
@@ -130,13 +122,9 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             status_code = status.HTTP_201_CREATED
-<<<<<<< HEAD
-            return Response(serializer.data, status=status_code, request=request, view=self)
-=======
             return Custom_Response(
                 serializer.data, status=status_code, request=request, view=self
             )
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
         else:
             return Custom_Response(
                 result, status=status_code, request=request, view=self
@@ -182,11 +170,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     result[i].update({"members": len(channel["users"].keys())})
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-<<<<<<< HEAD
-        return Response(result, status=status_code, request=request, view=self)
-=======
         return Custom_Response(result, status=status_code, request=request, view=self)
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
 
     @swagger_auto_schema(
         responses={
@@ -361,22 +345,12 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
-<<<<<<< HEAD
-=======
-
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
                 async def delete():
                     await AsyncRequest.delete(
                         org_id, "channelmessage", data_filter={"channel_id": channel_id}
                     )
                     await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
                     await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
-<<<<<<< HEAD
-                
-                loop = asyncio.get_event_loop()
-                loop.create_task(delete())
-        return Response(status=status.HTTP_204_NO_CONTENT, request=request, view=self)
-=======
                     await AsyncRequest.delete(
                         org_id, "thread", data_filter={"channel_id": channel_id}
                     )
@@ -390,7 +364,6 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         return Custom_Response(
             status=status.HTTP_204_NO_CONTENT, request=request, view=self
         )
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
 
     @swagger_auto_schema(
         operation_id="retrieve-user-channels",
@@ -1144,10 +1117,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                                 channel_id=channel_id,
                                 user=user_data.copy(),
                             )
-<<<<<<< HEAD
-
-=======
->>>>>>> b060882e422df4e3b657aca214e33087fc10dcd4
                         )
                         loop.create_task(
                             request_finished.send(
