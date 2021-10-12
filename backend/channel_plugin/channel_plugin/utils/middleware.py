@@ -50,7 +50,7 @@ class CorsMiddleware:
         if request.method in ["GET"]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
-            except:  # noqa
+            except KeyError:
                 pass
 
         if request.method in ["POST", "PUT", "DELETE"] and result:

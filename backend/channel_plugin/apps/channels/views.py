@@ -1,21 +1,19 @@
 import asyncio
 import requests
 
-from django.utils.timezone import datetime
-from django.shortcuts import render
-
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-
-from rest_framework import status, throttling
-from rest_framework.decorators import action, throttle_classes
-from rest_framework.viewsets import ViewSet
-
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
+from django.shortcuts import render
+from django.utils.timezone import datetime
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status, throttling
+from rest_framework.decorators import action, throttle_classes
+from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
 
-from channel_plugin.utils.custome_response import Response
+from channel_plugin.utils.custome_response import Response as Custom_Response
 from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import AsyncRequest, Request
 from channel_plugin.utils.mixins import AsycViewMixin
@@ -82,7 +80,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 )
             )
             status_code = status.HTTP_201_CREATED
-        return Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="create-room",
@@ -101,7 +99,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         serializer = RoomSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         channel_serializer = serializer.convert_to_channel_serializer()
-        channel_serializer.is_valid()
+        channel_serializer.is_valid(raise_exception=True)
         channel = channel_serializer.data.get("channel")
         result = await channel.create(serializer.data.get("ord_id"))
         status_code = status.HTTP_404_NOT_FOUND
@@ -118,9 +116,13 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             status_code = status.HTTP_201_CREATED
-            return Response(serializer.data, status=status_code, request=request, view=self)
+            return Custom_Response(
+                serializer.data, status=status_code, request=request, view=self
+            )
         else:
-            return Response(result, status=status_code, request=request, view=self)
+            return Custom_Response(
+                result, status=status_code, request=request, view=self
+            )
 
     @swagger_auto_schema(
         operation_id="retrieve-channels",
@@ -162,7 +164,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     result[i].update({"members": len(channel["users"].keys())})
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         responses={
@@ -226,7 +228,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 }
             )
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="retrieve-channel-details",
@@ -252,7 +254,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
@@ -293,7 +295,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="delete-channel",
@@ -337,16 +339,26 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
+
                 async def delete():
                     await AsyncRequest.delete(
                         org_id, "channelmessage", data_filter={"channel_id": channel_id}
                     )
                     await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
                     await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
+                    await AsyncRequest.delete(
+                        org_id, "thread", data_filter={"channel_id": channel_id}
+                    )
+                    await AsyncRequest.delete(
+                        org_id, "role", data_filter={"channel_id": channel_id}
+                    )
+
 
                 loop = asyncio.get_event_loop()
                 loop.create_task(delete())
-        return Response(status=status.HTTP_204_NO_CONTENT, request=request, view=self)
+        return Custom_Response(
+            status=status.HTTP_204_NO_CONTENT, request=request, view=self
+        )
 
     @swagger_auto_schema(
         operation_id="retrieve-user-channels",
@@ -388,7 +400,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 )
             )
 
-        return Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         responses={
@@ -418,11 +430,11 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         if channel:
             serializer = SocketSerializer(data=data)
             serializer.is_valid(raise_exception=True)
-            return Response(
+            return Custom_Response(
                 serializer.data, status=status.HTTP_200_OK, request=request, view=self
             )
         else:
-            return Response(
+            return Custom_Response(
                 {"error": "Channel not found"},
                 status=status.HTTP_404_NOT_FOUND,
                 request=request,
@@ -507,17 +519,17 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 }
 
                 settings = serializer.data.get("notifications", FACTORY_SETTINGS)
-                return Response(
+                return Custom_Response(
                     settings, status=status.HTTP_200_OK, request=request, view=self
                 )
 
-            return Response(
+            return Custom_Response(
                 {"error": "member not found"},
                 status=status.HTTP_404_NOT_FOUND,
                 request=request,
                 view=self,
             )
-        return Response(
+        return Custom_Response(
             {"error": "channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -588,24 +600,24 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                             else status.HTTP_400_BAD_REQUEST
                         )
 
-                        return Response(
+                        return Custom_Response(
                             data, status=status_code, request=request, view=self
                         )
                     else:
-                        return Response(
+                        return Custom_Response(
                             result,
                             status=result.status_code,
                             request=request,
                             view=self,
                         )
 
-            return Response(
+            return Custom_Response(
                 {"error": "member not found"},
                 status=status.HTTP_404_NOT_FOUND,
                 request=request,
                 view=self,
             )
-        return Response(
+        return Custom_Response(
             {"error": "channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -730,7 +742,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
 
                     output = user_data
                 else:
-                    return Response(
+                    return Custom_Response(
                         user_data, status=status.HTTP_200_OK, request=request, view=self
                     )
 
@@ -783,21 +795,21 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                     status_code = (
                         status.HTTP_201_CREATED if output else status.HTTP_200_OK
                     )
-                    return Response(
+                    return Custom_Response(
                         output, status=status_code, request=request, view=self
                     )
                 else:
-                    return Response(
+                    return Custom_Response(
                         result.get("error"),
                         status=status.HTTP_400_BAD_REQUEST,
                         request=request,
                         view=self,
                     )
             else:
-                return Response(
+                return Custom_Response(
                     result, status=result.status_code, request=request, view=self
                 )
-        return Response(
+        return Custom_Response(
             {"error": "channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -839,7 +851,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
         if channel.__contains__("_id"):
             if channel["allow_members_input"] is True:
                 can_input = True
-                return Response(
+                return Custom_Response(
                     can_input, status=status.HTTP_200_OK, request=request, view=self
                 )
             else:
@@ -849,17 +861,17 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 if user_data:
                     # Check if user is an admin
                     can_input = True if user_data.is_admin else False
-                    return Response(
+                    return Custom_Response(
                         can_input, status=status.HTTP_200_OK, request=request, view=self
                     )
                 else:
-                    return Response(
+                    return Custom_Response(
                         {"error": "channel not found"},
                         status=status.HTTP_404_NOT_FOUND,
                         request=request,
                         view=self,
                     )
-        return Response(
+        return Custom_Response(
             {"error": "channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -894,11 +906,11 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             serializer = UserSerializer(data=users, many=True)
 
             serializer.is_valid(raise_exception=True)
-            return Response(
+            return Custom_Response(
                 serializer.data, status=status.HTTP_200_OK, request=request, view=self
             )
 
-        return Response(
+        return Custom_Response(
             {"error": "Channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -932,21 +944,21 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             if user_data:
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-                return Response(
+                return Custom_Response(
                     serializer.data,
                     status=status.HTTP_200_OK,
                     request=request,
                     view=self,
                 )
 
-            return Response(
+            return Custom_Response(
                 {"error": "member not found"},
                 status=status.HTTP_404_NOT_FOUND,
                 request=request,
                 view=self,
             )
 
-        return Response(
+        return Custom_Response(
             {"error": "Channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -1025,24 +1037,24 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                             else status.HTTP_400_BAD_REQUEST
                         )
 
-                        return Response(
+                        return Custom_Response(
                             data, status=status_code, request=request, view=self
                         )
                     else:
-                        return Response(
+                        return Custom_Response(
                             result,
                             status=result.status_code,
                             request=request,
                             view=self,
                         )
 
-            return Response(
+            return Custom_Response(
                 {"error": "member not found"},
                 status=status.HTTP_404_NOT_FOUND,
                 request=request,
                 view=self,
             )
-        return Response(
+        return Custom_Response(
             {"error": "Channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -1100,7 +1112,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                                 channel_id=channel_id,
                                 user=user_data.copy(),
                             )
-
                         )
                         loop.create_task(
                             request_finished.send(
@@ -1116,17 +1127,17 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
-                    return Response(
+                    return Custom_Response(
                         data, status=status_code, request=request, view=self
                     )
 
-            return Response(
+            return Custom_Response(
                 {"error": "member not found"},
                 status=status.HTTP_404_NOT_FOUND,
                 request=request,
                 view=self,
             )
-        return Response(
+        return Custom_Response(
             {"error": "Channel not found"},
             status=status.HTTP_404_NOT_FOUND,
             request=request,
@@ -1174,6 +1185,8 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def dms_test(request):
+    import requests
+
     url = "https://dm.zuri.chat//dmapi/v1/ping"
     try:
         response = requests.get(url, headers={"Content-Type": "application/json"})
@@ -1200,5 +1213,4 @@ def dms_test(request):
 
     except Exception as e:
         core_server = "Inactive"
-
     return render(request, 'dms_test.html', {'dms_server': dms_server, "core_server":core_server})

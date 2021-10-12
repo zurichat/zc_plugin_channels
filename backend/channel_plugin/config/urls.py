@@ -29,7 +29,6 @@ def render_react(request):
 
 
 urlpatterns = [
-    path("", include("apps.tests.urls")),
     re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
         schema_view.without_ui(cache_timeout=0),
@@ -64,8 +63,7 @@ urlpatterns += [
     path("api/v1/", include(("apps.threads.urls", "threads"))),
     path("api/v1/", include(("apps.googlemeet.urls", "googlemeet"))),
     path("api/v1/", include(("apps.centri.urls", "centri"))),
-    # DRF auth token
-    # path("auth-token/", obtain_auth_token),
+    path("", include(("apps.tests.urls", "test"))),
 ]
 
 handler500 = "rest_framework.exceptions.server_error"
