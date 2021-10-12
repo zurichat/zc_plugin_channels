@@ -1,25 +1,24 @@
-from apps.centri.helperfuncs import build_room_name
-from apps.utils.serializers import ErrorSerializer
-from apps.centri.signals.async_signal import request_finished
-from django.http.response import JsonResponse
+import asyncio
+
 from django.utils.timezone import datetime
+from django.shortcuts import render
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework import status, throttling
-from rest_framework.decorators import action, api_view, throttle_classes
-from rest_framework.response import Response
+from rest_framework.decorators import action, throttle_classes
 from rest_framework.viewsets import ViewSet
 
+from apps.centri.helperfuncs import build_room_name
+from apps.centri.signals.async_signal import request_finished
+from apps.utils.serializers import ErrorSerializer
 
+from channel_plugin.utils.custome_response import Response
 from channel_plugin.utils.customexceptions import ThrottledViewSet
-from channel_plugin.utils.customrequest import (
-    Request,
-    find_match_in_db,
-    manage_channel_permissions,
-    AsyncRequest,
-)
+from channel_plugin.utils.customrequest import AsyncRequest, Request
+from channel_plugin.utils.mixins import AsycViewMixin
 from channel_plugin.utils.wrappers import OrderMixin
-from channel_plugin.utils.decorators import to_async
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
@@ -27,16 +26,16 @@ from .serializers import (  # SearchMessageQuerySerializer,
     ChannelSerializer,
     ChannelUpdateSerializer,
     NotificationsSettingSerializer,
+    RoomSerializer,
     SocketSerializer,
     UserChannelGetSerializer,
     UserSerializer,
-    RoomSerializer
 )
-
 
 # Create your views here.
 
-class ChannelViewset(ThrottledViewSet, OrderMixin):
+
+class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
 
     OrderingFields = {"members": int, "created_on": datetime.fromisoformat}
 
@@ -53,7 +52,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["POST"],
         detail=False,
     )
-    @to_async
     async def channels(self, request, org_id):
 
         """
@@ -66,7 +64,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         -d "{  \"name\": \"channel name\",  \"owner\": \"member_id\", \"description\": \"channel description\",  \"private\": false, \"default\":false,  \"topic\": \"channel topic\"}"
         ```
         """  # noqa
-
         serializer = ChannelSerializer(data=request.data, context={"org_id": org_id})
         serializer.is_valid(raise_exception=True)
         channel = serializer.data.get("channel")
@@ -74,15 +71,17 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id"):
             result.update({"members": len(result["users"].keys())})
-            await request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=org_id,
-                user_id=result.get("owner"),
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                request_finished.send(
+                    sender=None,
+                    dispatch_uid="UpdateSidebarSignal",
+                    org_id=org_id,
+                    user_id=result.get("owner"),
+                )
             )
             status_code = status.HTTP_201_CREATED
-        return Response(result, status=status_code)
-
+        return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="create-room",
@@ -97,7 +96,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["POST"],
         detail=False,
     )
-    @to_async
     async def create_room(self, request, org_id=None):
         serializer = RoomSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -108,16 +106,20 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
 
         if result.__contains__("_id"):
-            await request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=channel_serializer.data.get("ord_id"),
-                user_id=result.get("owner"),
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                request_finished.send(
+                    sender=str,
+                    dispatch_uid="UpdateSidebarSignal",
+                    org_id=channel_serializer.data.get("ord_id"),
+                    user_id=result.get("owner"),
+                )
             )
+
             status_code = status.HTTP_201_CREATED
-            return Response(serializer.data, status=status_code)
+            return Response(serializer.data, status=status_code, request=request, view=self)
         else:
-            return Response(result, status=status_code)
+            return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="retrieve-channels",
@@ -143,7 +145,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         ],
     )
     @action(methods=["GET"], detail=False)
-    @to_async
     async def channel_all(self, request, org_id):
         """Get all channels in the organization
         ```bash
@@ -160,7 +161,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
                     result[i].update({"members": len(channel["users"].keys())})
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         responses={
@@ -170,7 +171,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         operation_id="list-all-channel-files",
     )
     @action(methods=["GET"], detail=False)
-    @to_async
     async def channel_media_all(self, request, org_id, channel_id):
         """Retrieve all files in channel
         This endpoint retrieves a list of URLs for files/media that have been sen sent in a channel.
@@ -225,7 +225,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
                 }
             )
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="retrieve-channel-details",
@@ -238,7 +238,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["GET"],
         detail=False,
     )
-    @to_async
     async def channel_retrieve(self, request, org_id, channel_id):
         """Get channel details
         ```bash
@@ -252,7 +251,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
@@ -266,7 +265,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["PUT"],
         detail=False,
     )
-    @to_async
     async def channel_update(self, request, org_id, channel_id):
         """Update channel details
         ```bash
@@ -281,7 +279,10 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         )
         serializer.is_valid(raise_exception=True)
         payload = serializer.data.get("channel")
-        result = await AsyncRequest.put(org_id, "channel", payload, object_id=channel_id) or {}
+        result = (
+            await AsyncRequest.put(org_id, "channel", payload, object_id=channel_id)
+            or {}
+        )
         status_code = status.HTTP_404_NOT_FOUND
         if (
             result.__contains__("_id")
@@ -291,7 +292,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="delete-channel",
@@ -313,7 +314,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["DELETE"],
         detail=False,
     )
-    @to_async
     async def channel_delete(self, request, org_id, channel_id):
         """Delete a channel
         This endpoint deletes a channel and its related objects: messages, roles and threads
@@ -325,21 +325,27 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
 
         # delete relationships
         if result.get("status") == 200:
-            await request_finished.send(
-                sender=None,
-                dispatch_uid="UpdateSidebarSignal",
-                org_id=org_id,
-                user_id=request.query_params.get("user_id", None),
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                request_finished.send(
+                    sender=None,
+                    dispatch_uid="UpdateSidebarSignal",
+                    org_id=org_id,
+                    user_id=request.query_params.get("user_id", None),
+                )
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
-                await AsyncRequest.delete(
-                    org_id, "channelmessage", data_filter={"channel_id": channel_id}
-                )
-                await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
-                await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
+                async def delete():
+                    await AsyncRequest.delete(
+                        org_id, "channelmessage", data_filter={"channel_id": channel_id}
+                    )
+                    await AsyncRequest.delete(org_id, "thread", data_filter={"channel_id": channel_id})
+                    await AsyncRequest.delete(org_id, "role", data_filter={"channel_id": channel_id})
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+                loop = asyncio.get_event_loop()
+                loop.create_task(delete())
+        return Response(status=status.HTTP_204_NO_CONTENT, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="retrieve-user-channels",
@@ -350,7 +356,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         },
     )
     @action(methods=["GET"], detail=False)
-    @to_async
     async def user_channel_retrieve(self, request, org_id, user_id):
         """Retrieve list of channels a user belongs to
         ```bash
@@ -382,7 +387,7 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
                 )
             )
 
-        return Response(result, status=status_code)
+        return Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         responses={
@@ -395,7 +400,6 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         methods=["GET"],
         detail=False,
     )
-    @to_async
     async def get_channel_socket_name(self, request, org_id, channel_id):
         """
         Retrieve Centrifugo socket channel name based on organisation and channel IDs
@@ -403,7 +407,9 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/socket/" -H  "accept: application/json"
         ```
         """
-        channel = await ChannelMemberViewset.retrieve_channel(request, org_id, channel_id)
+        channel = await ChannelMemberViewset.retrieve_channel(
+            request, org_id, channel_id
+        )
         data = {
             "socket_name": build_room_name(org_id, channel_id),
             "channel_id": channel_id,
@@ -411,10 +417,15 @@ class ChannelViewset(ThrottledViewSet, OrderMixin):
         if channel:
             serializer = SocketSerializer(data=data)
             serializer.is_valid(raise_exception=True)
-            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                serializer.data, status=status.HTTP_200_OK, request=request, view=self
+            )
         else:
-            return JsonResponse(
-                {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+            return Response(
+                {"error": "Channel not found"},
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self,
             )
 
 
@@ -446,7 +457,7 @@ user_channel_list = ChannelViewset.as_view(
 channel_socket_view = ChannelViewset.as_view({"get": "get_channel_socket_name"})
 
 
-class ChannelMemberViewset(ViewSet):
+class ChannelMemberViewset(AsycViewMixin, ViewSet):
     def validate_name(self, name):
         return name
 
@@ -473,7 +484,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["GET"],
         detail=False,
     )
-    @to_async
     async def retrieve_notification(self, request, org_id, channel_id, member_id):
         """Retrieve user notification preferences for channel
         bash
@@ -496,13 +506,21 @@ class ChannelMemberViewset(ViewSet):
                 }
 
                 settings = serializer.data.get("notifications", FACTORY_SETTINGS)
-                return Response(settings, status=status.HTTP_200_OK)
+                return Response(
+                    settings, status=status.HTTP_200_OK, request=request, view=self
+                )
 
             return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"},
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self,
             )
         return Response(
-            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -519,7 +537,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["PUT"],
         detail=False,
     )
-    @to_async
     async def update_notification(self, request, org_id, channel_id, member_id):
         """Update user notification preferences for a channel
         bash
@@ -570,15 +587,28 @@ class ChannelMemberViewset(ViewSet):
                             else status.HTTP_400_BAD_REQUEST
                         )
 
-                        return Response(data, status=status_code)
+                        return Response(
+                            data, status=status_code, request=request, view=self
+                        )
                     else:
-                        return Response(result, status=result.status_code)
+                        return Response(
+                            result,
+                            status=result.status_code,
+                            request=request,
+                            view=self,
+                        )
 
             return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"},
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self,
             )
         return Response(
-            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -603,7 +633,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["POST"],
         detail=False,
     )
-    @to_async
     async def add_member(self, request, org_id, channel_id):
         """
         This method adds one or more users to a channel
@@ -700,7 +729,9 @@ class ChannelMemberViewset(ViewSet):
 
                     output = user_data
                 else:
-                    return Response(user_data, status=status.HTTP_200_OK)
+                    return Response(
+                        user_data, status=status.HTTP_200_OK, request=request, view=self
+                    )
 
             # remove channel ID to avoid changing it
             channel_id = channel.pop("_id", None)
@@ -716,43 +747,60 @@ class ChannelMemberViewset(ViewSet):
                 if not result.get("error"):
                     if isinstance(output, dict):
                         # when only one user is added
-                        await request_finished.send(
-                            sender=self.__class__,
-                            dispatch_uid="JoinedChannelSignal",
-                            org_id=org_id,
-                            channel_id=channel_id,
-                            user=output,
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_id=channel_id,
+                                user=output,
+                            )
                         )
-
-                        await request_finished.send(
-                            sender=None,
-                            dispatch_uid="UpdateSidebarSignal",
-                            org_id=org_id,
-                            user_id=user.get("_id"),
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                user_id=user.get("_id"),
+                            )
                         )
 
                     else:
                         # when output is a list multiple users where added
-                        await request_finished.send(
-                            sender=self.__class__,
-                            dispatch_uid="JoinedChannelSignal",
-                            org_id=org_id,
-                            channel_id=channel_id,
-                            # added_by=request.query_params.get("user_id"),
-                            added=output,
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_id=channel_id,
+                                # added_by=request.query_params.get("user_id"),
+                                added=output,
+                            )
                         )
                     status_code = (
                         status.HTTP_201_CREATED if output else status.HTTP_200_OK
                     )
-                    return Response(output, status=status_code)
+                    return Response(
+                        output, status=status_code, request=request, view=self
+                    )
                 else:
                     return Response(
-                        result.get("error"), status=status.HTTP_400_BAD_REQUEST
+                        result.get("error"),
+                        status=status.HTTP_400_BAD_REQUEST,
+                        request=request,
+                        view=self,
                     )
             else:
-                return Response(result, status=result.status_code)
+                return Response(
+                    result, status=result.status_code, request=request, view=self
+                )
         return Response(
-            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -767,7 +815,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["POST"],
         detail=False,
     )
-    @to_async
     async def can_input(self, request, org_id, channel_id):
         """Check if input is enabled for users
         This checks if a user input should be disabled or enabled, i.e \
@@ -791,26 +838,31 @@ class ChannelMemberViewset(ViewSet):
         if channel.__contains__("_id"):
             if channel["allow_members_input"] is True:
                 can_input = True
-                return Response(can_input, status=status.HTTP_200_OK)
+                return Response(
+                    can_input, status=status.HTTP_200_OK, request=request, view=self
+                )
             else:
                 user_id = request.data.get("_id")
                 user_data = channel["users"].get(user_id)
 
                 if user_data:
                     # Check if user is an admin
-                    can_input = True if user_data.is_admin else False  
-                    # if user_data.is_admin:
-                    #     can_input = True
-                    #     return Response(can_input, status=status.HTTP_200_OK)
-                    # else:
-                    #     can_input = False
-                    return Response(can_input, status=status.HTTP_200_OK)
+                    can_input = True if user_data.is_admin else False
+                    return Response(
+                        can_input, status=status.HTTP_200_OK, request=request, view=self
+                    )
                 else:
                     return Response(
-                        {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+                        {"error": "channel not found"},
+                        status=status.HTTP_404_NOT_FOUND,
+                        request=request,
+                        view=self,
                     )
         return Response(
-            {"error": "channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -824,7 +876,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["GET"],
         detail=False,
     )
-    @to_async
     async def list_members(self, request, org_id, channel_id):
         """
         This method gets all members for a
@@ -842,10 +893,15 @@ class ChannelMemberViewset(ViewSet):
             serializer = UserSerializer(data=users, many=True)
 
             serializer.is_valid(raise_exception=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                serializer.data, status=status.HTTP_200_OK, request=request, view=self
+            )
 
         return Response(
-            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -859,7 +915,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["GET"],
         detail=False,
     )
-    @to_async
     async def get_member(self, request, org_id, channel_id, member_id):
         """Get details of a channel member
         ```bash
@@ -876,14 +931,25 @@ class ChannelMemberViewset(ViewSet):
             if user_data:
                 serializer = UserSerializer(data=user_data)
                 serializer.is_valid(raise_exception=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_200_OK,
+                    request=request,
+                    view=self,
+                )
 
             return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"},
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self,
             )
 
         return Response(
-            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -898,7 +964,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["PUT"],
         detail=False,
     )
-    @to_async
     async def update_member(self, request, org_id, channel_id, member_id):
         """Update channel member details
         ```bash
@@ -959,15 +1024,28 @@ class ChannelMemberViewset(ViewSet):
                             else status.HTTP_400_BAD_REQUEST
                         )
 
-                        return Response(data, status=status_code)
+                        return Response(
+                            data, status=status_code, request=request, view=self
+                        )
                     else:
-                        return Response(result, status=result.status_code)
+                        return Response(
+                            result,
+                            status=result.status_code,
+                            request=request,
+                            view=self,
+                        )
 
             return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"},
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self,
             )
         return Response(
-            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
     @swagger_auto_schema(
@@ -981,7 +1059,6 @@ class ChannelMemberViewset(ViewSet):
         methods=["DELETE"],
         detail=False,
     )
-    @to_async
     async def remove_member(self, request, org_id, channel_id, member_id):
         """Remove member from a channel
         ```bash
@@ -1013,18 +1090,24 @@ class ChannelMemberViewset(ViewSet):
 
                     if not result.get("error"):
                         # when only one user is removed
-                        await request_finished.send(
-                            sender=self.__class__,
-                            dispatch_uid="LeftChannelSignal",
-                            org_id=org_id,
-                            channel_id=channel_id,
-                            user=user_data.copy(),
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="LeftChannelSignal",
+                                org_id=org_id,
+                                channel_id=channel_id,
+                                user=user_data.copy(),
+                            )
+
                         )
-                        await request_finished.send(
-                            sender=None,
-                            dispatch_uid="UpdateSidebarSignal",
-                            org_id=org_id,
-                            user_id=user_data.get("_id"),
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                user_id=user_data.get("_id"),
+                            )
                         )
 
                     status_code = (
@@ -1032,13 +1115,21 @@ class ChannelMemberViewset(ViewSet):
                         if not result.get("error")
                         else status.HTTP_400_BAD_REQUEST
                     )
-                    return Response(data, status=status_code)
+                    return Response(
+                        data, status=status_code, request=request, view=self
+                    )
 
             return Response(
-                {"error": "member not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "member not found"},
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self,
             )
         return Response(
-            {"error": "Channel not found"}, status=status.HTTP_404_NOT_FOUND
+            {"error": "Channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
         )
 
 
@@ -1064,19 +1155,45 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 )
 
 
-@api_view(["POST", "GET"])
-# @permission_classes(["IsAdmin"])
-def handle_channel_permissions(request, org_id, channel_id):
-    if request.method == "GET":
-        data = find_match_in_db(
-            org_id, "channelpermissions", "channel_id", channel_id, return_data=True
-        )
-        return Response(data, status=status.HTTP_200_OK)
-    serializer = ChannelPermissions(data=request.data)
-    if serializer.is_valid():
-        payload = dict(serializer.validated_data)
-        payload.update({"channel_id": channel_id})
-        data = manage_channel_permissions(org_id, channel_id, payload)
+# @api_view(["POST", "GET"])
+# # @permission_classes(["IsAdmin"])
+# def handle_channel_permissions(request, org_id, channel_id):
+#     if request.method == "GET":
+#         data = find_match_in_db(
+#             org_id, "channelpermissions", "channel_id", channel_id, return_data=True
+#         )
+#         return Response(data, status=status.HTTP_200_OK)
+#     serializer = ChannelPermissions(data=request.data)
+#     if serializer.is_valid():
+#         payload = dict(serializer.validated_data)
+#         payload.update({"channel_id": channel_id})
+#         data = manage_channel_permissions(org_id, channel_id, payload)
 
-        return Response(data, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(data, status=status.HTTP_200_OK)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def dms_test(request):
+    url = "https://dm.zuri.chat//dmapi/v1/ping"
+    try:
+        response = requests.get(url, headers={"Content-Type": "application/json"})
+        if response.status_code == 200:
+            dms_server = "Active"
+            return Response(data=server)
+        else:
+            dms_server = "Inactive"
+
+    except:
+        dms_server = "Inactive"
+    core_url = 'https://api.zuri.chat/health'
+    try:
+        response = requests.get(core_url, headers={"Content-Type": "application/json"})
+        if response.status_code in range(200,299):
+            core_server = "Active"
+            return Response(data=server)
+        else:
+            core_server = "Inactive"
+
+    except Exception:
+        core_server = "Inactive"
+
+    return render(request, 'dms_test.html', {'dms_server': dms_server, "core_server":core_server})

@@ -11,7 +11,7 @@ SECRET_KEY = env(
     default="7rjWEeHbPh5xAELO69F9tuXyJxGzQrYo5TURGF7z5cC2xbV0fVwR3391OpsGkkI5",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "channels.zuri.chat"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
 # CACHES
 # ------------------------------------------------------------------------------

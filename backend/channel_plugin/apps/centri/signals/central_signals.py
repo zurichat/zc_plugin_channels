@@ -1,9 +1,10 @@
+import asyncio
 from django.dispatch import receiver
 from django.conf import settings
 
 from apps.centri.centwrapper import CentClient
 from apps.centri.signals.async_signal import request_finished
-
+from apps.channels.views import ChannelViewset
 from channel_plugin.utils.customrequest import Request
 
 CLIENT = CentClient(
@@ -17,7 +18,6 @@ CLIENT = CentClient(
 @receiver(request_finished, sender=None)
 async def UpdateSidebarSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
-
     if uid == "UpdateSidebarSignal":
         org_id = kwargs.get("org_id")
         user_id = kwargs.get("user_id")
