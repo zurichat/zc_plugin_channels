@@ -47,9 +47,6 @@ class CorsMiddleware:
     def process_response(self, request, response):
 
         result = host_regex.match(request.get_host())
-        import pdb
-
-        pdb.set_trace()
         if request.method in ["GET"] and "test" not in request.path:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
