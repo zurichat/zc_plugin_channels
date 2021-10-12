@@ -200,7 +200,6 @@ class AsyncRequest:
     async def post(org_id, collection_name, payload):
 
         async with aiohttp.ClientSession() as Session:
-
             data = {"plugin_id": settings.PLUGIN_ID}
             data.update(
                 {
@@ -307,7 +306,6 @@ def search_db(org_id, channel_id, collection_name, **params):
     return {"error": response.json()}
 
 
-
 @change_collection_name
 def search_channels(org_id, collection_name, params):
     print(params)
@@ -318,13 +316,13 @@ def search_channels(org_id, collection_name, params):
         "filter": {},
     }
     liste = []
-    searchParam = params[0].split(',')
+    searchParam = params[0].split(",")
     if len(searchParam) > 0:
         for eachParams in searchParam:
             liste.append({"content": {"$regex": eachParams, "$options": "i"}})
             print(liste)
 
-            data['filter'] = {"$or": liste}
+            data["filter"] = {"$or": liste}
 
     response = requests.post(read, data=json.dumps(data))
     if response.status_code >= 200 and response.status_code < 300:
