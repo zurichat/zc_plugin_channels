@@ -1192,13 +1192,9 @@ def dms_test(request):
         response = requests.get(url, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             dms_server = "Active"
-            print('try if')
 
         else:
             dms_server = "Inactive"
-            print('try else')
-
-
     except:
         dms_server = "Inactive"
     core_url = 'https://api.zuri.chat/health'
@@ -1206,8 +1202,6 @@ def dms_test(request):
         response = requests.get(core_url, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             core_server = "Active"
-
-
         else:
             core_server = "Inactive"
 
