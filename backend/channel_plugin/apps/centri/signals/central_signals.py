@@ -1,17 +1,15 @@
-import asyncio
-from django.dispatch import receiver
-from django.conf import settings
-
 from apps.centri.centwrapper import CentClient
 from apps.centri.signals.async_signal import request_finished
-from apps.channels.views import ChannelViewset
+from django.conf import settings
+from django.dispatch import receiver
+
 from channel_plugin.utils.customrequest import Request
 
 CLIENT = CentClient(
     address=settings.CENTRIFUGO_URL,
     api_key=settings.CENTRIFUGO_API_KEY,
     timeout=3,
-    verify=True
+    verify=True,
 )
 
 
@@ -69,10 +67,11 @@ async def UpdateSidebarSignal(sender, **kwargs):
                     "name": "Channels Plugin",
                     "group_name": "Channel",
                     "show_group": False,
+                    "category": "channels",
                     "button_url": "/channels",
                     "public_rooms": public_rooms,
                     "joined_rooms": joined_rooms,
-                }
+                },
             }
 
         room_name = "currentWorkspace_userInfo_sidebar"
@@ -82,5 +81,5 @@ async def UpdateSidebarSignal(sender, **kwargs):
             print(payload)
             print("\n")
             await CLIENT.publish(room_name, payload)
-        except:
+        except:  # noqa
             pass
