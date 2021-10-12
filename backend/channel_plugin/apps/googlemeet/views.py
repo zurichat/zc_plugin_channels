@@ -3,13 +3,14 @@ from datetime import timedelta
 from uuid import uuid1
 
 from django.utils import timezone
-from drf_yasg.openapi import Response
+from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
@@ -26,7 +27,10 @@ class GoogleMeetViewset(ViewSet):
             creds = Credentials.from_authorized_user_file("token.json", SCOPES)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
+                try:
+                    creds.refresh(Request())
+                except RefreshError as e:
+                    return Response(e.args[1], status=status.HTTP_400_BAD_REQUEST)
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     "credentials.json", SCOPES
