@@ -26,11 +26,11 @@ import AddEmojiModal from "./addEmojiModal";
 import _ from "lodash";
 
 const MessageInput = ({ channelId}) => {
-  const {
-    channelsReducer: { channelDetails },
-  } = useSelector((state) => state);
+  // const {
+  //   channelsReducer: { channelDetails },
+  // } = useSelector((state) => state);
   const { users } = useSelector((state) => state.appReducer);
-  const [orgId, setOrgId] = useState([]);
+  // const [orgId, setOrgId] = useState([]);
 
   const textRef = useRef(null);
   const [data, setData] = useState("");
@@ -51,18 +51,18 @@ const MessageInput = ({ channelId}) => {
     onClose: onAddEmojiClose,
   } = useDisclosure();
 
-  let newChannelId = channelId;
+  // let newChannelId = channelId;
 
-  useEffect(() => {
-    if (users) {
-      setOrgId(users[0]);
-    }
-  }, [users]);
+  // useEffect(() => {
+  //   if (users) {
+  //     setOrgId(users[0]);
+  //   }
+  // }, [users]);
 
-  const datas = {
-    user_id: orgId?._id,
-    content: data,
-  };
+  // const datas = {
+  //   user_id: orgId?._id,
+  //   content: data,
+  // };
   //For Post Request
   const dispatch = useDispatch();
   const { _sendMessage } = bindActionCreators(appActions, dispatch);
@@ -70,19 +70,23 @@ const MessageInput = ({ channelId}) => {
   const { sendMessages } = useSelector((state) => state.channelsReducer);
   // console.log(sendMessages);
 
-  let _users;
-  let org_id;
+  // let _users;
+  // let org_id;
 
-  useEffect(() => {
-    _users = users;
-    org_id = _users.currentWorkspace;
-    console.log("this is the orgId message input", org_id);
-  });
+  // useEffect(() => {
+  //   _users = users;
+  //   org_id = _users.currentWorkspace;
+  //   console.log("this is the orgId message input", org_id);
+  // });
 
   const loadData = async () => {
-    const channel_id = newChannelId; 
-    await _sendMessage(org_id, channel_id, datas);
-    console.log(data, channel_id, datas.user_id);
+    // const channel_id = newChannelId;
+    const payload = {
+      user_id: users["0"]._id,
+      content: data
+    }
+    await _sendMessage(users.currentWorkspace, channelId, payload);
+    console.log("data sent === ", data);
     setData("");
   };
 

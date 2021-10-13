@@ -10,12 +10,15 @@ import {
   GET_FILES,
   GET_WORKSPACE_USERS,
   GET_NOTIFICATION_SETTINGS,
+  UPDATE_CHANNELMESSAGES,
+  DELETE_CHANNELMESSAGES,
+  ADD_CHANNELMESSAGES,
 } from "../actions/types";
 
 const initialState = {
   // STEP TWO
   // Default State
-  users: [],
+  users: {},
   workspace_users: [],
   workspace_users_object: {},
   channelMessages: [],
@@ -58,6 +61,37 @@ const appReducer = (state = initialState, action) => {
         ...state,
         channelMessages: payload,
       };
+    case ADD_CHANNELMESSAGES:
+      return {
+        ...state,
+        channelMessages: [...state.channelMessages, payload],
+      };
+    case UPDATE_CHANNELMESSAGES: {
+      const channelMessages = [...state.channelMessages]
+      channelMessages.find((o, i) => {
+        if (o._id === payload._id) {
+          channelMessages[i] = payload;
+          return true; // stop searching
+        }
+      });
+      return {
+        ...state,
+        channelMessages
+      }
+    }
+    case DELETE_CHANNELMESSAGES: {
+      const channelMessages = [...state.channelMessages]
+      channelMessages.find((o, i) => {
+        if (o._id === payload._id) {
+            channelMessages.splice(i, 1);
+            return true; // stop searching
+        }
+      });
+      return {
+        ...state,
+        channelMessages
+      }
+    }
     case GET_RENDEREDMESSAGES:
       return {
         ...state,
