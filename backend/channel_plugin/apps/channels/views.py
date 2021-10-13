@@ -187,52 +187,49 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/files/" -H  "accept: application/json"
         ```
         """
-        data = {"channel_id": channel_id, "has_files": "yes", "type": "message"}
+        data = {"channel_id": channel_id, "has_files": "true", "type": "message"}
         data.update(dict(request.query_params))
         result = {}
-        flag = 0
         result_message = await AsyncRequest.get(org_id, "channelmessage", data) or []
-        result_thread = await AsyncRequest.get(org_id, "thread", data)
+        result_thread = await AsyncRequest.get(org_id, "thread", data) or []
         status_code = status.HTTP_404_NOT_FOUND
-        if isinstance(result_message, list) or isinstance(result_thread, list):
-            message_response = []
-            thread_response = []
-            if result_message:
-                for i in result_message:
-                    message_response.append(
-                        {
-                            "timestamp": i["timestamp"],
-                            "files": i["files"],
-                            "message_id": i["_id"],
-                            "user_id": i["user_id"],
-                        }
-                    )
-                    flag = 1
-            if result_thread:
-                for i in result_thread:
-                    thread_response.append(
-                        {
-                            "timestamp": i["timestamp"],
-                            "files": i["files"],
-                            "message_id": i["_id"],
-                            "user_id": i["user_id"],
-                        }
-                    )
-                    flag = 1
-            result.update(
-                {
-                    "message": "Successfully Retrieved"
-                    if flag == 1
-                    else "There are no files in this channel",
-                    "channelfiles": message_response
-                    if isinstance(message_response, list)
-                    else [],
-                    "threadfiles": thread_response
-                    if isinstance(thread_response, list)
-                    else [],
-                }
+        result_message = result_message if isinstance(result_message, list) else []
+        result_thread = result_thread if isinstance(result_thread, list) else []
+
+        message_response = list(
+            map(
+                lambda item: {
+                    "timestamp": item["timestamp"],
+                    "files": item["files"],
+                    "message_id": item["_id"],
+                    "user_id": item["user_id"],
+                },
+                result_message,
             )
-            status_code = status.HTTP_200_OK
+        )
+
+        thread_response = list(
+            map(
+                lambda item: {
+                    "timestamp": item["timestamp"],
+                    "files": item["files"],
+                    "message_id": item["_id"],
+                    "user_id": item["user_id"],
+                },
+                result_thread,
+            )
+        )
+
+        result.update(
+            {
+                "message": "Successfully Retrieved"
+                if len(message_response) + len(thread_response) > 1
+                else "There are no files in this channel",
+                "channelfiles": message_response,
+                "threadfiles": thread_response,
+            }
+        )
+        status_code = status.HTTP_200_OK
         return Custom_Response(result, status=status_code, request=request, view=self)
 
     @swagger_auto_schema(

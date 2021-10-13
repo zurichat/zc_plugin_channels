@@ -192,8 +192,8 @@ class AsyncRequest:
             else:
                 response = await Session.get(url=url)
             if response.status >= 200 and response.status < 300:
-                return (await response.json())["data"]
-            return {"error": (await response.json())}
+                return (await response.json(content_type=None))["data"]
+            return {"error": (await response.json(content_type=None))}
 
     @staticmethod
     @change_collection_name
