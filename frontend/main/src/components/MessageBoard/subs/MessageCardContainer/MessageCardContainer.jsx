@@ -41,23 +41,20 @@ const MessageCardContainer = ({ channelId, allUsers, org_id }) => {
     useEffect(() => {
         if (messageRef.current) {
             messageRef.current.scrollIntoView(
-
                 {
                     behavior: 'smooth',
                     block: 'end',
                     inline: 'nearest'
                 })
         }
-    })
+    }, [channelMessages])
 
 
     useEffect(() => {
-        console.log("\n\n\nUseEffect works\n\n\n");
-        const loadData = async () => {
+        if (users && users !== {}) {
             _getChannelMessages(users.currentWorkspace, channelId)
         }
-        loadData()
-    }, [channelId]);
+    }, [channelId, users]);
 
 
     return (
