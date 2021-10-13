@@ -81,7 +81,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     sender=None,
                     dispatch_uid="UpdateSidebarSignal",
                     org_id=org_id,
-                    user_id=result.get("owner"),
+                    member_id=result.get("owner"),
                 )
             )
             status_code = status.HTTP_201_CREATED
