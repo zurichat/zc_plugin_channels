@@ -62,7 +62,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
 
             payload = {
                 "event": "sidebar_update",
-                "plugin_id": settings.PLUGIN_ID,
+                "plugin_id": "channels.zuri.chat",
                 "data": {
                     "name": "Channels Plugin",
                     "group_name": "Channel",
