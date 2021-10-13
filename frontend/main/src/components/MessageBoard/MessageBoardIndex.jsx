@@ -112,8 +112,10 @@ const MessageBoardIndex = () => {
  */
 
   useEffect(() => {
-    _getSocket(users.currentWorkspace, channelId)
-    _getNotifications(users.currentWorkspace, channelId, users.currentWorkspace)
+    if (users && users.currentWorkspace) {
+      _getSocket(users.currentWorkspace, channelId)
+      _getNotifications(users.currentWorkspace, channelId, users.currentWorkspace)
+    }
   }, [users])
 
   const reactToCreateMessageOrJoinOrLeaveChannel = React.useCallback((ctx) => {
@@ -122,19 +124,21 @@ const MessageBoardIndex = () => {
   }, [])
   
   useEffect(() => {
-    console.log("centrifugo socket ===", sockets)
-    const socketName = sockets.socket_name
-    if (socketName) {
-      Centrifugo.initForMessage(socketName)
-      Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
-      Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
-      Centrifugo.addMessageListener('leave:channel', reactToCreateMessageOrJoinOrLeaveChannel)
-      Centrifugo.addMessageListener('update:message', (ctx) => {
-        dispatch({ type: UPDATE_CHANNELMESSAGES, payload: ctx.data })
-      })
-      Centrifugo.addMessageListener('delete:message', (ctx) => {
-        dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
-      })
+    if (sockets && sockets.socket_name) {
+      console.log("centrifugo socket ===", sockets)
+      const socketName = sockets.socket_name
+      if (socketName) {
+        Centrifugo.initForMessage(socketName)
+        Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
+        Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
+        Centrifugo.addMessageListener('leave:channel', reactToCreateMessageOrJoinOrLeaveChannel)
+        Centrifugo.addMessageListener('update:message', (ctx) => {
+          dispatch({ type: UPDATE_CHANNELMESSAGES, payload: ctx.data })
+        })
+        Centrifugo.addMessageListener('delete:message', (ctx) => {
+          dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
+        })
+      }
     }
   }, [sockets])
    
