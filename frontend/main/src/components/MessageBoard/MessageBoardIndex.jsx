@@ -126,18 +126,17 @@ const MessageBoardIndex = () => {
   useEffect(() => {
     if (sockets && sockets.socket_name) {
       const socketName = sockets.socket_name
-      if (socketName) {
-        Centrifugo.initForMessage(socketName)
-        Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
-        Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
-        Centrifugo.addMessageListener('leave:channel', reactToCreateMessageOrJoinOrLeaveChannel)
-        Centrifugo.addMessageListener('update:message', (ctx) => {
-          dispatch({ type: UPDATE_CHANNELMESSAGES, payload: ctx.data })
-        })
-        Centrifugo.addMessageListener('delete:message', (ctx) => {
-          dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
-        })
-      }
+      
+      Centrifugo.initForMessage(socketName)
+      Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
+      Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
+      Centrifugo.addMessageListener('leave:channel', reactToCreateMessageOrJoinOrLeaveChannel)
+      Centrifugo.addMessageListener('update:message', (ctx) => {
+        dispatch({ type: UPDATE_CHANNELMESSAGES, payload: ctx.data })
+      })
+      Centrifugo.addMessageListener('delete:message', (ctx) => {
+        dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
+      })
     }
   }, [sockets])
    
