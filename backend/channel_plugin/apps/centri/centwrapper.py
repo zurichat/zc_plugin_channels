@@ -9,7 +9,7 @@ def to_bytes(s):
     return s.encode("latin-1")
 
 
-class CentClient(Client):
+class AsyncCentClient(Client):
     """ 
         add client subscrition implementation into 
         cent.Client
@@ -70,4 +70,22 @@ class CentClient(Client):
         if resp.status != 200:
             raise Exception("wrong status code: %d" % resp.status)
         return await resp.text()
+
+
+class CentClient(Client):
+
+
+    @staticmethod
+    def get_subscribe_params(user, channel=None):
+        params = {"user": user}
+        if channel:
+            params["channel"] = channel
+        return params
+
+    def subscribe(self, user, channel):
+        self._check_empty()
+        self.add("subscribe", self.get_subscribe_params(user, channel))
+        self._send_one()
+        return
+
 

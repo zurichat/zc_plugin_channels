@@ -4,7 +4,7 @@ from django.conf import settings
 
 from cent import CentException
 
-from apps.centri.centwrapper import CentClient
+from apps.centri.centwrapper import AsyncCentClient
 from apps.channels.views import ChannelMemberViewset, ChannelViewset
 from apps.channelmessages.serializers import ChannelMessageSerializer
 from apps.centri.helperfuncs import build_room_name
@@ -12,7 +12,7 @@ import asyncio
 
 from apps.centri.signals.async_signal import request_finished
 
-CLIENT = CentClient(
+CLIENT = AsyncCentClient(
     address = settings.CENTRIFUGO_URL,
     api_key = settings.CENTRIFUGO_API_KEY,
     timeout = 3,
@@ -63,6 +63,7 @@ async def JoinedChannelSignal(sender, **kwargs):
             await CLIENT.publish(room_name, result)
         except:
             pass
+
 
 @receiver(request_finished, sender=ChannelMemberViewset)
 async def LeftChannelSignal(sender, **kwargs):

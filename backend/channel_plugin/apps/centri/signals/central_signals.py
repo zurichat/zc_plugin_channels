@@ -1,11 +1,11 @@
-from apps.centri.centwrapper import CentClient
+from apps.centri.centwrapper import AsyncCentClient
 from apps.centri.signals.async_signal import request_finished
 from django.conf import settings
 from django.dispatch import receiver
 
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import AsyncRequest
 
-CLIENT = CentClient(
+CLIENT = AsyncCentClient(
     address=settings.CENTRIFUGO_URL,
     api_key=settings.CENTRIFUGO_API_KEY,
     timeout=3,
@@ -18,10 +18,10 @@ async def UpdateSidebarSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
     if uid == "UpdateSidebarSignal":
         org_id = kwargs.get("org_id")
-        user_id = kwargs.get("user_id")
+        member_id = kwargs.get("user_id")
 
-        if org_id is not None and user_id is not None:
-            channels = Request.get(org_id, "channel")
+        if org_id is not None and member_id is not None:
+            channels = await AsyncRequest.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
 
@@ -35,7 +35,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                         },
                         list(
                             filter(
-                                lambda channel: user_id in channel["users"].keys()
+                                lambda channel: member_id in channel["users"].keys()
                                 and not channel.get("default", False),
                                 channels,
                             )
@@ -51,7 +51,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                         },
                         list(
                             filter(
-                                lambda channel: user_id not in channel["users"].keys()
+                                lambda channel: member_id not in channel["users"].keys()
                                 and not channel.get("private")
                                 and not channel.get("default", False),
                                 channels,
@@ -62,7 +62,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
 
             payload = {
                 "event": "sidebar_update",
-                "plugin_id": settings.PLUGIN_ID,
+                "plugin_id": "channels.zuri.chat",
                 "data": {
                     "name": "Channels Plugin",
                     "group_name": "Channel",
@@ -74,7 +74,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                 },
             }
 
-        room_name = "currentWorkspace_userInfo_sidebar"
+        room_name = f"{org_id}_{member_id}_sidebar"
 
         try:
             print("\n")
