@@ -1,11 +1,11 @@
-from apps.centri.centwrapper import CentClient
+from apps.centri.centwrapper import AsyncCentClient
 from apps.centri.signals.async_signal import request_finished
 from django.conf import settings
 from django.dispatch import receiver
 
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.customrequest import AsyncRequest
 
-CLIENT = CentClient(
+CLIENT = AsyncCentClient(
     address=settings.CENTRIFUGO_URL,
     api_key=settings.CENTRIFUGO_API_KEY,
     timeout=3,
@@ -21,7 +21,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
         user_id = kwargs.get("user_id")
 
         if org_id is not None and user_id is not None:
-            channels = Request.get(org_id, "channel")
+            channels = await AsyncRequest.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
 
