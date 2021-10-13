@@ -25,10 +25,6 @@ import DisabledInput from "../shared/DiasbledInput";
 import notificationsManager from "./subs/Centrifugo/NotificationsManager";
 import Centrifugo from "../../utils/centrifugo";
 
-// Zuri components
-import { MessageInputBox } from "@zuri/zuri-ui"
-console.log("MessageInputBox ===", MessageInputBox)
-
 
 
 const MessageBoardIndex = () => {
@@ -180,7 +176,7 @@ const MessageBoardIndex = () => {
   //   if(orgId){
   //     retrieveNotificationSettings()
   //   }
-  // })
+  //" })
 
   return (
     <Box bg="#F9F9F9" width="99%">
@@ -201,7 +197,7 @@ const MessageBoardIndex = () => {
               },
             }}
           >
-            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId} />
           </Box>
           {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
