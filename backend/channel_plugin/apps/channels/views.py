@@ -4,7 +4,6 @@ import requests
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
-# from apps.channelmessages.views.ChannelMessageViewset import last_message_instance
 from apps.channelmessages.views import ChannelMessageViewset 
 from django.shortcuts import render
 from django.utils.timezone import datetime
@@ -21,7 +20,6 @@ from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import AsyncRequest, Request
 from channel_plugin.utils.mixins import AsycViewMixin
 from channel_plugin.utils.wrappers import OrderMixin
-# from apps.channelmessages.views.ChannelMessageViewset import last_message_instance
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
