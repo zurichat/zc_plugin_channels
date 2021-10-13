@@ -4,6 +4,8 @@ import requests
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
+# from apps.channelmessages.views.ChannelMessageViewset import last_message_instance
+from apps.channelmessages.views import ChannelMessageViewset 
 from django.shortcuts import render
 from django.utils.timezone import datetime
 
@@ -19,6 +21,7 @@ from channel_plugin.utils.customexceptions import ThrottledViewSet
 from channel_plugin.utils.customrequest import AsyncRequest, Request
 from channel_plugin.utils.mixins import AsycViewMixin
 from channel_plugin.utils.wrappers import OrderMixin
+# from apps.channelmessages.views.ChannelMessageViewset import last_message_instance
 
 from .serializers import (  # SearchMessageQuerySerializer,
     ChannelAllFilesSerializer,
@@ -460,6 +463,37 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 view=self,
             )
 
+    @swagger_auto_schema(
+        operation_id="workspace_channeld",
+        responses={
+            200: openapi.Response("Response", ChannelGetSerializer(many=True)),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(methods=["GET"], detail=False)
+    async def workspace_channel_all(self, request, org_id):
+        """Get all channels in the organization
+        ```bash
+        curl -X GET "{baseUrl}/v1/{org_id}/channels/" -H  "accept: application/json"
+        ```
+        """
+        data = {}
+        data.update(self._clean_query_params(request))
+        result = await AsyncRequest.get(org_id, "channel", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result, list):
+            if result:
+                for i, channel in enumerate(result):
+                    result[i].update({"members": len(channel["users"].keys())})
+                    channel_id = channel["_id"]
+                    channel_created_on = channel["created_on"]
+                    last_message_timestamp = ChannelMessageViewset.last_message_instance(self, request, org_id, channel_id, channel_created_on)
+                   
+                    result[i].update({"last_active": last_message_timestamp.data})                    
+
+                result = self.perform_ordering(request, result)
+            status_code = status.HTTP_200_OK
+        return Custom_Response(result, status=status_code, request=request, view=self)
 
 channel_list_create_view = ChannelViewset.as_view(
     {
@@ -469,6 +503,8 @@ channel_list_create_view = ChannelViewset.as_view(
 )
 
 create_room_view = ChannelViewset.as_view({"post": "create_room"})
+
+workspace_channel_view = ChannelViewset.as_view({"get": "workspace_channel_all"})
 
 channel_retrieve_update_delete_view = ChannelViewset.as_view(
     {"get": "channel_retrieve", "put": "channel_update", "delete": "channel_delete"}

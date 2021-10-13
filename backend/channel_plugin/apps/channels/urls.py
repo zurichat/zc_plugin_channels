@@ -9,7 +9,8 @@ from apps.channels.views import (
     create_room_view,
     notification_views,
     user_channel_list,
-    dms_test
+    dms_test,
+    workspace_channel_view
 )
 from django.urls import path
 
@@ -48,4 +49,8 @@ urlpatterns = [
         notification_views,
         name="notification_views"
     ),
+    path(
+        "<str:org_id>/workspace_channel/", workspace_channel_view, name="list_create_channel"
+    ),
+
 ]
