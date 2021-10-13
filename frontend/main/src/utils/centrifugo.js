@@ -72,7 +72,6 @@ class Centrifugo {
      */
     listenToMessageEvents(ctx) {
         const { event: { action } } = ctx.data
-        console.log("centrifugo actions ===", action)
         if (this.messageListeners[action]) {
             this.messageListeners[action](ctx)
         }

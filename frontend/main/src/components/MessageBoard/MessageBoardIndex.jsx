@@ -125,7 +125,6 @@ const MessageBoardIndex = () => {
   
   useEffect(() => {
     if (sockets && sockets.socket_name) {
-      console.log("centrifugo socket ===", sockets)
       const socketName = sockets.socket_name
       if (socketName) {
         Centrifugo.initForMessage(socketName)
