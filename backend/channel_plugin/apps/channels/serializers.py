@@ -90,10 +90,10 @@ class ChannelGetSerializer(serializers.Serializer):
         required=False,
         help_text="List of users in the channel",
     )
-    default = serializers.BooleanField(
-        default=False,
-        help_text="Default: false. True if this channel is a default channel for an organization.",
-    )
+    # default = serializers.BooleanField(
+    #     default=False,
+    #     help_text="Default: false. True if this channel is a default channel for an organization.",
+    # )
 
 
 class ChannelUpdateSerializer(serializers.Serializer):
@@ -110,6 +110,10 @@ class ChannelUpdateSerializer(serializers.Serializer):
     archived = serializers.BooleanField(
         required=False,
         help_text="Default: false. True if this channel has been archived.",
+    )
+    default = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this channel his default.",
     )
     topic = serializers.CharField(
         max_length=100, required=False, help_text="Channel topic"
@@ -215,8 +219,10 @@ class RoomSerializer(serializers.Serializer):
         max_length=100, required=True, help_text="Channel name"
     )
 
-    room_members_ids = serializers.ListField()
-    ord_id = serializers.CharField(max_length=200, required=True)
+    room_member_id = serializers.ListField(
+        child=serializers.CharField(max_length=30), allow_empty=False
+    )
+    org_id = serializers.CharField(max_length=200, required=True)
     private = serializers.BooleanField(default=False)
 
     def convert_to_channel_serializer(self) -> serializers.Serializer:

@@ -98,7 +98,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         methods=["POST"],
         detail=False,
     )
-    async def create_room(self, request, org_id=None):
+    async def create_room(self, request, org_id, member_id):
         serializer = RoomSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         channel_serializer = serializer.convert_to_channel_serializer()
