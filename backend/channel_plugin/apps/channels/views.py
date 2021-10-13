@@ -6,8 +6,10 @@ from apps.centri.signals.async_signal import request_finished
 from apps.utils.serializers import ErrorSerializer
 from django.shortcuts import render
 from django.utils.timezone import datetime
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework import status, throttling
 from rest_framework.decorators import action, throttle_classes
 from rest_framework.viewsets import ViewSet
@@ -79,7 +81,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     sender=None,
                     dispatch_uid="UpdateSidebarSignal",
                     org_id=org_id,
-                    user_id=result.get("owner"),
+                    member_id=result.get("owner"),
                 )
             )
             status_code = status.HTTP_201_CREATED
@@ -100,7 +102,12 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
     )
     async def create_room(self, request, org_id=None):
         serializer = RoomSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        # serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
         channel_serializer = serializer.convert_to_channel_serializer()
         channel_serializer.is_valid(raise_exception=True)
         channel = channel_serializer.data.get("channel")
@@ -280,7 +287,12 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         serializer = ChannelUpdateSerializer(
             data=request.data, context={"org_id": org_id, "_id": channel_id}
         )
-        serializer.is_valid(raise_exception=True)
+        # serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
         payload = serializer.data.get("channel")
         result = (
             await AsyncRequest.put(org_id, "channel", payload, object_id=channel_id)
@@ -339,7 +351,6 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
-
                 async def delete():
                     await AsyncRequest.delete(
                         org_id, "channelmessage", data_filter={"channel_id": channel_id}
@@ -432,7 +443,12 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         }
         if channel:
             serializer = SocketSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
+            # serializer.is_valid(raise_exception=True)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except Exception as exc:
+                return self.get_exception_response(exc, request)
+
             return Custom_Response(
                 serializer.data, status=status.HTTP_200_OK, request=request, view=self
             )
@@ -510,7 +526,12 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             user_data = channel["users"].get(member_id)
             if user_data:
                 serializer = UserSerializer(data=user_data)
-                serializer.is_valid(raise_exception=True)
+                # serializer.is_valid(raise_exception=True)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as exc:
+                    return self.get_exception_response(exc, request)
+
 
                 # an empty field will be returned for users that have not
                 # changed their settings.
@@ -573,7 +594,12 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
 
             if user_data:
                 serializer = NotificationsSettingSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
+                # serializer.is_valid(raise_exception=True)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as exc:
+                    return self.get_exception_response(exc, request)
+
 
                 # by default, users do not have a settings field
                 # whether or not this user has a settings field,
@@ -635,15 +661,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             404: openapi.Response("Collection Not Found"),
         },
         operation_id="add-channel-members",
-        # manual_parameters=[
-        #     openapi.Parameter(
-        #         "user_id",
-        #         openapi.IN_QUERY,
-        #         description="User ID (id of active user)",
-        #         required=True,
-        #         type=openapi.TYPE_STRING,
-        #     ),
-        # ],
     )
     @action(
         methods=["POST"],
@@ -719,7 +736,12 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             # if multiple users are been added
             if isinstance(request.data, list):
                 serializer = UserSerializer(data=request.data, many=True)
-                serializer.is_valid(raise_exception=True)
+                # serializer.is_valid(raise_exception=True)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as exc:
+                    return self.get_exception_response(exc, request)
+
                 user_list = serializer.initial_data
 
                 # add all users not in group
@@ -736,8 +758,14 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 user_data = channel["users"].get(user_id)
 
                 if not user_data:
+                    #if user is not part of the channel
                     serializer = UserSerializer(data=request.data)
-                    serializer.is_valid(raise_exception=True)
+                    # serializer.is_valid(raise_exception=True)
+                    try:
+                        serializer.is_valid(raise_exception=True)
+                    except Exception as exc:
+                        return self.get_exception_response(exc, request)
+
                     user_data = serializer.data
 
                     # add user to the channel
@@ -778,7 +806,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                                 sender=None,
                                 dispatch_uid="UpdateSidebarSignal",
                                 org_id=org_id,
-                                user_id=user.get("_id"),
+                                user_id=output.get("_id"),
                             )
                         )
 
@@ -908,7 +936,12 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             users = list(channel.get("users", {}).values())
             serializer = UserSerializer(data=users, many=True)
 
-            serializer.is_valid(raise_exception=True)
+            # serializer.is_valid(raise_exception=True)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except Exception as exc:
+                return self.get_exception_response(exc, request)
+
             return Custom_Response(
                 serializer.data, status=status.HTTP_200_OK, request=request, view=self
             )
@@ -946,7 +979,12 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
 
             if user_data:
                 serializer = UserSerializer(data=user_data)
-                serializer.is_valid(raise_exception=True)
+                # serializer.is_valid(raise_exception=True)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as exc:
+                    return self.get_exception_response(exc, request)
+
                 return Custom_Response(
                     serializer.data,
                     status=status.HTTP_200_OK,
@@ -1017,7 +1055,12 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                     user_data["starred"] = request.data.get("starred", False)
 
                 serializer = UserSerializer(data=user_data)
-                serializer.is_valid(raise_exception=True)
+                # serializer.is_valid(raise_exception=True)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as exc:
+                    return self.get_exception_response(exc, request)
+
 
                 # add user to the channel
                 channel["users"].update({f"{member_id}": serializer.data})

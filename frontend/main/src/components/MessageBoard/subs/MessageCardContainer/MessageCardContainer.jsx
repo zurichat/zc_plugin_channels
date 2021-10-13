@@ -51,7 +51,7 @@ const MessageCardContainer = ({ channelId }) => {
 
 
     useEffect(() => {
-        if (users && users.currentWorkspace) {
+        if (users && users !== {}) {
             _getChannelMessages(users.currentWorkspace, channelId)
         }
     }, [channelId, users]);

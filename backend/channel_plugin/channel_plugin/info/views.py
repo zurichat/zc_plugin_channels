@@ -98,7 +98,7 @@ class GetInfoViewset(ViewSet):
         ```
         """
         org_id = request.query_params.get("org")
-        user_id = request.query_params.get("user")
+        member_id = request.query_params.get("user")
 
         data = {
             "name": "Channels Plugin",
@@ -107,7 +107,7 @@ class GetInfoViewset(ViewSet):
             "plugin_id": settings.PLUGIN_ID,
             "category": "channels",
         }
-        if org_id is not None and user_id is not None:
+        if org_id is not None and member_id is not None:
             channels = Request.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
@@ -121,7 +121,7 @@ class GetInfoViewset(ViewSet):
                         },
                         list(
                             filter(
-                                lambda channel: user_id in channel["users"].keys()
+                                lambda channel: member_id in channel["users"].keys()
                                 and not channel.get("default", False),
                                 channels,
                             )
@@ -137,7 +137,7 @@ class GetInfoViewset(ViewSet):
                         },
                         list(
                             filter(
-                                lambda channel: user_id not in channel["users"].keys()
+                                lambda channel: member_id not in channel["users"].keys()
                                 and not channel.get("private")
                                 and not channel.get("default", False),
                                 channels,
@@ -149,9 +149,11 @@ class GetInfoViewset(ViewSet):
             data.update(
                 {
                     "organisation_id": org_id,
-                    "user_id": user_id,
+                    "user_id": member_id,
                     "group_name": "Channel",
                     "show_group": False,
+                    "category": "channels",
+                    "button_url": "/channels",
                     "joined_rooms": joined_rooms,
                     "public_rooms": public_rooms,
                 }
