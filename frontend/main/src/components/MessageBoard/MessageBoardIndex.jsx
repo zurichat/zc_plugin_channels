@@ -126,7 +126,7 @@ const MessageBoardIndex = () => {
   useEffect(() => {
     if (sockets && sockets.socket_name) {
       const socketName = sockets.socket_name
-      
+
       Centrifugo.initForMessage(socketName)
       Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
       Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
@@ -184,7 +184,7 @@ const MessageBoardIndex = () => {
     <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
-          <ChannelHeader channelId={channelId} org_id={users?.currentWorkspace} />
+          <ChannelHeader channelId={channelId} org_id={users.currentWorkspace} />
           <Box
             m="5px"
             bg="white"
