@@ -76,7 +76,7 @@ LOCAL_APPS = [
     "apps.googlemeet",
     # Your stuff: custom apps go here
     "apps.centri.apps.CentriConfig",
-    "apps.sync.apps.SyncConfig",
+    "apps.syncApp.apps.SyncAppConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
