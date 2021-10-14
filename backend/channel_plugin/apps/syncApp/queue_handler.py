@@ -57,7 +57,7 @@ class QueueHandler:
             ids.append(task["id"])
 
         return item["id"] in ids
-
+      
     async def __run_task(self, task_handler, task_data):
         compeleted = False
         try:
@@ -110,24 +110,7 @@ class QueueHandler:
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("queue", [
-                    {
-                        "id": 1,
-                        "event": "enter_organization",
-                    }, 
-                    {
-                        "id": 10,
-                        "event": "enter_organization"
-                    },
-                    {
-                        "id": 5,
-                        "event": "enter_organization"
-                    },
-                    {
-                        "id": 2,
-                        "event": "leave_organization"
-                    }
-                ])
+                queue = data.get("queue", [])
                 self.update_queue(queue)
 
     async def _process_queue(self):
