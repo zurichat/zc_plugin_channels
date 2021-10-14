@@ -1,4 +1,5 @@
 import asyncio
+from os import stat
 from django.conf import settings
 from aiohttp import ClientSession
 import json
@@ -57,7 +58,7 @@ class JoinTaskHandler:
     
     @staticmethod
     def run(data):
-        
+        print("\n\n stated run \n\n")
         JoinTaskHandler.member_id = data["message"]["member_id"]
         JoinTaskHandler.organization_id = data["message"]["organization_id"]
         JoinTaskHandler.event = data["event"]
@@ -123,8 +124,10 @@ class JoinTaskHandler:
                 }
             
             out = (self.BASE_URL + endpoint_url)
-            
-            response = requests.post(out, data=json.dumps(data))
+            headers = {
+                "Content-Type": "application/json"
+            }
+            response = requests.post(out, data=json.dumps(data), headers=headers)
             
             
 

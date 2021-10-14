@@ -14,21 +14,24 @@ import json
 
 
 # demo_handler.get_schema = _
-dummy_queue_data = [{
-                            "id":20,
-                            "event":"leave_organization",
-                            "message":{
-                                    "member_id":"testmaster",
-                                    "organization_id": "6167b3f14cd3cc2a7af3dbe6"
-                                }
-                            },
-                            {
-                            "id": 30,
-                            "event": "enter_organization",
-                            "message": { "member_id":"6166cd978eac3b6a751cfb83",
-                                            "organization_id":"1"
-                            }},
-                                                ]
+dummy_queue_data = [
+    {
+        "id":20,
+        "event":"leave_organization",
+        "message":{
+                "member_id":"testmaster",
+                "organization_id": "6167b3f14cd3cc2a7af3dbe6"
+            }
+    },
+    {
+        "id": 30,
+        "event": "enter_organization",
+        "message": {
+            "member_id":"OneHader",
+            "organization_id":"1"
+        }
+    },
+]
 
 class QueueHandler:
 
@@ -76,7 +79,7 @@ class QueueHandler:
     async def __run_task(self, task_handler, task_data):
         compeleted = False
         try:
-            compeleted = await task_handler.run(task_data)
+            compeleted = task_handler.run(task_data)
         except:
             pass
         if compeleted:
@@ -125,13 +128,14 @@ class QueueHandler:
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("queue", [])
+                queue = data.get("queue", dummy_queue_data)
                 # queue = dummy_queue_data # For debugging
                 self.update_queue(queue)
 
     async def _process_queue(self):
         event_loop = asyncio.get_event_loop()
         tasks = []
+        print(self.__task_queue)
         for task in self._get_queue():
             handler = self._task_handlers.get(task.get("event"))
 
