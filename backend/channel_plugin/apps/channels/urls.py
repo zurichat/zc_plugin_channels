@@ -1,4 +1,5 @@
 from apps.channels.views import (
+    channel_add_remove_member_to_room_view,
     channel_list_create_view,
     channel_media_all_view,
     channel_members_can_input_view,
@@ -21,6 +22,11 @@ urlpatterns = [
         "org/<str:org_id>/users/<str:member_id>/rooms/",
         create_room_view,
         name="create_room_view",
+    ),
+    path(
+        "org/<str:org_id>/room/<str:room_id>/members/<str:member_id>/",
+        channel_add_remove_member_to_room_view,
+        name="channel_add_member_to_room_view",
     ),
     path(
         "<str:org_id>/channels/", channel_list_create_view, name="list_create_channel"

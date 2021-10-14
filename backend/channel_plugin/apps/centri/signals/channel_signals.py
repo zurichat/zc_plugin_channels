@@ -71,7 +71,20 @@ async def LeftChannelSignal(sender, **kwargs):
 
         room_name = build_room_name(org_id, channel_id)
 
-        data = {"user_id": user.get("_id"), "content": "event", "files": []}
+        if user:
+            data = {"user_id": user.get("_id"), "content": "event", "files": []}
+        else:
+            if not kwargs.get("removed"):
+                return None
+            else:
+                try:
+                    data = {
+                        "user_id": kwargs.get("removed")[0],
+                        "content": "event",
+                        "files": [],
+                    }
+                except:  # noqa
+                    return None
 
         event = {"action": "leave:channel", "recipients": kwargs.get("removed", [user])}
 

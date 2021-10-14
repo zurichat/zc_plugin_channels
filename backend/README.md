@@ -37,27 +37,34 @@
 
         npm install --global yarn
 
-- Goto *frontend* directory and run command
+- Goto *frontend/main* directory and run command
 
         yarn
 
+        yarn relocate_main
+
+- Goto *frontend/root* directory and run command
+
+        yarn
+
+        yarn relocate_root
+
 #### After installing packages
 
-##### For Linux
-
-        yarn relocate
-
-##### For Windows
-
-        yarn build
-
-- move the build folder generated to *backend / channel_plugin / channel_plugin* directory
 
 #### Install Requirements
 
 - Goto *backend / channel_plugin* directory (where you can see manage.py file) ensure virtual environment is activated and run command
 
         pip install -r requirements/local.txt
+
+- To create virtual environment
+
+        python venv -m venv
+
+- To activate virtual environment
+
+        source venv/bin/activate
 
 #### Run server
 
