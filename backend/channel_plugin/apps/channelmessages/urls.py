@@ -22,6 +22,11 @@ urlpatterns = [
         "<str:org_id>/channels/<str:channel_id>/messages/cursor/", views.get_user_cursor
     ),
     path("<str:org_id>/search/", views.search),
-    path("test/", views.test)
+    path("test/", views.test),
+    path(
+        "<str:org_id>/<str:member_id>/search/",
+        views.workflow_search,
+        name="search_all_channels"
+    ),
     # path("test", views.search_channelmessage)
 ]
