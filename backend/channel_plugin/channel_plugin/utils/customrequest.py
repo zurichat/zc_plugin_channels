@@ -210,7 +210,6 @@ class AsyncRequest:
                 }
             )
             response = await Session.post(url=write, data=json.dumps(data))
-            # import pdb; pdb.set_trace()
             if response.status >= 200 and response.status < 300:
                 payload.update(
                     {
