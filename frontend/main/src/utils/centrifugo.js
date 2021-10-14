@@ -8,6 +8,8 @@ class Centrifugo {
     constructor() {
         this.listeners = {}
         this.messageListeners = {}
+        this.isMessageRTCSet = false
+        this.isWorkspaceRTCSet = false
         this.org_id = null
         this.init()
     }
@@ -19,6 +21,7 @@ class Centrifugo {
         const { org_id } = (await GetUserInfo())["0"]
         this.org_id = org_id
         this.subscribeToAllEvents()
+        this.isWorkspaceRTCSet = true
     }
 
     /**
@@ -28,6 +31,7 @@ class Centrifugo {
     async initForMessage(socketName) {
         this.socket_name = socketName
         this.subscribeToMessageEvents()
+        this.isMessageRTCSet = true
     }
 
     subscribeToAllEvents() {
