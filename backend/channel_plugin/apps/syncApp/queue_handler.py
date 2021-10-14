@@ -14,6 +14,21 @@ import json
 
 
 # demo_handler.get_schema = _
+dummy_queue_data = [{
+                            "id":20,
+                            "event":"leave_organization",
+                            "message":{
+                                    "member_id":"testmaster",
+                                    "organization_id": "6167b3f14cd3cc2a7af3dbe6"
+                                }
+                            },
+                            {
+                            "id": 30,
+                            "event": "enter_organization",
+                            "message": { "member_id":"6166cd978eac3b6a751cfb83",
+                                            "organization_id":"1"
+                            }},
+                                                ]
 
 class QueueHandler:
 
@@ -111,6 +126,7 @@ class QueueHandler:
             if res.status == 200:
                 data = json.loads(await res.read())
                 queue = data.get("queue", [])
+                queue = dummy_queue_data
                 self.update_queue(queue)
 
     async def _process_queue(self):
