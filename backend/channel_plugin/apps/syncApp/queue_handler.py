@@ -166,9 +166,9 @@ class QueueHandler:
             async with ClientSession() as session:
                 id = settings.PLUGIN_ID
                 
-                url = f"https://api.zuri.chat/marketplace/plugins/{id}/sync"
+                url = f"https://api.zuri.chat/plugins/{id}/sync"
                 
-                res = await session.post(url, {"id": most_recent_task.get("id", 0)})
+                res = await session.patch(url, {"id": most_recent_task.get("id", 0)})
               
                 if res.status == 200:
                     self.__update_global_state(done=True)
