@@ -12,6 +12,9 @@ class SyncAppConfig(AppConfig):
     name = 'apps.syncApp'
 
     def ready(self):
-        if len(scheduler.get_jobs()) <= 0:
-            scheduler.add_job(run_qhandler_schedule, trigger="interval", minutes=INTERVAL, max_instances=MAX_INSTANCES, id=JOB_ID)
-            scheduler.start()
+        try:
+            if len(scheduler.get_jobs()) <= 0:
+                scheduler.add_job(run_qhandler_schedule, trigger="interval", minutes=INTERVAL, max_instances=MAX_INSTANCES, id=JOB_ID)
+                scheduler.start()
+        except:
+            pass
