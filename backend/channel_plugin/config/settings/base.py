@@ -292,6 +292,7 @@ except:  # noqa
 
 CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
 
+SYNC_HANDLER=None
 
 # CORS_ALLOWED_ORIGIN_REGEXES = [
 #     r"^https://\w+\.zuri\.chat$",

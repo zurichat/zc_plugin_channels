@@ -1,8 +1,6 @@
 import asyncio
-from typing import Iterable
 from django.conf import settings
 from aiohttp import ClientSession
-import bisect
 import json
 
 
@@ -42,18 +40,15 @@ class QueueHandler:
     
     def _set_task_handler(self, handlers):
         for handler in handlers:
-            schema = handler.get_schema()
-            
-            assert isinstance(schema, dict), f"handler.get_schema() returned a {type(schema)} instead of dict"
-            assert isinstance(schema.get("event"), str), f"schema event must be of type string"
+            try:
+                schema = handler.get_schema()
+                
+                assert isinstance(schema, dict), f"handler.get_schema() returned a {type(schema)} instead of dict"
+                assert isinstance(schema.get("event"), str), f"schema event must be of type string"
 
-            self._task_handlers.update({schema.get("event"): handler})
-
-    def update_queue(self, items:list):
-        for item in items:
-            if isinstance(item, dict):
-                if not self._item_in_queue(item):
-                    self.__task_queue.append(item)
+                self._task_handlers.update({schema.get("event"): handler})
+            except:
+                pass
 
     def _item_in_queue(self, item:dict):
         ids = []
@@ -62,16 +57,7 @@ class QueueHandler:
             ids.append(task["id"])
 
         return item["id"] in ids
-    
-    def __update_global_state(self, done=True):
-        if done:
-            settings.SYNC_HANDLER=None
-        else:
-            settings.SYNC_HANDLER=self
-        return {
-            "SYNC_HANDLER": settings.SYNC_HANDLER,
-        }
-    
+      
     async def __run_task(self, task_handler, task_data):
         compeleted = False
         try:
@@ -83,7 +69,16 @@ class QueueHandler:
         else:
             self.__unresolved_task.append(task_data)
         self.__task_queue.remove(task_data)
-    
+
+    def __update_global_state(self, done=True):
+        if done:
+            settings.SYNC_HANDLER=None
+        else:
+            settings.SYNC_HANDLER=self
+        return {
+            "SYNC_HANDLER": settings.SYNC_HANDLER,
+        }
+
     @staticmethod
     def __set_runing_instance(handlers):
         settings.SYNC_HANDLER = QueueHandler(handlers)
@@ -101,33 +96,21 @@ class QueueHandler:
         for item in self.__task_queue:
             yield item
 
+    def update_queue(self, items:list):
+        for item in items:
+            if isinstance(item, dict):
+                if not self._item_in_queue(item):
+                    self.__task_queue.append(item)
+
     async def _get_queue_data(self):
         async with ClientSession()  as  session :
-            # id = settings.PLUGIN_ID
-            id = "6165f520375a4616090b8275"
+            id = settings.PLUGIN_ID
             url = f"https://api.zuri.chat//marketplace/plugins/{id}/"
             res = await session.get(url)
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("queue", [
-                    {
-                        "id": 1,
-                        "event": "enter_organization",
-                    }, 
-                    {
-                        "id": 10,
-                        "event": "enter_organization"
-                    },
-                    {
-                        "id": 5,
-                        "event": "enter_organization"
-                    },
-                    {
-                        "id": 2,
-                        "event": "leave_organization"
-                    }
-                ])
+                queue = data.get("queue", [])
                 self.update_queue(queue)
 
     async def _process_queue(self):
@@ -156,8 +139,7 @@ class QueueHandler:
 
         if most_recent_task:
             async with ClientSession() as session:
-                # id = settings.PLUGIN_ID
-                id = "6165f520375a4616090b8275" or settings.PLUGIN_ID
+                id = settings.PLUGIN_ID
                 url = f"https://api.zuri.chat//marketplace/plugins/{id}/sync"
                 
                 res = await session.post(url, {"id": most_recent_task.get("id")})
