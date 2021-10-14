@@ -53,6 +53,7 @@ class GetInfoViewset(ViewSet):
                 "plugin_info": {
                     "name": "Channels Plugin",
                     "description": ["Zuri.chat plugin", description],
+                    "id": settings.PLUGIN_ID,
                 },
                 "scaffold_structure": "Monolith",
                 "team": "HNG 8.0/Team Coelho",

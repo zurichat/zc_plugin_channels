@@ -49,9 +49,11 @@ class ChannelSerializer(serializers.Serializer):
 
 class NotificationsSettingSerializer(serializers.Serializer):
 
-    web = serializers.ChoiceField(choices=("all", "mentions", "nothing"), default="all")
+    web = serializers.ChoiceField(
+        choices=("all", "mentions", "nothing"), default="nothing"
+    )
     mobile = serializers.ChoiceField(
-        choices=("all", "mentions", "nothing"), default="all"
+        choices=("all", "mentions", "nothing"), default="nothing"
     )
     same_for_mobile = serializers.BooleanField(
         default=True,
@@ -244,7 +246,7 @@ class RoomSerializer(serializers.Serializer):
         return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
 
 
-class AddMembersSerializer(serializers.Serializer):
+class AddRemoveMembersSerializer(serializers.Serializer):
 
     room_id = serializers.CharField(max_length=30)
     member_ids = serializers.ListField(

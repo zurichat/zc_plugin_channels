@@ -16,14 +16,12 @@ data = {
     "install_url": "https://channels.zuri.chat/install",
     "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar",
     "icon_url": "https://channels.zuri.chat/static/images/full-logo.png/",
+    "sync_request_url": "https://channels.zuri.chat/sync/",
 }
 
 
 def run():
     response = requests.post(url, data=json.dumps(data))
-    import pdb
-
-    pdb.set_trace()
     if response.status_code >= 200 and response.status_code < 300:
         response = response.json()
         plugin_id = response.get("data", {}).get("plugin_id")

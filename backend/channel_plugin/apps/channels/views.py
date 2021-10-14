@@ -20,7 +20,7 @@ from channel_plugin.utils.mixins import AsycViewMixin
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
-    AddMembersSerializer,
+    AddRemoveMembersSerializer,
     ChannelAllFilesSerializer,
     ChannelGetSerializer,
     ChannelSerializer,
@@ -523,6 +523,13 @@ user_channel_list = ChannelViewset.as_view(
 
 channel_socket_view = ChannelViewset.as_view({"get": "get_channel_socket_name"})
 
+FACTORY_SETTINGS = {
+    "web": "nothing",
+    "mobile": "mentions",
+    "same_for_mobile": False,
+    "mute": False,
+}
+
 
 class ChannelMemberViewset(AsycViewMixin, ViewSet):
     def validate_name(self, name):
@@ -569,12 +576,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
 
                 # an empty field will be returned for users that have not
                 # changed their settings.
-                FACTORY_SETTINGS = {
-                    "web": "nothing",
-                    "mobile": "mentions",
-                    "same_for_mobile": False,
-                    "mute": False,
-                }
 
                 settings = serializer.data.get("notifications", FACTORY_SETTINGS)
                 return Custom_Response(
@@ -881,7 +882,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
         )
 
     @swagger_auto_schema(
-        request_body=AddMembersSerializer,
+        request_body=AddRemoveMembersSerializer,
         responses={
             201: openapi.Response("Response", UserSerializer),
             400: openapi.Response("Error Response"),
@@ -899,122 +900,184 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
         channel = await self.retrieve_channel(request, org_id, room_id)
 
         if channel.__contains__("_id"):
-
-            # output = None
-            serializer = AddMembersSerializer(data=request.data)
+            serializer = AddRemoveMembersSerializer(data=request.data)
             try:
                 serializer.is_valid(raise_exception=True)
             except Exception as exc:
                 return self.get_exception_response(exc, request)
-            # data = serializer.data
-            # users = dict()
-            # users_dict = UserSerializer(data=request.data, many=True)
-        #         # serializer.is_valid(raise_exception=True)
 
-        #         user_list = serializer.initial_data
+            data = serializer.data
+            users = dict()
+            tmp = data.get("member_ids")
+            for _, id in enumerate(tmp):
+                if channel.get("users", {}).get(id) is not None:
+                    data["member_ids"].pop(_)
+                    continue
+                serializer = UserSerializer(data={"_id": id, "notifications": {}})
 
-        #         # add all users not in group
-        #         for user in user_list:
-        #             if channel["users"].get(user["_id"]):
-        #                 user_list.remove(user)
-        #             else:
-        #                 channel["users"].update({f"{user['_id']}": user})
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as exc:
+                    return self.get_exception_response(exc, request)
+                users.update({id: serializer.data})
 
-        #         output = user_list
+            if users:
+                users_list = [v for k, v in users.items()]
+                # add user to the channel
+                channel["users"].update(users)
 
-        #     else:
-        #         user_id = request.data.get("_id")
-        #         user_data = channel["users"].get(user_id)
+                #     # only update user dict
+                payload = {"users": channel["users"]}
 
-        #         if not user_data:
-        #             #if user is not part of the channel
-        #             serializer = UserSerializer(data=request.data)
-        #             # serializer.is_valid(raise_exception=True)
-        #             try:
-        #                 serializer.is_valid(raise_exception=True)
-        #             except Exception as exc:
-        #                 return self.get_exception_response(exc, request)
+                result = Request.put(
+                    org_id, "channel", payload=payload, object_id=room_id
+                )
 
-        #             user_data = serializer.data
+                if isinstance(result, dict):
+                    if not result.get("error"):
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="JoinedChannelSignal",
+                                org_id=org_id,
+                                channel_id=room_id,
+                                # added_by=request.query_params.get("user_id"),
+                                added=users_list,
+                            )
+                        )
 
-        #             # add user to the channel
-        #             channel["users"].update({f"{user_data['_id']}": serializer.data})
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                room_id=room_id,
+                                user_id=list(
+                                    map(lambda item: item.get("_id"), users_list)
+                                ),
+                            )
+                        )
 
-        #             output = user_data
-        #         else:
-        #             return Custom_Response(
-        #                 user_data, status=status.HTTP_200_OK, request=request, view=self
-        #             )
+                        return Custom_Response(
+                            users_list,
+                            status=status.HTTP_201_CREATED,
+                            request=request,
+                            view=self,
+                        )
+                    else:
+                        return Custom_Response(
+                            result.get("error"),
+                            status=status.HTTP_400_BAD_REQUEST,
+                            request=request,
+                            view=self,
+                        )
+                else:
+                    return Custom_Response(
+                        result, status=result.status_code, request=request, view=self
+                    )
+            else:
+                return Custom_Response(
+                    {"msg": "All users added"}, status=200, request=request, view=self
+                )
+        return Custom_Response(
+            {"error": "channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
+        )
 
-        #     # remove channel ID to avoid changing it
-        #     channel_id = channel.pop("_id", None)
+    @swagger_auto_schema(
+        request_body=AddRemoveMembersSerializer,
+        responses={
+            201: openapi.Response("Response", UserSerializer),
+            400: openapi.Response("Error Response"),
+            404: openapi.Response("Collection Not Found"),
+        },
+        operation_id="remove-room-members",
+    )
+    @action(
+        methods=["PATCH"],
+        detail=False,
+    )
+    async def remove_members_from_room(self, request, org_id, room_id, member_id):
+        """ """
+        # get the channel from zc-core
+        channel = await self.retrieve_channel(request, org_id, room_id)
 
-        #     # only update user dict
-        #     payload = {"users": channel["users"]}
+        if channel.__contains__("_id"):
+            serializer = AddRemoveMembersSerializer(data=request.data)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except Exception as exc:
+                return self.get_exception_response(exc, request)
 
-        #     result = Request.put(
-        #         org_id, "channel", payload=payload, object_id=channel_id
-        #     )
+            data = serializer.data
+            tmp = data.get("member_ids")
+            users = []
+            for _, id in enumerate(tmp):
+                user = channel["users"].pop(id, None)
+                if user is not None:
+                    users.append(user.get("_id"))
+            if users:
+                #     # only update user dict
+                payload = {"users": channel["users"]}
 
-        #     if isinstance(result, dict):
-        #         if not result.get("error"):
-        #             if isinstance(output, dict):
-        #                 # when only one user is added
-        #                 loop = asyncio.get_event_loop()
-        #                 loop.create_task(
-        #                     request_finished.send(
-        #                         sender=self.__class__,
-        #                         dispatch_uid="JoinedChannelSignal",
-        #                         org_id=org_id,
-        #                         channel_id=channel_id,
-        #                         user=output,
-        #                     )
-        #                 )
-        #                 loop.create_task(
-        #                     request_finished.send(
-        #                         sender=None,
-        #                         dispatch_uid="UpdateSidebarSignal",
-        #                         org_id=org_id,
-        #                         user_id=output.get("_id"),
-        #                     )
-        #                 )
+                result = Request.put(
+                    org_id, "channel", payload=payload, object_id=room_id
+                )
 
-        #             else:
-        #                 # when output is a list multiple users where added
-        #                 loop = asyncio.get_event_loop()
-        #                 loop.create_task(
-        #                     request_finished.send(
-        #                         sender=self.__class__,
-        #                         dispatch_uid="JoinedChannelSignal",
-        #                         org_id=org_id,
-        #                         channel_id=channel_id,
-        #                         # added_by=request.query_params.get("user_id"),
-        #                         added=output,
-        #                     )
-        #                 )
-        #             status_code = (
-        #                 status.HTTP_201_CREATED if output else status.HTTP_200_OK
-        #             )
-        #             return Custom_Response(
-        #                 output, status=status_code, request=request, view=self
-        #             )
-        #         else:
-        #             return Custom_Response(
-        #                 result.get("error"),
-        #                 status=status.HTTP_400_BAD_REQUEST,
-        #                 request=request,
-        #                 view=self,
-        #             )
-        #     else:
-        #         return Custom_Response(
-        #             result, status=result.status_code, request=request, view=self
-        #         )
-        # return Custom_Response(
-        #     {"error": "channel not found"},
-        #     status=status.HTTP_404_NOT_FOUND,
-        #     request=request,
-        #     view=self,
-        # )
+                if isinstance(result, dict):
+                    if not result.get("error"):
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=self.__class__,
+                                dispatch_uid="LeftChannelSignal",
+                                org_id=org_id,
+                                channel_id=room_id,
+                                # added_by=request.query_params.get("user_id"),
+                                removed=users,
+                            )
+                        )
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                room_id=room_id,
+                                user_id=users,
+                            )
+                        )
+                        return Custom_Response(
+                            status=status.HTTP_204_NO_CONTENT,
+                            request=request,
+                            view=self,
+                        )
+                    else:
+                        return Custom_Response(
+                            result.get("error"),
+                            status=status.HTTP_400_BAD_REQUEST,
+                            request=request,
+                            view=self,
+                        )
+                else:
+                    return Custom_Response(
+                        result, status=result.status_code, request=request, view=self
+                    )
+            else:
+                return Custom_Response(
+                    {"msg": "All users removed."},
+                    status=status.HTTP_200_OK,
+                    request=request,
+                    view=self,
+                )
+        return Custom_Response(
+            {"error": "channel not found"},
+            status=status.HTTP_404_NOT_FOUND,
+            request=request,
+            view=self,
+        )
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -1380,6 +1443,9 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
     {"get": "get_member", "put": "update_member", "delete": "remove_member"}
 )
 
+channel_add_remove_member_to_room_view = ChannelMemberViewset.as_view(
+    {"post": "add_members_to_room", "patch": "remove_members_from_room"}
+)
 
 # @api_view(["POST", "GET"])
 # # @permission_classes(["IsAdmin"])

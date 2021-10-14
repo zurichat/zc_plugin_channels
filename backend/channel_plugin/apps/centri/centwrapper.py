@@ -1,8 +1,7 @@
-from cent import Client
-import aiohttp
 import json
 
-
+import aiohttp
+from cent import Client
 
 
 def to_bytes(s):
@@ -10,14 +9,22 @@ def to_bytes(s):
 
 
 class AsyncCentClient(Client):
-    """ 
-        add client subscrition implementation into 
-        cent.Client
-    """ 
+    """
+    add client subscrition implementation into
+    cent.Client
+    """
 
-    def __init__(self, address, api_key, timeout, json_encoder=None, verify=True, session=None, **kwargs):
-        session = aiohttp.ClientSession
-        super().__init__(address, api_key=api_key, timeout=timeout, json_encoder=json_encoder, verify=verify, session=session, **kwargs)
+    def __init__(
+        self, address, api_key, timeout, json_encoder=None, verify=True, **kwargs
+    ):
+        super().__init__(
+            address,
+            api_key=api_key,
+            timeout=timeout,
+            json_encoder=json_encoder,
+            verify=verify,
+            **kwargs
+        )
 
     @staticmethod
     def get_subscribe_params(user, channel=None):
@@ -34,11 +41,12 @@ class AsyncCentClient(Client):
 
     async def publish(self, channel, data, skip_history=False):
         self._check_empty()
-        self.add("publish", self.get_publish_params(
-            channel, data, skip_history=skip_history))
+        self.add(
+            "publish", self.get_publish_params(channel, data, skip_history=skip_history)
+        )
         result = await self._send_one()
         return result
-    
+
     async def _send_one(self):
         res = await self.send()
         data = res[0]
@@ -52,7 +60,8 @@ class AsyncCentClient(Client):
         messages = self._messages[:]
         self._messages = []
         data = to_bytes(
-            "\n".join([json.dumps(x, cls=self.json_encoder) for x in messages]))
+            "\n".join([json.dumps(x, cls=self.json_encoder) for x in messages])
+        )
         response = await self._send(self.address, data)
         return [json.loads(x) for x in response.split("\n") if x]
 
@@ -60,21 +69,20 @@ class AsyncCentClient(Client):
         """
         Send an async request to a remote web server using HTTP POST.
         """
-        headers = {
-            'Content-type': 'application/json'
-        }
+        async with aiohttp.ClientSession as session:
+            headers = {"Content-type": "application/json"}
 
-        if self.api_key:
-            headers['Authorization'] = 'apikey ' + self.api_key
-        resp = await self.session().post(url, data=data, headers=headers, timeout=self.timeout)
-        if resp.status != 200:
-            raise Exception("wrong status code: %d" % resp.status)
-        return await resp.text()
+            if self.api_key:
+                headers["Authorization"] = "apikey " + self.api_key
+            resp = await session().post(
+                url, data=data, headers=headers, timeout=self.timeout
+            )
+            if resp.status != 200:
+                raise Exception("wrong status code: %d" % resp.status)
+            return await resp.text()
 
 
 class CentClient(Client):
-
-
     @staticmethod
     def get_subscribe_params(user, channel=None):
         params = {"user": user}
@@ -87,5 +95,3 @@ class CentClient(Client):
         self.add("subscribe", self.get_subscribe_params(user, channel))
         self._send_one()
         return
-
-
