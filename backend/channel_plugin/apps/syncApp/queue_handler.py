@@ -126,7 +126,7 @@ class QueueHandler:
             if res.status == 200:
                 data = json.loads(await res.read())
                 queue = data.get("queue", [])
-                queue = dummy_queue_data
+                # queue = dummy_queue_data # For debugging
                 self.update_queue(queue)
 
     async def _process_queue(self):
