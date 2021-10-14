@@ -1,0 +1,3 @@
+
+class BadServerResponse(BaseException):
+	pass
