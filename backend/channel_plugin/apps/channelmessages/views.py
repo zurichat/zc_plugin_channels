@@ -523,14 +523,20 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         result = Request.get(org_id, "channelmessage", data) or []
         status_code = status.HTTP_404_NOT_FOUND
         if isinstance(result, list):
-            if len(result) > 0:
+            message_count = len(result)
+            if message_count > 0:
                 result = result[-1]
                 result =  result["timestamp"]
-            elif len(result) == 0:
+            elif message_count == 0:
                 result = timestamp
-                
+            
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+
+        new_result = {
+            'timestamp':result,
+            'message_count': message_count
+        }
+        return Response(new_result, status=status_code)
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
