@@ -551,3 +551,15 @@ def get_thread_from_message(
 #     data["links"] = pg_links
 
 #     return data
+
+def request_view_by_name(view_name, params, method="get", data=None, return_data=False):
+    SITE_HOST = "https://channels.zuri.chat"
+
+    url = SITE_HOST + reverse(view_name, kwargs=params)
+    func = getattr(requests, method)
+    response = func(url, data=data)
+    
+    if not return_data:
+        return response.status_code
+    return response.json()
+    
