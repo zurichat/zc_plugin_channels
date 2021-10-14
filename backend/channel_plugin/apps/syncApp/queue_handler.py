@@ -35,9 +35,9 @@ class QueueHandler:
         except:
             print("Failed to initialize QueueHandler")
         else:
-            self.__update_global_state(self, done=False)
+            self.__update_global_state(done=False)
             pass
-    
+
     def _set_task_handler(self, handlers):
         for handler in handlers:
             try:
