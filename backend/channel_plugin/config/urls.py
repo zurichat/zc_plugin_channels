@@ -63,7 +63,6 @@ urlpatterns += [
     path("api/v1/", include(("apps.threads.urls", "threads"))),
     path("api/v1/", include(("apps.googlemeet.urls", "googlemeet"))),
     path("api/v1/", include(("apps.centri.urls", "centri"))),
-    path("", include(("apps.syncApp.urls", "syncApp"))),
     path("", include(("apps.tests.urls", "test"))),
 ]
 
