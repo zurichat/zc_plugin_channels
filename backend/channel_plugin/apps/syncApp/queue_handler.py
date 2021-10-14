@@ -75,7 +75,7 @@ class QueueHandler:
     async def __run_task(self, task_handler, task_data):
         compeleted = False
         try:
-            compeleted = await task_handler(task_data)
+            compeleted = await task_handler.run(task_data)
         except:
             pass
         if compeleted:
