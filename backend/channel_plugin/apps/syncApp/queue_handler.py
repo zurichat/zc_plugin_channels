@@ -57,7 +57,7 @@ class QueueHandler:
             ids.append(task["id"])
 
         return item["id"] in ids
-
+      
     async def __run_task(self, task_handler, task_data):
         compeleted = False
         try:
