@@ -3,8 +3,9 @@ import { Box, Flex } from "@chakra-ui/layout";
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-import APIservice from "../../utils/api";
-import { USER_CAN_INPUT, GET_CHANNELMESSAGES } from "../../redux/actions/types";
+// import APIservice from "../../utils/api";
+import { USER_CAN_INPUT, GET_CHANNELMESSAGES, ADD_CHANNELMESSAGES, UPDATE_CHANNELMESSAGES, DELETE_CHANNELMESSAGES } from "../../redux/actions/types";
+
 
 import ChannelHeader from "../shared/ChannelHeader";
 // import ChannelNameBanner from "../admin/subs/ChannelNameBanner/ChannelNameBanner";
@@ -16,13 +17,13 @@ import MessageInput from "../shared/MessageInput";
 
 import { useParams } from "react-router";
 import DisabledInput from "../shared/DiasbledInput";
-import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
-import Centrifuge from 'centrifuge';
-import { SubscribeToChannel } from '@zuri/control'
+// import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
+// import Centrifuge from 'centrifuge';
+// import { SubscribeToChannel } from '@zuri/control'
 
 //notifications
 import notificationsManager from "./subs/Centrifugo/NotificationsManager";
-
+import Centrifugo from "../../utils/centrifugo";
 
 
 
@@ -35,13 +36,12 @@ const MessageBoardIndex = () => {
 
   const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
-  const canInput = channelDetails.allow_members_inpu
-
+  const canInput = channelDetails.allow_members_input || true
   
 
 
 
-  const [ orgId, setOrgId ] = useState()
+  // const [ orgId, setOrgId ] = useState()
 
   
 
@@ -50,8 +50,7 @@ const MessageBoardIndex = () => {
   // We will attempt to connect only when we are certain that the state has been updated
   // so we first check that sockets.socket_name is not undefined
 
-  const socketName = sockets.socket_name
-  
+/*   
   if(socketName){
     try{
         console.log('we have succesfully fetched the socket_name: ',socketName)
@@ -110,7 +109,36 @@ const MessageBoardIndex = () => {
   } else{
     console.log("\n\n\n\nwe have not been able to fetch the socket\n\n\n")
   }
+ */
+
+  useEffect(() => {
+    if (users && users.currentWorkspace) {
+      _getSocket(users.currentWorkspace, channelId)
+      _getNotifications(users.currentWorkspace, channelId, users.currentWorkspace)
+    }
+  }, [users])
+
+  const reactToCreateMessageOrJoinOrLeaveChannel = React.useCallback((ctx) => {
+    dispatch({ type: ADD_CHANNELMESSAGES, payload: ctx.data })
+    // notificationsManager(ctx.data.content)
+  }, [])
   
+  useEffect(() => {
+    if (sockets && sockets.socket_name) {
+      const socketName = sockets.socket_name
+
+      Centrifugo.initForMessage(socketName)
+      Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
+      Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
+      Centrifugo.addMessageListener('leave:channel', reactToCreateMessageOrJoinOrLeaveChannel)
+      Centrifugo.addMessageListener('update:message', (ctx) => {
+        dispatch({ type: UPDATE_CHANNELMESSAGES, payload: ctx.data })
+      })
+      Centrifugo.addMessageListener('delete:message', (ctx) => {
+        dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
+      })
+    }
+  }, [sockets])
    
 
 
@@ -121,36 +149,36 @@ const MessageBoardIndex = () => {
   //and this is when channels has been switched. The channelId is then 
   //used to fetch the new socket details. Once the state is updated, the subscribeToChannel
   //function runs again to update the centrifugo
-  useEffect(() => {
+  // useEffect(() => {
 
-    async function updateSocketName(){
+  //   async function updateSocketName(){
 
       
-      await _getSocket(users.currentWorkspace, channelId)
-      console.log("We've gotten the socket details")
+  //     await _getSocket(users.currentWorkspace, channelId)
+  //     console.log("We've gotten the socket details")
       
       
-    }
+  //   }
     
-    updateSocketName()
+  //   updateSocketName()
 
-  }, [channelId]);
+  // }, [channelId]);
 
-  useEffect(() => {
-    if(users){
-      setOrgId(users[0])
-    }
-  }, [])
+  // useEffect(() => {
+  //   if(users){
+  //     setOrgId(users[0])
+  //   }
+  // }, [])
 
-   const retrieveNotificationSettings = () =>{
-     _getNotifications(orgId?.org_id, channelId, orgId?._id)
-  }
+  //  const retrieveNotificationSettings = () =>{
+  //    _getNotifications(orgId?.org_id, channelId, orgId?._id)
+  // }
 
-  useEffect(() =>{
-    if(orgId){
-      retrieveNotificationSettings()
-    }
-  })
+  // useEffect(() =>{
+  //   if(orgId){
+  //     retrieveNotificationSettings()
+  //   }
+  //" })
 
   return (
     <Box bg="#F9F9F9" width="99%">
@@ -171,10 +199,9 @@ const MessageBoardIndex = () => {
               },
             }}
           >
-
-            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId} />
           </Box>
-          {channelDetails.allow_members_input ? <MessageInput channelId={channelId} /> : <DisabledInput />}
+          {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>
         {/* <Box>
           <Thread/>
