@@ -123,10 +123,10 @@ const MessageBoardIndex = () => {
     // notificationsManager(ctx.data.content)
   }, [])
   
-  useEffect(() => {
+  if (!Centrifugo.isMessageRTCSet) {
     if (sockets && sockets.socket_name) {
       const socketName = sockets.socket_name
-
+  
       Centrifugo.initForMessage(socketName)
       Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
       Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
@@ -138,7 +138,7 @@ const MessageBoardIndex = () => {
         dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
       })
     }
-  }, [sockets])
+  }
    
 
 
