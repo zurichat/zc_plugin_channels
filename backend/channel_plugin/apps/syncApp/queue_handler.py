@@ -153,7 +153,7 @@ class QueueHandler:
         await self.__end__()
 
     async def __end__(self):
-        most_recent_task = None
+        most_recent_task = {}
         id = 0
 
         for task in self.__resolved_task:
@@ -165,7 +165,7 @@ class QueueHandler:
                 id = settings.PLUGIN_ID
                 url = f"https://api.zuri.chat/marketplace/plugins/{id}/sync"
                 
-                res = await session.post(url, {"id": most_recent_task.get("id", 0)})
+                res = await session.patch(url, {"id": most_recent_task.get("id", 0)})
                 
                 if res.status == 200:
                     self.__update_global_state(done=True)
