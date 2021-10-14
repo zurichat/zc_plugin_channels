@@ -7,10 +7,8 @@ from apps.utils.serializers import ErrorSerializer
 from apps.channelmessages.views import ChannelMessageViewset 
 from django.shortcuts import render
 from django.utils.timezone import datetime
-
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-
 from rest_framework import status, throttling
 from rest_framework.decorators import action, throttle_classes
 from rest_framework.viewsets import ViewSet
@@ -22,6 +20,7 @@ from channel_plugin.utils.mixins import AsycViewMixin
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .serializers import (  # SearchMessageQuerySerializer,
+    AddMembersSerializer,
     ChannelAllFilesSerializer,
     ChannelGetSerializer,
     ChannelSerializer,
@@ -101,7 +100,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         methods=["POST"],
         detail=False,
     )
-    async def create_room(self, request, org_id=None):
+    async def create_room(self, request, org_id, member_id):
         serializer = RoomSerializer(data=request.data)
         # serializer.is_valid(raise_exception=True)
         try:
@@ -112,7 +111,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         channel_serializer = serializer.convert_to_channel_serializer()
         channel_serializer.is_valid(raise_exception=True)
         channel = channel_serializer.data.get("channel")
-        result = await channel.create(serializer.data.get("ord_id"))
+        result = await channel.create(serializer.data.get("org_id"))
         status_code = status.HTTP_404_NOT_FOUND
 
         if result.__contains__("_id"):
@@ -121,8 +120,9 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 request_finished.send(
                     sender=str,
                     dispatch_uid="UpdateSidebarSignal",
-                    org_id=channel_serializer.data.get("ord_id"),
+                    org_id=channel_serializer.data.get("org_id"),
                     user_id=result.get("owner"),
+                    room_id=result.get("_id"),
                 )
             )
 
@@ -352,6 +352,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             )
 
             if result.get("data", {}).get("deleted_count") > 0:
+
                 async def delete():
                     await AsyncRequest.delete(
                         org_id, "channelmessage", data_filter={"channel_id": channel_id}
@@ -566,7 +567,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 except Exception as exc:
                     return self.get_exception_response(exc, request)
 
-
                 # an empty field will be returned for users that have not
                 # changed their settings.
                 FACTORY_SETTINGS = {
@@ -633,7 +633,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                     serializer.is_valid(raise_exception=True)
                 except Exception as exc:
                     return self.get_exception_response(exc, request)
-
 
                 # by default, users do not have a settings field
                 # whether or not this user has a settings field,
@@ -792,7 +791,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 user_data = channel["users"].get(user_id)
 
                 if not user_data:
-                    #if user is not part of the channel
+                    # if user is not part of the channel
                     serializer = UserSerializer(data=request.data)
                     # serializer.is_valid(raise_exception=True)
                     try:
@@ -880,6 +879,142 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             request=request,
             view=self,
         )
+
+    @swagger_auto_schema(
+        request_body=AddMembersSerializer,
+        responses={
+            201: openapi.Response("Response", UserSerializer),
+            400: openapi.Response("Error Response"),
+            404: openapi.Response("Collection Not Found"),
+        },
+        operation_id="add-room-members",
+    )
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    async def add_members_to_room(self, request, org_id, room_id, member_id):
+        """ """
+        # get the channel from zc-core
+        channel = await self.retrieve_channel(request, org_id, room_id)
+
+        if channel.__contains__("_id"):
+
+            # output = None
+            serializer = AddMembersSerializer(data=request.data)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except Exception as exc:
+                return self.get_exception_response(exc, request)
+            # data = serializer.data
+            # users = dict()
+            # users_dict = UserSerializer(data=request.data, many=True)
+        #         # serializer.is_valid(raise_exception=True)
+
+        #         user_list = serializer.initial_data
+
+        #         # add all users not in group
+        #         for user in user_list:
+        #             if channel["users"].get(user["_id"]):
+        #                 user_list.remove(user)
+        #             else:
+        #                 channel["users"].update({f"{user['_id']}": user})
+
+        #         output = user_list
+
+        #     else:
+        #         user_id = request.data.get("_id")
+        #         user_data = channel["users"].get(user_id)
+
+        #         if not user_data:
+        #             #if user is not part of the channel
+        #             serializer = UserSerializer(data=request.data)
+        #             # serializer.is_valid(raise_exception=True)
+        #             try:
+        #                 serializer.is_valid(raise_exception=True)
+        #             except Exception as exc:
+        #                 return self.get_exception_response(exc, request)
+
+        #             user_data = serializer.data
+
+        #             # add user to the channel
+        #             channel["users"].update({f"{user_data['_id']}": serializer.data})
+
+        #             output = user_data
+        #         else:
+        #             return Custom_Response(
+        #                 user_data, status=status.HTTP_200_OK, request=request, view=self
+        #             )
+
+        #     # remove channel ID to avoid changing it
+        #     channel_id = channel.pop("_id", None)
+
+        #     # only update user dict
+        #     payload = {"users": channel["users"]}
+
+        #     result = Request.put(
+        #         org_id, "channel", payload=payload, object_id=channel_id
+        #     )
+
+        #     if isinstance(result, dict):
+        #         if not result.get("error"):
+        #             if isinstance(output, dict):
+        #                 # when only one user is added
+        #                 loop = asyncio.get_event_loop()
+        #                 loop.create_task(
+        #                     request_finished.send(
+        #                         sender=self.__class__,
+        #                         dispatch_uid="JoinedChannelSignal",
+        #                         org_id=org_id,
+        #                         channel_id=channel_id,
+        #                         user=output,
+        #                     )
+        #                 )
+        #                 loop.create_task(
+        #                     request_finished.send(
+        #                         sender=None,
+        #                         dispatch_uid="UpdateSidebarSignal",
+        #                         org_id=org_id,
+        #                         user_id=output.get("_id"),
+        #                     )
+        #                 )
+
+        #             else:
+        #                 # when output is a list multiple users where added
+        #                 loop = asyncio.get_event_loop()
+        #                 loop.create_task(
+        #                     request_finished.send(
+        #                         sender=self.__class__,
+        #                         dispatch_uid="JoinedChannelSignal",
+        #                         org_id=org_id,
+        #                         channel_id=channel_id,
+        #                         # added_by=request.query_params.get("user_id"),
+        #                         added=output,
+        #                     )
+        #                 )
+        #             status_code = (
+        #                 status.HTTP_201_CREATED if output else status.HTTP_200_OK
+        #             )
+        #             return Custom_Response(
+        #                 output, status=status_code, request=request, view=self
+        #             )
+        #         else:
+        #             return Custom_Response(
+        #                 result.get("error"),
+        #                 status=status.HTTP_400_BAD_REQUEST,
+        #                 request=request,
+        #                 view=self,
+        #             )
+        #     else:
+        #         return Custom_Response(
+        #             result, status=result.status_code, request=request, view=self
+        #         )
+        # return Custom_Response(
+        #     {"error": "channel not found"},
+        #     status=status.HTTP_404_NOT_FOUND,
+        #     request=request,
+        #     view=self,
+        # )
 
     @swagger_auto_schema(
         request_body=UserSerializer,
@@ -1094,7 +1229,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                     serializer.is_valid(raise_exception=True)
                 except Exception as exc:
                     return self.get_exception_response(exc, request)
-
 
                 # add user to the channel
                 channel["users"].update({f"{member_id}": serializer.data})

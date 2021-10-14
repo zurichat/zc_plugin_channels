@@ -47,10 +47,28 @@ class ChannelSerializer(serializers.Serializer):
         return data
 
 
+class NotificationsSettingSerializer(serializers.Serializer):
+
+    web = serializers.ChoiceField(choices=("all", "mentions", "nothing"), default="all")
+    mobile = serializers.ChoiceField(
+        choices=("all", "mentions", "nothing"), default="all"
+    )
+    same_for_mobile = serializers.BooleanField(
+        default=True,
+        help_text="Default: true. False if user has set web client\
+             notifications preferences to be different for mobile.",
+    )
+    mute = serializers.BooleanField(
+        default=False, help_text="Default: false. true if user has muted this channel."
+    )
+
+
 class UserSerializer(serializers.Serializer):
 
     _id = serializers.CharField(max_length=30, required=True, help_text="User ID")
-    role_id = serializers.CharField(max_length=30, required=False, help_text="Role ID")
+    role_id = serializers.CharField(
+        max_length=30, required=False, help_text="Role ID", default=None
+    )
 
     starred = serializers.BooleanField(
         default=False,
@@ -59,9 +77,7 @@ class UserSerializer(serializers.Serializer):
     is_admin = serializers.BooleanField(
         default=False, help_text="Default: false. True if the member is an admin"
     )
-    notifications = serializers.DictField(
-        required=False, help_text="User's notification preferences"
-    )
+    notifications = NotificationsSettingSerializer(required=False)
 
 
 class ChannelGetSerializer(serializers.Serializer):
@@ -90,10 +106,10 @@ class ChannelGetSerializer(serializers.Serializer):
         required=False,
         help_text="List of users in the channel",
     )
-    default = serializers.BooleanField(
-        default=False,
-        help_text="Default: false. True if this channel is a default channel for an organization.",
-    )
+    # default = serializers.BooleanField(
+    #     default=False,
+    #     help_text="Default: false. True if this channel is a default channel for an organization.",
+    # )
 
 
 class ChannelUpdateSerializer(serializers.Serializer):
@@ -110,6 +126,10 @@ class ChannelUpdateSerializer(serializers.Serializer):
     archived = serializers.BooleanField(
         required=False,
         help_text="Default: false. True if this channel has been archived.",
+    )
+    default = serializers.BooleanField(
+        required=False,
+        help_text="Default: false. True if this channel his default.",
     )
     topic = serializers.CharField(
         max_length=100, required=False, help_text="Channel topic"
@@ -168,20 +188,6 @@ class SocketSerializer(serializers.Serializer):
     )
 
 
-class NotificationsSettingSerializer(serializers.Serializer):
-
-    web = serializers.ChoiceField(choices=("all", "mentions", "nothing"))
-    mobile = serializers.ChoiceField(choices=("all", "mentions", "nothing"))
-    same_for_mobile = serializers.BooleanField(
-        required=True,
-        help_text="Default: true. False if user has set web client\
-             notifications preferences to be different for mobile.",
-    )
-    mute = serializers.BooleanField(
-        required=True, help_text="Default: true. False if user has muted this channel."
-    )
-
-
 class FilesDictSerializer(serializers.DictField):
     timestamp = serializers.TimeField()
     file = serializers.ListField(
@@ -215,17 +221,32 @@ class RoomSerializer(serializers.Serializer):
         max_length=100, required=True, help_text="Channel name"
     )
 
-    room_members_ids = serializers.ListField()
-    ord_id = serializers.CharField(max_length=200, required=True)
+    room_member_ids = serializers.ListField(
+        child=serializers.CharField(max_length=30), allow_empty=False
+    )
+    org_id = serializers.CharField(max_length=200, required=True)
     private = serializers.BooleanField(default=False)
+    default = serializers.BooleanField(
+        default=False,
+        help_text="Default: false. True if this channel is a default channel for an organization.",
+    )
 
     def convert_to_channel_serializer(self) -> serializers.Serializer:
         self.is_valid(raise_exception=True)
 
         data = {
             "name": self.data.get("room_name"),
-            "owner": self.data.get("room_members_ids", ["1"])[0],
-            "private": self.data.get("private"),
+            "owner": self.data.get("room_member_ids", ["1"])[0],
+            "private": self.data.get("private", False),
+            "default": self.data.get("default", False),
         }
 
         return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
+
+
+class AddMembersSerializer(serializers.Serializer):
+
+    room_id = serializers.CharField(max_length=30)
+    member_ids = serializers.ListField(
+        child=serializers.CharField(max_length=30), allow_empty=False
+    )

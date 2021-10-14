@@ -25,10 +25,6 @@ import DisabledInput from "../shared/DiasbledInput";
 import notificationsManager from "./subs/Centrifugo/NotificationsManager";
 import Centrifugo from "../../utils/centrifugo";
 
-// Zuri components
-import { MessageInputBox } from "@zuri/zuri-ui"
-console.log("MessageInputBox ===", MessageInputBox)
-
 
 
 const MessageBoardIndex = () => {
@@ -116,8 +112,10 @@ const MessageBoardIndex = () => {
  */
 
   useEffect(() => {
-    _getSocket(users.currentWorkspace, channelId)
-    _getNotifications(users.currentWorkspace, channelId, users.currentWorkspace)
+    if (users && users.currentWorkspace) {
+      _getSocket(users.currentWorkspace, channelId)
+      _getNotifications(users.currentWorkspace, channelId, users.currentWorkspace)
+    }
   }, [users])
 
   const reactToCreateMessageOrJoinOrLeaveChannel = React.useCallback((ctx) => {
@@ -125,10 +123,10 @@ const MessageBoardIndex = () => {
     // notificationsManager(ctx.data.content)
   }, [])
   
-  useEffect(() => {
-    console.log("centrifugo socket ===", sockets)
-    const socketName = sockets.socket_name
-    if (socketName) {
+  if (!Centrifugo.isMessageRTCSet) {
+    if (sockets && sockets.socket_name) {
+      const socketName = sockets.socket_name
+  
       Centrifugo.initForMessage(socketName)
       Centrifugo.addMessageListener('create:message', reactToCreateMessageOrJoinOrLeaveChannel)
       Centrifugo.addMessageListener('join:channel', reactToCreateMessageOrJoinOrLeaveChannel)
@@ -140,7 +138,7 @@ const MessageBoardIndex = () => {
         dispatch({ type: DELETE_CHANNELMESSAGES, payload: ctx.data })
       })
     }
-  }, [sockets])
+  }
    
 
 
@@ -180,13 +178,13 @@ const MessageBoardIndex = () => {
   //   if(orgId){
   //     retrieveNotificationSettings()
   //   }
-  // })
+  //" })
 
   return (
     <Box bg="#F9F9F9" width="99%">
       <Flex>
         <Box width="100%">
-          <ChannelHeader channelId={channelId} org_id={users?.currentWorkspace} />
+          <ChannelHeader channelId={channelId} org_id={users.currentWorkspace} />
           <Box
             m="5px"
             bg="white"
@@ -201,7 +199,7 @@ const MessageBoardIndex = () => {
               },
             }}
           >
-            <MessageCardContainer channelId={channelId} allUsers={workspace_users} org_id={users.currentWorkspace} />
+            <MessageCardContainer channelId={channelId} />
           </Box>
           {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />}
         </Box>

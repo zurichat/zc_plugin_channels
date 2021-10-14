@@ -18,6 +18,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
     uid = kwargs.get("dispatch_uid")
     if uid == "UpdateSidebarSignal":
         org_id = kwargs.get("org_id")
+        room_id = kwargs.get("room_id")
         member_id = kwargs.get("user_id")
 
         if org_id is not None and member_id is not None:
@@ -65,6 +66,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                 "plugin_id": "channels.zuri.chat",
                 "data": {
                     "name": "Channels Plugin",
+                    "id": room_id,
                     "group_name": "Channel",
                     "show_group": False,
                     "category": "channels",
