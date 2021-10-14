@@ -76,7 +76,6 @@ LOCAL_APPS = [
     "apps.googlemeet",
     # Your stuff: custom apps go here
     "apps.centri.apps.CentriConfig",
-    "apps.syncApp.apps.SyncAppConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -292,7 +291,6 @@ except:  # noqa
 
 CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
 
-SYNC_HANDLER=None
 
 # CORS_ALLOWED_ORIGIN_REGEXES = [
 #     r"^https://\w+\.zuri\.chat$",
