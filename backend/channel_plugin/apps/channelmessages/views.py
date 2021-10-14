@@ -31,6 +31,8 @@ from .serializers import (
     ChannelMessageUpdateSerializer,
 )
 
+import requests
+
 
 class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
 
@@ -683,3 +685,62 @@ def search(request, org_id):
 @api_view(["GET"])
 def test(request):
     return render(request, "index.html")
+
+
+@swagger_auto_schema(
+    method="GET",
+    responses={
+        200: openapi.Response(
+            "Response", "Ok"
+        ),
+        400: openapi.Response("Error Response", "Bad Request"),
+    },
+    operation_id="workflow-search-all-channel-messages",
+)
+@api_view(["GET"])
+def workflow_search(request, org_id, member_id):
+    """Search channel messages based on content"""
+    print("Yes")
+    key = request.GET.get("key", "")
+    
+    read_channels_api_url = "https://channels.zuri.chat/api/v1/{org_id}/channels/".format(
+        org_id=org_id
+    )
+    channels = requests.get(read_channels_api_url)
+    user_channels = [ch for ch in channels.json() if member_id in ch["users"].keys()]
+
+    results = []
+
+    for channel in user_channels:
+        read_messages_api_url = "https://channels.zuri.chat/api/v1/{org_id}/channels/{channel_id}/messages/".format(
+            org_id=org_id, channel_id=user_channels[0]["_id"]
+        )
+        
+        messages = requests.get(read_messages_api_url).json()
+
+        for message in messages:
+            if key in message["content"]:
+                data = {
+                    "title": message["user_id"],
+                    "email": "",
+                    "description": message["content"],
+                    "created_at": message["timestamp"],
+                    "url": message["_id"]
+                }
+                results.append(data)
+    
+    response = {
+        "status": "ok",
+        "pagination": {
+
+        },
+        "query": key,
+        "plugin": "Channels",
+        "data": results,
+        "filter_suggestions": {
+            "in": [],
+            "from": []
+        }
+    }
+
+    return Response(response, status=status.HTTP_200_OK)
