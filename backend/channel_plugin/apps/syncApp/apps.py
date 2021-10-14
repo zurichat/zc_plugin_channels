@@ -1,10 +1,17 @@
 from django.apps import AppConfig
-from .jobs import scheduler,  job_function # run_qhandler_schedule
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.memory import MemoryJobStore
+from .jobs import job_function , run_qhandler_schedule
+
+scheduler = BackgroundScheduler()
+INTERVAL = 10
+MAX_INSTANCES = 1
+JOB_ID = "QH-Timer"
 
 class SyncAppConfig(AppConfig):
     name = 'apps.syncApp'
 
     def ready(self):
-        if len(scheduler.get_jobs()) < 0:
-            scheduler.add_job(job_function, trigger="interval", seconds=5, max_instances=1, id="Timer")
+        if len(scheduler.get_jobs()) <= 0:
+            scheduler.add_job(run_qhandler_schedule, trigger="interval", minutes=INTERVAL, max_instances=MAX_INSTANCES, id=JOB_ID)
             scheduler.start()
