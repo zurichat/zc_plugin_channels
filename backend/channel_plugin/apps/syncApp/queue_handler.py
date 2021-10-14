@@ -2,10 +2,7 @@ import asyncio
 from django.conf import settings
 from aiohttp import ClientSession
 import json
-from django.urls import reverse
-from channel_plugin.utils.customrequest import request_view_by_name, find_match_in_db
-import requests
-from .utils import BadServerResponse
+
 
 # def _():
 #     return {"event": "enter_organization"}
@@ -35,8 +32,8 @@ class QueueHandler:
     def __init__(self, handlers=[]) -> None:
         try:
             self._set_task_handler(handlers)
-        except Exception as e:
-            print(f"Failed to initialize QueueHandler due to {e}")
+        except:
+            print("Failed to initialize QueueHandler")
         else:
             self.__update_global_state(done=False)
             pass
@@ -45,9 +42,10 @@ class QueueHandler:
         for handler in handlers:
             try:
                 schema = handler.get_schema()
-                print(f"\n {schema} \n")
+                
                 assert isinstance(schema, dict), f"handler.get_schema() returned a {type(schema)} instead of dict"
                 assert isinstance(schema.get("event"), str), f"schema event must be of type string"
+
                 self._task_handlers.update({schema.get("event"): handler})
             except:
                 pass
@@ -72,9 +70,7 @@ class QueueHandler:
             self.__unresolved_task.append(task_data)
         self.__task_queue.remove(task_data)
 
-    def __update_global_state(self, done=True, *args, **kwargs):
-        print(args)
-        print(kwargs)
+    def __update_global_state(self, done=True):
         if done:
             settings.SYNC_HANDLER=None
         else:
@@ -114,22 +110,7 @@ class QueueHandler:
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("queue", [] )
-                queue = [{
-                            "id":20,
-                            "event":"leave_organization",
-                            "message":{
-                                    "member_id":"testmaster",
-                                    "organization_id": "6167b3f14cd3cc2a7af3dbe6"
-                                }
-                            },
-                            {
-                            "id": 30,
-                            "event": "enter_organization",
-                            "message": { "member_id":"6166cd978eac3b6a751cfb83",
-                                            "organization_id":"61459d8e62688da5302acdb1"
-                            }},
-                                                ]
+                queue = data.get("queue", [])
                 self.update_queue(queue)
 
     async def _process_queue(self):
@@ -173,110 +154,3 @@ class QueueHandler:
         asyncio.run(queue_handler.__start__())
 
 
-class TaskHandler:
-    def __init__(self):
-        # self.job_status = {"event": "enter_organization"}
-        self.BASE_URL = "https://channels.zuri.chat/api"
-    
-    @staticmethod
-    def run(data):
-        print("RECEIVED DATA :" + str(data))
-        assert isinstance(data, dict), f"Improper data type"
-        
-        self.__process_data()
-    
-    # @staticmethod
-    def __process_data(self):
-        self.member_id = data["message"]["member_id"]
-        self.organization_id = data["message"]["organization_id"]
-        self.event = data["event"]
-
-    @staticmethod
-    def get_schema():
-        print("HEO")
-        return {"event": "enter_organization"}
-
-class JOIN_TaskHandler(TaskHandler):
-    def __init__(self):
-        pass
-
-    # @staticmethod
-    def __process_data(self):
-        print("Processing Data")
-        self.member_id = data["message"]["member_id"]
-        self.organization_id = data["message"]["organization_id"]
-        self.event = data["event"]
-        default_channels =JOIN_TaskHandler.__get_default_channels()
-        JOIN_TaskHandler.__add_member_to_channel(__member_id, __organization_id, default_channels)
-        # super().
-    @staticmethod
-    def __get_default_channels(self):
-        print("Get Default Channels")
-        data = find_match_in_db(__organization_id, "channel", default, True, return_data=True)
-        default_channel = [i["_id"] for i in data]
-        return default_channels
-
-    @staticmethod
-    def __add_member_to_channel(self, member_id, org_id, channels):
-        print("Add Member to Channel")
-        for channel in channels:
-            endpoint_url = f"/v1/{org_id}/channels/{channel_id}/members/"
-            data = {"_id": member_id,
-                    "role_id": "member",
-                    "is_admin": false,
-                    "notifications": {
-                     "web": "nothing",
-                     "mobile": "mentions",
-                     "same_for_mobile": true,
-                     "mute": false
-                    }
-                }
-            response = requests.post(__BASE_URL + endpoint_url, data=json.loads(data))
-    
-
-class REMOVE_TaskHandler(TaskHandler):
-    # def __init__(self):
-    #     self.job_status = {"event":"leave_organization"}
-    #     super().__init__()
-
-    # @staticmethod
-    # def __retrieve_user_channels(org_id, user_id):
-    #     endpoint_url = f"/v1/{org_id}/channels/users/{user_id}/"
-    #     response = requests.get(self.BASE_URL + endpoint_url)
-    #     if response.status_code < 500:
-    #         try:
-    #             data = response.json()
-    #             channel_ids = [i["_id"] for i in data]
-    #             return channel_ids
-
-    #         except Exception as e:
-    #             print(f"\n ERROR {e} \n")
-    #             raise BadServerResponse
-    #     else:
-    #         raise BadServerResponse
-
-    # @staticmethod
-    # def __remove_from_channels(member_id, org_id, channels=[]):
-    #     for channel_id in channels:
-    #         try:
-    #             endpoint_url = f"/v1/{org_id}/channels/{channel_id}/members/{member_id}/"
-    #             response = requests.delete(self.BASE_URL + endpoint_url)
-    #         except Exception as e:
-    #             raise BadServerResponse
-
-    # @staticmethod
-    # def run(data):
-    #     assert isinstance(data, dict), f"Improper data type"
-    #     member_id = data["message"]["member_id"]
-    #     organization_id = data["message"]["organization_id"]
-    #     event = data["event"]
-        
-    #     user_channels = self.retrieve_user_channels(organization_id, member_id)
-    #     self.remove_from_channels(member_id, organization_id, user_channels)
-    
-    
-    # @staticmethod
-    # def get_schema():
-    #     print(__job_status)
-    #     return {"event":"leave_organization"}
-    pass
