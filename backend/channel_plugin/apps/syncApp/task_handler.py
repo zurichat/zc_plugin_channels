@@ -6,7 +6,7 @@ import json
 from django.urls import reverse
 from channel_plugin.utils.customrequest import find_match_in_db
 import requests
-from .utils import BadServerResponse
+from apps.syncApp.utils import BadServerResponse
 
 # class TaskHandler:
 #     __BASE_URL = "https://channels.zuri.chat/api"

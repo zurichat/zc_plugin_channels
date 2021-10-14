@@ -2,8 +2,8 @@ from datetime import datetime,timedelta
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.memory import MemoryJobStore
-from .queue_handler import QueueHandler as QHandler
-from .task_handler import JoinTaskHandler, RemoveTaskHandler
+from apps.syncApp.queue_handler import QueueHandler as QHandler
+from apps.syncApp.task_handler import JoinTaskHandler, RemoveTaskHandler
 
 
 def job_function():
