@@ -497,6 +497,40 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             {"error": "message not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
+    @swagger_auto_schema(
+        operation_id="last_message_instance",
+        responses={
+            200: openapi.Response(
+                "Response", ChannelMessageUpdateSerializer(many=True)
+            ),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def last_message_instance(self, request, org_id, channel_id, timestamp):
+        """Get all the messages sent in a channel.
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
+        ```
+        """
+        data = {"channel_id": channel_id}
+        params = self._clean_query_params(request)
+        data.update(params)
+        result = Request.get(org_id, "channelmessage", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result, list):
+            if len(result) > 0:
+                result = result[-1]
+                result =  result["timestamp"]
+            elif len(result) == 0:
+                result = timestamp
+                
+            status_code = status.HTTP_200_OK
+        return Response(result, status=status_code)
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {

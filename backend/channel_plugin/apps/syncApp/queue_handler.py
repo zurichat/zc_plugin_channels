@@ -78,17 +78,17 @@ class QueueHandler:
       
     async def __run_task(self, task_handler, task_data):
         compeleted = False
-
+        
         try:
             compeleted = task_handler.run(task_data)
         except Exception as exc:
             pass
-
+        
         if compeleted:
             self.__resolved_task.append(task_data)
         else:
             self.__unresolved_task.append(task_data)
-
+            
         self.__task_queue.remove(task_data)
 
     def __update_global_state(self, done=True):
@@ -126,7 +126,9 @@ class QueueHandler:
     async def _get_queue_data(self):
         async with ClientSession()  as  session :
             id = settings.PLUGIN_ID
+            
             url = f"https://api.zuri.chat/marketplace/plugins/{id}/"
+
             res = await session.get(url)
             
             if res.status == 200:
@@ -138,7 +140,7 @@ class QueueHandler:
     async def _process_queue(self):
         event_loop = asyncio.get_event_loop()
         tasks = []
-
+        
         for task in self._get_queue():
             handler = self._task_handlers.get(task.get("event"))
 
@@ -163,10 +165,11 @@ class QueueHandler:
         if most_recent_task:
             async with ClientSession() as session:
                 id = settings.PLUGIN_ID
+                
                 url = f"https://api.zuri.chat/marketplace/plugins/{id}/sync"
                 
-                res = await session.patch(url, {"id": most_recent_task.get("id", 0)})
-                
+                res = await session.post(url, {"id": most_recent_task.get("id", 0)})
+              
                 if res.status == 200:
                     self.__update_global_state(done=True)
 

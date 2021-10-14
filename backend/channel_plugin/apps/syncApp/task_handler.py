@@ -58,7 +58,6 @@ class JoinTaskHandler:
     
     @staticmethod
     def run(data):
-
         assert isinstance(data, dict), f"Improper data type"
         assert isinstance(data.get("message"), dict), "message must be of type dict"
 
