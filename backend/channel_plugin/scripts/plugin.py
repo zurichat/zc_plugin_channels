@@ -8,7 +8,7 @@ To run `python manage.py runscript plugin`
 
 url = "https://api.zuri.chat/plugins/register"
 data = {
-    "name": "Channels",
+    "name": "Channels Plugin",
     "developer_name": "Team Coelho",
     "developer_email": "team-coelho@zuri.chat",
     "description": "Channel Plugin",
@@ -26,6 +26,9 @@ data = {
 
 def run():
     response = requests.post(url, data=json.dumps(data))
+    import pdb
+
+    pdb.set_trace()
     if response.status_code >= 200 and response.status_code < 300:
         response = response.json()
         plugin_id = response.get("data", {}).get("plugin_id")
