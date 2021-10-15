@@ -56,9 +56,11 @@ const ChannelHeader = ({channelId}) => {
                 <Button mr='10px' {...pinnedAndBookmarkButtonStyle} textColor='#B0AFB0' leftIcon={<Image src={pinImage}/>}>{pinnedMessages.length} Pinned</Button>
               </PinnedMessages>
           )}
+          {/* <div style={{position: 'fixed', marginTop: '6rem'}}>
           <IconButton {...pinnedAndBookmarkButtonStyle} width='33px' icon={<Icon w={5} h={4} as={AiOutlineStar}/>}></IconButton>        
           <IconButton {...pinnedAndBookmarkButtonStyle} width='33px' icon={<Icon w={5} h={4} as={ImNotification} onClick={onOpen}/> }></IconButton>        
           <MoreNotificationModal isOpen={isOpen} onClose={onClose} />
+          </div> */}
         </Flex>
       </Box> 
     </Box> 
