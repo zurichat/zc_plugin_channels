@@ -172,6 +172,9 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     result[i].update({"members": len(channel["users"].keys())})
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
+            return Custom_Response(
+                result, status=status_code, request=request, view=self
+            )
         return Custom_Response(list(), status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
@@ -258,7 +261,10 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         if result.__contains__("_id") or isinstance(result, dict):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
-            status_code = status.HTTP_200_OK
+                status_code = status.HTTP_200_OK
+                return Custom_Response(
+                    result, status=status_code, request=request, view=self
+                )
         return Custom_Response(dict(), status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
@@ -313,15 +319,15 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             204: openapi.Response("Channel deleted successfully"),
             404: openapi.Response("Not found"),
         },
-        manual_parameters=[
-            openapi.Parameter(
-                "user_id",
-                openapi.IN_QUERY,
-                description="User ID (owner of message)",
-                required=True,
-                type=openapi.TYPE_STRING,
-            )
-        ],
+        # manual_parameters=[
+        #     openapi.Parameter(
+        #         "user_id",
+        #         openapi.IN_QUERY,
+        #         description="User ID (Admin)",
+        #         required=True,
+        #         type=openapi.TYPE_STRING,
+        #     )
+        # ],
     )
     @action(
         methods=["DELETE"],

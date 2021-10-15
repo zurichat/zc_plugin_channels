@@ -1,4 +1,3 @@
-import requests
 from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
@@ -150,6 +149,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             if len(result) > 0:
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
+            return Response(result, status=status_code)
         return Response(list(), status=status_code)
 
     # def _stream_message_all(self, request, org_id, channel_id):
@@ -684,26 +684,40 @@ def test(request):
     return render(request, "index.html")
 
 
+@swagger_auto_schema(
+    method="GET",
+    operation_id="workflow-search",
+    responses={
+        200: openapi.Response("Ok"),
+        404: openapi.Response("Not found"),
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            "key",
+            openapi.IN_QUERY,
+            description="Search Key",
+            required=True,
+            type=openapi.TYPE_STRING,
+        )
+    ],
+)
 @api_view(["GET"])
 def workflow_search(request, org_id, member_id):
     """Search channel messages based on content"""
-    print("Yes")
     key = request.GET.get("key", "")
 
-    read_channels_api_url = (
-        "https://channels.zuri.chat/api/v1/{org_id}/channels/".format(org_id=org_id)
-    )
-    channels = requests.get(read_channels_api_url)
-    user_channels = [ch for ch in channels.json() if member_id in ch["users"].keys()]
+    tmp = Request.get(org_id, "channels")
+    channels = tmp if isinstance(tmp, list) else []
+    user_channels = [ch for ch in channels if member_id in ch["users"].keys()]
 
     results = []
 
     for channel in user_channels:
-        read_messages_api_url = "https://channels.zuri.chat/api/v1/{org_id}/channels/{channel_id}/messages/".format(
-            org_id=org_id, channel_id=user_channels[0]["_id"]
+        tmp = Request.get(
+            org_id, "channelmessage", {"channel_id": user_channels[0]["_id"]}
         )
 
-        messages = requests.get(read_messages_api_url).json()
+        messages = tmp if isinstance(tmp, list) else []
 
         for message in messages:
             if key in message["content"]:

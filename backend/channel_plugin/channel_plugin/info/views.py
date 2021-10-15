@@ -249,7 +249,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         res = requests.post(url, data=json.dumps(data), headers=headers)
         if res.status_code == 400 and "invalid" in res.json().get("message"):
             return Custom_Response(
-                res.get("message"),
+                res.json().get("message"),
                 status=status.HTTP_400_BAD_REQUEST,
                 request=request,
                 view=self,
