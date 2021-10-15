@@ -225,8 +225,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-        capture_message(f"Headers - {request.headers}", loglevel="info")
-        capture_message(f"Request - {request.__dict__}", loglevel="info")
+        capture_message(f"Headers - {request.headers}", level="info")
+        capture_message(f"Request - {request.__dict__}", level="info")
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -247,9 +247,13 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
-        if res.status_code == 400 and "invalid" in res.json().get("message"):
+        if (
+            res.status_code == 400
+            and "invalid" in res.json().get("message")
+            or res.status_code == 401
+        ):
             return Custom_Response(
-                res.get("message"),
+                res.json(),
                 status=status.HTTP_400_BAD_REQUEST,
                 request=request,
                 view=self,
