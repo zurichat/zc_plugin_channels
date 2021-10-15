@@ -7,7 +7,7 @@ import {
   useDisclosure,
   Flex,
   Spacer,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 import {
   Box,
   Button,
@@ -15,28 +15,28 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-  ModalOverlay
-} from "@chakra-ui/react";
-import { Text } from "@chakra-ui/layout";
-import TabsRows from "./TabsRow";
-import { FaPhoneAlt } from "react-icons/fa";
-import { FaRegBell } from "react-icons/fa";
-import { FaChevronDown } from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa";
-import { FaHashtag } from "react-icons/fa";
+  ModalOverlay,
+} from '@chakra-ui/react';
+import { Text } from '@chakra-ui/layout';
+import TabsRows from './TabsRow';
+import { FaPhoneAlt } from 'react-icons/fa';
+import { FaRegBell } from 'react-icons/fa';
+import { FaChevronDown } from 'react-icons/fa';
+import { FaRegStar } from 'react-icons/fa';
+import { FaHashtag } from 'react-icons/fa';
 
-import { useDispatch, useSelector } from "react-redux";
-import appActions from "../../redux/actions/app";
-import { bindActionCreators } from "redux";
+import { useDispatch, useSelector } from 'react-redux';
+import appActions from '../../redux/actions/app';
+import { bindActionCreators } from 'redux';
 
-import OrganisationMembersList from "./organisationMembersList";
-import About from "./about";
-import FileList from "./fileList";
-import NotificationModal from "./NotificationModal";
+import OrganisationMembersList from './organisationMembersList';
+import About from './about';
+import FileList from './fileList';
+import NotificationModal from './NotificationModal';
 
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from 'react';
 
-import { useParams } from "react-router";
+import { useParams } from 'react-router';
 
 const ChannelDetails = ({ onClose, isOpen }) => {
   const initialRef = useRef();
@@ -47,7 +47,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
     setShowModal(prev => !prev);
   };
 
-  const { channelId } = useParams()
+  const { channelId } = useParams();
   const org_id = '614679ee1a5607b13c00bcb7';
   const channel_id = channelId;
 
@@ -56,10 +56,14 @@ const ChannelDetails = ({ onClose, isOpen }) => {
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
 
   //-------getting channel details.........//
-  const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
-  const loadChannelDetails = async () => { await _getChannelDetails(org_id, channel_id);};
-  useEffect(() => { loadChannelDetails(); }, []);
-  
+  const { channelDetails } = useSelector(state => state.channelsReducer); //extract redux state
+  const loadChannelDetails = async () => {
+    await _getChannelDetails(org_id, channel_id);
+  };
+  useEffect(() => {
+    loadChannelDetails();
+  }, []);
+
   const isPrivate = channelDetails.private;
 
   return (
@@ -71,16 +75,15 @@ const ChannelDetails = ({ onClose, isOpen }) => {
         size="lg"
       >
         <ModalOverlay />
-        <ModalContent p={0} mt="8rem" maxW="700px" height="834px">
+        <ModalContent p={0} mt="8rem" maxW="700px" height="80vh">
           <Tabs colorScheme="" borderBottomColor="green" color="#fff">
             <ModalHeader
               pt={3}
               pb={2}
               backgroundColor="#F6F6F6"
               color="#000"
-              height="191px"
+              // height="20%"
             >
-
               <Box px={6}>
                 <Flex>
                   <Box pe={2} pt={1.5}>
@@ -107,8 +110,8 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                   <Spacer />
                   <ModalCloseButton
                     color="#000"
-                  // border="1px"
-                  // borderColor="#000"
+                    // border="1px"
+                    // borderColor="#000"
                   />
                 </Flex>
                 <Stack direction="row" my={1} py={2}>
@@ -122,12 +125,17 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                       <Box mr={2} mt={1}>
                         <FaRegBell color="#000" mr={6} />
                       </Box>
-                      <Text color='#000'>Get Notifications for @ mentions</Text>
+                      <Text color="#000">Get Notifications for @ mentions</Text>
                       <Box ml={2} mt={1}>
-                        <FaChevronDown color="#000" mt={4} ml={5} onClick={openModal} />
+                        <FaChevronDown
+                          color="#000"
+                          mt={4}
+                          ml={5}
+                          onClick={openModal}
+                        />
                         <NotificationModal
-                          // showModal={showModal}
-                          // setShowModal={setShowModal}
+                        // showModal={showModal}
+                        // setShowModal={setShowModal}
                         />
                       </Box>
                     </Button>
@@ -140,7 +148,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                       <Box mr={2} mt={1}>
                         <FaPhoneAlt color="#FFFFF" w={2} />
                       </Box>
-                      <Text color='#000'>Start a Call</Text>
+                      <Text color="#000">Start a Call</Text>
                     </Button>
                   </Box>
                 </Stack>
@@ -149,7 +157,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                 </Box>
               </Box>
             </ModalHeader>
-            <ModalBody height="703px" backgroundColor="#f9f9f9">
+            <ModalBody height="80%" backgroundColor="#f9f9f9">
               <Box px={6}>
                 <TabPanels>
                   <TabPanel>
@@ -157,12 +165,10 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                     {/* <FileList /> */}
                   </TabPanel>
                   <TabPanel>
-                    {/* <OrganisationMembersList /> */}
+                    <OrganisationMembersList />
                   </TabPanel>
-                  <TabPanel>
-                  </TabPanel>
-                  <TabPanel>
-                  </TabPanel>
+                  <TabPanel></TabPanel>
+                  <TabPanel></TabPanel>
                 </TabPanels>
               </Box>
             </ModalBody>
