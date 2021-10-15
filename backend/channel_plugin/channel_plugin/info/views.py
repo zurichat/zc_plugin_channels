@@ -239,7 +239,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
 
         headers = {
             "Content-Type": "application/json",
-            "Cookie": "f6822af94e29ba112be310d3af45d5c7=MTYzNDEyMDc3MHxHd3dBR0RZeE5UZzBNak5sT0RjMU5EQmtPR1F3TVdabVl6aGpNdz09fAS7LNmVpw4nBIe5afKc4Wx9Kqzr1AftKwLXz8_a59Dr",  # noqa
+            "Cookie": request.COOKIES.get("token", "null"),
         }
         url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
         data = {
