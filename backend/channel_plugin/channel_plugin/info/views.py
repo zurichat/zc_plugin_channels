@@ -225,8 +225,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-        capture_message(f"Headers - {request.headers}", loglevel="info")
-        capture_message(f"Request - {request.__dict__}", loglevel="info")
+        capture_message(f"Headers - {request.headers}", level="info")
+        capture_message(f"Request - {request.__dict__}", level="info")
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
