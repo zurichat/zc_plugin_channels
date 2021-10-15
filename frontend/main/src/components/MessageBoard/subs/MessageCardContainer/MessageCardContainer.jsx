@@ -23,7 +23,12 @@ import EmptyStateComponent from '../../../createChannel/EmptyStateComponent';
 //centrifuge
 import Centrifuge from 'centrifuge'
 import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
-
+import {
+    CommentBox,
+    MessageInputBox,
+    ChatSection,
+    MessageBoard,
+  } from '@zuri/zuri-ui';
 
 const MessageCardContainer = ({ channelId }) => {
 
@@ -59,11 +64,12 @@ const MessageCardContainer = ({ channelId }) => {
 
     return (
         <>
+        <MessageBoard />
             <Box overflowY='scroll'
                 height='100%'
                 position='relative'>
-                <EmptyStateComponent org_id={users.currentWorkspace} />
-                {channelMessages && channelMessages.length > 0 &&
+                {/* <EmptyStateComponent org_id={users.currentWorkspace} /> */}
+                {/* {channelMessages && channelMessages.length > 0 &&
                     <Box ref={messageRef}>
                         {channelMessages && channelMessages.length > 0 &&
                             channelMessages.map((message) => {
@@ -74,7 +80,7 @@ const MessageCardContainer = ({ channelId }) => {
                             })
                         }
                     </Box>
-                }
+                } */}
                 <Box />
             </Box>
         </>

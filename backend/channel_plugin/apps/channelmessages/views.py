@@ -687,16 +687,6 @@ def test(request):
     return render(request, "index.html")
 
 
-@swagger_auto_schema(
-    method="GET",
-    responses={
-        200: openapi.Response(
-            "Response", "Ok"
-        ),
-        400: openapi.Response("Error Response", "Bad Request"),
-    },
-    operation_id="workflow-search-all-channel-messages",
-)
 @api_view(["GET"])
 def workflow_search(request, org_id, member_id):
     """Search channel messages based on content"""
