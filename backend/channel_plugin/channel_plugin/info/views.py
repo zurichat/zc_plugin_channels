@@ -1,6 +1,8 @@
+import json
 import random
 
 import requests
+from apps.channels.serializers import ChannelSerializer
 from django.conf import settings
 from django.utils import timezone
 from drf_yasg import openapi
@@ -9,15 +11,20 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from sentry_sdk import capture_message
 
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.custome_response import Response as Custom_Response
+from channel_plugin.utils.customrequest import AsyncRequest, Request
+from channel_plugin.utils.mixins import AsycViewMixin
+
+from .serializers import InstallSerializer
 
 description = "The Channel Plugin is a feature\
     that helps users create spaces for\
     conversation and communication on zuri.chat."
 
 
-class GetInfoViewset(ViewSet):
+class GetInfoViewset(AsycViewMixin, ViewSet):
     def get_throttled_message(self, request):
         """Add a custom message to the throttled error."""
         return "request limit exceeded"
@@ -210,3 +217,99 @@ class GetInfoViewset(ViewSet):
             or {}
         )
         return Response(response, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(request_body=InstallSerializer)
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="install",
+    )
+    async def install(self, request):
+        capture_message(f"Headers - {request.headers}", level="info")
+        capture_message(f"Request - {request.__dict__}", level="info")
+        serializer = InstallSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
+        org_id = serializer.data.get("org_id")
+        user_id = serializer.data.get("user_id")
+        title = serializer.data.get("title")
+
+        headers = {
+            "Content-Type": "application/json",
+            "Cookie": "f6822af94e29ba112be310d3af45d5c7=MTYzNDEyMDc3MHxHd3dBR0RZeE5UZzBNak5sT0RjMU5EQmtPR1F3TVdabVl6aGpNdz09fAS7LNmVpw4nBIe5afKc4Wx9Kqzr1AftKwLXz8_a59Dr",  # noqa
+        }
+        url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
+        data = {
+            "user_id": user_id,
+            "plugin_id": settings.PLUGIN_ID,
+        }
+        res = requests.post(url, data=json.dumps(data), headers=headers)
+        if (
+            res.status_code == 400
+            and "invalid" in res.json().get("message")
+            or res.status_code == 401
+        ):
+            return Custom_Response(
+                res.json(),
+                status=status.HTTP_400_BAD_REQUEST,
+                request=request,
+                view=self,
+            )
+        default_channels = ["general", "random"] + [title]
+        channel_id = None
+        for channel in default_channels:
+
+            serializer = ChannelSerializer(
+                data={
+                    "name": channel,
+                    "owner": user_id,
+                    "default": True,
+                },
+                context={"org_id": org_id},
+            )
+            try:
+                serializer.is_valid(raise_exception=True)
+
+                channel = serializer.data.get("channel")
+                response = await channel.create(org_id)
+                if response.__contains__("_id"):
+
+                    if channel == title:
+                        channel_id = response.get("_id")
+
+                    if channel_id is None:
+                        channel_id = response.get("_id")
+
+            except Exception as exc:
+
+                err = self.get_exception_response(exc, request)
+                if channel == title and "name" in err.__dict__["data"]:
+                    result = await AsyncRequest.get(
+                        org_id, "channel", {"name": title.lower()}
+                    )
+                    if result[0].__contains__("_id"):
+                        channel_id = result[0].get("_id")
+
+        response = {
+            200: {
+                "message": "successfully installed!",
+                "success": True,
+                "data": {"redirect_url": f"/channels/message-board/{channel_id}"},
+            },
+            400: {
+                "message": "It has been installed!",
+                "success": False,
+                "data": {"redirect_url": f"/channels/message-board/{channel_id}"},
+            },
+        }
+        return Custom_Response(
+            response.get(res.status_code, 200),
+            status=status.HTTP_201_CREATED
+            if res.status_code == 200
+            else status.HTTP_400_BAD_REQUEST,
+            request=request,
+            view=self,
+        )
