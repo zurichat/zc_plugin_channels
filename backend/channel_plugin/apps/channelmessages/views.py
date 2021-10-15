@@ -1,3 +1,4 @@
+import requests
 from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
@@ -30,8 +31,6 @@ from .serializers import (
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
-
-import requests
 
 
 class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
@@ -151,7 +150,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             if len(result) > 0:
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(list(), status=status_code)
 
     # def _stream_message_all(self, request, org_id, channel_id):
     #     """
@@ -209,7 +208,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(dict(), status=status_code)
 
     @swagger_auto_schema(
         request_body=ChannelMessageUpdateSerializer,
@@ -528,17 +527,15 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             message_count = len(result)
             if message_count > 0:
                 result = result[-1]
-                result =  result["timestamp"]
+                result = result["timestamp"]
             elif message_count == 0:
                 result = timestamp
-            
+
             status_code = status.HTTP_200_OK
 
-        new_result = {
-            'timestamp':result,
-            'message_count': message_count
-        }
+        new_result = {"timestamp": result, "message_count": message_count}
         return Response(new_result, status=status_code)
+
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
@@ -591,7 +588,7 @@ def search_messages(request, org_id, channel_id):
     if isinstance(result, list):
         response = {"result": result, "query": data}
         return Response(response, status=status.HTTP_200_OK)
-    return Response(result, status=status.HTTP_400_BAD_REQUEST)
+    return Response(list(), status=status.HTTP_400_BAD_REQUEST)
 
 
 search_channelmessage = search_messages
@@ -692,9 +689,9 @@ def workflow_search(request, org_id, member_id):
     """Search channel messages based on content"""
     print("Yes")
     key = request.GET.get("key", "")
-    
-    read_channels_api_url = "https://channels.zuri.chat/api/v1/{org_id}/channels/".format(
-        org_id=org_id
+
+    read_channels_api_url = (
+        "https://channels.zuri.chat/api/v1/{org_id}/channels/".format(org_id=org_id)
     )
     channels = requests.get(read_channels_api_url)
     user_channels = [ch for ch in channels.json() if member_id in ch["users"].keys()]
@@ -705,7 +702,7 @@ def workflow_search(request, org_id, member_id):
         read_messages_api_url = "https://channels.zuri.chat/api/v1/{org_id}/channels/{channel_id}/messages/".format(
             org_id=org_id, channel_id=user_channels[0]["_id"]
         )
-        
+
         messages = requests.get(read_messages_api_url).json()
 
         for message in messages:
@@ -715,22 +712,17 @@ def workflow_search(request, org_id, member_id):
                     "email": "",
                     "description": message["content"],
                     "created_at": message["timestamp"],
-                    "url": message["_id"]
+                    "url": message["_id"],
                 }
                 results.append(data)
-    
+
     response = {
         "status": "ok",
-        "pagination": {
-
-        },
+        "pagination": {},
         "query": key,
         "plugin": "Channels",
         "data": results,
-        "filter_suggestions": {
-            "in": [],
-            "from": []
-        }
+        "filter_suggestions": {"in": [], "from": []},
     }
 
     return Response(response, status=status.HTTP_200_OK)
