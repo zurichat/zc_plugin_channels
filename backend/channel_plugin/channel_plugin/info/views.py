@@ -253,7 +253,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             or res.status_code == 401
         ):
             return Custom_Response(
-                res.json().get("message"),
+                res.json(),
                 status=status.HTTP_400_BAD_REQUEST,
                 request=request,
                 view=self,
