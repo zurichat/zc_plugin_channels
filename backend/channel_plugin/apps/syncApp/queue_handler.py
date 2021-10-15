@@ -80,8 +80,9 @@ class QueueHandler:
         compeleted = False
         
         try:
-            compeleted = task_handler.run(task_data)
+            compeleted = await task_handler.run(task_data)
         except Exception as exc:
+            print(exc)
             pass
         
         if compeleted:
@@ -134,6 +135,7 @@ class QueueHandler:
             if res.status == 200:
                 data = json.loads(await res.read())
                 queue = data.get("data").get("queue", [])
+                queue = queue or []
                 # queue = dummy_queue_data # For debugging
                 self.update_queue(queue)
 
@@ -163,16 +165,18 @@ class QueueHandler:
                 most_recent_task = task
 
         if most_recent_task:
-            async with ClientSession() as session:
-                id = settings.PLUGIN_ID
-                
-                url = f"https://api.zuri.chat/plugins/{id}/sync"
-                
-                res = await session.patch(url, {"id": most_recent_task.get("id", 0)})
-              
-                if res.status == 200:
-                    self.__update_global_state(done=True)
+            session = ClientSession()
+            id = settings.PLUGIN_ID
+            url = f"https://api.zuri.chat/plugins/{id}/sync"
+            # url = f"https://api.zuri.chat/marketplace/plugins/{id}/sync"
 
+            # res = await session.patch(url, json.dumps({"id": most_recent_task.get("id")}))
+            
+                # print(res.status)
+
+                # if res.status >= 200 and res.status < 300:
+            self.__update_global_state(done=True)
+            await session.close()
 
     @staticmethod
     def run(handlers):

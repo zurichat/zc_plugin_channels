@@ -1,5 +1,6 @@
 import asyncio
 from os import stat
+import aiohttp
 from django.conf import settings
 from aiohttp import ClientSession
 import json
@@ -7,7 +8,7 @@ from django.urls import reverse
 from channel_plugin.utils.customrequest import find_match_in_db
 import requests
 from apps.syncApp.utils import BadServerResponse
-
+from channel_plugin.utils.customrequest import change_collection_name
 # class TaskHandler:
 #     __BASE_URL = "https://channels.zuri.chat/api"
 
@@ -49,82 +50,126 @@ from apps.syncApp.utils import BadServerResponse
 #     def get_schema():
 #         return {"event": "enter_organization"}
 
+data = {"plugin_id": settings.PLUGIN_ID}
+read = settings.READ_URL
+write = settings.WRITE_URL
+delete = settings.DELETE_URL
+
+
+@change_collection_name
+async def find_match_in_db(org_id, collection_name, param, value, return_data=False):
+    data = {
+        "plugin_id": settings.PLUGIN_ID,
+        "organization_id": org_id,
+        "collection_name": collection_name,
+        "filter": {
+            "$and": [
+                {param: {"$eq": value}},
+            ]
+        },
+    }
+    
+    async with aiohttp.ClientSession() as session:
+        response = await session.post(read, data=json.dumps(data))
+        
+        if response.status >= 200 or response.status < 300:
+            response_data = json.loads(await response.read()) or {}
+            assert isinstance(response_data, dict), "Invalid response returned"
+
+            try:
+                if return_data:
+                    return response_data["data"]
+
+                if response_data["data"] is not None:
+                    print("We made a match")
+                    return True
+
+            except:  # noqa
+                print("No match")
+                return None
+
+
 class JoinTaskHandler:
     __BASE_URL = "https://channels.zuri.chat/api"
 
     def __init__(self):
         self.BASE_URL = "https://channels.zuri.chat/api"
-        self.__execute_operations()
     
     @staticmethod
-    def run(data):
+    async def run(data):
         assert isinstance(data, dict), f"Improper data type"
         assert isinstance(data.get("message"), dict), "message must be of type dict"
 
-        JoinTaskHandler.__process_data(data)
+        await JoinTaskHandler.__process_data(data)
+        return True
 
     
     @staticmethod
-    def __process_data(data):
+    async def __process_data(data):
         
         JoinTaskHandler.member_id = data["message"]["member_id"]
         JoinTaskHandler.organization_id = data["message"]["organization_id"]
         JoinTaskHandler.event = data["event"]
         
         JoinTaskHandler.instance = JoinTaskHandler.__create_new_instance()
+        await JoinTaskHandler.instance.__execute_operations()
     
     @staticmethod
     def __create_new_instance():
-        
         return JoinTaskHandler()    
-
     
     @staticmethod
     def get_schema():
         return {"event": "enter_organization"}
 
-    def __execute_operations(self):
+    async def __execute_operations(self):
         
+        default_channels = await self.__get_default_channels()
         
-        default_channels = self.__get_default_channels()
+        await self.__add_member_to_channel(JoinTaskHandler.member_id, JoinTaskHandler.organization_id, default_channels)
         
-        self.__add_member_to_channel(JoinTaskHandler.member_id, JoinTaskHandler.organization_id, default_channels)
-        
-        # super().
     
-    def __get_default_channels(self):
+    async def __get_default_channels(self):
         
-
-        data = find_match_in_db(JoinTaskHandler.organization_id, "channel", "default", True, return_data=True)
+        data = await find_match_in_db(JoinTaskHandler.organization_id, "channel", "default", True, return_data=True)
+        assert  isinstance(data, list), "find_match_in_db returned an invalid type"
         
         default_channel = [i["_id"] for i in data]
-        
+        print(default_channel)
         return default_channel
 
-
-    def __add_member_to_channel(self, member_id, org_id, channels):
-        
-        
+    async def __add_member_to_channel(self, member_id, org_id, channels):
+        loop = asyncio.get_event_loop()        
+        task = []
         for channel in channels:
-            
-            endpoint_url = f"/v1/{org_id}/channels/{channel}/members/"
-            data = {"_id": member_id,
-                    "role_id": "member",
-                    "is_admin": False,
-                    "notifications": {
-                     "web": "nothing",
-                     "mobile": "mentions",
-                     "same_for_mobile": True,
-                     "mute": False
+            async def add_member():
+                try:
+                    endpoint_url = f"/v1/{org_id}/channels/{channel}/members/"
+                    data = {"_id": member_id,
+                            "role_id": "member",
+                            "is_admin": False,
+                            "notifications": {
+                            "web": "nothing",
+                            "mobile": "mentions",
+                            "same_for_mobile": True,
+                            "mute": False
+                            }
+                        }
+                    
+                    url = (self.BASE_URL + endpoint_url)
+                    headers = {
+                        "Content-Type": "application/json"
                     }
-                }
-            
-            out = (self.BASE_URL + endpoint_url)
-            headers = {
-                "Content-Type": "application/json"
-            }
-            response = requests.post(out, data=json.dumps(data), headers=headers)
-            
+                    
+                    session = ClientSession()
+                    res = await session.post(url, data=json.dumps(data), headers=headers)
+                    print(res.status, "WHAT ")
+                except:
+                    pass
+            task.append(add_member())
+        
+        asyncio.gather(*task)
+
             
 
 class RemoveTaskHandler:
