@@ -58,14 +58,10 @@ class JoinTaskHandler:
     
     @staticmethod
     def run(data):
-        print("\n\n stated run \n\n")
-        JoinTaskHandler.member_id = data["message"]["member_id"]
-        JoinTaskHandler.organization_id = data["message"]["organization_id"]
-        JoinTaskHandler.event = data["event"]
-        
         assert isinstance(data, dict), f"Improper data type"
-        JoinTaskHandler.__process_data(data)
+        assert isinstance(data.get("message"), dict), "message must be of type dict"
 
+        JoinTaskHandler.__process_data(data)
 
     
     @staticmethod
