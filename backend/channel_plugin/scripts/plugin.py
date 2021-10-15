@@ -13,9 +13,13 @@ data = {
     "developer_email": "team-coelho@zuri.chat",
     "description": "Channel Plugin",
     "template_url": "https://channels.zuri.chat",
-    "install_url": "https://channels.zuri.chat/install",
+    "install_url": "https://channels.zuri.chat/api/v1/install",
     "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar",
-    "icon_url": "https://channels.zuri.chat/static/images/full-logo.png/",
+    "icon_url": "https://www.svgrepo.com/show/43575/message-in-a-speech-bubble.svg",
+    "approved": True,
+    "images": None,
+    "version": "v1",
+    "category": "channels",
     "sync_request_url": "https://channels.zuri.chat/sync/",
 }
 
