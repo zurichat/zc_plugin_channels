@@ -1,5 +1,6 @@
 from apps.channelmembers.views import (
     channel_add_remove_member_to_room_view,
+    channel_member_join_view,
     channel_members_can_input_view,
     channel_members_list_create_views,
     channel_members_update_retrieve_views,
@@ -29,6 +30,11 @@ urlpatterns = [
         "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/",
         channel_members_update_retrieve_views,
         name="channel_members_update_retrieve_views",
+    ),
+    path(
+        "<str:org_id>/channels/<str:channel_id>/join/",
+        channel_member_join_view,
+        name="channel_members_join_view",
     ),
     path(
         "<str:org_id>/channels/<str:channel_id>/members/<str:member_id>/notifications/",
