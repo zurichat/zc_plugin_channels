@@ -488,7 +488,8 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     channel_created_on = channel["created_on"]
                     last_message_timestamp = ChannelMessageViewset.last_message_instance(self, request, org_id, channel_id, channel_created_on)
                    
-                    result[i].update({"last_active": last_message_timestamp.data})                    
+                    result[i].update({"last_active": last_message_timestamp.data['timestamp']})                    
+                    result[i].update({"message_count": last_message_timestamp.data['message_count']})                    
 
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
