@@ -11,6 +11,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from sentry_sdk import capture_message
 
 from channel_plugin.utils.custome_response import Response as Custom_Response
 from channel_plugin.utils.customrequest import AsyncRequest, Request
@@ -224,7 +225,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-
+        capture_message(f"Headers - {request.headers}", loglevel="info")
+        capture_message(f"Request - {request.__dict__}", loglevel="info")
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
