@@ -167,7 +167,7 @@ class JoinTaskHandler:
                 except:
                     pass
             task.append(add_member())
-        
+
         asyncio.gather(*task)
 
             
