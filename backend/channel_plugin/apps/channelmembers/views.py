@@ -13,6 +13,7 @@ from channel_plugin.utils.mixins import AsycViewMixin
 
 from .serializers import (
     AddRemoveMembersSerializer,
+    JoinSerializer,
     NotificationsSettingSerializer,
     UserSerializer,
 )
@@ -377,6 +378,81 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             status=status.HTTP_404_NOT_FOUND,
             request=request,
             view=self,
+        )
+
+    @swagger_auto_schema(
+        request_body=JoinSerializer,
+        responses={
+            201: openapi.Response("Response", UserSerializer),
+            400: openapi.Response("{}"),
+        },
+        operation_id="join-channel",
+    )
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    async def join(self, request, org_id, channel_id):
+
+        serializer = JoinSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
+        user_id = serializer.data.get("user_id")
+        channel = await self.retrieve_channel(request, org_id, channel_id)
+        if channel.__contains__("_id"):
+            if not channel.get("private", True):
+                if channel.get("users", {}).get(user_id) is None:
+                    serializer = UserSerializer(
+                        data={"_id": user_id, "notifications": {}}
+                    )
+                    try:
+                        serializer.is_valid(raise_exception=True)
+                    except Exception as exc:
+                        return self.get_exception_response(exc, request)
+
+                    channel["users"].update({user_id: serializer.data})
+
+                    payload = {"users": channel["users"]}
+
+                    result = Request.put(
+                        org_id, "channel", payload=payload, object_id=channel_id
+                    )
+
+                    if isinstance(result, dict):
+                        if not result.get("error"):
+                            loop = asyncio.get_event_loop()
+                            loop.create_task(
+                                request_finished.send(
+                                    sender=self.__class__,
+                                    dispatch_uid="JoinedChannelSignal",
+                                    org_id=org_id,
+                                    channel_id=channel_id,
+                                    # added_by=request.query_params.get("user_id"),
+                                    user=user_id,
+                                )
+                            )
+
+                            loop.create_task(
+                                request_finished.send(
+                                    sender=None,
+                                    dispatch_uid="UpdateSidebarSignal",
+                                    org_id=org_id,
+                                    room_id=channel_id,
+                                    user_id=user_id,
+                                )
+                            )
+
+                            return Custom_Response(
+                                serializer.data,
+                                status=status.HTTP_201_CREATED,
+                                request=request,
+                                view=self,
+                            )
+        return Custom_Response(
+            dict(), status=status.HTTP_400_BAD_REQUEST, request=request, view=self
         )
 
     @swagger_auto_schema(
@@ -934,6 +1010,12 @@ channel_members_list_create_views = ChannelMemberViewset.as_view(
     {
         "get": "list_members",
         "post": "add_member",
+    }
+)
+
+channel_member_join_view = ChannelMemberViewset.as_view(
+    {
+        "post": "join",
     }
 )
 
