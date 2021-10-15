@@ -247,6 +247,13 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
+        if res.status_code == 400 and "invalid" in res.json().get("message"):
+            return Custom_Response(
+                res.get("message"),
+                status=status.HTTP_400_BAD_REQUEST,
+                request=request,
+                view=self,
+            )
         default_channels = ["general", "random"] + [title]
         channel_id = None
         for channel in default_channels:
