@@ -172,7 +172,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     result[i].update({"members": len(channel["users"].keys())})
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        return Custom_Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(list(), status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         responses={
@@ -259,7 +259,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             if result.__contains__("_id"):
                 result.update({"members": len(result["users"].keys())})
             status_code = status.HTTP_200_OK
-        return Custom_Response(result, status=status_code, request=request, view=self)
+        return Custom_Response(dict(), status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
@@ -413,7 +413,10 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 )
             )
 
-        return Custom_Response(result, status=status_code, request=request, view=self)
+            return Custom_Response(
+                result, status=status_code, request=request, view=self
+            )
+        return Custom_Response(list(), status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         responses={
@@ -498,7 +501,10 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
 
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        return Custom_Response(result, status=status_code, request=request, view=self)
+            return Custom_Response(
+                result, status=status_code, request=request, view=self
+            )
+        return Custom_Response(list(), status=status_code, request=request, view=self)
 
 
 channel_list_create_view = ChannelViewset.as_view(
