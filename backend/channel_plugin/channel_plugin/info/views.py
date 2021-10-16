@@ -162,7 +162,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                     "organisation_id": org_id,
                     "user_id": member_id,
                     "group_name": "Channel",
-                    "show_group": False,
+                    "show_group": True,
                     "category": "channels",
                     "button_url": "/channels",
                     "joined_rooms": joined_rooms,

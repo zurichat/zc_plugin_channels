@@ -1,7 +1,7 @@
-from django.conf import settings
-from rest_framework import response
+import requests
 from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
+from django.conf import settings
 from django.core.signals import request_finished
 from django.shortcuts import render
 from django.utils import timezone
@@ -22,6 +22,7 @@ from channel_plugin.utils.customrequest import (
     search_channels,
     search_db,
 )
+from channel_plugin.utils.pagination_handler import SearchPagination
 from channel_plugin.utils.wrappers import OrderMixin
 
 from .permissions import IsMember, IsOwner
@@ -32,10 +33,6 @@ from .serializers import (
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
-
-from channel_plugin.utils.pagination_handler import SearchPagination
-from django.urls import reverse
-import requests
 
 
 class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
@@ -157,6 +154,23 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             status_code = status.HTTP_200_OK
             return Response(result, status=status_code)
         return Response(list(), status=status_code)
+
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def org_message_analytics(self, request, org_id):
+        """Get all the messages count sent in an organization.
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels-messages-analytics/" -H  "accept: application/json"
+        ```
+        """
+        result = Request.get(org_id, "channelmessage") or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result, list):
+            return Response(len(result), status=status.HTTP_200_OK)
+        return Response(0, status=status_code)
 
     # def _stream_message_all(self, request, org_id, channel_id):
     #     """
@@ -558,6 +572,10 @@ channelmessage_reactions = ChannelMessageViewset.as_view(
     {"get": "retrieve_message_reactions", "post": "update_message_reaction"}
 )
 
+channelmessage_analytics = ChannelMessageViewset.as_view(
+    {"get": "org_message_analytics"}
+)
+
 
 @swagger_auto_schema(
     method="POST",
@@ -725,7 +743,7 @@ def test(request):
             description="Number Per Page",
             required=False,
             type=openapi.TYPE_INTEGER,
-        )
+        ),
     ],
 )
 @api_view(["GET"])
@@ -751,16 +769,14 @@ def workflow_search(request, org_id, member_id):
         # return only channels that match filter param if filter is given
         # or return all channels
         if filter:
-            filter = {
-                "name": {"$in": filter}
-            }
+            filter = {"name": {"$in": filter}}
 
         payload = {
             "plugin_ID": settings.PLUGIN_ID,
             "organization_ID": org_id,
             "collection_name": "channel",
             "filter": filter,
-            "object_id": ""
+            "object_id": "",
         }
         res = requests.post(settings.READ_URL, json=payload)
 
@@ -769,17 +785,18 @@ def workflow_search(request, org_id, member_id):
 
             for channel in channels:
                 # if user owns or is a member of the channel
-                if channel.get("owner") == member_id or member_id in channel.get("users", {}).keys():
+                if (
+                    channel.get("owner") == member_id
+                    or member_id in channel.get("users", {}).keys()
+                ):
                     # filter query to return only messages that belong to channel
-                    msg_filter = {
-                        "channel_id": {"$eq": channel.get("_id", "")}
-                    }
+                    msg_filter = {"channel_id": {"$eq": channel.get("_id", "")}}
                     payload = {
                         "plugin_ID": settings.PLUGIN_ID,
                         "organization_ID": org_id,
                         "collection_name": "channelmessage",
                         "filter": msg_filter,
-                        "object_id": ""
+                        "object_id": "",
                     }
                     res = requests.post(settings.READ_URL, json=payload)
 
@@ -787,20 +804,21 @@ def workflow_search(request, org_id, member_id):
                         for message in res.json().get("data", []):
                             if q.lower() in message.get("content", "").lower():
                                 entity_data = {
-                                        "_id": message.get("_id", ""),
-                                        "room_name": channel.get("name", ""),
-                                        "title": channel.get("name", ""),
-                                        "content": message.get("content", ""),
-                                        "created_by": message.get("user_id", ""),
-                                        "images_url": message.get("images_url", []),
-                                        "created_at": message.get("timestamp", ""),
-                                        "destination_url": msg_url.format(
-                                            org_id=org_id, msg_id=message.get("_id", ""))
-                                    }
+                                    "_id": message.get("_id", ""),
+                                    "room_name": channel.get("name", ""),
+                                    "title": channel.get("name", ""),
+                                    "content": message.get("content", ""),
+                                    "created_by": message.get("user_id", ""),
+                                    "images_url": message.get("images_url", []),
+                                    "created_at": message.get("timestamp", ""),
+                                    "destination_url": msg_url.format(
+                                        org_id=org_id, msg_id=message.get("_id", "")
+                                    ),
+                                }
                                 result.append(entity_data)
 
             result = paginator.paginate_queryset(result, request)
-            
+
             return paginator.get_paginated_response(result, q, filter, request)
     except Exception as e:
         print(e)
@@ -818,9 +836,7 @@ def workflow_search(request, org_id, member_id):
 )
 @api_view(["GET"])
 def search_suggestions(request, org_id, member_id):
-    filter = {
-        "user_id": member_id
-    }
+    filter = {"user_id": member_id}
 
     data = {}
     count = 0
@@ -831,27 +847,18 @@ def search_suggestions(request, org_id, member_id):
             "organization_ID": org_id,
             "collection_name": "channelmessage",
             "filter": filter,
-            "object_id": ""
+            "object_id": "",
         }
         res = requests.post(settings.READ_URL, json=payload)
 
         for message in res.json().get("data", []):
-            data[message.get("content","")] = message.get("content", "")
+            data[message.get("content", "")] = message.get("content", "")
             if count == 10:
                 break
 
-        response = {
-            "status":"ok",
-            "type":"suggestions",
-            "data": data
-        }
-                   
-    except Exception as e:
-        print(e)     
-        response = {
-            "status":"ok",
-            "type":"suggestions",
-            "data":data
-        }
-    return Response(response, status=status.HTTP_200_OK)
+        response = {"status": "ok", "type": "suggestions", "data": data}
 
+    except Exception as e:
+        print(e)
+        response = {"status": "ok", "type": "suggestions", "data": data}
+    return Response(response, status=status.HTTP_200_OK)

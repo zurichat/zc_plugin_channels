@@ -111,6 +111,7 @@ const MessageBoardIndex = () => {
     }
    */
 
+
   useEffect(() => {
     if (users && users.currentWorkspace) {
       _getSocket(users.currentWorkspace, channelId)
@@ -136,81 +137,9 @@ const MessageBoardIndex = () => {
       username: users["0"]?.user_name || "",
       imageUrl: users["0"]?.image_url || "",
     },
-    // messages: [
-    //   {
-    //     username: 'Pidoxy',
-    //     id: 7,
-    //     time: '7:05PM',
-    //     imageUrl: '',
-    //     emojis: [
-    //       { name: 'smiling', count: 4, emoji: '😋' },
-    //       { name: 'grining', count: 1, emoji: '😊' },
-    //     ],
-    //     richUiData: {
-    //       blocks: [
-    //         {
-    //           data: {},
-    //           depth: 0,
-    //           entityRanges: [],
-    //           inlineStyleRanges: [],
-    //           key: '543og',
-    //           text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;. Nulla porttitor accumstincidunt.',
-    //           type: 'unstyled',
-    //         },
-    //       ],
-    //       entityMap: {},
-    //     },
-    //   },
-    //   {
-    //     username: 'Fortune',
-    //     id: 7,
-    //     time: '9:35PM',
-    //     imageUrl: '',
-    //     emojis: [
-    //       { name: 'cool', count: 4, emoji: '😎' },
-    //       { name: 'celebrate', count: 1, emoji: '🎉' },
-    //     ],
-    //     richUiData: {
-    //       blocks: [
-    //         {
-    //           data: {},
-    //           depth: 0,
-    //           entityRanges: [],
-    //           inlineStyleRanges: [],
-    //           key: '543og',
-    //           text: 'Qwertitgv asfjf jheiuhie vehhoe trices posdf sjde dewl;. Nulla porttitor accumstincidunt.',
-    //           type: 'unstyled',
-    //         },
-    //       ],
-    //       entityMap: {},
-    //     },
-    //   },
-    //   {
-    //     username: 'Daetoun',
-    //     id: 7,
-    //     time: '12:15PM',
-    //     imageUrl: '',
-    //     emojis: [
-    //       { name: 'cool', count: 9, emoji: '🥳' },
-    //       { name: 'celebrate', count: 11, emoji: '🥂' },
-    //     ],
-    //     richUiData: {
-    //       blocks: [
-    //         {
-    //           data: {},
-    //           depth: 0,
-    //           entityRanges: [],
-    //           inlineStyleRanges: [],
-    //           key: '543og',
-    //           text: 'Portiioe asfjf jgjgioef vehhoe rtuwodd posdf sjde dewl;. Nulla porttitor accumstincidunt.',
-    //           type: 'unstyled',
-    //         },
-    //       ],
-    //       entityMap: {},
-    //     },
-    //   },
-    // ],
     messages: channelMessages.map((msg) => {
+      // console.log(msg);
+
       const user = workspace_users_object[msg.user_id] || {
         user_name: "",
         image_url: ""
@@ -222,9 +151,10 @@ const MessageBoardIndex = () => {
       image_url: user.image_url,
       time: formattedTime,
       emojis: [
-        { name: 'smiling', count: 4, emoji: '😋' },
-        { name: 'grining', count: 1, emoji: '😊' },
+        // { name: 'smiling', count: 4, emoji: '😋' },
+        // { name: 'grining', count: 1, emoji: '😊' },
       ],
+      event: msg.event,
       richUiData: {
         blocks: [
           {
@@ -234,7 +164,7 @@ const MessageBoardIndex = () => {
             inlineStyleRanges: [],
             key: '543og',
             text: msg.content,
-            type: 'unstyled',
+            type: 'unstyled'
           },
         ],
         entityMap: {},
