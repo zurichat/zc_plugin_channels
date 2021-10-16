@@ -10,7 +10,7 @@ def job_function():
     print(datetime.now().time().strftime('%H:%M:%S'))
 
 
-def run_qhandler_schedule(Handler=QHandler, Workers = [JoinTaskHandler,RemoveTaskHandler]):
+def run_qhandler_schedule(Handler=QHandler, Workers = [JoinTaskHandler]):
     print(datetime.now().time().strftime('%H:%M:%S'))
     Handler.run(Workers)
 

@@ -54,7 +54,7 @@ data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
 write = settings.WRITE_URL
 delete = settings.DELETE_URL
-
+timeout = aiohttp.ClientTimeout(150)
 
 @change_collection_name
 async def find_match_in_db(org_id, collection_name, param, value, return_data=False):
@@ -68,7 +68,7 @@ async def find_match_in_db(org_id, collection_name, param, value, return_data=Fa
             ]
         },
     }
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(timeout=timeout) as session:
         response = await session.post(read, data=json.dumps(data))
         
         if response.status >= 200 or response.status < 300:
@@ -207,7 +207,7 @@ class JoinTaskHandler:
     async def __add_member_to_channel(self, member_id, org_id, channels):
         loop = asyncio.get_event_loop()        
         task = []
-        session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession(timeout=timeout)
         for channel in channels:
             async def add_member():
                 try:
@@ -227,8 +227,9 @@ class JoinTaskHandler:
                     headers = {
                         "Content-Type": "application/json"
                     }
-                    print(url)
-                    res = await session.post(url, data=json.dumps(data), headers=headers)
+                    res = session.post(url, data=json.dumps(data), headers=headers)
+                    loop.create_task(res)
+                    print(res.status)
                 except Exception as err:
                     pass
             task.append(add_member())
@@ -292,7 +293,7 @@ class RemoveTaskHandler:
         if len(channels) > 0:
             tasks = []
             
-            session = aiohttp.ClientSession()
+            session = aiohttp.ClientSession(timeout=timeout)
             for channel_id in channels:
                 async def remove_user():
                     try:
