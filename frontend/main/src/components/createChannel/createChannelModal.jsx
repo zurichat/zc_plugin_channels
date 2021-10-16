@@ -63,7 +63,7 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
     const handleSubmit = () => {
     console.log(data);
     newChannel().then(() => {
-       window.location.reload();
+       //window.location.reload();
     });
     onClose();
   };

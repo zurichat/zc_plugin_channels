@@ -55,8 +55,8 @@ const NewChannelHeader = ({ channelId }) => {
 
   let count =0;
   for (const key in channelDetailsData.users) {
-    if (Object.hasOwnProperty.call(object, key)) {
-      userList = [...userList,{"_id":object[key]._id, "email":`User${count}@mail.com`}]
+    if (Object.hasOwnProperty.call(channelDetailsData.users, key)) {
+      userList = [...userList,{"_id":channelDetailsData.users[key]._id, "email":`User${count}@mail.com`}]
       count++;
     }
   }
