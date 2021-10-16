@@ -624,7 +624,8 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                             )
                         )
                         return Custom_Response(
-                            status=status.HTTP_204_NO_CONTENT,
+                            users,
+                            status=status.HTTP_200_OK,
                             request=request,
                             view=self,
                         )
@@ -641,13 +642,13 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                     )
             else:
                 return Custom_Response(
-                    {"msg": "All users removed."},
+                    list(),
                     status=status.HTTP_200_OK,
                     request=request,
                     view=self,
                 )
         return Custom_Response(
-            {"error": "channel not found"},
+            list(),
             status=status.HTTP_404_NOT_FOUND,
             request=request,
             view=self,

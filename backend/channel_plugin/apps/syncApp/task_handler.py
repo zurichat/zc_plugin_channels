@@ -81,6 +81,7 @@ class JoinTaskHandler:
     async def __execute_operations(self):
         print("Executing process")
         default_channels = await self.__get_default_channels()
+        print(default_channels)
         await self.__add_member_to_channel(self.member_id, self.organization_id, default_channels)
             
     async def __get_default_channels(self):
@@ -88,6 +89,7 @@ class JoinTaskHandler:
         assert  isinstance(data, list), "find_match_in_db returned an invalid type"
 
         default_channel = [i["_id"] for i in data]
+        print(default_channel)
         return default_channel or []
 
     async def __add_member_to_channel(self, member_id, org_id, channels):
