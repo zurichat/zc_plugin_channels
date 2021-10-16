@@ -15,7 +15,6 @@ def sync_notifier(request):
     try:
         th = threading.Thread(target=run_qhandler_schedule)
         th.start()
-        th.join()
         return Response({"status": True, "message":"OK"}, status=status.HTTP_200_OK)
     except:
         return Response({"status":False,}, status.HTTP_400_BAD_REQUEST)
