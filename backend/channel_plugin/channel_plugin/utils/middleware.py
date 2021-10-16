@@ -59,4 +59,10 @@ class CorsMiddleware:
                 "*",
             )
 
+        if "worskpace" in request.path:
+            capture_message(response.__dict__["_headers"])
+
+        if request.method in ["GET"] and result:
+            del response.__dict__["_headers"]["access-control-allow-origin"]
+
         return response
