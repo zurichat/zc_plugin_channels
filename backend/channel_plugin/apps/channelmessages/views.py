@@ -733,7 +733,7 @@ def workflow_search(request, org_id, member_id):
     """Search channel messages based on content"""
 
     q = request.GET.get("q", "")
-    filter = request.query_params.getlist("filter", [])
+    filter = request.query_params.getlist("filter", {})
     limit = request.GET.get("limit", 20)
     result = []
     msg_url = "https://channels.zuri.chat/api/v1/{org_id}/messages/{msg_id}/"
@@ -748,11 +748,18 @@ def workflow_search(request, org_id, member_id):
     paginator.page_size = limit
 
     try:
+        # return only channels that match filter param if filter is given
+        # or return all channels
+        if filter:
+            filter = {
+                "name": {"$in": filter}
+            }
+
         payload = {
             "plugin_ID": settings.PLUGIN_ID,
             "organization_ID": org_id,
             "collection_name": "channel",
-            "filter": {},
+            "filter": filter,
             "object_id": ""
         }
         res = requests.post(settings.READ_URL, json=payload)
@@ -761,12 +768,17 @@ def workflow_search(request, org_id, member_id):
             channels = res.json().get("data", [])
 
             for channel in channels:
+                # if user owns or is a member of the channel
                 if channel.get("owner") == member_id or member_id in channel.get("users", {}).keys():
+                    # filter query to return only messages that belong to channel
+                    msg_filter = {
+                        "channel_id": {"$eq": channel.get("_id", "")}
+                    }
                     payload = {
                         "plugin_ID": settings.PLUGIN_ID,
                         "organization_ID": org_id,
                         "collection_name": "channelmessage",
-                        "filter": {},
+                        "filter": msg_filter,
                         "object_id": ""
                     }
                     res = requests.post(settings.READ_URL, json=payload)
@@ -792,5 +804,5 @@ def workflow_search(request, org_id, member_id):
             return paginator.get_paginated_response(result, q, filter, request)
     except Exception as e:
         print(e)
-        result = paginator.paginate_queryset([], request)
-        return paginator.get_paginated_response(result, q, filter, request)
+    result = paginator.paginate_queryset([], request)
+    return paginator.get_paginated_response(result, q, filter, request)
