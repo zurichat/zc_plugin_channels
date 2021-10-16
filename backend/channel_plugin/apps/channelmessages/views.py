@@ -807,3 +807,48 @@ def workflow_search(request, org_id, member_id):
         print(e)
         result = paginator.paginate_queryset([], request)
         return paginator.get_paginated_response(result, q, filter, request)
+
+
+@swagger_auto_schema(
+    methods=["get"],
+    operation_summary="searches for message by a user",
+    responses={404: "Error: Not Found"},
+)
+@api_view(["GET"])
+def search_suggestions(request, org_id, member_id):
+    filter = {
+        "user_id": member_id
+    }
+
+    data = {}
+    count = 0
+
+    try:
+        payload = {
+            "plugin_ID": settings.PLUGIN_ID,
+            "organization_ID": org_id,
+            "collection_name": "channelmessage",
+            "filter": filter,
+            "object_id": ""
+        }
+        res = requests.post(settings.READ_URL, json=payload)
+
+        for message in res.json().get("data", []):
+            data[message.get("content","")] = message.get("content", "")
+            if count == 10:
+                break
+
+        response = {
+            "status":"ok",
+            "type":"suggestions",
+            "data": data
+        }
+                   
+    except Exception as e:
+        print(e)     
+        response = {
+            "status":"ok",
+            "type":"suggestions",
+            "data":data
+        }
+    return Response(response, status=status.HTTP_200_OK)
