@@ -1025,7 +1025,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                                 sender=None,
                                 dispatch_uid="UpdateSidebarSignal",
                                 org_id=org_id,
-                                member_id=member_id,
+                                user_id=member_id,
                             )
                         )
                         status_code = status.HTTP_201_CREATED
