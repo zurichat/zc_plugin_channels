@@ -1,4 +1,10 @@
-from apps.channelmembers.views import *
+from apps.channelmembers.views import \
+    channel_member_join_view, \
+    channel_add_remove_member_to_room_view,\
+    channel_members_can_input_view, \
+    channel_members_update_retrieve_views, \
+    starr_channel_view, notification_views, \
+    channel_members_list_create_views
 
 from django.urls import path
 
