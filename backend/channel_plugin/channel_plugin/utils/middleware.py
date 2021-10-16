@@ -54,7 +54,7 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-        if "worskpace" in request.path:
+        if "workspace" in request.path:
             capture_message(response.__dict__["_headers"])
 
         return response
