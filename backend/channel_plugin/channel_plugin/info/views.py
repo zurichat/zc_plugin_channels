@@ -246,8 +246,18 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         org_id = serializer.data.get("organization_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
-        tmp = request.headers.get("authorization")
-        token = tmp.split()[1].strip() if tmp is not None else ""
+        tmp = request.headers.get("authorization", "")
+
+        try:
+
+            if "Bearer" not in tmp:
+                token = tmp
+            else:
+                token = tmp.split()[1].strip()
+
+        except IndexError:
+            token = ""
+
         capture_message(f"auth {request.headers.get('authorization')}")
         capture_message(f"token {token}")
 
@@ -261,6 +271,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
+        capture_message(f"Response of register - {res}")
         if (
             res.status_code == 400
             and "invalid" in res.json().get("message")
