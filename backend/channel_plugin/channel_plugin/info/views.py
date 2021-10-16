@@ -190,7 +190,6 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                 "starred_rooms": starred_rooms,
             }
         )
-
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
         return Custom_Response(

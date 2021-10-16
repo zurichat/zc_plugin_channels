@@ -214,8 +214,8 @@ class AsyncRequest:
                 payload.update(
                     {
                         "_id": (await response.json(content_type=None))
-                            .get("data", {})
-                            .get("object_id")
+                        .get("data", {})
+                        .get("object_id")
                     }
                 )
                 return payload
@@ -335,7 +335,7 @@ def search_channels(org_id, collection_name, params):
 
 @change_collection_name
 def get_messages_from_page(
-        org_id, collection_name, channel_id, page, page_size, site_host=None
+    org_id, collection_name, channel_id, page, page_size, site_host=None
 ):
     if site_host is None:
         site_host = "https://channels.zuri.chat"
@@ -529,15 +529,11 @@ async def member_channels(org_id, member_id):
 
 
 # get unread count for each user
-async def unread(org_id, channel_id):
-    """returns unread messages in a channel
-    """
+def unread(org_id, channel_id):
+    """returns unread messages in a channel"""
     load = {"channel_id": channel_id}
-    result = await AsyncRequest.get(org_id, "channelmessage", load)
+    result = Request.get(org_id, "channelmessage", load)
     return len(result[-7:-1])
-
-
-
 
 
 def get_channel_permissions(org_id, channel_id):
@@ -545,9 +541,10 @@ def get_channel_permissions(org_id, channel_id):
 
 
 def get_thread_from_message(
-        org_id, collection_name, channelmessage_id, page, page_size
+    org_id, collection_name, channelmessage_id, page, page_size
 ):
     pass
+
 
 #     data = {
 #         "plugin_id": settings.PLUGIN_ID,
