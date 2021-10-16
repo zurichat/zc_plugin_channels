@@ -34,7 +34,7 @@ const MessageBoardIndex = () => {
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
   const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
-  const { _getChannelMessages, _getSocket, _getNotifications } = bindActionCreators(appActions, dispatch)
+  const { _getChannelMessages, _getSocket, _getNotifications, _sendMessage } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_input || true
 
 
@@ -113,6 +113,7 @@ const MessageBoardIndex = () => {
   useEffect(() => {
     if (users && users.currentWorkspace) {
       _getSocket(users.currentWorkspace, channelId)
+      _getChannelMessages(users.currentWorkspace, channelId)
       _getNotifications(users.currentWorkspace, channelId, users.currentWorkspace)
     }
   }, [users])
@@ -124,92 +125,114 @@ const MessageBoardIndex = () => {
 
   const chatSidebarConfig = useMemo(() => ({
     sendChatMessageHandler: (msg) => {
-      dispatch(
-        handleCreateRoomMessages(org_id, room_id, {
-          sender_id: loggedInUser_id,
-          room_id,
-          message: msg.message,
-        })
-      );
+      console.log("Message ===", msg)
+      _sendMessage(users.currentWorkspace, channelId, {
+        user_id: users["0"]._id,
+        content: msg
+      });
     },
     currentUserData: {
       username: 'Aleey',
       imageUrl: '',
     },
-    messages: [
-      {
-        username: 'Pidoxy',
-        id: 7,
-        time: '7:05PM',
-        imageUrl: '',
-        emojis: [
-          { name: 'smiling', count: 4, emoji: '😋' },
-          { name: 'grining', count: 1, emoji: '😊' },
+    // messages: [
+    //   {
+    //     username: 'Pidoxy',
+    //     id: 7,
+    //     time: '7:05PM',
+    //     imageUrl: '',
+    //     emojis: [
+    //       { name: 'smiling', count: 4, emoji: '😋' },
+    //       { name: 'grining', count: 1, emoji: '😊' },
+    //     ],
+    //     richUiData: {
+    //       blocks: [
+    //         {
+    //           data: {},
+    //           depth: 0,
+    //           entityRanges: [],
+    //           inlineStyleRanges: [],
+    //           key: '543og',
+    //           text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;. Nulla porttitor accumstincidunt.',
+    //           type: 'unstyled',
+    //         },
+    //       ],
+    //       entityMap: {},
+    //     },
+    //   },
+    //   {
+    //     username: 'Fortune',
+    //     id: 7,
+    //     time: '9:35PM',
+    //     imageUrl: '',
+    //     emojis: [
+    //       { name: 'cool', count: 4, emoji: '😎' },
+    //       { name: 'celebrate', count: 1, emoji: '🎉' },
+    //     ],
+    //     richUiData: {
+    //       blocks: [
+    //         {
+    //           data: {},
+    //           depth: 0,
+    //           entityRanges: [],
+    //           inlineStyleRanges: [],
+    //           key: '543og',
+    //           text: 'Qwertitgv asfjf jheiuhie vehhoe trices posdf sjde dewl;. Nulla porttitor accumstincidunt.',
+    //           type: 'unstyled',
+    //         },
+    //       ],
+    //       entityMap: {},
+    //     },
+    //   },
+    //   {
+    //     username: 'Daetoun',
+    //     id: 7,
+    //     time: '12:15PM',
+    //     imageUrl: '',
+    //     emojis: [
+    //       { name: 'cool', count: 9, emoji: '🥳' },
+    //       { name: 'celebrate', count: 11, emoji: '🥂' },
+    //     ],
+    //     richUiData: {
+    //       blocks: [
+    //         {
+    //           data: {},
+    //           depth: 0,
+    //           entityRanges: [],
+    //           inlineStyleRanges: [],
+    //           key: '543og',
+    //           text: 'Portiioe asfjf jgjgioef vehhoe rtuwodd posdf sjde dewl;. Nulla porttitor accumstincidunt.',
+    //           type: 'unstyled',
+    //         },
+    //       ],
+    //       entityMap: {},
+    //     },
+    //   },
+    // ],
+    messages: channelMessages.map((msg, index) => ({
+      message_id: msg._id,
+      username: "Aleey",
+      image_url: "",
+      time: msg.timestamp,
+      emojis: [
+        { name: 'smiling', count: 4, emoji: '😋' },
+        { name: 'grining', count: 1, emoji: '😊' },
+      ],
+      richUiData: {
+        blocks: [
+          {
+            data: {},
+            depth: 0,
+            entityRanges: [],
+            inlineStyleRanges: [],
+            key: '543og',
+            text: msg.content,
+            type: 'unstyled',
+          },
         ],
-        richUiData: {
-          blocks: [
-            {
-              data: {},
-              depth: 0,
-              entityRanges: [],
-              inlineStyleRanges: [],
-              key: '543og',
-              text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;. Nulla porttitor accumstincidunt.',
-              type: 'unstyled',
-            },
-          ],
-          entityMap: {},
-        },
-      },
-      {
-        username: 'Fortune',
-        id: 7,
-        time: '9:35PM',
-        imageUrl: '',
-        emojis: [
-          { name: 'cool', count: 4, emoji: '😎' },
-          { name: 'celebrate', count: 1, emoji: '🎉' },
-        ],
-        richUiData: {
-          blocks: [
-            {
-              data: {},
-              depth: 0,
-              entityRanges: [],
-              inlineStyleRanges: [],
-              key: '543og',
-              text: 'Qwertitgv asfjf jheiuhie vehhoe trices posdf sjde dewl;. Nulla porttitor accumstincidunt.',
-              type: 'unstyled',
-            },
-          ],
-          entityMap: {},
-        },
-      },
-      {
-        username: 'Daetoun',
-        id: 7,
-        time: '12:15PM',
-        imageUrl: '',
-        emojis: [
-          { name: 'cool', count: 9, emoji: '🥳' },
-          { name: 'celebrate', count: 11, emoji: '🥂' },
-        ],
-        richUiData: {
-          blocks: [
-            {
-              data: {},
-              depth: 0,
-              entityRanges: [],
-              inlineStyleRanges: [],
-              key: '543og',
-              text: 'Portiioe asfjf jgjgioef vehhoe rtuwodd posdf sjde dewl;. Nulla porttitor accumstincidunt.',
-              type: 'unstyled',
-            },
-          ],
-          entityMap: {},
-        },
-      },
-    ],
+        entityMap: {},
+      }
+    })),
     showChatSideBar: true,
     chatHeader: 'Chats',
   }));
@@ -272,14 +295,16 @@ const MessageBoardIndex = () => {
   //" })
 
   return (
-    // <>
+    // <Flex>
     //   <MessageBoard />
     // </>
-    <Box bg="#F9F9F9" width="99%">
-      <Flex>
-        <Box width="100%">
-          <ChannelHeader channelId={channelId} org_id={users.currentWorkspace} />
-          <MessageBoard chatsConfig={chatSidebarConfig}/>
+    <Flex direction="column" bg="#F9F9F9" width="100%" height="100%">
+      {/* <Flex> */}
+        {/* <Box width="100%"> */}
+          <ChannelHeader channelId={channelId} org_id={users?.currentWorkspace} />
+          <Box flex="1" overflowY="auto">
+            <MessageBoard chatsConfig={chatSidebarConfig}/>
+          </Box>
 
           {/* <Box
             m="5px"
@@ -298,12 +323,12 @@ const MessageBoardIndex = () => {
             <MessageCardContainer channelId={channelId} />
           </Box>
           {canInput ? <MessageInput channelId={channelId} /> : <DisabledInput />} */}
-        </Box>
+        {/* </Box> */}
         {/* <Box>
           <Thread/>
         </Box> */}
-      </Flex>
-    </Box>
+      {/* </Flex> */}
+    </Flex>
   );
 };
 
