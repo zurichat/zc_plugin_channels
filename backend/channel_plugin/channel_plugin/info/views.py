@@ -250,7 +250,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
 
         try:
 
-            if "Bearer" in tmp:
+            if "Bearer" not in tmp:
                 token = tmp
             else:
                 token = tmp.split()[1].strip()
