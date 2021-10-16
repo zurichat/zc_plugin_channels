@@ -110,86 +110,83 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         """
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user", [])
-        member_ids = user_id if isinstance(user_id, list) else [user_id]
 
         data = {
             "name": "Channels Plugin",
             "description": description,
             "plugin_id": settings.PLUGIN_ID,
         }
-        if org_id is not None and member_ids is not None:
+        if org_id is not None and user_id is not None:
 
             channels = await AsyncRequest.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
             starred_rooms = list()
             if isinstance(channels, list):
-                for member_id in member_ids:
-                    joined_rooms = list(
-                        map(
-                            lambda channel: {
-                                "room_name": channel.get("slug"),
-                                "room_url": f"/channels/message-board/{channel.get('_id')}",
-                                "room_image": "",
-                                "unread": unread(org_id, channel.get('_id')),
-                            },
-                            list(
-                                filter(
-                                    lambda channel: member_id in channel["users"].keys()
-                                    and not channel.get("default", False)
-                                    and channel["users"][member_id].get("starred") is False,
-                                    channels,
-                                )
-                            ),
-                        )
+                joined_rooms = list(
+                    map(
+                        lambda channel: {
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                            "unread": unread(org_id, channel.get("_id")),
+                        },
+                        list(
+                            filter(
+                                lambda channel: user_id in channel["users"].keys()
+                                and not channel.get("default", False)
+                                and not channel["users"][user_id].get("starred", False),
+                                channels,
+                            )
+                        ),
                     )
-                    starred_rooms = list(
-                        map(
-                            lambda channel: {
-                                "room_name": channel.get("slug"),
-                                "room_url": f"/channels/message-board/{channel.get('_id')}",
-                                "room_image": "",
-                                "unread": unread(org_id, channel.get('_id')),
-                            },
-                            list(
-                                filter(
-                                    lambda channel: member_id in channel["users"].keys()
-                                    and not channel.get("default", False)
-                                    and channel["users"][member_id].get("starred") is True,
-                                    channels,
-                                )
-                            ),
-                        )
+                )
+                starred_rooms = list(
+                    map(
+                        lambda channel: {
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                            "unread": unread(org_id, channel.get("_id")),
+                        },
+                        list(
+                            filter(
+                                lambda channel: user_id in channel["users"].keys()
+                                and not channel.get("default", False)
+                                and channel["users"][user_id].get("starred", False),
+                                channels,
+                            )
+                        ),
                     )
-                    public_rooms = list(
-                        map(
-                            lambda channel: {
-                                "room_name": channel.get("slug"),
-                                "room_url": f"/channels/message-board/{channel.get('_id')}",
-                                "room_image": "",
-                            },
-                            list(
-                                filter(
-                                    lambda channel: member_id
-                                    not in channel["users"].keys()
-                                    and not channel.get("private")
-                                    and not channel.get("default", False),
-                                    channels,
-                                )
-                            ),
-                        )
+                )
+                public_rooms = list(
+                    map(
+                        lambda channel: {
+                            "room_name": channel.get("slug"),
+                            "room_url": f"/channels/message-board/{channel.get('_id')}",
+                            "room_image": "",
+                        },
+                        list(
+                            filter(
+                                lambda channel: user_id not in channel["users"].keys()
+                                and not channel.get("private")
+                                and not channel.get("default", False),
+                                channels,
+                            )
+                        ),
                     )
+                )
         data.update(
             {
-                    "organisation_id": org_id,
-                    "user_id": member_id,
-                    "group_name": "Channel",
-                    "show_group": True,
-                    "category": "channels",
-                    "button_url": "/channels",
-                    "joined_rooms": joined_rooms,
-                    "public_rooms": public_rooms,
-                    "starred_rooms": starred_rooms,
+                "organisation_id": org_id,
+                "user_id": user_id,
+                "group_name": "Channel",
+                "show_group": True,
+                "category": "channels",
+                "button_url": "/channels",
+                "joined_rooms": joined_rooms,
+                "public_rooms": public_rooms,
+                "starred_rooms": starred_rooms,
             }
         )
 

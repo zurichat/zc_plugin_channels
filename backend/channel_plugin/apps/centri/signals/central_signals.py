@@ -2,7 +2,6 @@ from apps.centri.centwrapper import AsyncCentClient
 from apps.centri.signals.async_signal import request_finished
 from django.conf import settings
 from django.dispatch import receiver
-import requests
 
 from channel_plugin.utils.customrequest import AsyncRequest, unread
 
@@ -39,13 +38,15 @@ async def UpdateSidebarSignal(sender, **kwargs):
                                 "room_name": channel.get("slug"),
                                 "room_url": f"/channels/message-board/{channel.get('_id')}",
                                 "room_image": "",
-                                "unread": unread(org_id, channel.get('_id')),
+                                "unread": unread(org_id, channel.get("_id")),
                             },
                             list(
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel["users"][member_id].get("starred") is False,
+                                    and not channel["users"][member_id].get(
+                                        "starred", False
+                                    ),
                                     channels,
                                 )
                             ),
@@ -57,13 +58,15 @@ async def UpdateSidebarSignal(sender, **kwargs):
                                 "room_name": channel.get("slug"),
                                 "room_url": f"/channels/message-board/{channel.get('_id')}",
                                 "room_image": "",
-                                "unread": unread(org_id, channel.get('_id')),
+                                "unread": unread(org_id, channel.get("_id")),
                             },
                             list(
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel["users"][member_id].get("starred") is True,
+                                    and channel["users"][member_id].get(
+                                        "starred", False
+                                    ),
                                     channels,
                                 )
                             ),
