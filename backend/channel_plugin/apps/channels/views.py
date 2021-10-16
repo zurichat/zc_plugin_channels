@@ -107,8 +107,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
         except Exception as exc:
             return self.get_exception_response(exc, request)
 
-        data = serializer.convert_to_channel_serializer()
-        channel_serializer = ChannelSerializer(data=data)
+        channel_serializer = serializer.convert_to_channel_serializer()
         status_code = status.HTTP_404_NOT_FOUND
         if channel_serializer.is_valid(raise_exception=False):
             channel = channel_serializer.data.get("channel")

@@ -209,11 +209,11 @@ class RoomSerializer(serializers.Serializer):
     )
 
     def convert_to_channel_serializer(self) -> serializers.Serializer:
+        self.is_valid(raise_exception=True)
         data = {
-            "name": self.initial_data.get("room_name"),
-            "owner": self.initial_data.get("room_member_ids", ["1"])[0],
-            "private": self.initial_data.get("private", False),
-            "default": self.initial_data.get("default", False),
+            "name": self.data.get("room_name"),
+            "owner": self.data.get("room_member_ids", ["1"])[0],
+            "private": self.data.get("private", False),
+            "default": self.data.get("default", False),
         }
-        # return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
-        return data
+        return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
