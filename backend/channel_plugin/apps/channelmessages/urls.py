@@ -24,9 +24,14 @@ urlpatterns = [
     path("<str:org_id>/search/", views.search),
     path("test/", views.test),
     path(
-        "<str:org_id>/<str:member_id>/search/",
+        "search/<str:org_id>/<str:member_id>/",
         views.workflow_search,
         name="search_all_channels"
+    ),
+    path(
+        "search-suggestions/<str:org_id>/<str:member_id>/",
+        views.search_suggestions,
+        name="workflow-search-suggestion"
     ),
     # path("test", views.search_channelmessage)
 ]
