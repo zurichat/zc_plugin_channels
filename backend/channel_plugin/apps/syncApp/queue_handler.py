@@ -153,7 +153,7 @@ class QueueHandler:
     async def __start__(self):
         await self._get_queue_data()
         await self._process_queue()
-        await self.__end__()
+        # await self.__end__()
 
     async def __end__(self):
         most_recent_task = {}
