@@ -109,7 +109,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         ```
         """
         org_id = request.query_params.get("org")
-        user_id = request.query_params.get("user", [])
+        user_id = request.query_params.get("user")
 
         data = {
             "name": "Channels Plugin",
