@@ -110,6 +110,9 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         """
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
+        joined_rooms = list()
+        public_rooms = list()
+        starred_rooms = list()
 
         data = {
             "name": "Channels Plugin",
@@ -119,9 +122,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         if org_id is not None and user_id is not None:
 
             channels = await AsyncRequest.get(org_id, "channel")
-            joined_rooms = list()
-            public_rooms = list()
-            starred_rooms = list()
+
             if isinstance(channels, list):
                 joined_rooms = list(
                     map(
