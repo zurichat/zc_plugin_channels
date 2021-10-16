@@ -4,6 +4,7 @@ Base settings to build other settings files upon.
 from pathlib import Path
 
 import environ
+from corsheaders.defaults import default_headers
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # channel_plugin/
@@ -68,7 +69,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "crispy_forms",
     "rest_framework",
-    # "corsheaders",
+    "corsheaders",
     "drf_yasg",
 ]
 
@@ -109,7 +110,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "channel_plugin.utils.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -292,13 +293,16 @@ except:  # noqa
 
 CENTRIFUGO_URL = "https://realtime.zuri.chat/api"
 
-SYNC_HANDLER=None
+SYNC_HANDLER = None
 
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     r"^https://\w+\.zuri\.chat$",
-#     r"^http://localhost:[\d+]{4}",
-#     r"^http://127.0.0.1:[\d+]{4}",
-# ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.zuri\.chat$",
+    r"^http://(\d+\.\d+\.\d+\.\d+|localhost):[\d+]{4}",
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "access-control-allow-origin",
+]
 
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3001",
@@ -306,4 +310,4 @@ SYNC_HANDLER=None
 
 # CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True

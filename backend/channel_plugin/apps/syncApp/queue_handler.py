@@ -14,6 +14,24 @@ import json
 
 
 # demo_handler.get_schema = _
+dummy_queue_data = [
+    {
+        "id":20,
+        "event":"leave_organization",
+        "message":{
+                "member_id":"testmaster",
+                "organization_id": "6167b3f14cd3cc2a7af3dbe6"
+            }
+    },
+    {
+        "id": 30,
+        "event": "enter_organization",
+        "message": {
+            "member_id":"OneHader",
+            "organization_id":"1"
+        }
+    },
+]
 
 class QueueHandler:
 
@@ -60,14 +78,17 @@ class QueueHandler:
       
     async def __run_task(self, task_handler, task_data):
         compeleted = False
+        
         try:
-            compeleted = await task_handler.run(task_data)
-        except:
+            compeleted = task_handler.run(task_data)
+        except Exception as exc:
             pass
+        
         if compeleted:
             self.__resolved_task.append(task_data)
         else:
             self.__unresolved_task.append(task_data)
+            
         self.__task_queue.remove(task_data)
 
     def __update_global_state(self, done=True):
@@ -105,17 +126,21 @@ class QueueHandler:
     async def _get_queue_data(self):
         async with ClientSession()  as  session :
             id = settings.PLUGIN_ID
-            url = f"https://api.zuri.chat//marketplace/plugins/{id}/"
+            
+            url = f"https://api.zuri.chat/marketplace/plugins/{id}/"
+
             res = await session.get(url)
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("queue", [])
+                queue = data.get("data").get("queue", [])
+                # queue = dummy_queue_data # For debugging
                 self.update_queue(queue)
 
     async def _process_queue(self):
         event_loop = asyncio.get_event_loop()
         tasks = []
+        
         for task in self._get_queue():
             handler = self._task_handlers.get(task.get("event"))
 
@@ -130,7 +155,7 @@ class QueueHandler:
         await self.__end__()
 
     async def __end__(self):
-        most_recent_task = None
+        most_recent_task = {}
         id = 0
 
         for task in self.__resolved_task:
@@ -140,10 +165,11 @@ class QueueHandler:
         if most_recent_task:
             async with ClientSession() as session:
                 id = settings.PLUGIN_ID
-                url = f"https://api.zuri.chat//marketplace/plugins/{id}/sync"
                 
-                res = await session.post(url, {"id": most_recent_task.get("id")})
+                url = f"https://api.zuri.chat/plugins/{id}/sync"
                 
+                res = await session.patch(url, {"id": most_recent_task.get("id", 0)})
+              
                 if res.status == 200:
                     self.__update_global_state(done=True)
 

@@ -58,6 +58,7 @@ urlpatterns += [
     # API base url
     path("api/v1/", include("channel_plugin.info.urls")),
     path("api/v1/", include(("apps.channels.urls", "channels"))),
+    path("api/v1/", include(("apps.channelmembers.urls", "channels"))),
     path("api/v1/", include(("apps.channelmessages.urls", "channelmessages"))),
     path("api/v1/", include(("apps.roles.urls", "roles"))),
     path("api/v1/", include(("apps.threads.urls", "threads"))),

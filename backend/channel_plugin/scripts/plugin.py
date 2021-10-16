@@ -8,22 +8,24 @@ To run `python manage.py runscript plugin`
 
 url = "https://api.zuri.chat/plugins/register"
 data = {
-    "name": "Channels",
+    "name": "Channels Plugin",
     "developer_name": "Team Coelho",
     "developer_email": "team-coelho@zuri.chat",
     "description": "Channel Plugin",
     "template_url": "https://channels.zuri.chat",
-    "install_url": "https://channels.zuri.chat/install",
+    "install_url": "https://channels.zuri.chat/api/v1/install",
     "sidebar_url": "https://channels.zuri.chat/api/v1/sidebar",
-    "icon_url": "https://channels.zuri.chat/static/images/full-logo.png/",
+    "icon_url": "https://www.svgrepo.com/show/43575/message-in-a-speech-bubble.svg",
+    "approved": True,
+    "images": None,
+    "version": "v1",
+    "category": "channels",
+    "sync_request_url": "https://channels.zuri.chat/sync/",
 }
 
 
 def run():
     response = requests.post(url, data=json.dumps(data))
-    import pdb
-
-    pdb.set_trace()
     if response.status_code >= 200 and response.status_code < 300:
         response = response.json()
         plugin_id = response.get("data", {}).get("plugin_id")

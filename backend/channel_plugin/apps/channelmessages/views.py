@@ -149,7 +149,8 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             if len(result) > 0:
                 result = self.perform_ordering(request, result)
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+            return Response(result, status=status_code)
+        return Response(list(), status=status_code)
 
     # def _stream_message_all(self, request, org_id, channel_id):
     #     """
@@ -207,7 +208,7 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
         status_code = status.HTTP_404_NOT_FOUND
         if result.__contains__("_id") or isinstance(result, dict):
             status_code = status.HTTP_200_OK
-        return Response(result, status=status_code)
+        return Response(dict(), status=status_code)
 
     @swagger_auto_schema(
         request_body=ChannelMessageUpdateSerializer,
@@ -497,6 +498,44 @@ class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
             {"error": "message not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
+    @swagger_auto_schema(
+        operation_id="last_message_instance",
+        responses={
+            200: openapi.Response(
+                "Response", ChannelMessageUpdateSerializer(many=True)
+            ),
+            404: openapi.Response("Error Response", ErrorSerializer),
+        },
+    )
+    @action(
+        methods=["GET"],
+        detail=False,
+    )
+    def last_message_instance(self, request, org_id, channel_id, timestamp):
+        """Get all the messages sent in a channel.
+
+        ```bash
+        curl -X GET "{{baseUrl}}/v1/{{org_id}}/channels/{{channel_id}}/messages/" -H  "accept: application/json"
+        ```
+        """
+        data = {"channel_id": channel_id}
+        params = self._clean_query_params(request)
+        data.update(params)
+        result = Request.get(org_id, "channelmessage", data) or []
+        status_code = status.HTTP_404_NOT_FOUND
+        if isinstance(result, list):
+            message_count = len(result)
+            if message_count > 0:
+                result = result[-1]
+                result = result["timestamp"]
+            elif message_count == 0:
+                result = timestamp
+
+            status_code = status.HTTP_200_OK
+
+        new_result = {"timestamp": result, "message_count": message_count}
+        return Response(new_result, status=status_code)
+
 
 channelmessage_views = ChannelMessageViewset.as_view(
     {
@@ -549,7 +588,7 @@ def search_messages(request, org_id, channel_id):
     if isinstance(result, list):
         response = {"result": result, "query": data}
         return Response(response, status=status.HTTP_200_OK)
-    return Response(result, status=status.HTTP_400_BAD_REQUEST)
+    return Response(list(), status=status.HTTP_400_BAD_REQUEST)
 
 
 search_channelmessage = search_messages
@@ -643,3 +682,61 @@ def search(request, org_id):
 @api_view(["GET"])
 def test(request):
     return render(request, "index.html")
+
+
+@swagger_auto_schema(
+    method="GET",
+    operation_id="workflow-search",
+    responses={
+        200: openapi.Response("Ok"),
+        404: openapi.Response("Not found"),
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            "key",
+            openapi.IN_QUERY,
+            description="Search Key",
+            required=True,
+            type=openapi.TYPE_STRING,
+        )
+    ],
+)
+@api_view(["GET"])
+def workflow_search(request, org_id, member_id):
+    """Search channel messages based on content"""
+    key = request.GET.get("key", "")
+
+    tmp = Request.get(org_id, "channels")
+    channels = tmp if isinstance(tmp, list) else []
+    user_channels = [ch for ch in channels if member_id in ch["users"].keys()]
+
+    results = []
+
+    for channel in user_channels:
+        tmp = Request.get(
+            org_id, "channelmessage", {"channel_id": user_channels[0]["_id"]}
+        )
+
+        messages = tmp if isinstance(tmp, list) else []
+
+        for message in messages:
+            if key in message["content"]:
+                data = {
+                    "title": message["user_id"],
+                    "email": "",
+                    "description": message["content"],
+                    "created_at": message["timestamp"],
+                    "url": message["_id"],
+                }
+                results.append(data)
+
+    response = {
+        "status": "ok",
+        "pagination": {},
+        "query": key,
+        "plugin": "Channels",
+        "data": results,
+        "filter_suggestions": {"in": [], "from": []},
+    }
+
+    return Response(response, status=status.HTTP_200_OK)
