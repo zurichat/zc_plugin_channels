@@ -1,8 +1,9 @@
 import asyncio
+from asyncio.tasks import gather
 from django.conf import settings
 from aiohttp import ClientSession
 import json
-
+import requests
 
 # def _():
 #     return {"event": "enter_organization"}
@@ -60,7 +61,6 @@ class QueueHandler:
         for handler in handlers:
             try:
                 schema = handler.get_schema()
-                
                 assert isinstance(schema, dict), f"handler.get_schema() returned a {type(schema)} instead of dict"
                 assert isinstance(schema.get("event"), str), f"schema event must be of type string"
 
@@ -78,10 +78,11 @@ class QueueHandler:
       
     async def __run_task(self, task_handler, task_data):
         compeleted = False
-        
+        print("RUNING A TASK")
         try:
-            compeleted = task_handler.run(task_data)
+            compeleted = await task_handler.run(task_data)
         except Exception as exc:
+            print(exc)
             pass
         
         if compeleted:
@@ -143,8 +144,8 @@ class QueueHandler:
         
         for task in self._get_queue():
             handler = self._task_handlers.get(task.get("event"))
-
             if handler:
+                print("Gotten handler and sending")
                 tasks.append(self.__run_task(handler, task))
 
         await asyncio.gather(*tasks)
@@ -152,7 +153,7 @@ class QueueHandler:
     async def __start__(self):
         await self._get_queue_data()
         await self._process_queue()
-        await self.__end__()
+        # await self.__end__()
 
     async def __end__(self):
         most_recent_task = {}
@@ -163,20 +164,17 @@ class QueueHandler:
                 most_recent_task = task
 
         if most_recent_task:
-            async with ClientSession() as session:
-                id = settings.PLUGIN_ID
-                
-                url = f"https://api.zuri.chat/plugins/{id}/sync"
-                
-                res = await session.patch(url, {"id": most_recent_task.get("id", 0)})
-              
-                if res.status == 200:
-                    self.__update_global_state(done=True)
+            id = settings.PLUGIN_ID
+            url = f"https://api.zuri.chat/plugins/{id}/sync"
 
+            res = requests.patch(url, json.dumps({"id": most_recent_task.get("id")}))
+            if res.status_code >= 200 or res.status_code < 300:  
+                self.__update_global_state(done=True)
 
     @staticmethod
     def run(handlers):
         queue_handler = QueueHandler.__get_runing_instance(handlers)
-        asyncio.run(queue_handler.__start__())
-
-
+        try:
+            asyncio.run(queue_handler.__start__())
+        except (RuntimeError,  RuntimeWarning):
+            future = asyncio.ensure_future(queue_handler.__start__())
