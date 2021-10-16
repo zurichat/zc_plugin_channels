@@ -249,7 +249,12 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         tmp = request.headers.get("authorization", "")
 
         try:
-            token = tmp.split()[1].strip()
+
+            if "Bearer" in tmp:
+                token = tmp
+            else:
+                token = tmp.split()[1].strip()
+
         except IndexError:
             token = ""
 
