@@ -60,7 +60,7 @@ class QueueHandler:
         for handler in handlers:
             try:
                 schema = handler.get_schema()
-                
+                print(f"Schema {schema}, Handler {handler}")
                 assert isinstance(schema, dict), f"handler.get_schema() returned a {type(schema)} instead of dict"
                 assert isinstance(schema.get("event"), str), f"schema event must be of type string"
 
@@ -78,9 +78,11 @@ class QueueHandler:
       
     async def __run_task(self, task_handler, task_data):
         compeleted = False
-        
+        print(task_data)
         try:
-            compeleted = await task_handler.run(task_data)
+            print(f"Running {task_handler}")
+            compeleted = task_handler.run(task_data)
+
         except Exception as exc:
             print(exc)
             pass
@@ -135,8 +137,8 @@ class QueueHandler:
             if res.status == 200:
                 data = json.loads(await res.read())
                 queue = data.get("data").get("queue", [])
-                queue = queue or []
-                # queue = dummy_queue_data # For debugging
+                queue = dummy_queue_data # For debugging
+                print(queue)
                 self.update_queue(queue)
 
     async def _process_queue(self):
@@ -145,8 +147,9 @@ class QueueHandler:
         
         for task in self._get_queue():
             handler = self._task_handlers.get(task.get("event"))
-
+            print(handler)
             if handler:
+                print("Gotten handler and sending")
                 tasks.append(self.__run_task(handler, task))
 
         await asyncio.gather(*tasks)
