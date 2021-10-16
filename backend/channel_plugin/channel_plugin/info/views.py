@@ -1,6 +1,9 @@
+import json
+from json.decoder import JSONDecodeError
 import random
 
 import requests
+from apps.channels.serializers import ChannelSerializer
 from django.conf import settings
 from django.utils import timezone
 from drf_yasg import openapi
@@ -9,15 +12,20 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from sentry_sdk import capture_message
 
-from channel_plugin.utils.customrequest import Request
+from channel_plugin.utils.custome_response import Response as Custom_Response
+from channel_plugin.utils.customrequest import AsyncRequest, Request
+from channel_plugin.utils.mixins import AsycViewMixin
+
+from .serializers import InstallSerializer
 
 description = "The Channel Plugin is a feature\
     that helps users create spaces for\
     conversation and communication on zuri.chat."
 
 
-class GetInfoViewset(ViewSet):
+class GetInfoViewset(AsycViewMixin, ViewSet):
     def get_throttled_message(self, request):
         """Add a custom message to the throttled error."""
         return "request limit exceeded"
@@ -26,20 +34,20 @@ class GetInfoViewset(ViewSet):
         methods=["GET"],
         detail=False,
     )
-    def ping(self, request):
+    async def ping(self, request):
         """Get server status
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/ping" -H  "accept: application/json"
         ```
         """
-        return Response({"success": True}, status=status.HTTP_200_OK)
+        return Custom_Response({"success": True}, status=status.HTTP_200_OK, view=self, request=request)
 
     @action(
         methods=["GET"],
         detail=False,
     )
-    def info(self, request):
+    async def info(self, request):
         """Get plugin details and developer information
 
         ```bash
@@ -53,6 +61,7 @@ class GetInfoViewset(ViewSet):
                 "plugin_info": {
                     "name": "Channels Plugin",
                     "description": ["Zuri.chat plugin", description],
+                    "id": settings.PLUGIN_ID,
                 },
                 "scaffold_structure": "Monolith",
                 "team": "HNG 8.0/Team Coelho",
@@ -62,7 +71,7 @@ class GetInfoViewset(ViewSet):
             },
             "success": True,
         }
-        return Response(data, status=status.HTTP_200_OK)
+        return Custom_Response(data, status=status.HTTP_200_OK, request=request, view=self)
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -90,7 +99,7 @@ class GetInfoViewset(ViewSet):
         ]
     )
     @action(methods=["GET"], detail=False, url_path="sidebar")
-    def info_sidebar(self, request):
+    async def info_sidebar(self, request):
         """Get dynamic sidebar details for a user in an organisation
 
         ```bash
@@ -98,7 +107,7 @@ class GetInfoViewset(ViewSet):
         ```
         """
         org_id = request.query_params.get("org")
-        user_id = request.query_params.get("user")
+        member_id = request.query_params.get("user")
 
         data = {
             "name": "Channels Plugin",
@@ -107,7 +116,7 @@ class GetInfoViewset(ViewSet):
             "plugin_id": settings.PLUGIN_ID,
             "category": "channels",
         }
-        if org_id is not None and user_id is not None:
+        if org_id is not None and member_id is not None:
             channels = Request.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
@@ -121,7 +130,7 @@ class GetInfoViewset(ViewSet):
                         },
                         list(
                             filter(
-                                lambda channel: user_id in channel["users"].keys()
+                                lambda channel: member_id in channel["users"].keys()
                                 and not channel.get("default", False),
                                 channels,
                             )
@@ -137,7 +146,7 @@ class GetInfoViewset(ViewSet):
                         },
                         list(
                             filter(
-                                lambda channel: user_id not in channel["users"].keys()
+                                lambda channel: member_id not in channel["users"].keys()
                                 and not channel.get("private")
                                 and not channel.get("default", False),
                                 channels,
@@ -149,9 +158,11 @@ class GetInfoViewset(ViewSet):
             data.update(
                 {
                     "organisation_id": org_id,
-                    "user_id": user_id,
+                    "user_id": member_id,
                     "group_name": "Channel",
                     "show_group": False,
+                    "category": "channels",
+                    "button_url": "/channels",
                     "joined_rooms": joined_rooms,
                     "public_rooms": public_rooms,
                 }
@@ -159,23 +170,25 @@ class GetInfoViewset(ViewSet):
 
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
-        return Response(data, status=status.HTTP_200_OK)
+        return Custom_Response(data, status=status.HTTP_200_OK, request=request, view=self)
 
     @action(methods=["GET"], detail=False, url_path="details")
-    def info_details(self, request):
+    async def info_details(self, request):
         date = timezone.now().isoformat()
         no_of_times = random.randint(11, 25) + random.randint(10, 20)
-        return Response(
+        return Custom_Response(
             data={
                 "message": "Welcome, to the Channels Plugin",
                 "last_visted": date,
                 "no_of_times_visted": no_of_times,
             },
             status=status.HTTP_200_OK,
+            request=request,
+            view=self
         )
 
     @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
-    def collections(self, request, plugin_id):
+    async def collections(self, request, plugin_id):
         """Get all database collections related to plugin
 
         ```bash
@@ -183,17 +196,20 @@ class GetInfoViewset(ViewSet):
         ```
         """
         response = (
-            requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}").json()
-            or {}
+            requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}")
         )
-        return Response(response, status=status.HTTP_200_OK)
+        status_code = status.HTTP_404_NOT_FOUND
+        if response.status_code >= 200 and response.status_code < 300:
+            response = response.json()
+            status_code = status.HTTP_200_OK
+        return Custom_Response(response, status=status_code, view=self, request=request)
 
     @action(
         methods=["GET"],
         detail=False,
         url_path="collections/(?P<plugin_id>[^/.]+)/organizations/(?P<org_id>[^/.]+)",
     )
-    def collections_by_organization(self, request, org_id, plugin_id):
+    async def collections_by_organization(self, request, org_id, plugin_id):
         """Get all database collections related to plugin specific to an organisation
 
         ```bash
@@ -201,9 +217,112 @@ class GetInfoViewset(ViewSet):
         ```
         """
         response = (
-            requests.get(
-                f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
-            ).json()
-            or {}
+                requests.get(
+                    f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
+                )
+            )
+
+        status_code = status.HTTP_404_NOT_FOUND
+
+        if response.status_code >= 200 and response.status_code < 300:
+            response = response.json()
+            status_code = status.HTTP_200_OK
+            
+        return Custom_Response(response, status=status_code, view=self, request=request)
+
+    @swagger_auto_schema(request_body=InstallSerializer)
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="install",
+    )
+    async def install(self, request):
+        capture_message(f"Headers - {request.headers}", level="info")
+        capture_message(f"Request - {request.__dict__}", level="info")
+        serializer = InstallSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as exc:
+            return self.get_exception_response(exc, request)
+
+        org_id = serializer.data.get("org_id")
+        user_id = serializer.data.get("user_id")
+        title = serializer.data.get("title")
+
+        headers = {
+            "Content-Type": "application/json",
+            "Cookie": request.COOKIES.get("token", "null"),
+        }
+        url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
+        data = {
+            "user_id": user_id,
+            "plugin_id": settings.PLUGIN_ID,
+        }
+        res = requests.post(url, data=json.dumps(data), headers=headers)
+        if (
+            res.status_code == 400
+            and "invalid" in res.json().get("message")
+            or res.status_code == 401
+        ):
+            return Custom_Response(
+                res.json(),
+                status=status.HTTP_400_BAD_REQUEST,
+                request=request,
+                view=self,
+            )
+        default_channels = ["general", "random"] + [title]
+        channel_id = None
+        for channel in default_channels:
+
+            serializer = ChannelSerializer(
+                data={
+                    "name": channel,
+                    "owner": user_id,
+                    "default": True,
+                },
+                context={"org_id": org_id},
+            )
+            try:
+                serializer.is_valid(raise_exception=True)
+
+                channel = serializer.data.get("channel")
+                response = await channel.create(org_id)
+                if response.__contains__("_id"):
+
+                    if channel == title:
+                        channel_id = response.get("_id")
+
+                    if channel_id is None:
+                        channel_id = response.get("_id")
+
+            except Exception as exc:
+
+                err = self.get_exception_response(exc, request)
+                if channel == title and "name" in err.__dict__["data"]:
+                    result = await AsyncRequest.get(
+                        org_id, "channel", {"name": title.lower()}
+                    )
+                    if result[0].__contains__("_id"):
+                        channel_id = result[0].get("_id")
+
+        response = {
+            200: {
+                "message": "successfully installed!",
+                "success": True,
+                "data": {"redirect_url": f"/channels/message-board/{channel_id}"},
+            },
+            400: {
+                "message": "It has been installed!",
+                "success": False,
+                "data": {"redirect_url": f"/channels/message-board/{channel_id}"},
+            },
+        }
+        return Custom_Response(
+            response.get(res.status_code, 200),
+            status=status.HTTP_201_CREATED
+            if res.status_code == 200
+            else status.HTTP_400_BAD_REQUEST,
+            request=request,
+            view=self,
         )
-        return Response(response, status=status.HTTP_200_OK)
+
