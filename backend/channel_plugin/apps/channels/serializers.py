@@ -30,7 +30,7 @@ class ChannelSerializer(serializers.Serializer):
 
     def validate_name(self, name):
         """
-        Validate name doesnt alreat exist in organization
+        Validate name doesn't already exist in organization
         """
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
@@ -43,7 +43,7 @@ class ChannelSerializer(serializers.Serializer):
         user_id = instance.get("owner")
         slug = slugify(instance.get("name"))
         channel = Channel(**instance, slug=slug)
-        user_serializer =  UserSerializer(
+        user_serializer = UserSerializer(
                 data={"_id": user_id, "is_admin": True, "notifications": {}}
         )
 

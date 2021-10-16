@@ -13,7 +13,7 @@ from rest_framework.viewsets import ViewSet
 from sentry_sdk import capture_message
 
 from channel_plugin.utils.custome_response import Response as Custom_Response
-from channel_plugin.utils.customrequest import AsyncRequest, Request
+from channel_plugin.utils.customrequest import *
 from channel_plugin.utils.mixins import AsycViewMixin
 
 from .serializers import InstallSerializer
@@ -109,7 +109,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         ```
         """
         org_id = request.query_params.get("org")
-        member_id = request.query_params.get("user")
+        user_id = request.query_params.get("user", [])
+        member_ids = user_id if isinstance(user_id, list) else [user_id]
 
         data = {
             "name": "Channels Plugin",
@@ -118,44 +119,67 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
             "category": "channels",
         }
-        if org_id is not None and member_id is not None:
-            channels = Request.get(org_id, "channel")
+        if org_id is not None and member_ids is not None:
+
+            channels = await AsyncRequest.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
             if isinstance(channels, list):
-                joined_rooms = list(
-                    map(
-                        lambda channel: {
-                            "room_name": channel.get("slug"),
-                            "room_url": f"/channels/message-board/{channel.get('_id')}",
-                            "room_image": "",
-                        },
-                        list(
-                            filter(
-                                lambda channel: member_id in channel["users"].keys()
-                                and not channel.get("default", False),
-                                channels,
-                            )
-                        ),
+                for member_id in member_ids:
+                    joined_rooms = list(
+                        map(
+                            lambda channel: {
+                                "room_name": channel.get("slug"),
+                                "room_url": f"/channels/message-board/{channel.get('_id')}",
+                                "room_image": "",
+                                "unread": unread(org_id, channel.get('_id')),
+                            },
+                            list(
+                                filter(
+                                    lambda channel: member_id in channel["users"].keys()
+                                    and not channel.get("default", False)
+                                    and channel.get("starred", list),
+                                    channels,
+                                )
+                            ),
+                        )
                     )
-                )
-                public_rooms = list(
-                    map(
-                        lambda channel: {
-                            "room_name": channel.get("slug"),
-                            "room_url": f"/channels/message-board/{channel.get('_id')}",
-                            "room_image": "",
-                        },
-                        list(
-                            filter(
-                                lambda channel: member_id not in channel["users"].keys()
-                                and not channel.get("private")
-                                and not channel.get("default", False),
-                                channels,
-                            )
-                        ),
+                    starred_rooms = list(
+                        map(
+                            lambda channel: {
+                                "room_name": channel.get("slug"),
+                                "room_url": f"/channels/message-board/{channel.get('_id')}",
+                                "room_image": "",
+                                "unread": unread(org_id, channel.get('_id')),
+                            },
+                            list(
+                                filter(
+                                    lambda channel: member_id in channel["users"].keys()
+                                    and not channel.get("default", False)
+                                    and channel.get("starred", member_id),
+                                    channels,
+                                )
+                            ),
+                        )
                     )
-                )
+                    public_rooms = list(
+                        map(
+                            lambda channel: {
+                                "room_name": channel.get("slug"),
+                                "room_url": f"/channels/message-board/{channel.get('_id')}",
+                                "room_image": "",
+                            },
+                            list(
+                                filter(
+                                    lambda channel: member_id
+                                    not in channel["users"].keys()
+                                    and not channel.get("private")
+                                    and not channel.get("default", False),
+                                    channels,
+                                )
+                            ),
+                        )
+                    )
 
             data.update(
                 {
@@ -163,10 +187,10 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                     "user_id": member_id,
                     "group_name": "Channel",
                     "show_group": False,
-                    "category": "channels",
                     "button_url": "/channels",
                     "joined_rooms": joined_rooms,
                     "public_rooms": public_rooms,
+                    "starred_rooms": starred_rooms
                 }
             )
 

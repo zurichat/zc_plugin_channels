@@ -214,8 +214,8 @@ class AsyncRequest:
                 payload.update(
                     {
                         "_id": (await response.json(content_type=None))
-                        .get("data", {})
-                        .get("object_id")
+                            .get("data", {})
+                            .get("object_id")
                     }
                 )
                 return payload
@@ -285,7 +285,6 @@ class AsyncRequest:
 
 @change_collection_name
 def search_db(org_id, channel_id, collection_name, **params):
-
     data = {
         "plugin_id": settings.PLUGIN_ID,
         "organization_id": org_id,
@@ -336,7 +335,7 @@ def search_channels(org_id, collection_name, params):
 
 @change_collection_name
 def get_messages_from_page(
-    org_id, collection_name, channel_id, page, page_size, site_host=None
+        org_id, collection_name, channel_id, page, page_size, site_host=None
 ):
     if site_host is None:
         site_host = "https://channels.zuri.chat"
@@ -481,7 +480,6 @@ def find_match_in_db(org_id, collection_name, param, value, return_data=False):
 
 @change_collection_name
 def manage_channel_permissions(org_id, channel_id, payload):
-
     collection_name = "channelpermissions"
     data = {
         "plugin_id": settings.PLUGIN_ID,
@@ -504,15 +502,52 @@ def manage_channel_permissions(org_id, channel_id, payload):
     return response.json()
 
 
+async def member_channels(org_id, member_id):
+    """Get the channels a member  is in
+    Args:
+        member_id (str): The organization/workspace member ID
+        org_id(str): The organization ID
+    """
+    res = await AsyncRequest.get(org_id, "channels")
+    load = list
+    if res is not None:
+        if "status_code" in res:
+            return res
+        for channel in res:
+            if "users" in channel:
+                try:
+                    channel_member_list = await channel["users"]
+                    if member_id in channel_member_list:
+                        load.append(channel)
+                except Exception:  # noqa
+                    pass
+        if len(load) == 0:
+            load = []
+            return load
+        return load
+    return load
+
+
+# get unread count for each user
+async def unread(org_id, channel_id):
+    """returns unread messages in a channel
+    """
+    load = {"channel_id": channel_id}
+    result = await AsyncRequest.get(org_id, "channelmessage", load)
+    return len(result[-7:-1])
+
+
+
+
+
 def get_channel_permissions(org_id, channel_id):
     pass
 
 
 def get_thread_from_message(
-    org_id, collection_name, channelmessage_id, page, page_size
+        org_id, collection_name, channelmessage_id, page, page_size
 ):
     pass
-
 
 #     data = {
 #         "plugin_id": settings.PLUGIN_ID,

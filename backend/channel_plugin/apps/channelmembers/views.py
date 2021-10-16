@@ -597,7 +597,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 #     # only update user dict
                 payload = {"users": channel["users"]}
 
-                result = Request.put(
+                result = await AsyncRequest.put(
                     org_id, "channel", payload=payload, object_id=room_id
                 )
 
@@ -637,7 +637,9 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                         )
                 else:
                     return Custom_Response(
-                        result, status=result.status_code, request=request, view=self
+                        result, status=result.status_code,
+                        request=request,
+                        view=self
                     )
             else:
                 return Custom_Response(
@@ -847,7 +849,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
 
         if channel.__contains__("_id"):
 
-            # check if the user is aleady a member of the channel
+            # check if the user is already a member of the channel
             user_data = channel["users"].get(member_id)
 
             if user_data:
@@ -856,9 +858,6 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 for key in user_data.keys():
                     if key != "_id":
                         user_data[key] = request.data.get(key, user_data[key])
-
-                if "starred" not in user_data.keys():
-                    user_data["starred"] = request.data.get("starred", False)
 
                 serializer = UserSerializer(data=user_data)
                 # serializer.is_valid(raise_exception=True)
@@ -995,6 +994,104 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             view=self,
         )
 
+    @action(["PUT", "GET"],
+            detail=False,
+            )
+    async def MemberStarredChannels(self, request, org_id, channel_id, member_id):
+        """
+        for starring and un-starring per workspace member
+        it moves a member's starred channel to the sidebar starred list
+        """
+        if request.method == "PUT":
+            channel = await self.retrieve_channel(request, org_id, channel_id)
+            if channel:
+                if member_id in channel.get(
+                        "users", {}
+                ).keys() or member_id in channel.get(
+                    "users", {}
+                ).keys():
+                    load = await channel.get("starred", [])
+                    if member_id in load:
+                        load.remove(member_id)
+                    else:
+                        load.append(member_id)
+
+                    res = await AsyncRequest.put(org_id, "channels", object_id=channel_id,
+                                                 data_filter={"starred": load})
+                    if res and res.get("status_code", None) is None:
+                        loop = asyncio.get_event_loop()
+                        loop.create_task(
+                            request_finished.send(
+                                sender=None,
+                                dispatch_uid="UpdateSidebarSignal",
+                                org_id=org_id,
+                                member_id=member_id,
+                            )
+                        )
+                        status_code = status.HTTP_201_CREATED
+                        return Custom_Response(
+                            res, status=status_code,
+                            request=request,
+                            view=self
+                        )
+                    return Custom_Response(
+                        data="channel starred but centrifugo unavailable",
+                        status=status.HTTP_424_FAILED_DEPENDENCY,
+                        request=request,
+                        view=self
+                    )
+                return Custom_Response(
+                    data="channel not updated",
+                    status=status.HTTP_424_FAILED_DEPENDENCY,
+                    request=request,
+                    view=self
+                )
+            return Custom_Response(
+                data="member not in channel",
+                status=status.HTTP_404_NOT_FOUND,
+                request=request,
+                view=self
+            )
+        elif request.method == "GET":
+            channel = await self.retrieve_channel(request, org_id, channel_id)
+            if channel:
+                if member_id in channel.get(
+                        "users", {}
+                ).keys() or member_id in channel.get(
+                    "users", {}
+                ).keys():
+                    load = await channel.get("starred", [])
+                    if member_id in load:
+                        return Custom_Response(
+                            {"status": True},
+                            status=status.HTTP_200_OK,
+                            request=request,
+                            view=self
+                        )
+                    return Custom_Response(
+                        {"status": False},
+                        status=status.HTTP_200_OK,
+                        request=request,
+                        view=self
+                    )
+                return Custom_Response(
+                    data="Member not in channel",
+                    status=status.HTTP_404_NOT_FOUND,
+                    request=request,
+                    view=self
+                )
+            return Custom_Response(
+                "Invalid channel",
+                status=status.HTTP_400_BAD_REQUEST,
+                request=request,
+                view=self
+            )
+        return Custom_Response(
+            status=status.HTTP_400_BAD_REQUEST,
+            request=request,
+            view=self
+        )
+
 
 channel_members_can_input_view = ChannelMemberViewset.as_view(
     {
@@ -1025,4 +1122,7 @@ channel_members_update_retrieve_views = ChannelMemberViewset.as_view(
 
 channel_add_remove_member_to_room_view = ChannelMemberViewset.as_view(
     {"post": "add_members_to_room", "patch": "remove_members_from_room"}
+)
+starr_channel_view = ChannelMemberViewset.as_view(
+    {"put": "MemberStarredChannels", "get": "MemberStarredChannels"}
 )
