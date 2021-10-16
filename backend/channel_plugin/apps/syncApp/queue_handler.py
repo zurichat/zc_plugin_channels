@@ -179,12 +179,14 @@ class QueueHandler:
     def run(handlers):
         queue_handler = QueueHandler.__get_runing_instance(handlers)
         try:
-            asyncio.run(queue_handler.__start__())
+            future = queue_handler.__start__()
+            asyncio.run(future)
+            asyncio.wait_for(future)
         except (RuntimeError,  RuntimeWarning):
             future = asyncio.ensure_future(queue_handler.__start__())
 
-        try:
-            loop = asyncio.get_event_loop()
-            loop.close()
-        except:
-            pass
+        # try:
+        #     loop = asyncio.get_event_loop()
+        #     loop.close()
+        # except:
+        #     pass
