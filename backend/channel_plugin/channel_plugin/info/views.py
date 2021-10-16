@@ -9,7 +9,6 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from sentry_sdk import capture_message
 
@@ -33,20 +32,22 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         methods=["GET"],
         detail=False,
     )
-    def ping(self, request):
+    async def ping(self, request):
         """Get server status
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/ping" -H  "accept: application/json"
         ```
         """
-        return Response({"success": True}, status=status.HTTP_200_OK)
+        return Custom_Response(
+            {"success": True}, status=status.HTTP_200_OK, view=self, request=request
+        )
 
     @action(
         methods=["GET"],
         detail=False,
     )
-    def info(self, request):
+    async def info(self, request):
         """Get plugin details and developer information
 
         ```bash
@@ -70,7 +71,9 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             },
             "success": True,
         }
-        return Response(data, status=status.HTTP_200_OK)
+        return Custom_Response(
+            data, status=status.HTTP_200_OK, request=request, view=self
+        )
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -98,7 +101,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         ]
     )
     @action(methods=["GET"], detail=False, url_path="sidebar")
-    def info_sidebar(self, request):
+    async def info_sidebar(self, request):
         """Get dynamic sidebar details for a user in an organisation
 
         ```bash
@@ -169,54 +172,63 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
 
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
-        return Response(data, status=status.HTTP_200_OK)
+        return Custom_Response(
+            data, status=status.HTTP_200_OK, request=request, view=self
+        )
 
     @action(methods=["GET"], detail=False, url_path="details")
-    def info_details(self, request):
+    async def info_details(self, request):
         date = timezone.now().isoformat()
         no_of_times = random.randint(11, 25) + random.randint(10, 20)
-        return Response(
+        return Custom_Response(
             data={
                 "message": "Welcome, to the Channels Plugin",
                 "last_visted": date,
                 "no_of_times_visted": no_of_times,
             },
             status=status.HTTP_200_OK,
+            request=request,
+            view=self,
         )
 
     @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
-    def collections(self, request, plugin_id):
+    async def collections(self, request, plugin_id):
         """Get all database collections related to plugin
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/collections/<plugin_id>" -H  "accept: application/json"
         ```
         """
-        response = (
-            requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}").json()
-            or {}
-        )
-        return Response(response, status=status.HTTP_200_OK)
+        response = requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}")
+        status_code = status.HTTP_404_NOT_FOUND
+        if response.status_code >= 200 and response.status_code < 300:
+            response = response.json()
+            status_code = status.HTTP_200_OK
+        return Custom_Response(response, status=status_code, view=self, request=request)
 
     @action(
         methods=["GET"],
         detail=False,
         url_path="collections/(?P<plugin_id>[^/.]+)/organizations/(?P<org_id>[^/.]+)",
     )
-    def collections_by_organization(self, request, org_id, plugin_id):
+    async def collections_by_organization(self, request, org_id, plugin_id):
         """Get all database collections related to plugin specific to an organisation
 
         ```bash
         curl -X GET "{{baseUrl}}/v1/collections/{{plugin_id}}/organizations/{{org_id}}" -H  "accept: application/json"
         ```
         """
-        response = (
-            requests.get(
-                f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
-            ).json()
-            or {}
+        response = requests.get(
+            f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
         )
-        return Response(response, status=status.HTTP_200_OK)
+
+        status_code = status.HTTP_404_NOT_FOUND
+
+        if response.status_code >= 200 and response.status_code < 300:
+            response = response.json()
+            status_code = status.HTTP_200_OK
+
+        return Custom_Response(response, status=status_code, view=self, request=request)
 
     @swagger_auto_schema(request_body=InstallSerializer)
     @action(
@@ -236,10 +248,12 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         org_id = serializer.data.get("org_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
+        token = request.headers.get("authorization").split(" ")[1]
+        capture_message(f"auth {request.headers.get('authorization')}\n {token}")
 
         headers = {
             "Content-Type": "application/json",
-            "Cookie": request.COOKIES.get("token", "null"),
+            "Cookie": token,
         }
         url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
         data = {

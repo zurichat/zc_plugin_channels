@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from apps.syncApp.jobs import job_function , run_qhandler_schedule
 # Create your views here.
 
-@api_view(["GET"])
+@api_view(["GET", "POST", "PUT"])
 def sync_notifier(request):
     # once the request is recieved call the queue class to start a new queue or add object to the queue
     try:
