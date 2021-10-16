@@ -25,6 +25,7 @@ import DisabledInput from "../shared/DiasbledInput";
 import notificationsManager from "./subs/Centrifugo/NotificationsManager";
 import Centrifugo from "../../utils/centrifugo";
 import { MessageBoard } from '@zuri/zuri-ui';
+import instance from "../../utils/utils";
 
 const MessageBoardIndex = () => {
 
@@ -33,7 +34,7 @@ const MessageBoardIndex = () => {
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);
 
-  const { channelMessages, sockets, renderedMessages, users, workspace_users } = useSelector((state) => state.appReducer)
+  const { channelMessages, sockets, renderedMessages, users, workspace_users_object } = useSelector((state) => state.appReducer)
   const { _getChannelMessages, _getSocket, _getNotifications, _sendMessage } = bindActionCreators(appActions, dispatch)
   const canInput = channelDetails.allow_members_input || true
 
@@ -128,12 +129,12 @@ const MessageBoardIndex = () => {
       console.log("Message ===", msg)
       _sendMessage(users.currentWorkspace, channelId, {
         user_id: users["0"]._id,
-        content: msg
+        content: msg.richUiData.blocks[0].text
       });
     },
     currentUserData: {
-      username: 'Aleey',
-      imageUrl: '',
+      username: users["0"]?.user_name || "",
+      imageUrl: users["0"]?.image_url || "",
     },
     // messages: [
     //   {
@@ -209,11 +210,17 @@ const MessageBoardIndex = () => {
     //     },
     //   },
     // ],
-    messages: channelMessages.map((msg, index) => ({
+    messages: channelMessages.map((msg) => {
+      const user = workspace_users_object[msg.user_id] || {
+        user_name: "",
+        image_url: ""
+      }
+      const formattedTime = instance.formatDate(msg.timestamp, 'LT')
+      return ({
       message_id: msg._id,
-      username: "Aleey",
-      image_url: "",
-      time: msg.timestamp,
+      username: user.user_name,
+      image_url: user.image_url,
+      time: formattedTime,
       emojis: [
         { name: 'smiling', count: 4, emoji: '😋' },
         { name: 'grining', count: 1, emoji: '😊' },
@@ -232,10 +239,10 @@ const MessageBoardIndex = () => {
         ],
         entityMap: {},
       }
-    })),
+    })}),
     showChatSideBar: true,
     chatHeader: 'Chats',
-  }));
+  }), [channelMessages, workspace_users_object]);
 
   if (!Centrifugo.isMessageRTCSet) {
     if (sockets && sockets.socket_name) {
@@ -303,7 +310,7 @@ const MessageBoardIndex = () => {
         {/* <Box width="100%"> */}
           <ChannelHeader channelId={channelId} org_id={users?.currentWorkspace} />
           <Box flex="1" overflowY="auto">
-            <MessageBoard chatsConfig={chatSidebarConfig}/>
+            {Object.keys(workspace_users_object).length > 0 && channelMessages.length > 0 && <MessageBoard chatsConfig={chatSidebarConfig}/>}
           </Box>
 
           {/* <Box
