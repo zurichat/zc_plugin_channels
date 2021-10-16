@@ -7,6 +7,8 @@ To run `python manage.py runscript plugin`
 """
 
 url = "https://api.zuri.chat/plugins/register"
+
+
 data = {
     "name": "Channels Plugin",
     "developer_name": "Team Coelho",
@@ -20,7 +22,6 @@ data = {
     "images": None,
     "version": "v1",
     "category": "channels",
-    "sync_request_url": "https://channels.zuri.chat/sync/",
 }
 
 
@@ -33,6 +34,14 @@ def run():
             f.truncate(0)
             f.write(plugin_id)
             f.close()
-            print("Plugin registration successful")
+            print("Plugin registration successful")        
+        
+        sync_url = f"https://api.zuri.chat/plugins/{plugin_id}"
+        sync_data = {"sync_request_url": "https://channels.zuri.chat/sync/"}
+        
+        response = requests.patch(sync_url, sync_data)
+
+        if response.status_code >= 200 and response.status_code < 300:
+            print("Setup Plugin Synchronization successful")
         return
     print("Plugin registration not successful")

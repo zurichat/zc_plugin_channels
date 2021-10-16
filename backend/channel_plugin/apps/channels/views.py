@@ -1,6 +1,8 @@
 import asyncio
+import json
 
 import requests
+from rest_framework.exceptions import ValidationError
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.channelmembers.views import ChannelMemberViewset
@@ -106,30 +108,30 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
             return self.get_exception_response(exc, request)
 
         channel_serializer = serializer.convert_to_channel_serializer()
-        channel_serializer.is_valid(raise_exception=True)
-        channel = channel_serializer.data.get("channel")
-        result = await channel.create(serializer.data.get("org_id"))
         status_code = status.HTTP_404_NOT_FOUND
+        if channel_serializer.is_valid(raise_exception=False):
+            channel = channel_serializer.data.get("channel")
+            result = await channel.create(serializer.data.get("org_id"))
 
-        if result.__contains__("_id"):
-            loop = asyncio.get_event_loop()
-            loop.create_task(
-                request_finished.send(
-                    sender=str,
-                    dispatch_uid="UpdateSidebarSignal",
-                    org_id=channel_serializer.data.get("org_id"),
-                    user_id=result.get("owner"),
-                    room_id=result.get("_id"),
+            if result.__contains__("_id"):
+                loop = asyncio.get_event_loop()
+                loop.create_task(
+                    request_finished.send(
+                        sender=str,
+                        dispatch_uid="UpdateSidebarSignal",
+                        org_id=channel_serializer.data.get("org_id"),
+                        user_id=result.get("owner"),
+                        room_id=result.get("_id"),
+                    )
                 )
-            )
 
-            status_code = status.HTTP_201_CREATED
-            return Custom_Response(
-                serializer.data, status=status_code, request=request, view=self
-            )
+                status_code = status.HTTP_201_CREATED
+                return Custom_Response(
+                    serializer.data, status=status_code, request=request, view=self
+                )
         else:
             return Custom_Response(
-                result, status=status_code, request=request, view=self
+                channel_serializer.errors, status=status_code, request=request, view=self
             )
 
     @swagger_auto_schema(
@@ -418,7 +420,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     ),
                 )
             )
-
+            
             return Custom_Response(
                 result, status=status_code, request=request, view=self
             )

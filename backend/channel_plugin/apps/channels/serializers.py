@@ -43,11 +43,16 @@ class ChannelSerializer(serializers.Serializer):
         user_id = instance.get("owner")
         slug = slugify(instance.get("name"))
         channel = Channel(**instance, slug=slug)
-        channel.users = {
-            user_id: UserSerializer(
+        user_serializer =  UserSerializer(
                 data={"_id": user_id, "is_admin": True, "notifications": {}}
-            ).data
+        )
+
+        user_serializer.is_valid(raise_exception=True)
+        
+        channel.users = {
+            user_id: user_serializer.data
         }
+        
         data = {"channel": channel}
         return data
 
@@ -205,12 +210,10 @@ class RoomSerializer(serializers.Serializer):
 
     def convert_to_channel_serializer(self) -> serializers.Serializer:
         self.is_valid(raise_exception=True)
-
         data = {
             "name": self.data.get("room_name"),
             "owner": self.data.get("room_member_ids", ["1"])[0],
             "private": self.data.get("private", False),
             "default": self.data.get("default", False),
         }
-
         return ChannelSerializer(data=data, context={"org_id": self.data.get("org_id")})
