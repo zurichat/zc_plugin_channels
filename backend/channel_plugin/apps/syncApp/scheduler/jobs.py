@@ -15,9 +15,4 @@ def run_qhandler_schedule(Handler=QHandler, Workers = [JoinTaskHandler,RemoveTas
     Handler.run(Workers)
     print("\n\nDone")
 
-def my_listener(event):
-    if event.exception:
-        print('The job crashed :(')
-    else:
-        print('The job worked :)')
 

@@ -31,6 +31,14 @@ dummy_queue_data = [
             "organization_id":"1"
         }
     },
+    {
+        "id": 50,
+        "event": "enter_organization",
+        "message": {
+            "member_id":"testuser",
+            "organization_id":"1"
+        }
+    },
 ]
 
 class QueueHandler:
@@ -137,8 +145,8 @@ class QueueHandler:
             if res.status == 200:
                 data = json.loads(await res.read())
                 queue = data.get("data").get("queue", [])
-                queue = dummy_queue_data # For debugging
-                print(queue)
+                # queue = dummy_queue_data # For debugging
+                # print(queue)
                 self.update_queue(queue)
 
     async def _process_queue(self):

@@ -201,7 +201,7 @@ class JoinTaskHandler:
     
     def __get_default_channels(self):
         
-        data = find_match_in_db(self.organization_id, "channel", "default", True, return_data=True)
+        data = find_match_in_db(self.organization_id, "channel", "default", False, return_data=True)
         data = data or [] # Screen for empty data
         print(data)
         assert  isinstance(data, list), "find_match_in_db returned an invalid type"
