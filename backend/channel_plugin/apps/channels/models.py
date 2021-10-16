@@ -11,8 +11,6 @@ class Channel:
     name: str
     # creator of channel
     owner: str
-    # starred channel
-    starred: []
     slug: str = ""
     # list of user IDs in a channel
     users: dict = field(default_factory=dict)
@@ -39,7 +37,6 @@ class Channel:
             "private": self.private,
             "archived": self.archived,
             "default": self.default,
-            "starred": self.starred,
             "users": self.users,
             "created_on": self.created_on,
             "allow_members_input": self.allow_members_input,

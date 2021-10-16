@@ -859,6 +859,8 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
                 for key in user_data.keys():
                     if key != "_id":
                         user_data[key] = request.data.get(key, user_data[key])
+                        if "starred" not in user_data.keys():
+                            user_data["starred"] = request.data.get("starred", False)
 
                 serializer = UserSerializer(data=user_data)
                 # serializer.is_valid(raise_exception=True)
@@ -995,7 +997,7 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
             view=self,
         )
 
-    @action(["PUT", "GET"],
+    @action(["PUT"],
             detail=False,
             )
     async def MemberStarredChannels(self, request, org_id, channel_id, member_id):
@@ -1003,95 +1005,74 @@ class ChannelMemberViewset(AsycViewMixin, ViewSet):
         for starring and un-starring per workspace member
         it moves a member's starred channel to the sidebar starred list
         """
-        if request.method == "PUT":
-            channel = await self.retrieve_channel(request, org_id, channel_id)
-            if channel:
-                if member_id in channel.get(
-                        "users", {}
-                ).keys() or member_id in channel.get(
-                    "users", {}
-                ).keys():
-                    load = await channel.get("starred", [])
-                    if member_id in load:
-                        load.remove(member_id)
-                    else:
-                        load.append(member_id)
+        channel = await self.retrieve_channel(request, org_id, channel_id)
+        if channel:
+            if member_id in channel["users"].keys():
+                load = await channel["users"][member_id].get("starred")
+                if load is None or True:
+                    load = await channel["users"][member_id].pop("starred")
+                    load["starred"] = request.data.get("starred", False)
+                if load is False:
+                    load = await channel["users"][member_id].pop("starred")
+                    load["starred"] = request.data.get("starred", True)
+                    serializer = UserSerializer(data=load)
+                    # serializer.is_valid(raise_exception=True)
+                    try:
+                        serializer.is_valid(raise_exception=True)
+                    except Exception as exc:
+                        return self.get_exception_response(exc, request)
 
-                    res = await AsyncRequest.put(org_id, "channels", object_id=channel_id,
-                                                 data_filter={"starred": load})
-                    if res and res.get("status_code", None) is None:
-                        loop = asyncio.get_event_loop()
-                        loop.create_task(
-                            request_finished.send(
-                                sender=None,
-                                dispatch_uid="UpdateSidebarSignal",
-                                org_id=org_id,
-                                user_id=member_id,
+                    # add user to the channel
+                    channel["users"].update({f"{member_id}": serializer.data})
+
+                    # remove channel id to avoid changing it
+                    channel.pop("_id", None)
+
+                    payload = {"users": channel["users"]}
+
+                    res = await AsyncRequest.put(
+                        org_id, "channel", payload=payload, object_id=channel_id
+                    )
+                    if res:
+                        if isinstance(res, dict):
+                            data = load if not res.get("error") else res
+                            loop = asyncio.get_event_loop()
+                            loop.create_task(
+                                request_finished.send(
+                                    sender=None,
+                                    dispatch_uid="UpdateSidebarSignal",
+                                    org_id=org_id,
+                                    user_id=member_id,
+                                )
                             )
-                        )
-                        status_code = status.HTTP_201_CREATED
-                        return Custom_Response(
-                            res, status=status_code,
-                            request=request,
-                            view=self
-                        )
+                            status_code = (
+                                status.HTTP_201_CREATED
+                                if not res.get("error")
+                                else status.HTTP_400_BAD_REQUEST
+                            )
+                            return Custom_Response(
+                                data, status=status_code, request=request, view=self
+                            )
+                        else:
+                            return Custom_Response(
+                                res,
+                                status=res.status_code,
+                                request=request,
+                                view=self,
+                            )
+
                     return Custom_Response(
-                        data="channel starred but centrifugo unavailable",
-                        status=status.HTTP_424_FAILED_DEPENDENCY,
+                        {"error": "member not found"},
+                        status=status.HTTP_404_NOT_FOUND,
                         request=request,
-                        view=self
+                        view=self,
                     )
                 return Custom_Response(
-                    data="channel not updated",
-                    status=status.HTTP_424_FAILED_DEPENDENCY,
-                    request=request,
-                    view=self
-                )
-            return Custom_Response(
-                data="member not in channel",
-                status=status.HTTP_404_NOT_FOUND,
-                request=request,
-                view=self
-            )
-        elif request.method == "GET":
-            channel = await self.retrieve_channel(request, org_id, channel_id)
-            if channel:
-                if member_id in channel.get(
-                        "users", {}
-                ).keys() or member_id in channel.get(
-                    "users", {}
-                ).keys():
-                    load = await channel.get("starred", [])
-                    if member_id in load:
-                        return Custom_Response(
-                            {"status": True},
-                            status=status.HTTP_200_OK,
-                            request=request,
-                            view=self
-                        )
-                    return Custom_Response(
-                        {"status": False},
-                        status=status.HTTP_200_OK,
+                        {"error": "Channel not found"},
+                        status=status.HTTP_404_NOT_FOUND,
                         request=request,
-                        view=self
-                    )
-                return Custom_Response(
-                    data="Member not in channel",
-                    status=status.HTTP_404_NOT_FOUND,
-                    request=request,
-                    view=self
+                        view=self,
                 )
-            return Custom_Response(
-                "Invalid channel",
-                status=status.HTTP_400_BAD_REQUEST,
-                request=request,
-                view=self
-            )
-        return Custom_Response(
-            status=status.HTTP_400_BAD_REQUEST,
-            request=request,
-            view=self
-        )
 
 
 channel_members_can_input_view = ChannelMemberViewset.as_view(
@@ -1110,7 +1091,6 @@ channel_members_list_create_views = ChannelMemberViewset.as_view(
         "post": "add_member",
     }
 )
-
 channel_member_join_view = ChannelMemberViewset.as_view(
     {
         "post": "join",
@@ -1125,5 +1105,7 @@ channel_add_remove_member_to_room_view = ChannelMemberViewset.as_view(
     {"post": "add_members_to_room", "patch": "remove_members_from_room"}
 )
 starr_channel_view = ChannelMemberViewset.as_view(
-    {"put": "MemberStarredChannels", "get": "MemberStarredChannels"}
+    {"put": "MemberStarredChannels"}
 )
+
+

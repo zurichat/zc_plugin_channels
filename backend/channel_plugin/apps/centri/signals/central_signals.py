@@ -45,7 +45,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel.get("starred", []),
+                                    and channel["users"][member_id].get("starred") is False,
                                     channels,
                                 )
                             ),
@@ -63,7 +63,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel.get("starred", member_id),
+                                    and channel["users"][member_id].get("starred") is True,
                                     channels,
                                 )
                             ),

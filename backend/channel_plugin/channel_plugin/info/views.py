@@ -115,15 +115,14 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         data = {
             "name": "Channels Plugin",
             "description": description,
-            "button_url": "/channels",
             "plugin_id": settings.PLUGIN_ID,
-            "category": "channels",
         }
         if org_id is not None and member_ids is not None:
 
             channels = await AsyncRequest.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
+            starred_rooms = list()
             if isinstance(channels, list):
                 for member_id in member_ids:
                     joined_rooms = list(
@@ -138,7 +137,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel.get("starred", []),
+                                    and channel["users"][member_id].get("starred") is False,
                                     channels,
                                 )
                             ),
@@ -156,7 +155,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel.get("starred", member_id),
+                                    and channel["users"][member_id].get("starred") is True,
                                     channels,
                                 )
                             ),
@@ -180,20 +179,19 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                             ),
                         )
                     )
-
-            data.update(
-                {
+        data.update(
+            {
                     "organisation_id": org_id,
                     "user_id": member_id,
-                    "group_name": "Channel"
+                    "group_name": "Channel",
                     "show_group": True,
-                    "category": "channels"
+                    "category": "channels",
                     "button_url": "/channels",
                     "joined_rooms": joined_rooms,
                     "public_rooms": public_rooms,
-                    "starred_rooms": starred_rooms
-                }
-            )
+                    "starred_rooms": starred_rooms,
+            }
+        )
 
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
