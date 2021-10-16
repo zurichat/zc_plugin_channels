@@ -38,6 +38,14 @@ dummy_queue_data = [
             "organization_id":"1"
         }
     },
+    {
+        "id": 50,
+        "event": "enter_organization",
+        "message": {
+            "member_id":"testuser",
+            "organization_id":"1"
+        }
+    },
 ]
 
 
