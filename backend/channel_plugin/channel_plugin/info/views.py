@@ -271,7 +271,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
-        capture_message(f"Response of register - {res}")
+        capture_message(f"Response of register - {res.json()}")
         if (
             res.status_code == 400
             and "invalid" in res.json().get("message")
