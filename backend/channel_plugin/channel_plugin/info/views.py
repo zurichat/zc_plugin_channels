@@ -237,8 +237,6 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-        capture_message(f"Headers - {request.headers}", level="info")
-        capture_message(f"Request - {request.__dict__}", level="info")
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -250,7 +248,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         title = serializer.data.get("title")
         tmp = request.headers.get("authorization")
         token = tmp.split()[1].strip() if tmp is not None else ""
-        capture_message(f"auth {request.headers.get('authorization')}\n {token}")
+        capture_message(f"auth {request.headers.get('authorization')}")
+        capture_message(f"token {token}")
 
         headers = {
             "Content-Type": "application/json",
