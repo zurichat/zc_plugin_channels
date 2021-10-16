@@ -243,7 +243,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         except Exception as exc:
             return self.get_exception_response(exc, request)
 
-        org_id = serializer.data.get("org_id")
+        org_id = serializer.data.get("organization_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
         tmp = request.headers.get("authorization")
