@@ -2,7 +2,7 @@ import asyncio
 from django.conf import settings
 from aiohttp import ClientSession
 import json
-
+import requests
 
 # def _():
 #     return {"event": "enter_organization"}
@@ -168,18 +168,12 @@ class QueueHandler:
                 most_recent_task = task
 
         if most_recent_task:
-            session = ClientSession()
             id = settings.PLUGIN_ID
             url = f"https://api.zuri.chat/plugins/{id}/sync"
             # url = f"https://api.zuri.chat/marketplace/plugins/{id}/sync"
-
-            # res = await session.patch(url, json.dumps({"id": most_recent_task.get("id")}))
-            
-                # print(res.status)
-
-                # if res.status >= 200 and res.status < 300:
-            self.__update_global_state(done=True)
-            await session.close()
+            res = requests.patch(url, json.dumps({"id": most_recent_task.get("id")}))
+            if res.status_code >= 200 or res.status_code < 300:  
+                self.__update_global_state(done=True)
 
     @staticmethod
     def run(handlers):
