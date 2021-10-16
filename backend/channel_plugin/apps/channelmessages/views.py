@@ -1,5 +1,3 @@
-from django.conf import settings
-from rest_framework import response
 from apps.threads.serializers import ReactionSerializer
 from apps.utils.serializers import ErrorSerializer
 from django.core.signals import request_finished
@@ -32,10 +30,6 @@ from .serializers import (
     ChannelMessageSerializer,
     ChannelMessageUpdateSerializer,
 )
-
-from channel_plugin.utils.pagination_handler import SearchPagination
-from django.urls import reverse
-import requests
 
 
 class ChannelMessageViewset(ThrottledViewSet, OrderMixin):
@@ -699,156 +693,50 @@ def test(request):
     },
     manual_parameters=[
         openapi.Parameter(
-            "q",
+            "key",
             openapi.IN_QUERY,
             description="Search Key",
             required=True,
             type=openapi.TYPE_STRING,
-        ),
-        openapi.Parameter(
-            "filter",
-            openapi.IN_QUERY,
-            description="Filter Query",
-            required=False,
-            type=openapi.TYPE_STRING,
-        ),
-        openapi.Parameter(
-            "page",
-            openapi.IN_QUERY,
-            description="Page Number",
-            required=False,
-            type=openapi.TYPE_INTEGER,
-        ),
-        openapi.Parameter(
-            "limit",
-            openapi.IN_QUERY,
-            description="Number Per Page",
-            required=False,
-            type=openapi.TYPE_INTEGER,
         )
     ],
 )
 @api_view(["GET"])
 def workflow_search(request, org_id, member_id):
     """Search channel messages based on content"""
+    key = request.GET.get("key", "")
 
-    q = request.GET.get("q", "")
-    filter = request.query_params.getlist("filter", {})
-    limit = request.GET.get("limit", 20)
-    result = []
-    msg_url = "https://channels.zuri.chat/api/v1/{org_id}/messages/{msg_id}/"
+    tmp = Request.get(org_id, "channels")
+    channels = tmp if isinstance(tmp, list) else []
+    user_channels = [ch for ch in channels if member_id in ch["users"].keys()]
 
-    try:
-        if type(limit) == str:
-            limit = int(limit)
-    except ValueError:
-        limit = 20
+    results = []
 
-    paginator = SearchPagination()
-    paginator.page_size = limit
+    for channel in user_channels:
+        tmp = Request.get(
+            org_id, "channelmessage", {"channel_id": user_channels[0]["_id"]}
+        )
 
-    try:
-        # return only channels that match filter param if filter is given
-        # or return all channels
-        if filter:
-            filter = {
-                "name": {"$in": filter}
-            }
+        messages = tmp if isinstance(tmp, list) else []
 
-        payload = {
-            "plugin_ID": settings.PLUGIN_ID,
-            "organization_ID": org_id,
-            "collection_name": "channel",
-            "filter": filter,
-            "object_id": ""
-        }
-        res = requests.post(settings.READ_URL, json=payload)
+        for message in messages:
+            if key in message["content"]:
+                data = {
+                    "title": message["user_id"],
+                    "email": "",
+                    "description": message["content"],
+                    "created_at": message["timestamp"],
+                    "url": message["_id"],
+                }
+                results.append(data)
 
-        if res.status_code == 200:
-            channels = res.json().get("data", [])
-            print(len(channels))
-
-            for channel in channels:
-                # if user owns or is a member of the channel
-                if channel.get("owner") == member_id or member_id in channel.get("users", {}).keys():
-                    # filter query to return only messages that belong to channel
-                    msg_filter = {
-                        "channel_id": {"$eq": channel.get("_id", "")}
-                    }
-                    payload = {
-                        "plugin_ID": settings.PLUGIN_ID,
-                        "organization_ID": org_id,
-                        "collection_name": "channelmessage",
-                        "filter": msg_filter,
-                        "object_id": ""
-                    }
-                    res = requests.post(settings.READ_URL, json=payload)
-
-                    if res.status_code == 200:
-                        for message in res.json().get("data", []):
-                            if q.lower() in message.get("content", "").lower():
-                                entity_data = {
-                                        "_id": message.get("_id", ""),
-                                        "room_name": channel.get("name", ""),
-                                        "title": channel.get("name", ""),
-                                        "content": message.get("content", ""),
-                                        "created_by": message.get("user_id", ""),
-                                        "images_url": message.get("images_url", []),
-                                        "created_at": message.get("timestamp", ""),
-                                        "destination_url": msg_url.format(
-                                            org_id=org_id, msg_id=message.get("_id", ""))
-                                    }
-                                result.append(entity_data)
-
-            result = paginator.paginate_queryset(result, request)
-            
-            return paginator.get_paginated_response(result, q, filter, request)
-    except Exception as e:
-        print(e)
-        result = paginator.paginate_queryset([], request)
-        return paginator.get_paginated_response(result, q, filter, request)
-
-
-@swagger_auto_schema(
-    methods=["get"],
-    operation_summary="searches for message by a user",
-    responses={404: "Error: Not Found"},
-)
-@api_view(["GET"])
-def search_suggestions(request, org_id, member_id):
-    filter = {
-        "user_id": member_id
+    response = {
+        "status": "ok",
+        "pagination": {},
+        "query": key,
+        "plugin": "Channels",
+        "data": results,
+        "filter_suggestions": {"in": [], "from": []},
     }
 
-    data = {}
-    count = 0
-
-    try:
-        payload = {
-            "plugin_ID": settings.PLUGIN_ID,
-            "organization_ID": org_id,
-            "collection_name": "channelmessage",
-            "filter": filter,
-            "object_id": ""
-        }
-        res = requests.post(settings.READ_URL, json=payload)
-
-        for message in res.json().get("data", []):
-            data[message.get("content","")] = message.get("content", "")
-            if count == 10:
-                break
-
-        response = {
-            "status":"ok",
-            "type":"suggestions",
-            "data": data
-        }
-                   
-    except Exception as e:
-        print(e)     
-        response = {
-            "status":"ok",
-            "type":"suggestions",
-            "data":data
-        }
     return Response(response, status=status.HTTP_200_OK)
