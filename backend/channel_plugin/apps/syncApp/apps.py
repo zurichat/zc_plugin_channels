@@ -11,6 +11,7 @@ scheduler = SingleJobBackgroundScheduler()
 
 from .queue_handler import QueueHandler as QHandler
 from .task_handler import RemoveTaskHandler, JoinTaskHandler 
+import threading
 
 INTERVAL = 20
 MAX_INSTANCES = 1
@@ -29,4 +30,6 @@ class SyncAppConfig(AppConfig):
         #         print("JOB_SCHEDULED")
         # except:
         #     pass
-        QHandler.run([JoinTaskHandler, RemoveTaskHandler])
+        th = threading.Thread(target=run_qhandler_schedule)
+        th.start()
+
