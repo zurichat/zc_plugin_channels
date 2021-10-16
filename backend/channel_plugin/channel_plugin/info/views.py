@@ -237,6 +237,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
+        good_message = ["plugin saved successfully", "plugin has already been added"]
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -262,7 +263,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         capture_message(f"Response of register - {res.json()}")
         if (
             res.status_code == 400
-            and "invalid" in res.json().get("message")
+            and res.json().get("message") not in good_message
             or res.status_code == 401
         ):
             return Custom_Response(
