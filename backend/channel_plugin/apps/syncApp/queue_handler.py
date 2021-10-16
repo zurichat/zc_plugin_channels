@@ -7,7 +7,7 @@ import json
 import requests
 from requests.sessions import session
 
-timeout = aiohttp.ClientTimeout(150)
+timeout = aiohttp.ClientTimeout(100)
 
 
 # def _():
@@ -140,7 +140,7 @@ class QueueHandler:
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("data").get("queue", [])
+                queue = data.get("data").get("queue", dummy_queue_data)
                 # queue = dummy_queue_data # For debugging
                 self.update_queue(queue)
 
@@ -179,12 +179,13 @@ class QueueHandler:
     def run(handlers):
         queue_handler = QueueHandler.__get_runing_instance(handlers)
         try:
-            asyncio.run(queue_handler.__start__())
-        except (RuntimeError,  RuntimeWarning):
+            future = queue_handler.__start__()
+            asyncio.run(future)
+        except (RuntimeError):
             future = asyncio.ensure_future(queue_handler.__start__())
 
-        try:
-            loop = asyncio.get_event_loop()
-            loop.close()
-        except:
-            pass
+        # try:
+        #     loop = asyncio.get_event_loop()
+        #     loop.close()
+        # except:
+        #     pass
