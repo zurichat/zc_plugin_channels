@@ -49,7 +49,10 @@ class CorsMiddleware:
                 pass
 
         if request.method in ["GET", "POST", "PUT", "DELETE"] and result:
-            del response.__dict__["_headers"]["access-control-allow-origin"]
+            try:
+                del response.__dict__["_headers"]["access-control-allow-origin"]
+            except KeyError:
+                pass
 
         if "worskpace" in request.path:
             capture_message(response.__dict__["_headers"])
