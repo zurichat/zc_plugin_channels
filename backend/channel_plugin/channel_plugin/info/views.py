@@ -248,7 +248,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         org_id = serializer.data.get("org_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
-        token = request.headers.get("authorization").split(" ")[1]
+        tmp = request.headers.get("authorization")
+        token = tmp.split()[1].strip() if tmp is not None else ""
         capture_message(f"auth {request.headers.get('authorization')}\n {token}")
 
         headers = {
