@@ -181,8 +181,7 @@ class QueueHandler:
         try:
             future = queue_handler.__start__()
             asyncio.run(future)
-            asyncio.wait_for(future)
-        except (RuntimeError,  RuntimeWarning):
+        except (RuntimeError):
             future = asyncio.ensure_future(queue_handler.__start__())
 
         # try:
