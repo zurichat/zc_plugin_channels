@@ -237,22 +237,22 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-        capture_message(f"Headers - {request.headers}", level="info")
-        capture_message(f"Request - {request.__dict__}", level="info")
+        good_message = ["plugin saved successfully", "plugin has already been added"]
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as exc:
             return self.get_exception_response(exc, request)
 
-        org_id = serializer.data.get("org_id")
+        org_id = serializer.data.get("organization_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
-        token = request.headers.get("authorization").split(" ")[1]
+
+        capture_message(f"auth {request.headers.get('authorization')}")
 
         headers = {
             "Content-Type": "application/json",
-            "Cookie": token,
+            "Authorization": request.headers.get("authorization", ""),
         }
         url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
         data = {
@@ -260,9 +260,10 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
+        capture_message(f"Response of register - {res.json()}")
         if (
             res.status_code == 400
-            and "invalid" in res.json().get("message")
+            and res.json().get("message") not in good_message
             or res.status_code == 401
         ):
             return Custom_Response(

@@ -2,8 +2,13 @@ import asyncio
 from asyncio.tasks import gather
 from django.conf import settings
 from aiohttp import ClientSession
+import aiohttp
 import json
 import requests
+from requests.sessions import session
+
+timeout = aiohttp.ClientTimeout(150)
+
 
 # def _():
 #     return {"event": "enter_organization"}
@@ -33,6 +38,7 @@ dummy_queue_data = [
         }
     },
 ]
+
 
 class QueueHandler:
 
@@ -78,6 +84,7 @@ class QueueHandler:
       
     async def __run_task(self, task_handler, task_data):
         compeleted = False
+        self.__task_queue.remove(task_data)
         print("RUNING A TASK")
         try:
             compeleted = await task_handler.run(task_data)
@@ -90,7 +97,6 @@ class QueueHandler:
         else:
             self.__unresolved_task.append(task_data)
             
-        self.__task_queue.remove(task_data)
 
     def __update_global_state(self, done=True):
         if done:
@@ -125,7 +131,7 @@ class QueueHandler:
                     self.__task_queue.append(item)
 
     async def _get_queue_data(self):
-        async with ClientSession()  as  session :
+        async with ClientSession(timeout=timeout)  as  session :
             id = settings.PLUGIN_ID
             
             url = f"https://api.zuri.chat/marketplace/plugins/{id}/"
@@ -139,7 +145,6 @@ class QueueHandler:
                 self.update_queue(queue)
 
     async def _process_queue(self):
-        event_loop = asyncio.get_event_loop()
         tasks = []
         
         for task in self._get_queue():
@@ -153,7 +158,7 @@ class QueueHandler:
     async def __start__(self):
         await self._get_queue_data()
         await self._process_queue()
-        # await self.__end__()
+        await self.__end__()
 
     async def __end__(self):
         most_recent_task = {}
@@ -166,8 +171,7 @@ class QueueHandler:
         if most_recent_task:
             id = settings.PLUGIN_ID
             url = f"https://api.zuri.chat/plugins/{id}/sync"
-
-            res = requests.patch(url, json.dumps({"id": most_recent_task.get("id")}))
+            res = requests.patch(url, json.dumps({"id": most_recent_task.get("id")}), timeout=150)
             if res.status_code >= 200 or res.status_code < 300:  
                 self.__update_global_state(done=True)
 
@@ -178,3 +182,9 @@ class QueueHandler:
             asyncio.run(queue_handler.__start__())
         except (RuntimeError,  RuntimeWarning):
             future = asyncio.ensure_future(queue_handler.__start__())
+
+        try:
+            loop = asyncio.get_event_loop()
+            loop.close()
+        except:
+            pass
