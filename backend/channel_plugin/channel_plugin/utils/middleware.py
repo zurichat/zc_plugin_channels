@@ -36,12 +36,7 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             response = self.process_response(request, response)
-
-            if request.method in ["POST", "PUT", "DELETE"]:
-                capture_message(
-                    f"Response (production) - {response.__dict__['_headers']}",
-                    level="info",
-                )
+            capture_message(f'Production - {response.__dict__["_headers"]}')
         return response
 
     def process_response(self, request, response):
@@ -53,10 +48,13 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-        if request.method in ["POST", "PUT", "DELETE"] and result:
-            response.__dict__["_headers"]["access-control-allow-origin"] = (
-                "Access-Control-Allow-Origin",
-                "*",
-            )
+        if request.method in ["GET", "POST", "PUT", "DELETE"] and result:
+            try:
+                del response.__dict__["_headers"]["access-control-allow-origin"]
+            except KeyError:
+                pass
+
+        if "workspace" in request.path:
+            capture_message(response.__dict__["_headers"])
 
         return response
