@@ -9,53 +9,14 @@ import requests
 from requests.sessions import session
 from apps.syncApp.utils import BadServerResponse
 from channel_plugin.utils.customrequest import change_collection_name
-# class TaskHandler:
-#  __BASE_URL = "https://channels.zuri.chat/api"
 
-#     def __init__(self):
-#         __BASE_URL = "https://channels.zuri.chat/api"
-#         self.__execute_operations()
-    
-#     @staticmethod
-#     def run(data):
-        
-#         TaskHandler.member_id = data["message"]["member_id"]
-#         TaskHandler.organization_id = data["message"]["organization_id"]
-#         TaskHandler.event = data["event"]
-
-#         assert isinstance(data, dict), f"Improper data type"
-#         TaskHandler.__process_data(data)
-
-
-    
-#     @staticmethod
-#     def __process_data(data):
-
-#         TaskHandler.member_id = data["message"]["member_id"]
-#         TaskHandler.organization_id = data["message"]["organization_id"]
-#         TaskHandler.event = data["event"]
-
-#         TaskHandler.instance = TaskHandler.__create_new_instance()
-    
-#     @staticmethod
-#     def __create_new_instance():
-
-#         return TaskHandler()    
-
-#     def __execute_operations(self):
-
-
-#         pass
-#     @staticmethod
-#     def get_schema():
-#         return {"event": "enter_organization"}
 
 data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
 write = settings.WRITE_URL
 delete = settings.DELETE_URL
 
-timeout = aiohttp.ClientTimeout(100)
+timeout = aiohttp.ClientTimeout(500)
 
 
 @change_collection_name
@@ -91,82 +52,6 @@ async def find_match_in_db(org_id, collection_name, param, value, return_data=Fa
                 return None
 
 
-# class JoinTaskHandler:
-#     __BASE_URL = "https://channels.zuri.chat/api"
-
-#     def __init__(self, data):
-#         self.process_data(data)
-#         self.__execute_operations()
-    
-#     @staticmethod
-#     async def run(data):
-#         assert isinstance(data, dict), f"Improper data type"
-#         assert isinstance(data.get("message"), dict), "message must be of type dict"
-
-#         await JoinTaskHandler.__create_new_instance(data)
-#         return True    
-    
-#     @staticmethod
-#     def __create_new_instance(data):
-#         return JoinTaskHandler(data=data)    
-    
-#     @staticmethod
-#     def get_schema():
-#         return {"event": "enter_organization"}
-
-#     async def __process_data(self, data):
-#         self.member_id = data["message"]["member_id"]
-#         self.organization_id = data["message"]["organization_id"]
-#         self.event = data["event"]
-    
-#     async def __execute_operations(self):
-#         print("Executing process")
-#         default_channels = await self.__get_default_channels()
-#         print(default_channels)
-#         await self.__add_member_to_channel(self.member_id, self.organization_id, default_channels)
-        
-    
-#     async def __get_default_channels(self):
-        
-#         data = await find_match_in_db(self.organization_id, "channel", "default", True, return_data=True)
-#         assert  isinstance(data, list), "find_match_in_db returned an invalid type"
-        
-#         default_channel = [i["_id"] for i in data]
-#         print(default_channel or "No default channels")
-#         return default_channel or []
-
-#     async def __add_member_to_channel(self, member_id, org_id, channels):
-#         loop = asyncio.get_event_loop()        
-#         task = []
-#         for channel in channels:
-#             async def add_member():
-#                 try:
-#                     endpoint_url = f"/v1/{org_id}/channels/{channel}/members/"
-#                     data = {"_id": member_id,
-#                             "role_id": "member",
-#                             "is_admin": False,
-#                             "notifications": {
-#                             "web": "nothing",
-#                             "mobile": "mentions",
-#                             "same_for_mobile": True,
-#                             "mute": False
-#                             }
-#                         }
-                    
-#                     url = (self.BASE_URL + endpoint_url)
-#                     headers = {
-#                         "Content-Type": "application/json"
-#                     }
-                    
-#                     session = ClientSession()
-#                     res = await session.post(url, data=json.dumps(data), headers=headers)
-#                     print(res.status, "WHAT ")
-#                 except:
-#                     pass
-#             task.append(add_member())
-        
-#         await asyncio.gather(*task)
-
 class JoinTaskHandler:
     __BASE_URL = "https://channels.zuri.chat/api"
 
@@ -197,6 +82,7 @@ class JoinTaskHandler:
     async def __execute_operations(self):
         print("Executing process")
         default_channels = await self.__get_default_channels()
+        print(default_channels)
         await self.__add_member_to_channel(self.member_id, self.organization_id, default_channels)
             
     async def __get_default_channels(self):
@@ -205,39 +91,43 @@ class JoinTaskHandler:
         assert  isinstance(data, list), "find_match_in_db returned an invalid type"
         
         default_channel = [i["_id"] for i in data]
+        print(default_channel)
         return default_channel or []
 
     async def __add_member_to_channel(self, member_id, org_id, channels):
         loop = asyncio.get_event_loop()        
         task = []
-        session = aiohttp.ClientSession(timeout=timeout)
+        
+        async def add_member(channel):
+            try:
+                session = aiohttp.ClientSession(timeout=timeout)
+                endpoint_url = f"/v1/{org_id}/channels/{channel}/members/"
+                data = {
+                    "_id": member_id,
+                    "role_id": "member",
+                    "is_admin": False,
+                    "notifications": {
+                        "web": "nothing",
+                        "mobile": "mentions",
+                        "same_for_mobile": True,
+                        "mute": False
+                    }
+                }
+                url = (self.__BASE_URL + endpoint_url)
+                headers = {
+                    "Content-Type": "application/json"
+                }
+                res = await session.post(url, data=json.dumps(data), headers=headers, timeout=timeout)
+                await session.close()
+            except Exception as err:
+                print(err)
+                pass
+            
         for channel in channels:
-            async def add_member():
-                try:
-                    endpoint_url = f"/v1/{org_id}/channels/{channel}/members/"
-                    data = {
-                        "_id": member_id,
-                        "role_id": "member",
-                        "is_admin": False,
-                        "notifications": {
-                            "web": "nothing",
-                            "mobile": "mentions",
-                            "same_for_mobile": True,
-                            "mute": False
-                        }
-                    }
-                    url = (self.__BASE_URL + endpoint_url)
-                    headers = {
-                        "Content-Type": "application/json"
-                    }
-                    res = session.post(url, data=json.dumps(data), headers=headers)
-                    loop.create_task(res)
-                    print(res.status)
-                except Exception as err:
-                    pass
-            task.append(add_member())
+            task.append(add_member(channel))
+
         await asyncio.gather(*task)
-        await session.close()
+
 
 class RemoveTaskHandler:
     __BASE_URL = "https://channels.zuri.chat/api"
