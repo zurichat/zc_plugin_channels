@@ -6,6 +6,8 @@ import {
   Button,
 } from "@chakra-ui/react";
 import CreateChannelModal from "../createChannel/createChannelModal";
+import { Icon } from "@chakra-ui/icons";
+import { BiChevronDown, BiChevronLeft } from "react-icons/bi";
 import { useDisclosure } from "@chakra-ui/hooks";
 
 
@@ -13,8 +15,13 @@ const ChannelBrowserHeader = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box width="100%" mt="5px">
+    <Box width="100%" 
+        mb="25px"
+        pos="fixed"
+         >
       <Flex
+
+        onClick={onOpen}
         flexShrink={0}
         ml="1px"
         align="center"
@@ -37,21 +44,9 @@ const ChannelBrowserHeader = () => {
         >
           Channel Browser
         </Box>
-
+        <Icon as={BiChevronDown} color="#FFFFFF" />
         <Spacer />
-        <Button
-          onClick={onOpen}
-          size="sm"
-          borderColor="white"
-          variant="outline"
-          color="white"
-          colorScheme="#00B87C"
-          borderRadius="4px"
-          fontSize="14px"
-          sx={{"@media screen and (max-width: 768.5px)": { display: "none",},}}
-        >
-          Create New channel
-        </Button>
+        
         <CreateChannelModal isOpen={isOpen} onClose={onClose} />
       </Flex>
     </Box>

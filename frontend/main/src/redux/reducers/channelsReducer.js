@@ -16,6 +16,7 @@ const initialState = {
     members:  '1',
     private: false,
     archived : false,
+    users:[],
   },
   pinnedMessages: [],
   sendMessages: {},
@@ -30,6 +31,8 @@ const channelsReducer = (state = initialState, action) => {
       return {
         ...state,
         channelMember: { ...payload },
+        channelDetails: {...channelDetails, users: [...payload] },
+
       };
     case GET_CHANNEL_DETAILS:
       return {

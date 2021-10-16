@@ -41,9 +41,9 @@ const ChannelBrowser = () => {
   
   const searchChannel= param =>{
     if (!channels) return
-    param = param.trim()
+    param = param.trim().toLowerCase()
     if(param){
-      setChannel(originalchannel.filter((chan) => (chan.name.includes(param) || chan.description.includes(param))))
+      setChannel(originalchannel.filter((chan) => (chan.name.toLowerCase().includes(param) || chan.description.toLowerCase().includes(param))))
     }
     else{
       setChannel([...originalchannel])
@@ -111,8 +111,7 @@ const ChannelBrowser = () => {
   }
   return (
     <Box mt="0" bgColor="#E5E5E5" height="100vh">
-      {/* <ChannelBrowserHeader /> */}
-      <PluginHeaderC />
+      <ChannelBrowserHeader />
       <Box
         bgColor="white"
         h="full"

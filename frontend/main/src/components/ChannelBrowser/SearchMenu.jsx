@@ -14,6 +14,7 @@ const SearchMenu = ({ sortBy, searchChannel, channels}) => {
   return (
     <>
       <HStack
+        mt="50px"
         mb={8}
         justifyContent="space-between"
         sx={{

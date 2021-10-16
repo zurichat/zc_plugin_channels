@@ -1,29 +1,26 @@
 import React, {useEffect} from "react";
 import Parcel from "single-spa-react/parcel";
 import { pluginHeader } from "@zuri/plugin-header";
-import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
-import {FiHash} from "react-icons/fi"
-import { BiLockAlt } from "react-icons/bi"
-import { Icon } from "@chakra-ui/icon";
 import { useDisclosure } from "@chakra-ui/hooks";
 import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSettings";
 import hashImage from "./assets/default.png";
 
 
 const NewChannelHeader = ({channelId, org_id}) => {
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const { channelMember } = useSelector((state) => state.channelsReducer);
   const { users } = useSelector(state => state.appReducer)
   let _users;
   let orgId;
-
+    
   useEffect(() => {
     _users = users;
     orgId = _users.currentWorkspace;
-    console.log("this is the orgId plugin hheader", orgId);
   });
 
   console.log("This is the orgId plugin header", orgId)
@@ -46,7 +43,7 @@ const NewChannelHeader = ({channelId, org_id}) => {
   }, [channelId]);
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
-  console.log(channelDetails);//to see what kind of data I'm actually getting
+  console.log("all in the channel", channelDetails);//to see what kind of data I'm actually getting
 
   const isPrivate = channelDetails.private;// to check if channel is private or not
 
@@ -63,13 +60,23 @@ const NewChannelHeader = ({channelId, org_id}) => {
     ], //Replace with images of users
     userCount: channelDetails.members, //User count on header
     eventTitle: () => {
-      onOpen()
-      // <ChannelDetails isOpen={isOpen} onClose={onClose} />
+
     },
     eventThumbnail: () => {
-      onOpen()
+      
     },
     hasThumbnail: true, //set false if you don't want thumbnail on the header
+
+    // add and remove 
+    roomInfo: {
+      membersList: [],
+      addmembersevent: values => {
+        console.warn("a plugin added ", values)
+      },
+      removememberevent: id => {
+        console.warn("a plugin deleted ", id)
+      }
+    }
   };
   return (
     <>

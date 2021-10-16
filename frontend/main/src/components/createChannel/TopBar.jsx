@@ -17,7 +17,7 @@ const TopBar = () => {
     <Box bg="#00B87C" p={4} py={2} borderRadius="2px">
       <HStack alignItems="center">
         <Heading as="h5" size="sm" color="#FFFFFF" textTransform="capitalize">
-          # {channelDetails.name}
+          # {channelDetails.namez}
         </Heading>
 
         <Icon as={BiChevronDown} color="#FFFFFF" />

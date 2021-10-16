@@ -85,15 +85,30 @@ const ChannelContainer = (props) => {
           >
             <HStack p={2}>
               {users.hasOwnProperty(props.orgId._id) ? (
-                <Button
-                  width="147px"
-                  bgColor="#00B87C"
-                  color="white"
-                  borderRadius="0"
-                  _hover={{ bg: "#007A5A" }}
-                >
-                  Leave
-                </Button>
+                <>
+                  <Link to={"/message-board/" + props.chan._id}>
+                    <Button
+                      width="147px"
+                      bgColor="unset"
+                      border="1px solid #00B87C"
+                      color="#00B87C"
+                      borderRadius="0"
+                      _hover={{ bg: "#ebedf0" }}
+                    >
+                      Open
+                    </Button>
+                  </Link>
+
+                  <Button
+                    width="147px"
+                    bgColor="#00B87C"
+                    color="white"
+                    borderRadius="0"
+                    _hover={{ bg: "#007A5A" }}
+                  >
+                    Leave
+                  </Button>
+                </>
               ) : (
                 <>
                   <Link to={"/message-board/" + props.chan._id}>

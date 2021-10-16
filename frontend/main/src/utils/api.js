@@ -95,8 +95,8 @@ class APIServices {
   }
 
   async createChannel(org_id, data) {
-    // return api.post(`/v1​/${org_id}​/channels​/​`, data);
-    return axios.post(`${baseURL}/${org_id}/channels/`, data);
+    return api.post(`​/${org_id}​/channels​/​`, data);
+    // return axios.post(`${baseURL}/${org_id}/channels/`, data);
   }
 
   async getChannels(org_id) {
