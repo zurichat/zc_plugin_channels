@@ -13,7 +13,7 @@ from rest_framework.viewsets import ViewSet
 from sentry_sdk import capture_message
 
 from channel_plugin.utils.custome_response import Response as Custom_Response
-from channel_plugin.utils.customrequest import *
+from channel_plugin.utils.customrequest import AsyncRequest, unread
 from channel_plugin.utils.mixins import AsycViewMixin
 
 from .serializers import InstallSerializer
@@ -138,7 +138,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel.get("starred", list),
+                                    and channel.get("starred", []),
                                     channels,
                                 )
                             ),
@@ -207,8 +207,8 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         return Custom_Response(
             data={
                 "message": "Welcome, to the Channels Plugin",
-                "last_visted": date,
-                "no_of_times_visted": no_of_times,
+                "last_visited": date,
+                "no_of_times_visited": no_of_times,
             },
             status=status.HTTP_200_OK,
             request=request,

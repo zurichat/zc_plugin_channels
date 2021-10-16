@@ -4,7 +4,7 @@ from django.conf import settings
 from django.dispatch import receiver
 import requests
 
-from channel_plugin.utils.customrequest import *
+from channel_plugin.utils.customrequest import AsyncRequest, unread
 
 CLIENT = AsyncCentClient(
     address=settings.CENTRIFUGO_URL,
@@ -45,7 +45,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
                                     and not channel.get("default", False)
-                                    and channel.get("starred", list),
+                                    and channel.get("starred", []),
                                     channels,
                                 )
                             ),

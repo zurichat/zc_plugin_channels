@@ -12,7 +12,7 @@ class Channel:
     # creator of channel
     owner: str
     # starred channel
-    starred: list
+    starred: []
     slug: str = ""
     # list of user IDs in a channel
     users: dict = field(default_factory=dict)
