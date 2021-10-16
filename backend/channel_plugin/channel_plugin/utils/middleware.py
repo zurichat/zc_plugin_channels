@@ -36,7 +36,7 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             response = self.process_response(request, response)
-
+            capture_message(response)
         return response
 
     def process_response(self, request, response):
