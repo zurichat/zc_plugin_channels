@@ -6,8 +6,9 @@ import aiohttp
 import json
 import requests
 from requests.sessions import session
+import threading
 
-timeout = aiohttp.ClientTimeout(500)
+timeout = aiohttp.ClientTimeout(60*2)
 
 
 # def _():
@@ -140,7 +141,7 @@ class QueueHandler:
             
             if res.status == 200:
                 data = json.loads(await res.read())
-                queue = data.get("data").get("queue", dummy_queue_data)
+                queue = data.get("data").get("queue", [])
                 # queue = dummy_queue_data # For debugging
                 self.update_queue(queue)
 
@@ -171,21 +172,18 @@ class QueueHandler:
         if most_recent_task:
             id = settings.PLUGIN_ID
             url = f"https://api.zuri.chat/plugins/{id}/sync"
-            res = requests.patch(url, json.dumps({"id": most_recent_task.get("id")}), timeout=150)
+            res = requests.patch(url, json.dumps({"id": most_recent_task.get("id")}), timeout=60*2)
             if res.status_code >= 200 or res.status_code < 300:  
                 self.__update_global_state(done=True)
 
     @staticmethod
     def run(handlers):
         queue_handler = QueueHandler.__get_runing_instance(handlers)
+        print("START RUN")
         try:
             future = queue_handler.__start__()
             asyncio.run(future)
         except (RuntimeError):
             future = asyncio.ensure_future(queue_handler.__start__())
-
-        # try:
-        #     loop = asyncio.get_event_loop()
-        #     loop.close()
-        # except:
-        #     pass
+        else:
+            print("END RUN")
