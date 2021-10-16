@@ -65,9 +65,7 @@ const routes = () => {
       <Route exact path="/message-board/">
         <MessageBoardEmpty />
       </Route>
-      <Route exact path="/message-board/:channelId">
-        <MessageBoardIndex allUsers={allUsers} />
-      </Route>
+      <Route exact path="/message-board/:channelId" component={MessageBoardIndex} />
       <Route path="/channel-detail">
         <ChannelDetailsAndSetting />
       </Route>
