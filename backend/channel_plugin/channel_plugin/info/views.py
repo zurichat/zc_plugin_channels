@@ -237,19 +237,19 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-        capture_message(f"Headers - {request.headers}", level="info")
-        capture_message(f"Request - {request.__dict__}", level="info")
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as exc:
             return self.get_exception_response(exc, request)
 
-        org_id = serializer.data.get("org_id")
+        org_id = serializer.data.get("organization_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
-        token = request.headers.get("authorization").split(" ")[1]
-        capture_message(f"auth {request.headers.get('authorization')}\n {token}")
+        tmp = request.headers.get("authorization")
+        token = tmp.split()[1].strip() if tmp is not None else ""
+        capture_message(f"auth {request.headers.get('authorization')}")
+        capture_message(f"token {token}")
 
         headers = {
             "Content-Type": "application/json",
