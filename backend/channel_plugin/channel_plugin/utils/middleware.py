@@ -37,6 +37,13 @@ class CorsMiddleware:
         if response:
             response = self.process_response(request, response)
             capture_message(f'Production - {response.__dict__["_headers"]}')
+            try:
+                del response.__dict__["_headers"]["access-control-allow-origin"]
+            except KeyError:
+                pass
+            capture_message(f'Production - {response.__dict__["_headers"]}')
+            capture_message(f'Production Keys- {response.__dict__["_headers"].keys()}')
+
         return response
 
     def process_response(self, request, response):
