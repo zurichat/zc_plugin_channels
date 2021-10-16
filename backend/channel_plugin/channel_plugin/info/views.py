@@ -9,7 +9,6 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from sentry_sdk import capture_message
 
@@ -40,7 +39,9 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         curl -X GET "{{baseUrl}}/v1/ping" -H  "accept: application/json"
         ```
         """
-        return Custom_Response({"success": True}, status=status.HTTP_200_OK, view=self, request=request)
+        return Custom_Response(
+            {"success": True}, status=status.HTTP_200_OK, view=self, request=request
+        )
 
     @action(
         methods=["GET"],
@@ -70,7 +71,9 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             },
             "success": True,
         }
-        return Custom_Response(data, status=status.HTTP_200_OK, request=request, view=self)
+        return Custom_Response(
+            data, status=status.HTTP_200_OK, request=request, view=self
+        )
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -169,7 +172,9 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
 
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
-        return Custom_Response(data, status=status.HTTP_200_OK, request=request, view=self)
+        return Custom_Response(
+            data, status=status.HTTP_200_OK, request=request, view=self
+        )
 
     @action(methods=["GET"], detail=False, url_path="details")
     async def info_details(self, request):
@@ -183,7 +188,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             },
             status=status.HTTP_200_OK,
             request=request,
-            view=self
+            view=self,
         )
 
     @action(methods=["GET"], detail=False, url_path="collections/(?P<plugin_id>[^/.]+)")
@@ -194,9 +199,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         curl -X GET "{{baseUrl}}/v1/collections/<plugin_id>" -H  "accept: application/json"
         ```
         """
-        response = (
-            requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}")
-        )
+        response = requests.get(f"https://api.zuri.chat/data/collections/{plugin_id}")
         status_code = status.HTTP_404_NOT_FOUND
         if response.status_code >= 200 and response.status_code < 300:
             response = response.json()
@@ -215,18 +218,16 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         curl -X GET "{{baseUrl}}/v1/collections/{{plugin_id}}/organizations/{{org_id}}" -H  "accept: application/json"
         ```
         """
-        response = (
-                requests.get(
-                    f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
-                )
-            )
+        response = requests.get(
+            f"https://api.zuri.chat/data/collections/{plugin_id}/{org_id}"
+        )
 
         status_code = status.HTTP_404_NOT_FOUND
 
         if response.status_code >= 200 and response.status_code < 300:
             response = response.json()
             status_code = status.HTTP_200_OK
-            
+
         return Custom_Response(response, status=status_code, view=self, request=request)
 
     @swagger_auto_schema(request_body=InstallSerializer)
@@ -236,21 +237,22 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         url_path="install",
     )
     async def install(self, request):
-        capture_message(f"Headers - {request.headers}", level="info")
-        capture_message(f"Request - {request.__dict__}", level="info")
+        good_message = ["plugin saved successfully", "plugin has already been added"]
         serializer = InstallSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as exc:
             return self.get_exception_response(exc, request)
 
-        org_id = serializer.data.get("org_id")
+        org_id = serializer.data.get("organization_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
 
+        capture_message(f"auth {request.headers.get('authorization')}")
+
         headers = {
             "Content-Type": "application/json",
-            "Cookie": request.COOKIES.get("token", "null"),
+            "Authorization": request.headers.get("authorization", ""),
         }
         url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
         data = {
@@ -258,9 +260,10 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
+        capture_message(f"Response of register - {res.json()}")
         if (
             res.status_code == 400
-            and "invalid" in res.json().get("message")
+            and res.json().get("message") not in good_message
             or res.status_code == 401
         ):
             return Custom_Response(

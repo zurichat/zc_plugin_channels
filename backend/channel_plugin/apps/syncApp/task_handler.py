@@ -15,7 +15,9 @@ data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
 write = settings.WRITE_URL
 delete = settings.DELETE_URL
+
 timeout = aiohttp.ClientTimeout(500)
+
 
 @change_collection_name
 async def find_match_in_db(org_id, collection_name, param, value, return_data=False):
@@ -30,7 +32,8 @@ async def find_match_in_db(org_id, collection_name, param, value, return_data=Fa
         },
     }
     async with aiohttp.ClientSession(timeout=timeout) as session:
-        response = await session.post(read, data=json.dumps(data), timeout=500)
+
+        response = await session.post(read, data=json.dumps(data), timeout=timeout)
         
         if response.status >= 200 or response.status < 300:
             response_data = json.loads(await response.read()) or {}
