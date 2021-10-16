@@ -9,7 +9,7 @@ import {FiHash} from "react-icons/fi"
 import { BiLockAlt } from "react-icons/bi"
 import { Icon } from "@chakra-ui/icon";
 import { useDisclosure } from "@chakra-ui/hooks";
-import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSettings";
+import { ChannelDetails } from '@zuri/zuri-ui';
 import hashImage from "./assets/default.png";
 
 
@@ -38,9 +38,8 @@ const NewChannelHeader = ({ channelId }) => {
 
   const dispatch = useDispatch();
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch); //extract redux function
-
-  // const loadChannelDetails = async () => { 
   // No need for Async function
+  // const loadChannelDetails = async () => { 
   //   await _getChannelDetails(users.currentWorkspace, channelId);
 
   // };
