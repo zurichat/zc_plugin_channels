@@ -246,24 +246,12 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         org_id = serializer.data.get("organization_id")
         user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
-        tmp = request.headers.get("authorization", "")
-
-        try:
-
-            if "Bearer" not in tmp:
-                token = tmp
-            else:
-                token = tmp.split()[1].strip()
-
-        except IndexError:
-            token = ""
 
         capture_message(f"auth {request.headers.get('authorization')}")
-        capture_message(f"token {token}")
 
         headers = {
             "Content-Type": "application/json",
-            "Cookie": token,
+            "Authorization": request.headers.get("authorization", ""),
         }
         url = f"https://api.zuri.chat/organizations/{org_id}/plugins"
         data = {
@@ -271,7 +259,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             "plugin_id": settings.PLUGIN_ID,
         }
         res = requests.post(url, data=json.dumps(data), headers=headers)
-        capture_message(f"Response of register - {res}")
+        capture_message(f"Response of register - {res.json()}")
         if (
             res.status_code == 400
             and "invalid" in res.json().get("message")
