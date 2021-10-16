@@ -56,14 +56,14 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
   const { _createChannel } = bindActionCreators(appActions, dispatch);
   const newChannel = async () => {
     
-    await _createChannel(organization, data);
+    await _createChannel(organization,owner, data);
     console.log(organization, data)
   };
 
     const handleSubmit = () => {
     console.log(data);
     newChannel().then(() => {
-      window.location.reload();
+       window.location.reload();
     });
     onClose();
   };

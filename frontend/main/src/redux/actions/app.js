@@ -14,6 +14,7 @@ import {
   CREATE_CHANNELS,
   GET_SOCKETS,
   ADD_CHANNEL_MEMBER,
+  REMOVE_CHANNEL_MEMBER,
   SET_NOTIFICATION,
   USER_CAN_INPUT,
   GET_FILES,
@@ -76,6 +77,17 @@ const _addChannelMember = (org_id, channel_id, data) => async (dispatch) => {
     const res = await APIService.addChannelMember(org_id, channel_id, data);
     console.log(res.data);
     dispatch({ type: ADD_CHANNEL_MEMBER, payload: res.data }); // Result is sent to the store via dispatch (Pass payload if needed)
+  } catch (error) {
+    console.log(error); // Handle exceptions here
+  }
+};
+const _removeChannelMember = (org_id, channel_id, data) => async (dispatch) => {
+  try {
+    // Result comes from the endpoint
+    // Let's assume an array of objects is returned from the endpoint
+    const res = await APIService.removeChannelMember(org_id, channel_id, data);
+    console.log(res.data);
+    dispatch({ type: REMOVE_CHANNEL_MEMBER, payload: res.data }); // Result is sent to the store via dispatch (Pass payload if needed)
   } catch (error) {
     console.log(error); // Handle exceptions here
   }
@@ -282,6 +294,7 @@ const appActions = {
   _createChannel,
   _getSocket,
   _addChannelMember,
+  _removeChannelMember,
   _setNotifications,
   _userCanInput,
   _deleteChannel,

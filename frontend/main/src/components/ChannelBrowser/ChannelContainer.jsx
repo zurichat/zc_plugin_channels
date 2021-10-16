@@ -20,10 +20,20 @@ const ChannelContainer = (props) => {
     _id: props.orgId._id,
   };
   const [users, setUsers] = useState(props.chan.users);
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
 
   const history = useHistory();
 
-  const { channelMember } = useSelector((state) => state.channelsReducer);
+  const loadChannelDetails = async () => { 
+    await _getChannelDetails(props.orgId.org_id, props.chan._id)
+  };
+
+  useEffect(() => { 
+    loadChannelDetails();
+  }, []);
+
+  const { channelMember} = useSelector((state) => state.channelsReducer);
+  
   useEffect(() => {
     if (channelMember._id) {
       history.push("/message-board/" + props.chan._id);

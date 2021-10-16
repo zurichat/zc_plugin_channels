@@ -30,10 +30,17 @@ const channelsReducer = (state = initialState, action) => {
     case ADD_CHANNEL_MEMBER:
       return {
         ...state,
-        channelMember: { ...payload },
-        channelDetails: {...channelDetails, users: [...payload] },
+        channelMember: [...channelMember, ...payload ],
+        channelDetails: {...channelDetails, users: [...channelMember] },
 
       };
+    // case REMOVE_CHANNEL_MEMBER:
+    //   return {
+    //     ...state,
+    //     channelMember: channelMember.filter(),
+    //     channelDetails: {...channelDetails, users: [...channelMember] },
+
+    //   };
     case GET_CHANNEL_DETAILS:
       return {
         ...state,
