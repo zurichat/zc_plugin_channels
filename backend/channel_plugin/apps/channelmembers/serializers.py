@@ -46,3 +46,8 @@ class UserSerializer(serializers.Serializer):
         default=False, help_text="Default: false. True if the member is an admin"
     )
     notifications = NotificationsSettingSerializer(required=False)
+
+
+class JoinSerializer(serializers.Serializer):
+
+    user_id = serializers.CharField(max_length=30, required=True)

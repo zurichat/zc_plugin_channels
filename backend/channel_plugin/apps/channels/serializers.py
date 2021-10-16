@@ -43,7 +43,11 @@ class ChannelSerializer(serializers.Serializer):
         user_id = instance.get("owner")
         slug = slugify(instance.get("name"))
         channel = Channel(**instance, slug=slug)
-        channel.users = {user_id: {"_id": user_id, "is_admin": True}}
+        channel.users = {
+            user_id: UserSerializer(
+                data={"_id": user_id, "is_admin": True, "notifications": {}}
+            ).data
+        }
         data = {"channel": channel}
         return data
 
