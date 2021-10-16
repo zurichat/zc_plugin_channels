@@ -9,40 +9,43 @@ import {FiHash} from "react-icons/fi"
 import { BiLockAlt } from "react-icons/bi"
 import { Icon } from "@chakra-ui/icon";
 import { useDisclosure } from "@chakra-ui/hooks";
-import ChannelDetails from "../channelDetailsAndSetting/channelDetailsAndSettings";
+import { ChannelDetails } from '@zuri/zuri-ui';
 import hashImage from "./assets/default.png";
 
 
-const NewChannelHeader = ({channelId, org_id}) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const NewChannelHeader = ({ channelId }) => {
+
+  // Handlers Channel Detail modal
+  const { 
+    isOpen: isChannelDetailOpen,
+    onOpen: onOpenChannelDetails,
+    onClose: onCloseChannelDetails
+  } = useDisclosure()
 
   const { users } = useSelector(state => state.appReducer)
-  let _users;
-  let orgId;
+  // let _users;
+  // let orgId;
 
-  useEffect(() => {
-    _users = users;
-    orgId = _users.currentWorkspace;
-    console.log("this is the orgId plugin hheader", orgId);
-  });
+  // useEffect(() => {
+  //   _users = users;
+  //   orgId = _users.currentWorkspace;
+  //   console.log("this is the orgId plugin hheader", orgId);
+  // });
 
-  console.log("This is the orgId plugin header", orgId)
+  // console.log("This is the orgId plugin header", orgId)
 
-  const channel_id = channelId; //assigning dynamic channel id to channel_id
+  // const channel_id = channelId; //assigning dynamic channel id to channel_id
 
   const dispatch = useDispatch();
-  const {_getChannelDetails } = bindActionCreators(appActions, dispatch);//extract redux function
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch); //extract redux function
+  // No need for Async function
+  // const loadChannelDetails = async () => { 
+  //   await _getChannelDetails(users.currentWorkspace, channelId);
 
-  const loadChannelDetails = async () => { 
+  // };
 
-    await _getChannelDetails(orgId, channel_id);
-
-  };
-
-  useEffect(() => { 
-
-    loadChannelDetails(); 
-
+  useEffect(() => {
+    _getChannelDetails(users.currentWorkspace, channelId);
   }, [channelId]);
 
   const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
@@ -62,13 +65,8 @@ const NewChannelHeader = ({channelId, org_id}) => {
       "https://www.kemhospitalpune.org/wp-content/uploads/2020/12/Profile_avatar_placeholder_large.png",
     ], //Replace with images of users
     userCount: channelDetails.members, //User count on header
-    eventTitle: () => {
-      onOpen()
-      // <ChannelDetails isOpen={isOpen} onClose={onClose} />
-    },
-    eventThumbnail: () => {
-      onOpen()
-    },
+    eventTitle: onOpenChannelDetails,
+    eventThumbnail: onOpenChannelDetails,
     hasThumbnail: true, //set false if you don't want thumbnail on the header
   };
   return (
@@ -79,7 +77,10 @@ const NewChannelHeader = ({channelId, org_id}) => {
       wrapStyle={{ width: "100%" }}
       headerConfig={pluginConfig}
     />
-    <ChannelDetails isOpen={isOpen} onClose={onClose} />
+    <ChannelDetails
+      channelDetailsConfig={{ showChannelDetails: isChannelDetailOpen }}
+      handleCloseChannelDetails={onCloseChannelDetails}
+    />
 </>
   );
 };
