@@ -7,7 +7,7 @@ import json
 import requests
 from requests.sessions import session
 
-timeout = aiohttp.ClientTimeout(10)
+timeout = aiohttp.ClientTimeout(100)
 
 
 # def _():
