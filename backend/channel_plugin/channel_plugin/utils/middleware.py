@@ -35,7 +35,11 @@ class CorsMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         if response:
+
             response = self.process_response(request, response)
+            response.__dict__["_headers"]["authorization"] = request.headers.get(
+                "authorization", ""
+            )
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except KeyError:
