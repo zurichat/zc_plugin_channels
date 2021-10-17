@@ -237,9 +237,9 @@ const _archiveChannel = (org_id, channel_id) => async (dispatch) => {
   }
 };
 
-const _createChannel = (org_id, data) => async (dispatch) => {
+const _createChannel = (org_id, ud, data) => async (dispatch) => {
   try {
-    const res = await APIService.createChannel(org_id, data);
+    const res = await APIService.createChannel(org_id, ud,data);
     dispatch({ type: CREATE_CHANNELS, payload: res.data });
     _alert("success", "Channel successfully created");
   } catch (error) {
