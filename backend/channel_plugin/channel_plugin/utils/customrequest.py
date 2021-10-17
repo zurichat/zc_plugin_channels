@@ -532,7 +532,7 @@ async def member_channels(org_id, member_id):
 def unread(org_id, channel_id):
     """returns unread messages in a channel"""
     load = {"channel_id": channel_id}
-    result = Request.get(org_id, "channelmessage", load)
+    result = Request.get(org_id, "channelmessage", load) or []
     return len(result[-7:-1])
 
 
