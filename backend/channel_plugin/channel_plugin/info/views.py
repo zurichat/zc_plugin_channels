@@ -265,7 +265,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             return self.get_exception_response(exc, request)
 
         org_id = serializer.data.get("organization_id")
-        user_id = serializer.data.get("member_id")
+        user_id = serializer.data.get("user_id")
         title = serializer.data.get("title")
 
         capture_message(f"auth {request.headers.get('authorization')}")
