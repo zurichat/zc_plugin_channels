@@ -10,13 +10,12 @@ from requests.sessions import session
 from apps.syncApp.utils import BadServerResponse
 from channel_plugin.utils.customrequest import change_collection_name
 
-
 data = {"plugin_id": settings.PLUGIN_ID}
 read = settings.READ_URL
 write = settings.WRITE_URL
 delete = settings.DELETE_URL
 
-timeout = aiohttp.ClientTimeout(500)
+timeout = aiohttp.ClientTimeout(60*2)
 
 
 @change_collection_name
@@ -86,10 +85,9 @@ class JoinTaskHandler:
         await self.__add_member_to_channel(self.member_id, self.organization_id, default_channels)
             
     async def __get_default_channels(self):
-        
         data = await find_match_in_db(self.organization_id, "channel", "default", True, return_data=True)
         assert  isinstance(data, list), "find_match_in_db returned an invalid type"
-        
+
         default_channel = [i["_id"] for i in data]
         print(default_channel)
         return default_channel or []

@@ -3,7 +3,7 @@ from apps.centri.signals.async_signal import request_finished
 from django.conf import settings
 from django.dispatch import receiver
 
-from channel_plugin.utils.customrequest import AsyncRequest
+from channel_plugin.utils.customrequest import AsyncRequest, unread
 
 CLIENT = AsyncCentClient(
     address=settings.CENTRIFUGO_URL,
@@ -27,20 +27,46 @@ async def UpdateSidebarSignal(sender, **kwargs):
             channels = await AsyncRequest.get(org_id, "channel")
             joined_rooms = list()
             public_rooms = list()
+            starred_rooms = list()
 
             if isinstance(channels, list):
                 for member_id in member_ids:
+
                     joined_rooms = list(
                         map(
                             lambda channel: {
                                 "room_name": channel.get("slug"),
                                 "room_url": f"/channels/message-board/{channel.get('_id')}",
                                 "room_image": "",
+                                "unread": unread(org_id, channel.get("_id")),
                             },
                             list(
                                 filter(
                                     lambda channel: member_id in channel["users"].keys()
-                                    and not channel.get("default", False),
+                                    and not channel.get("default", False)
+                                    and not channel["users"][member_id].get(
+                                        "starred", False
+                                    ),
+                                    channels,
+                                )
+                            ),
+                        )
+                    )
+                    starred_rooms = list(
+                        map(
+                            lambda channel: {
+                                "room_name": channel.get("slug"),
+                                "room_url": f"/channels/message-board/{channel.get('_id')}",
+                                "room_image": "",
+                                "unread": unread(org_id, channel.get("_id")),
+                            },
+                            list(
+                                filter(
+                                    lambda channel: member_id in channel["users"].keys()
+                                    and not channel.get("default", False)
+                                    and channel["users"][member_id].get(
+                                        "starred", False
+                                    ),
                                     channels,
                                 )
                             ),
@@ -77,6 +103,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                             "button_url": "/channels",
                             "public_rooms": public_rooms,
                             "joined_rooms": joined_rooms,
+                            "starred_rooms": starred_rooms,
                         },
                     }
 
