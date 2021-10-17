@@ -66,9 +66,9 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-            try:
-                del response.__dict__["_headers"]["authorization"]
-            except KeyError:
-                pass
+        try:
+            del response.__dict__["_headers"]["authorization"]
+        except KeyError:
+            pass
 
         return response
