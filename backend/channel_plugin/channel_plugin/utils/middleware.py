@@ -61,7 +61,7 @@ class CorsMiddleware:
 
             response.__dict__["_headers"]["access-control-allow-origin"] = (
                 "Access-Control-Allow-Origin",
-                request.get_host(),
+                f"{request.scheme}://{request.get_host()}",
             )
 
         if result:
