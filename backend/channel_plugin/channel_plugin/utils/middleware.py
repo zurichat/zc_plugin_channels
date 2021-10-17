@@ -34,16 +34,10 @@ class CorsMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        capture_message(f'Authprization Production - {response.__dict__["_headers"]}')
         if response:
             response = self.process_response(request, response)
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
-            except KeyError:
-                pass
-
-            try:
-                del response.__dict__["_headers"]["authorization"]
             except KeyError:
                 pass
 
@@ -66,10 +60,5 @@ class CorsMiddleware:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except KeyError:
                 pass
-
-        try:
-            del response.__dict__["_headers"]["authorization"]
-        except KeyError:
-            pass
 
         return response
