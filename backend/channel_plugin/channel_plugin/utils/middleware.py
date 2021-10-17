@@ -40,6 +40,12 @@ class CorsMiddleware:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except KeyError:
                 pass
+
+            try:
+                del response.__dict__["_headers"]["authorization"]
+            except KeyError:
+                pass
+
             capture_message(f'Production - {response.__dict__["_headers"]}')
 
         return response
