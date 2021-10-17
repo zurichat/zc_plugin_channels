@@ -138,7 +138,7 @@ const MessageBoardIndex = () => {
       imageUrl: users["0"]?.image_url || "",
     },
     messages: channelMessages.map((msg) => {
-      // console.log(msg);
+      console.log('lolo', msg);
 
       const user = workspace_users_object[msg.user_id] || {
         user_name: "",
