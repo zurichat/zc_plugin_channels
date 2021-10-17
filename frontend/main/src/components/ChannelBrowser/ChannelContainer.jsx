@@ -46,6 +46,12 @@ const ChannelContainer = (props) => {
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
     );
   };
+  const leaveChannel = () => {
+    // add member to channel after clickig on join
+    dispatch(
+      appActions._removeChannelMember(props.orgId.org_id, props.chan._id, userData)
+    );
+  };
 
   return (
     <Box
@@ -115,6 +121,7 @@ const ChannelContainer = (props) => {
                     color="white"
                     borderRadius="0"
                     _hover={{ bg: "#007A5A" }}
+                    onClick={leaveChannel}
                   >
                     Leave
                   </Button>

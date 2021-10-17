@@ -7,6 +7,7 @@ import {
   PIN_MESSAGE,
   SEND_MESSAGES,
   ADD_CHANNEL_MEMBER,
+  REMOVE_CHANNEL_MEMBER,
   DELETE_CHANNEL,
 } from "../actions/types";
 
@@ -30,17 +31,14 @@ const channelsReducer = (state = initialState, action) => {
     case ADD_CHANNEL_MEMBER:
       return {
         ...state,
-        channelMember: [...channelMember, ...payload ],
-        channelDetails: {...channelDetails, users: [...channelMember] },
+        channelMember: {...payload }
 
       };
-    // case REMOVE_CHANNEL_MEMBER:
-    //   return {
-    //     ...state,
-    //     channelMember: channelMember.filter(),
-    //     channelDetails: {...channelDetails, users: [...channelMember] },
-
-    //   };
+    case REMOVE_CHANNEL_MEMBER:
+      return {
+        ...state,
+        channelMember: {...payload }
+      };
     case GET_CHANNEL_DETAILS:
       return {
         ...state,
