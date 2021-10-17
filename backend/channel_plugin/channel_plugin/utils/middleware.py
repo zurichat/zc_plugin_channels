@@ -42,17 +42,17 @@ class CorsMiddleware:
 
     def process_response(self, request, response):
 
-        result = host_regex.match(request.get_host())
+        # result = host_regex.match(request.get_host())
         if request.method in ["GET"]:
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
             except KeyError:
                 pass
 
-        if request.method in ["POST", "PUT", "DELETE"] and result:
-            response.__dict__["_headers"]["access-control-allow-origin"] = (
-                "Access-Control-Allow-Origin",
-                request.get_host(),
-            )
+        # if request.method in ["POST", "PUT", "DELETE"] and result:
+        #     response.__dict__["_headers"]["access-control-allow-origin"] = (
+        #         "Access-Control-Allow-Origin",
+        #         request.get_host(),
+        #     )
 
         return response
