@@ -82,7 +82,7 @@ const NewChannelHeader = ({ channelId }) => {
       membersList: [...userList],
       addmembersevent: values => {
         console.warn("a plugin added ", values)
-        let data = values.reduce((cum,val)=>([...cum,{_id:val}]),[])
+        let data = values.reduce((cum,val)=>([...cum,{_id:val.value}]),[])
         if(data){
           data = data.length >1?data:data[0];
            _addChannelMember(orgId, channelId,data)

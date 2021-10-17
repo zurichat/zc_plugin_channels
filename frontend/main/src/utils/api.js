@@ -136,19 +136,21 @@ class APIServices {
   }
 
   async addChannelMember(org_id, channel_id, data) {
-    // new
-    // return api.post(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
-
+   
     // old 
     return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
+
+     // new
+    // return api.post(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
   }
 
   async removeChannelMember(org_id, channel_id, data) {
+    
+    // old 
+    return api.delete(`/${org_id}/channels/${channel_id}/members/`, data);
     // new
     // return api.patch(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
 
-    // old 
-    return api.delete(`/${org_id}/channels/${channel_id}/members/`, data);
   }
 
     async getChannelFiles(org_id, channel_id) {
