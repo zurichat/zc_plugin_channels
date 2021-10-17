@@ -182,7 +182,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                 "organisation_id": org_id,
                 "user_id": user_id,
                 "group_name": "Channel",
-                "show_group": True,
+                "show_group": False,
                 "category": "channels",
                 "button_url": "/channels",
                 "joined_rooms": joined_rooms,
@@ -265,7 +265,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
             return self.get_exception_response(exc, request)
 
         org_id = serializer.data.get("organization_id")
-        user_id = serializer.data.get("user_id")
+        user_id = serializer.data.get("member_id")
         title = serializer.data.get("title")
 
         capture_message(f"auth {request.headers.get('authorization')}")

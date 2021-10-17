@@ -98,7 +98,7 @@ async def UpdateSidebarSignal(sender, **kwargs):
                             "name": "Channels Plugin",
                             "id": room_id,
                             "group_name": "Channel",
-                            "show_group": True,
+                            "show_group": False,
                             "category": "channels",
                             "button_url": "/channels",
                             "public_rooms": public_rooms,
