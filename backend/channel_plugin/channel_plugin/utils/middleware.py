@@ -57,13 +57,6 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-        if request.method in ["POST", "PUT", "DELETE"] and not result:
-
-            response.__dict__["_headers"]["access-control-allow-origin"] = (
-                "Access-Control-Allow-Origin",
-                f"{request.scheme}://{request.get_host()}",
-            )
-
         if result:
 
             try:
