@@ -308,7 +308,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 
 # CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "authorization",
