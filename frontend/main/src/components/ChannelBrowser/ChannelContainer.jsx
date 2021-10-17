@@ -20,10 +20,20 @@ const ChannelContainer = (props) => {
     _id: props.orgId._id,
   };
   const [users, setUsers] = useState(props.chan.users);
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
 
   const history = useHistory();
 
-  const { channelMember } = useSelector((state) => state.channelsReducer);
+  const loadChannelDetails = async () => { 
+    await _getChannelDetails(props.orgId.org_id, props.chan._id)
+  };
+
+  useEffect(() => { 
+    loadChannelDetails();
+  }, []);
+
+  const { channelMember} = useSelector((state) => state.channelsReducer);
+  
   useEffect(() => {
     if (channelMember._id) {
       history.push("/message-board/" + props.chan._id);
@@ -85,15 +95,30 @@ const ChannelContainer = (props) => {
           >
             <HStack p={2}>
               {users.hasOwnProperty(props.orgId._id) ? (
-                <Button
-                  width="147px"
-                  bgColor="#00B87C"
-                  color="white"
-                  borderRadius="0"
-                  _hover={{ bg: "#007A5A" }}
-                >
-                  Leave
-                </Button>
+                <>
+                  <Link to={"/message-board/" + props.chan._id}>
+                    <Button
+                      width="147px"
+                      bgColor="unset"
+                      border="1px solid #00B87C"
+                      color="#00B87C"
+                      borderRadius="0"
+                      _hover={{ bg: "#ebedf0" }}
+                    >
+                      Open
+                    </Button>
+                  </Link>
+
+                  <Button
+                    width="147px"
+                    bgColor="#00B87C"
+                    color="white"
+                    borderRadius="0"
+                    _hover={{ bg: "#007A5A" }}
+                  >
+                    Leave
+                  </Button>
+                </>
               ) : (
                 <>
                   <Link to={"/message-board/" + props.chan._id}>

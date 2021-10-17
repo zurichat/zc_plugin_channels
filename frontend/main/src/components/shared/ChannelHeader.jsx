@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
 import { Box } from "@chakra-ui/layout";
 import { Flex, Button, IconButton, Image } from "@chakra-ui/react";
-import { AiOutlineStar } from 'react-icons/ai';
-import { ImNotification } from "react-icons/im";
-import { Icon } from "@chakra-ui/icon";
+// import { AiOutlineStar } from 'react-icons/ai';
+// import { ImNotification } from "react-icons/im";
+// import { Icon } from "@chakra-ui/icon";
 import pinImage from "../../assets/pin.png";
-import searchImage from "../../assets/search.png";
-import infoImage from "../../assets/info.png";
+// import searchImage from "../../assets/search.png";
+// import infoImage from "../../assets/info.png";
 import { useDispatch, useSelector } from "react-redux";
 import appActions from "../../redux/actions/app";
 import { bindActionCreators } from "redux";
 import PinnedMessages from "./PinnedMessages";
 import NewChannelHeader from "./pluginHeader";
 import _ from "lodash";
-import MoreNotificationModal from "./MoreNotificationModal";
+// import MoreNotificationModal from "./MoreNotificationModal";
 import { useDisclosure } from "@chakra-ui/hooks";
 
 const ChannelHeader = ({channelId}) => {
@@ -24,10 +24,8 @@ const ChannelHeader = ({channelId}) => {
   useEffect(() => {
     _users = users;
     orgId = _users.currentWorkspace;
-    console.log("this is the orgId channel header", orgId);
   });
   const channel_id = channelId; //assigning dynamic channel id to channel_id
-  console.log(channel_id);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure()
 

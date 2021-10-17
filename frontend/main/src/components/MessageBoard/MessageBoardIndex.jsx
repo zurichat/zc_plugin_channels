@@ -238,7 +238,7 @@ const MessageBoardIndex = () => {
     <Flex direction="column" bg="#F9F9F9" width="100%" height="100%">
       {/* <Flex> */}
         {/* <Box width="100%"> */}
-          <ChannelHeader channelId={channelId} org_id={users?.currentWorkspace} />
+          <ChannelHeader channelId={channelId} org_id={users?users.currentWorkspace:null} />
           <Box flex="1" overflowY="auto">
             {Object.keys(workspace_users_object).length > 0 && channelMessages.length > 0 && <MessageBoard chatsConfig={chatSidebarConfig}/>}
           </Box>

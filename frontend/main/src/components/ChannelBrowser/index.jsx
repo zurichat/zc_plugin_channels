@@ -7,11 +7,10 @@ import { bindActionCreators } from "redux";
 import { useDispatch, useSelector } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import ChannelList from "./ChannelList";
-import PluginHeaderC from "../createChannel/homeHeader";
 
 const ChannelBrowser = () => {
-  const { users } = useSelector((state) => state.appReducer);
 
+  const { users } = useSelector((state) => state.appReducer);
   const dispatch = useDispatch();
   const [orgId, setOrgId] = useState("");
   const { _getChannels } = bindActionCreators(appActions, dispatch);
@@ -33,7 +32,7 @@ const ChannelBrowser = () => {
   }, [orgId]);
 
   let originalchannel = useSelector((state) => state.appReducer).channels;
- const [channels, setChannel] = useState([...originalchannel]);
+  const [channels, setChannel] = useState([...originalchannel]);
 
   useEffect(() => {
     setChannel([...originalchannel])
@@ -41,9 +40,9 @@ const ChannelBrowser = () => {
   
   const searchChannel= param =>{
     if (!channels) return
-    param = param.trim()
+    param = param.trim().toLowerCase()
     if(param){
-      setChannel(originalchannel.filter((chan) => (chan.name.includes(param) || chan.description.includes(param))))
+      setChannel(originalchannel.filter((chan) => (chan.name.toLowerCase().includes(param) || chan.description.toLowerCase().includes(param))))
     }
     else{
       setChannel([...originalchannel])
@@ -111,8 +110,7 @@ const ChannelBrowser = () => {
   }
   return (
     <Box mt="0" bgColor="#E5E5E5" height="100vh">
-      {/* <ChannelBrowserHeader /> */}
-      <PluginHeaderC />
+      <ChannelBrowserHeader />
       <Box
         bgColor="white"
         h="full"

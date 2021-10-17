@@ -6,14 +6,14 @@ import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import { BiSort } from "react-icons/bi";
 import { GoSettings } from "react-icons/go";
 import {React, useState} from "react";
-import { useSelector } from "react-redux";
-// import { sortBy } from "lodash";
+
 
 const SearchMenu = ({ sortBy, searchChannel, channels}) => {
   const [sortButtonTitle, setSortButtonTitle] = useState("Most recommended")
   return (
     <>
       <HStack
+        mt="50px"
         mb={8}
         justifyContent="space-between"
         sx={{

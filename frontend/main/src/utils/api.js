@@ -94,9 +94,17 @@ class APIServices {
     );
   }
 
-  async createChannel(org_id, data) {
-    // return api.post(`/v1​/${org_id}​/channels​/​`, data);
-    return axios.post(`${baseURL}/${org_id}/channels/`, data);
+  async createChannel(org_id, user_id, data) {
+    // old
+    // return api.post(`/${org_id}/channels/`, data);
+     // let addr =`${org_id}/channels/`
+    //  let last = addr.lastIndexOf("/")
+    // new 
+     let addr = `/org/${org_id}/users/${user_id}/rooms/`
+     let last = addr.lastIndexOf("/")
+    // console.log("kk 0000",data)
+    return api.post(addr.substr(0,last+1), data);
+    
   }
 
   async getChannels(org_id) {
@@ -128,7 +136,21 @@ class APIServices {
   }
 
   async addChannelMember(org_id, channel_id, data) {
+   
+    // old 
     return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
+
+     // new
+    // return api.post(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
+  }
+
+  async removeChannelMember(org_id, channel_id, data) {
+    
+    // old 
+    return api.delete(`/${org_id}/channels/${channel_id}/members/`, data);
+    // new
+    // return api.patch(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
+
   }
 
     async getChannelFiles(org_id, channel_id) {
