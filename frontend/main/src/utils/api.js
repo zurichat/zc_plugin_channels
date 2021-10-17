@@ -103,7 +103,7 @@ class APIServices {
     // let addr = `/org/${org_id}/users/${user_id}/rooms/​`
     // let last = addr.lastIndexOf("/")
     // console.log("kk 0000",data)
-    return api.post(addr.substr(0,last+1), {...data});
+    return api.post(addr.substr(0,last+1), data);
     
   }
 

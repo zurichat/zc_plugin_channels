@@ -38,6 +38,7 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
   let data = {
     org_id:organization,
     room_name: name,
+    name: name,
     room_member_ids:[owner],
     owner: owner,
     description: description,
@@ -63,7 +64,7 @@ const CreateChannelModal = ({ onClose, isOpen }) => {
     const handleSubmit = () => {
     console.log(data);
     newChannel().then(() => {
-       //window.location.reload();
+      window.location.reload();
     });
     onClose();
   };
