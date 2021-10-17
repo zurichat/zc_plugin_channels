@@ -35,13 +35,13 @@ class CorsMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         if response:
-
+            result = host_regex.match(request.get_host())
             response = self.process_response(request, response)
-            response.__dict__["_headers"]["authorization"] = ("Authorization", "")
-            try:
-                del response.__dict__["_headers"]["access-control-allow-origin"]
-            except KeyError:
-                pass
+            if result:
+                try:
+                    del response.__dict__["_headers"]["access-control-allow-origin"]
+                except KeyError:
+                    pass
 
             capture_message(f'Production - {response.__dict__["_headers"]}')
             capture_message(f"Production Request - {request.headers}")
@@ -57,7 +57,14 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-        if request.method in ["POST", "PUT", "DELETE"] and result:
+        if request.method in ["POST", "PUT", "DELETE"] and not result:
+
+            response.__dict__["_headers"]["access-control-allow-origin"] = (
+                "Access-Control-Allow-Origin",
+                request.get_host(),
+            )
+
+        if result:
 
             try:
                 del response.__dict__["_headers"]["access-control-allow-origin"]
