@@ -44,7 +44,7 @@ class CorsMiddleware:
                 pass
 
             capture_message(f'Production - {response.__dict__["_headers"]}')
-            capture_message(f"Production Request - {response.headers}")
+            capture_message(f"Production Request - {request.headers}")
 
         return response
 
