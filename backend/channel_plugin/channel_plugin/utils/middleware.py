@@ -54,6 +54,10 @@ class CorsMiddleware:
                     del response.__dict__["_headers"]["access-control-allow-origin"]
                 except KeyError:
                     pass
+                response.__dict__["_headers"]["access-control-allow-origin"] = (
+                    "Access-Control-Allow-Origin",
+                    f"{request.scheme}://zuri.chat",
+                )
                 capture_message(
                     f'Production Live [GET] - {response.__dict__["_headers"]}'
                 )
