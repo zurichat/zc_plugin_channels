@@ -36,14 +36,17 @@ class CorsMiddleware:
         response = self.get_response(request)
         if response:
             result = local_host_regex.match(request.get_host())
-            response = self.process_response(request, response)
+
+            try:
+                del response.__dict__["_headers"]["access-control-allow-origin"]
+            except KeyError:
+                pass
 
             if not result and request.method in [
                 "POST",
                 "PUT",
                 "PATCH",
                 "DELETE",
-                "GET",
             ]:
                 if not response.__dict__["_headers"].__contains__(
                     "access-control-allow-origin"
@@ -58,22 +61,14 @@ class CorsMiddleware:
 
             if "zuri-zuri-plugin-channels.js" in request.path:
 
-                try:
-                    del response.__dict__["_headers"]["access-control-allow-origin"]
-                except KeyError:
-                    pass
                 capture_message(
                     f'Production Live Static - {response.__dict__["_headers"]}'
                 )
 
             if result:
-                try:
-                    del response.__dict__["_headers"]["access-control-allow-origin"]
-                except KeyError:
-                    pass
 
                 capture_message(f'Production Local - {response.__dict__["_headers"]}')
-                capture_message(f"Production Request - {request.headers}")
+                capture_message(f"Production Local Request - {request.headers}")
 
         return response
 
