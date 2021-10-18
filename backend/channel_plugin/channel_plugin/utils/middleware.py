@@ -42,17 +42,12 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-            if (
-                not result
-                and request.method
-                in [
-                    "POST",
-                    "PUT",
-                    "PATCH",
-                    "DELETE",
-                ]
-                or request.GET.get("format") is not None
-            ):
+            if not result and request.method in [
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+            ]:
                 if not response.__dict__["_headers"].__contains__(
                     "access-control-allow-origin"
                 ):
@@ -73,7 +68,7 @@ class CorsMiddleware:
             if result:
 
                 capture_message(f'Production Local - {response.__dict__["_headers"]}')
-                capture_message(f"Production Local Request - {request.headers}")
+        capture_message(f"Production Request - {request.headers}")
 
         return response
 
