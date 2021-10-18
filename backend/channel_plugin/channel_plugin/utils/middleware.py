@@ -44,11 +44,19 @@ class CorsMiddleware:
                     "Access-Control-Allow-Origin",
                     f"{request.scheme}://zuri.chat",
                 )
-                capture_message(f'Production Live - {response.__dict__["_headers"]}')
+                capture_message(
+                    f'Production Live [PUT,DELETE,PATCH,POST]- {response.__dict__["_headers"]}'
+                )
 
             else:
 
-                del response.__dict__["_headers"]["access-control-allow-origin"]
+                try:
+                    del response.__dict__["_headers"]["access-control-allow-origin"]
+                except KeyError:
+                    pass
+                capture_message(
+                    f'Production Live [GET] - {response.__dict__["_headers"]}'
+                )
 
             if result:
                 try:
