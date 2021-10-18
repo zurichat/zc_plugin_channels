@@ -6,7 +6,7 @@ import re
 
 from sentry_sdk import capture_message
 
-host_regex = re.compile(r"(\d+\.\d+\.\d+\.\d+|localhost):[\d+]{4}")
+local_host_regex = re.compile(r"(\d+\.\d+\.\d+\.\d+|localhost):[\d+]{4}")
 
 
 class AuthenticationMiddleware:
@@ -35,29 +35,31 @@ class CorsMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         if response:
-            result = host_regex.match(request.get_host())
+            result = local_host_regex.match(request.get_host())
             response = self.process_response(request, response)
+
+            if not result:
+
+                response.__dict__["_headers"]["access-control-allow-origin"] = (
+                    "Access-Control-Allow-Origin",
+                    f"{request.scheme}://zuri.chat",
+                )
+                capture_message(f'Production Live - {response.__dict__["_headers"]}')
+
             if result:
                 try:
                     del response.__dict__["_headers"]["access-control-allow-origin"]
                 except KeyError:
                     pass
 
-            capture_message(f'Production - {response.__dict__["_headers"]}')
-            capture_message(f"Production Request - {request.headers}")
+                capture_message(f'Production Local - {response.__dict__["_headers"]}')
+                capture_message(f"Production Request - {request.headers}")
 
         return response
 
     def process_response(self, request, response):
 
-        result = host_regex.match(request.get_host())
-
-        if request.method in ["POST", "PUT", "DELETE", "GET"] and not result:
-
-            response.__dict__["_headers"]["access-control-allow-origin"] = (
-                "Access-Control-Allow-Origin",
-                f"{request.scheme}://zuri.chat",
-            )
+        result = local_host_regex.match(request.get_host())
 
         if result:
 
