@@ -43,6 +43,7 @@ class CorsMiddleware:
                 "PUT",
                 "PATCH",
                 "DELETE",
+                "GET",
             ]:
 
                 response.__dict__["_headers"]["access-control-allow-origin"] = (
