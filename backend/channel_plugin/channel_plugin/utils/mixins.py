@@ -5,11 +5,48 @@ from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import exceptions, status
 
 from channel_plugin.utils.custome_response import Response
 
 
 class AsycViewMixin:
+
+    # Note: Views are made CSRF exempt from within `as_view` as to prevent
+    # accidental removal of this exemption in cases where `dispatch` needs to
+    # be overridden.
+
+    async def handle_exception(self, exc):
+        """
+        Handle any exception that occurs, by returning an appropriate response,
+        or re-raising the error.
+        """
+        if isinstance(
+            exc, (exceptions.NotAuthenticated, exceptions.AuthenticationFailed)
+        ):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                exc.auth_header = auth_header
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
+
+        exception_handler = self.get_exception_handler()
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            self.raise_uncaught_exception(exc)
+
+        response.exception = True
+        setattr(response, "accepted_renderer", self.request.accepted_renderer)
+        setattr(response, "accepted_media_type", self.request.accepted_media_type)
+        setattr(response, "renderer_context", self.get_renderer_context())
+
+        return response
+
     def get_exception_response(self, exc, request):
 
         response = self.handle_exception(exc)
@@ -53,11 +90,11 @@ class AsycViewMixin:
 
             for key, value in self.headers.items():
                 response[key] = value
-
         return response
 
     @classonlymethod
     def as_view(cls, actions=None, **initkwargs):
+
         """
         Because of the way class based views create a closure around the
         instantiated view, we need to totally reimplement `.as_view`,
@@ -127,7 +164,6 @@ class AsycViewMixin:
             self.request = request
             self.args = args
             self.kwargs = kwargs
-
             # And continue as usual
             return self.dispatch(request, *args, **kwargs)
 
