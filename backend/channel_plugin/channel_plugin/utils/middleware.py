@@ -38,13 +38,17 @@ class CorsMiddleware:
             result = local_host_regex.match(request.get_host())
             response = self.process_response(request, response)
 
-            if not result:
+            if not result and request.method in ["POST", "PUT", "PATCH", "DELETE"]:
 
                 response.__dict__["_headers"]["access-control-allow-origin"] = (
                     "Access-Control-Allow-Origin",
                     f"{request.scheme}://zuri.chat",
                 )
                 capture_message(f'Production Live - {response.__dict__["_headers"]}')
+
+            else:
+
+                del response.__dict__["_headers"]["access-control-allow-origin"]
 
             if result:
                 try:
