@@ -42,12 +42,17 @@ class CorsMiddleware:
             except KeyError:
                 pass
 
-            if not result and request.method in [
-                "POST",
-                "PUT",
-                "PATCH",
-                "DELETE",
-            ]:
+            if (
+                not result
+                and request.method
+                in [
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                ]
+                or request.GET.get("format") is not None
+            ):
                 if not response.__dict__["_headers"].__contains__(
                     "access-control-allow-origin"
                 ):
