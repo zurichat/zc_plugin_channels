@@ -45,14 +45,16 @@ class CorsMiddleware:
                 "DELETE",
                 "GET",
             ]:
-
-                response.__dict__["_headers"]["access-control-allow-origin"] = (
-                    "Access-Control-Allow-Origin",
-                    f"{request.scheme}://zuri.chat",
-                )
-                capture_message(
-                    f'Production Live [PUT,DELETE,PATCH,POST,GET]- {response.__dict__["_headers"]}'
-                )
+                if not response.__dict__["_headers"].__contains__(
+                    "access-control-allow-origin"
+                ):
+                    response.__dict__["_headers"]["access-control-allow-origin"] = (
+                        "Access-Control-Allow-Origin",
+                        f"{request.scheme}://zuri.chat",
+                    )
+                    capture_message(
+                        f'Production Live [PUT,DELETE,PATCH,POST,GET]- {response.__dict__["_headers"]}'
+                    )
 
             if "zuri-zuri-plugin-channels.js" in request.path:
 
