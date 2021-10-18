@@ -37,7 +37,7 @@ urlpatterns = [
         channel_socket_view,
         name="channel_socket_view",
     ),
-    path("<str:org_id>/channels/users/<str:user_id>/", user_channel_list),
+    path("<str:org_id>/channels/users/<str:member_id>/", user_channel_list),
     path(
         "<str:org_id>/workspace_channel/",
         workspace_channel_view,
