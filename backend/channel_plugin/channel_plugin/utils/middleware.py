@@ -43,7 +43,6 @@ class CorsMiddleware:
                 pass
 
             if not result and request.method in [
-                "POST",
                 "PUT",
                 "PATCH",
                 "DELETE",
@@ -69,6 +68,7 @@ class CorsMiddleware:
 
                 capture_message(f'Production Local - {response.__dict__["_headers"]}')
         capture_message(f"Production Request - {request.headers}")
+        capture_message(f"Production Request DICT - {request.META}")
 
         return response
 
