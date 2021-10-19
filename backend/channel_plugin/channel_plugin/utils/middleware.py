@@ -68,7 +68,7 @@ class CorsMiddleware:
 
                 capture_message(f'Production Local - {response.__dict__["_headers"]}')
         capture_message(f"Production Request - {request.headers}")
-        capture_message(f"Production Request DICT - {request.META}")
+        capture_message(f"Production Request DICT - {request.META.keys()}")
 
         return response
 

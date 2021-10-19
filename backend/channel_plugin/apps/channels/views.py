@@ -1,8 +1,6 @@
 import asyncio
-import json
 
 import requests
-from rest_framework.exceptions import ValidationError
 from apps.centri.helperfuncs import build_room_name
 from apps.centri.signals.async_signal import request_finished
 from apps.channelmembers.views import ChannelMemberViewset
@@ -131,7 +129,10 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 )
         else:
             return Custom_Response(
-                channel_serializer.errors, status=status_code, request=request, view=self
+                channel_serializer.errors,
+                status=status_code,
+                request=request,
+                view=self,
             )
 
     @swagger_auto_schema(
@@ -267,7 +268,9 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 return Custom_Response(
                     result, status=status_code, request=request, view=self
                 )
-        return Custom_Response(dict(), status=status_code, request=request, view=self)
+        return Custom_Response(
+            dict(), status=status.HTTP_200_OK, request=request, view=self
+        )
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
@@ -420,7 +423,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                     ),
                 )
             )
-            
+
             return Custom_Response(
                 result, status=status_code, request=request, view=self
             )
@@ -582,7 +585,7 @@ def dms_test(request):
         else:
             core_server = "Inactive"
 
-    except Exception: # noqa
+    except Exception:  # noqa
         core_server = "Inactive"
     return render(
         request, "dms_test.html", {"dms_server": dms_server, "core_server": core_server}
