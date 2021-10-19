@@ -18,7 +18,7 @@ const NewChannelHeader = ({ channelId }) => {
     onClose: onCloseChannelDetails
   } = useDisclosure()
 
-  const { channelMember } = useSelector((state) => state.channelsReducer);
+  const { channelMember, workspace_users_object } = useSelector((state) => state.channelsReducer);
   const { users } = useSelector(state => state.appReducer)
   let _users;
   let orgId;
@@ -44,7 +44,7 @@ const NewChannelHeader = ({ channelId }) => {
 
   useEffect(() => {
     _getChannelDetails(users.currentWorkspace, channelId);
-  }, [channelId]);
+  }, [channelId, channelMember]);
   
   const channelDetailsData = useSelector((state) => state.channelsReducer).channelDetails;//extract redux state
   console.log("all in the channel", channelDetailsData);//to see what kind of data I'm actually getting
@@ -52,11 +52,18 @@ const NewChannelHeader = ({ channelId }) => {
   const isPrivate = channelDetailsData.private;// to check if channel is private or not
 
   let userList = [];
-
+  let usermail =""
   let count =0;
   for (const key in channelDetailsData.users) {
     if (Object.hasOwnProperty.call(channelDetailsData.users, key)) {
-      userList = [...userList,{"_id":channelDetailsData.users[key]._id, "email":`User${count}@mail.com`}]
+      usermail = workspace_users_object?
+      //getting usermail from workspace object
+      workspace_users_object[key]?
+                workspace_users_object[key].user_name?workspace_users_object[key].user_name:workspace_users_object[key].email
+             :"unknown user"
+      //end of getting usermail
+      :`User${count+1}@mail.com`
+      userList = [...userList,{"_id":channelDetailsData.users[key]._id, "email":usermail}]
       count++;
     }
   }
@@ -81,11 +88,13 @@ const NewChannelHeader = ({ channelId }) => {
     roomInfo: {
       membersList: [...userList],
       addmembersevent: values => {
-        console.warn("a plugin added ", values)
+        // console.warn("a plugin added ", values)
+        console.log("kk's work space users", workspace_users_object)
         let data = values.reduce((cum,val)=>([...cum,{_id:val.value}]),[])
         if(data){
           data = data.length >1?data:data[0];
            _addChannelMember(orgId, channelId,data)
+           _getChannelDetails(users.currentWorkspace, channelId);
         }
         
       },
@@ -93,6 +102,7 @@ const NewChannelHeader = ({ channelId }) => {
         console.warn("a plugin deleted ", id)
         if(id){
           _removeChannelMember(orgId, channelId, {_id:id})
+          _getChannelDetails(users.currentWorkspace, channelId);
         }
       }
     }
