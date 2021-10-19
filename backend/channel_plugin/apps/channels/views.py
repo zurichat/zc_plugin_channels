@@ -268,9 +268,7 @@ class ChannelViewset(AsycViewMixin, ThrottledViewSet, OrderMixin):
                 return Custom_Response(
                     result, status=status_code, request=request, view=self
                 )
-        return Custom_Response(
-            dict(), status=status.HTTP_200_OK, request=request, view=self
-        )
+        return Custom_Response(dict(), status=status_code, request=request, view=self)
 
     @swagger_auto_schema(
         operation_id="update-channel-details",
