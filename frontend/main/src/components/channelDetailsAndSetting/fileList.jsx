@@ -1,70 +1,63 @@
-import React from "react";
-import { Box, Text, Flex, Divider } from "@chakra-ui/layout";
-import { Image } from "@chakra-ui/react";
+import React from "react"
+import { Box, Text, Flex, Divider } from "@chakra-ui/layout"
+import { Image } from "@chakra-ui/react"
 
 const FileList = () => {
-  
   const files = [
     {
       filename: "Image.png",
       time: "Aug 25th at 10:10pm",
       username: "Kevin",
-      src: "https://bit.ly/sage-adebayo",
+      src: "https://bit.ly/sage-adebayo"
     },
     {
       filename: "Image.png",
       time: "Aug 25th at 10:10pm",
       username: "Kevin",
-      src: "https://bit.ly/sage-adebayo",
+      src: "https://bit.ly/sage-adebayo"
     },
     {
       filename: "Image.png",
       time: "Aug 25th at 10:10pm",
       username: "Kevin",
-      src: "https://bit.ly/sage-adebayo",
+      src: "https://bit.ly/sage-adebayo"
     },
     {
       filename: "Image.png",
       time: "Aug 25th at 10:10pm",
       username: "Kevin",
-      src: "https://bit.ly/sage-adebayo",
-    },
-  ];
+      src: "https://bit.ly/sage-adebayo"
+    }
+  ]
 
-  let fileElements = files.map((file) => {
-    return (
-      <Box>
-        <Flex flexDirection="row" mb="3" mt="2">
-          <Image
-            borderRadius="full"
-            boxSize="36px"
-            src="https://bit.ly/sage-adebayo"
-            alt="Segun Adebayo"
-          />
-          {/* <Image borderRadius="full" boxSize="36px" src="{file.src}" alt="Segun Adebayo"/> */}
+  const fileElements = files.map(file => (
+    <Box>
+      <Flex flexDirection="row" mb="3" mt="2">
+        <Image
+          borderRadius="full"
+          boxSize="36px"
+          src="https://bit.ly/sage-adebayo"
+          alt="Segun Adebayo"
+        />
+        {/* <Image borderRadius="full" boxSize="36px" src="{file.src}" alt="Segun Adebayo"/> */}
 
-          <Flex flexDirection="column" ml="6">
-            <Text fontWeight="bold" fontSize="12px" color="#333333">
-              {file.filename}
+        <Flex flexDirection="column" ml="6">
+          <Text fontWeight="bold" fontSize="12px" color="#333333">
+            {file.filename}
+          </Text>
+          <Flex flexDirection="row" alignItems="center" justifyContent="center">
+            <Text fontSize="8px" mr="8px" fontWeight="bold" color="#717171">
+              {file.username}
             </Text>
-            <Flex
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text fontSize="8px" mr="8px" fontWeight="bold" color="#717171">
-                {file.username}
-              </Text>
-              <Text fontSize="8px" color="#717171">
-                {file.time}
-              </Text>
-            </Flex>
+            <Text fontSize="8px" color="#717171">
+              {file.time}
+            </Text>
           </Flex>
         </Flex>
-        <Divider orientation="horizontal" width="100%" />
-      </Box>
-    );
-  });
+      </Flex>
+      <Divider orientation="horizontal" width="100%" />
+    </Box>
+  ))
 
   return (
     <Box>
@@ -106,7 +99,7 @@ const FileList = () => {
         </Text>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-export default FileList;
+export default FileList

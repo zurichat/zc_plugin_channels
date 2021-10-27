@@ -1,6 +1,6 @@
-import React from "react";
-import { VStack, Text, HStack } from "@chakra-ui/layout";
-import { Avatar } from "@chakra-ui/avatar";
+import React from "react"
+import { VStack, Text, HStack } from "@chakra-ui/layout"
+import { Avatar } from "@chakra-ui/avatar"
 
 function EachMessage({ userName, src, messageTime, messageContent }) {
   return (
@@ -18,7 +18,7 @@ function EachMessage({ userName, src, messageTime, messageContent }) {
         </Text>
       </VStack>
     </HStack>
-  );
+  )
 }
 
-export default EachMessage;
+export default EachMessage

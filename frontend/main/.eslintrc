@@ -1,7 +1,40 @@
 {
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
   "extends": [
-    "react-important-stuff",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb",
     "plugin:prettier/recommended"
   ],
-  "parser": "@babel/eslint-parser", "parserOptions": { "requireConfigFile" : "false" }, "babelOptions": { "configFile": "./.babelrc"}
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    "react/react-in-jsx-scope": [0, "off"],
+    "react/display-name": ["off"],
+    "react/prop-types": [0, "off"],
+    "react/no-unescaped-entities": ["off"],
+    "import/no-unresolved": ["off"],
+    "import/no-extraneous-dependencies": ["off"],
+    "react/jsx-props-no-spreading": ["off"],
+    "no-underscore-dangle": ["off"],
+    "class-methods-use-this": ["off"],
+    "no-useless-escape": ["off"],
+    "jsx-a11y/anchor-is-valid": ["off"],
+    "react/no-array-index-key": ["off"],
+    "no-param-reassign": ["off"],
+    "no-unused-vars": ["warn"],
+    "no-use-before-define": ["warn"]
+    // "no-use-before-define": ["off"]
+
+    // "no-console": ["error", { "allow": ["warn", "error"] }]
+  }
 }

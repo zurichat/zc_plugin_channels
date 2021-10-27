@@ -1,22 +1,23 @@
-import React from "react";
+import React from "react"
 import {
   Box,
   Text,
   Spacer,
   Avatar,
   HStack,
-} from "@chakra-ui/react";
-import { Divider, Heading } from "@chakra-ui/react";
-import { useBreakpointValue } from "@chakra-ui/media-query";
-import { BiChevronDown } from "react-icons/bi";
+  Divider,
+  Heading
+} from "@chakra-ui/react"
+import { useBreakpointValue } from "@chakra-ui/media-query"
+import { BiChevronDown } from "react-icons/bi"
 
 const Members = () => {
   const isMobile = useBreakpointValue({
     base: true,
     md: true,
     lg: false,
-    xl: false,
-  });
+    xl: false
+  })
 
   return (
     <Box>
@@ -25,7 +26,7 @@ const Members = () => {
         <HStack
           border="1px"
           borderRadius="2xl"
-          borderColor={"gray.100"}
+          borderColor="gray.100"
           py="6.5px"
           px={2}
           height="27px"
@@ -51,7 +52,7 @@ const Members = () => {
         />
         <Box>
           <HStack>
-            <Heading fontSize="15px" fontWeight={"black"}>
+            <Heading fontSize="15px" fontWeight="black">
               Deyrin Cutting
             </Heading>
             <Text fontSize="12px" color="#616061">
@@ -64,7 +65,7 @@ const Members = () => {
         </Box>
       </HStack>
     </Box>
-  );
-};
+  )
+}
 
-export default Members;
+export default Members

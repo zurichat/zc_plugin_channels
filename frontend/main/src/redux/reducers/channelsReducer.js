@@ -1,5 +1,5 @@
 // import { v4 } from "uuid";
-import UtilityService from "../../utils/utils";
+import UtilityService from "../../utils/utils"
 import {
   ARCHIVE_CHANNEL,
   GET_CHANNEL_DETAILS,
@@ -8,80 +8,79 @@ import {
   SEND_MESSAGES,
   ADD_CHANNEL_MEMBER,
   REMOVE_CHANNEL_MEMBER,
-  DELETE_CHANNEL,
-} from "../actions/types";
+  DELETE_CHANNEL
+} from "../actions/types"
 
 const initialState = {
   channelDetails: {
-    name : 'General',
-    members:  '1',
+    name: "General",
+    members: "1",
     private: false,
-    archived : false,
-    users:[],
+    archived: false,
+    users: []
   },
   pinnedMessages: [],
   sendMessages: {},
-  channelMember: {},
-};
+  channelMember: {}
+}
 
 const channelsReducer = (state = initialState, action) => {
-  const { type, payload } = action;
+  const { type, payload } = action
 
   switch (type) {
     case ADD_CHANNEL_MEMBER:
       return {
         ...state,
-        channelMember: {...payload }
-
-      };
+        channelMember: { ...payload }
+      }
     case REMOVE_CHANNEL_MEMBER:
       return {
         ...state,
-        channelMember: {...payload }
-      };
+        channelMember: { ...payload }
+      }
     case GET_CHANNEL_DETAILS:
       return {
         ...state,
-        channelDetails: { ...payload },
-      };
+        channelDetails: { ...payload }
+      }
     case GET_PINNED_MESSAGES: {
       return {
         ...state,
-        pinnedMessages: payload,
-      };
+        pinnedMessages: payload
+      }
     }
     case SEND_MESSAGES:
       return {
         ...state,
-        sendMessages: payload,
-      };
+        sendMessages: payload
+      }
     case PIN_MESSAGE: {
-      const { pinnedMessages: formal } = state;
+      const { pinnedMessages: formal } = state
       const pinnedMessages = UtilityService.removeDuplicateObjectFromArray(
         [...formal, payload],
         "_id"
-      );
+      )
       return {
         ...state,
-        pinnedMessages,
-      };
+        pinnedMessages
+      }
     }
     case ARCHIVE_CHANNEL: {
       return {
         ...state,
-        channelDetails: { ...payload },
-      };
+        channelDetails: { ...payload }
+      }
     }
 
     case DELETE_CHANNEL: {
       return {
         ...state,
-        channelDetails: {  },
-      };
+        channelDetails: {}
+      }
     }
     default:
-      return state;
+      return state
   }
-};
+}
 
-export default channelsReducer;
+export default channelsReducer

@@ -1,26 +1,17 @@
-import React from "react";
-import { Box, HStack } from "@chakra-ui/layout";
-import {
-  Flex,
-  Spacer,
-  Button,
-} from "@chakra-ui/react";
-import CreateChannelModal from "../createChannel/createChannelModal";
-import { Icon } from "@chakra-ui/icons";
-import { BiChevronDown, BiChevronLeft } from "react-icons/bi";
-import { useDisclosure } from "@chakra-ui/hooks";
-
+import React from "react"
+import { Box, HStack } from "@chakra-ui/layout"
+import { Flex, Spacer, Button } from "@chakra-ui/react"
+import { Icon } from "@chakra-ui/icons"
+import { BiChevronDown, BiChevronLeft } from "react-icons/bi"
+import { useDisclosure } from "@chakra-ui/hooks"
+import CreateChannelModal from "../createChannel/createChannelModal"
 
 const ChannelBrowserHeader = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <Box width="100%" 
-        mb="25px"
-        pos="fixed"
-         >
+    <Box width="100%" mb="25px" pos="fixed">
       <Flex
-
         onClick={onOpen}
         flexShrink={0}
         ml="1px"
@@ -46,11 +37,11 @@ const ChannelBrowserHeader = () => {
         </Box>
         <Icon as={BiChevronDown} color="#FFFFFF" />
         <Spacer />
-        
+
         <CreateChannelModal isOpen={isOpen} onClose={onClose} />
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-export default ChannelBrowserHeader;
+export default ChannelBrowserHeader

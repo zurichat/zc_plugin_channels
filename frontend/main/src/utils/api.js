@@ -1,181 +1,176 @@
-import axios from "axios";
+/* eslint-disable no-irregular-whitespace */
+import axios from "axios"
 
-const baseURL = "https://channels.zuri.chat/api/v1";
+const baseURL = "https://channels.zuri.chat/api/v1"
 // const baseURL = "http://127.0.0.1:8000/api/v1";
 
 const defaultConfig = {
   baseURL,
   timeout: 60000,
   headers: {
-    "Content-type": "application/json",
+    "Content-type": "application/json"
     // "Access-Control-Allow-Origin": "*",
-  },
-};
+  }
+}
 
-const api = axios.create({ ...defaultConfig });
+const api = axios.create({ ...defaultConfig })
 
 api.interceptors.request.use(
-  (config) => {
-    const token = ""; // Whatever the token is
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
+  config => {
+    const token = "" // Whatever the token is
+    if (token) config.headers.Authorization = `Bearer ${token}`
+    return config
   },
-  (err) => Promise.reject(err)
-);
+  err => Promise.reject(err)
+)
 class APIServices {
   // @desc End Point Example
   async getUsers(data) {
-    return api.post("/some-endpoint", data);
+    return api.post("/some-endpoint", data)
   }
 
-  async createMessage(org_id, channel_id, data) {
-    return api.post(`/channels/messages/${org_id}/${channel_id}/`, data);
-  }
-  async sendMessage(org_id, channel_id, data) {
-    return api.post(`/${org_id}/channels/${channel_id}/messages/`, data);
+  async createMessage(orgId, channelId, data) {
+    return api.post(`/channels/messages/${orgId}/${channelId}/`, data)
   }
 
-  async getMessages(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}/messages/`);
+  async sendMessage(orgId, channelId, data) {
+    return api.post(`/${orgId}/channels/${channelId}/messages/`, data)
   }
 
-  async deleteMessage(org_id, msg_id) {
-    return api.delete(`/channels​/messages​/${org_id}​/${msg_id}​/delete​`);
+  async getMessages(orgId, channelId) {
+    return api.get(`/${orgId}/channels/${channelId}/messages/`)
   }
 
-  async retrieveMessage(org_id, msg_id) {
-    return api.get(`/channels​/messages​/${org_id}​/${msg_id}​/retrieve​`);
+  async deleteMessage(orgId, msgId) {
+    return api.delete(`/channels​/messages​/${orgId}​/${msgId}​/delete​`)
   }
 
-  async updateMessage(org_id, channel_id, user_id, msg_id, data) {
-    return api.put(`/${org_id}/messages/${msg_id}/`, data, {
-      params: { user_id, channel_id },
-    });
+  async retrieveMessage(orgId, msgId) {
+    return api.get(`/channels​/messages​/${orgId}​/${msgId}​/retrieve​`)
   }
 
-  async createRole(org_id, channel_id, data) {
-    return api.post(`/channels/roles/${org_id}/${channel_id}`, data);
+  async updateMessage(orgId, channelId, userId, msgId, data) {
+    return api.put(`/${orgId}/messages/${msgId}/`, data, {
+      params: { userId, channelId }
+    })
   }
 
-  async getRoles(org_id, channel_id) {
-    return api.get(`/channels​/roles​/${org_id}​/${channel_id}​/all​`);
+  async createRole(orgId, channelId, data) {
+    return api.post(`/channels/roles/${orgId}/${channelId}`, data)
   }
 
-  async deleteRole(org_id, role_id) {
-    return api.delete(`​/channels​/roles​/${org_id}​/${role_id}​/delete`);
+  async getRoles(orgId, channelId) {
+    return api.get(`/channels​/roles​/${orgId}​/${channelId}​/all​`)
   }
 
-  async retriveRole(org_id, role_id) {
-    return api.get(`/channels​/role​s/${org_id}​/${role_id}​/retrieve`);
+  async deleteRole(orgId, roleId) {
+    return api.delete(`​/channels​/roles​/${orgId}​/${roleId}​/delete`)
   }
 
-  async updateRole(org_id, role_id, data) {
-    return api.put(`/channels​/roles​/${org_id}​/${role_id}​/update`, data);
+  async retriveRole(orgId, roleId) {
+    return api.get(`/channels​/role​s/${orgId}​/${roleId}​/retrieve`)
   }
 
-  async createThread(org_id, channelmessage_id, data) {
-    return api.post(`/channels/threads/${org_id}/${channelmessage_id}`, data);
+  async updateRole(orgId, roleId, data) {
+    return api.put(`/channels​/roles​/${orgId}​/${roleId}​/update`, data)
   }
 
-  async getThreads(org_id, channelmessage_id) {
-    return api.get(`/channels/threads/${org_id}/${channelmessage_id}/all`);
+  async createThread(orgId, channelMessageId, data) {
+    return api.post(`/channels/threads/${orgId}/${channelMessageId}`, data)
   }
 
-  async deleteThread(org_id, channelmessage_id) {
-    return api.delete(
-      `/channels/threads/${org_id}/${channelmessage_id}/delete`
-    );
+  async getThreads(orgId, channelMessageId) {
+    return api.get(`/channels/threads/${orgId}/${channelMessageId}/all`)
   }
 
-  async updateThread(org_id, channelmessage_id, data) {
+  async deleteThread(orgId, channelMessageId) {
+    return api.delete(`/channels/threads/${orgId}/${channelMessageId}/delete`)
+  }
+
+  async updateThread(orgId, channelMessageId, data) {
     return api.put(
-      `/channels/threads/${org_id}/${channelmessage_id}/update`,
+      `/channels/threads/${orgId}/${channelMessageId}/update`,
       data
-    );
+    )
   }
 
-  async createChannel(org_id, user_id, data) {
+  async createChannel(orgId, userId, data) {
     // old
-    // return api.post(`/${org_id}/channels/`, data);
-     // let addr =`${org_id}/channels/`
+    // return api.post(`/${orgId}/channels/`, data);
+    // let addr =`${orgId}/channels/`
     //  let last = addr.lastIndexOf("/")
-    // new 
-     let addr = `/org/${org_id}/users/${user_id}/rooms/`
-     let last = addr.lastIndexOf("/")
-    // console.log("kk 0000",data)
-    return api.post(addr.substr(0,last+1), data);
-    
-  }
-
-  async getChannels(org_id) {
-    return api.get(`/${org_id}/channels/`);
-  }
-
-  async deleteChannel(org_id, channel_id) {
-    return api.delete(`​/channels​/${org_id}​/${channel_id}​/delete​`);
-  }
-
-  async retrieveChannel(org_id, channel_id) {
-    return api.get(`/channels/${org_id}/${channel_id}/retrieve`);
-  }
-
-  async updateChannel(org_id, channel_id, data) {
-    return api.put(`/${org_id}/channels/${channel_id}/`, data);
-  }
-
-  async getPinnedMessages(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}/messages/?pinned=True`);
-  }
-
-  async getChannelDetails(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}/?format=json`);
-  }
-
-  async getSockets(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}/socket/`);
-  }
-
-  async addChannelMember(org_id, channel_id, data) {
-   
-    // old 
-    return api.post(`/${org_id}/channels/${channel_id}/members/`, data);
-
-     // new
-    // return api.post(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
-  }
-
-  async removeChannelMember(org_id, channel_id, data) {
-    
-    // old 
-    return api.delete(`/${org_id}/channels/${channel_id}/members/`, data);
     // new
-    // return api.patch(`/org/${org_id}/room/${channel_id}/members/${data._id}/`, data);
-
+    const addr = `/org/${orgId}/users/${userId}/rooms/`
+    const last = addr.lastIndexOf("/")
+    // console.log("kk 0000",data)
+    return api.post(addr.substr(0, last + 1), data)
   }
 
-    async getChannelFiles(org_id, channel_id) {
-    return api.get(`/${org_id}/channels/${channel_id}/media/?format=json`);
+  async getChannels(orgId) {
+    return api.get(`/${orgId}/channels/`)
   }
 
+  async deleteChannel(orgId, channelId) {
+    return api.delete(`​/channels​/${orgId}​/${channelId}​/delete​`)
+  }
 
-  async userCanInput(org_id, channel_id, data) {
-    return api.post(
-      `/${org_id}/channels/${channel_id}/members/can-input`,
+  async retrieveChannel(orgId, channelId) {
+    return api.get(`/channels/${orgId}/${channelId}/retrieve`)
+  }
+
+  async updateChannel(orgId, channelId, data) {
+    return api.put(`/${orgId}/channels/${channelId}/`, data)
+  }
+
+  async getPinnedMessages(orgId, channelId) {
+    return api.get(`/${orgId}/channels/${channelId}/messages/?pinned=True`)
+  }
+
+  async getChannelDetails(orgId, channelId) {
+    return api.get(`/${orgId}/channels/${channelId}/?format=json`)
+  }
+
+  async getSockets(orgId, channelId) {
+    return api.get(`/${orgId}/channels/${channelId}/socket/`)
+  }
+
+  async addChannelMember(orgId, channelId, data) {
+    // old
+    return api.post(`/${orgId}/channels/${channelId}/members/`, data)
+
+    // new
+    // return api.post(`/org/${orgId}/room/${channelId}/members/${data._id}/`, data);
+  }
+
+  async removeChannelMember(orgId, channelId, data) {
+    // old
+    return api.delete(`/${orgId}/channels/${channelId}/members/`, data)
+    // new
+    // return api.patch(`/org/${orgId}/room/${channelId}/members/${data._id}/`, data);
+  }
+
+  async getChannelFiles(orgId, channelId) {
+    return api.get(`/${orgId}/channels/${channelId}/media/?format=json`)
+  }
+
+  async userCanInput(orgId, channelId, data) {
+    return api.post(`/${orgId}/channels/${channelId}/members/can-input`, data)
+  }
+
+  async setNotification(orgId, channelId, memberId, data) {
+    return api.put(
+      `/${orgId}/channels/${channelId}/members/${memberId}/notifications/`,
       data
-    );
+    )
   }
-  async setNotification(org_id, channel_id, member_id, data) {
-    return api.put(`/${org_id}/channels/${channel_id}/members/${member_id}/notifications/`, data);
-}
-  async getNotification(org_id, channel_id, member_id) {
-    return api.put(`/${org_id}/channels/${channel_id}/members/${member_id}/notifications/`);
+
+  async getNotification(orgId, channelId, memberId) {
+    return api.put(
+      `/${orgId}/channels/${channelId}/members/${memberId}/notifications/`
+    )
+  }
 }
 
-async userCanInput(org_id, channel_id, data) {
-  return api.post(`/${org_id}/channels/${channel_id}/members/can-input`, data );
-}
-}
+const instance = new APIServices()
 
-const instance = new APIServices();
-
-export default instance;
+export default instance

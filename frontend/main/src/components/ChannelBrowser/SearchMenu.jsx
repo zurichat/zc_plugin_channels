@@ -1,14 +1,14 @@
-import Icon from "@chakra-ui/icon";
-import { Search2Icon } from "@chakra-ui/icons";
-import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Heading, HStack } from "@chakra-ui/layout";
-import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
-import { BiSort } from "react-icons/bi";
-import { GoSettings } from "react-icons/go";
-import {React, useState} from "react";
+/* eslint-disable react/no-children-prop */
+import Icon from "@chakra-ui/icon"
+import { Search2Icon } from "@chakra-ui/icons"
+import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input"
+import { Heading, HStack } from "@chakra-ui/layout"
+import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu"
+import { BiSort } from "react-icons/bi"
+import { GoSettings } from "react-icons/go"
+import { React, useState } from "react"
 
-
-const SearchMenu = ({ sortBy, searchChannel, channels}) => {
+const SearchMenu = ({ sortBy, searchChannel, channels }) => {
   const [sortButtonTitle, setSortButtonTitle] = useState("Most recommended")
   return (
     <>
@@ -17,7 +17,7 @@ const SearchMenu = ({ sortBy, searchChannel, channels}) => {
         mb={8}
         justifyContent="space-between"
         sx={{
-          "@media screen and (max-width: 768.5px)": { marginBottom: "0" },
+          "@media screen and (max-width: 768.5px)": { marginBottom: "0" }
         }}
       >
         <InputGroup>
@@ -33,7 +33,7 @@ const SearchMenu = ({ sortBy, searchChannel, channels}) => {
             color="#A1A1A1"
             size="md"
             w="100%"
-            onChange={e =>searchChannel(e.target.value)}
+            onChange={e => searchChannel(e.target.value)}
           />
         </InputGroup>
       </HStack>
@@ -44,21 +44,71 @@ const SearchMenu = ({ sortBy, searchChannel, channels}) => {
         sx={{ "@media screen and (max-width: 768.5px)": { display: "none" } }}
       >
         <Heading size="md" fontSize="18px" fontWeight={700}>
-          {channels.length } recommended results
+          {channels.length} recommended results
         </Heading>
         <HStack spacing="10px">
           <Menu isLazy>
             <MenuButton fontSize="17px">
-              <Icon as={BiSort} mr={1} w="14px" /> Sort: {sortButtonTitle}
+              <Icon as={BiSort} mr={1} w="14px" /> Sort:
+              {sortButtonTitle}
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={() => { setSortButtonTitle("Most recommended"); sortBy("recommended"); }}>Most recommended</MenuItem>
-              <MenuItem onClick={() => { setSortButtonTitle("Newest Channel"); sortBy("newest")}}>Newest Channel</MenuItem>
-              <MenuItem onClick={() => { setSortButtonTitle("Oldest Channel"); sortBy("oldest")}}>Oldest Channel</MenuItem>
-              <MenuItem onClick={() => { setSortButtonTitle("Least Members"); sortBy("leastMembers") }}>Least Members</MenuItem>
-              <MenuItem onClick={() => { setSortButtonTitle("Most Members"); sortBy("mostMembers") }}>Most Members</MenuItem>
-              <MenuItem onClick={() => { setSortButtonTitle("A to Z"); sortBy("name")}}>A to Z</MenuItem>
-              <MenuItem onClick={() => { setSortButtonTitle("Z to A"); sortBy("nameReverse")}}>Z to A</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("Most recommended")
+                  sortBy("recommended")
+                }}
+              >
+                Most recommended
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("Newest Channel")
+                  sortBy("newest")
+                }}
+              >
+                Newest Channel
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("Oldest Channel")
+                  sortBy("oldest")
+                }}
+              >
+                Oldest Channel
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("Least Members")
+                  sortBy("leastMembers")
+                }}
+              >
+                Least Members
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("Most Members")
+                  sortBy("mostMembers")
+                }}
+              >
+                Most Members
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("A to Z")
+                  sortBy("name")
+                }}
+              >
+                A to Z
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSortButtonTitle("Z to A")
+                  sortBy("nameReverse")
+                }}
+              >
+                Z to A
+              </MenuItem>
             </MenuList>
           </Menu>
 
@@ -70,7 +120,7 @@ const SearchMenu = ({ sortBy, searchChannel, channels}) => {
         </HStack>
       </HStack>
     </>
-  );
-};
+  )
+}
 
-export default SearchMenu;
+export default SearchMenu

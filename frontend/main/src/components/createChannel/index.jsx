@@ -1,13 +1,16 @@
-import React, { useEffect } from "react";
-import { Box } from "@chakra-ui/layout";
-import MessageInput from "../shared/MessageInput";
-import { TobBarMobile, TopBar } from "./TopBar";
-import ChannelBody from "./ChannelBody";
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/named */
+import React, { useEffect } from "react"
+import { Box } from "@chakra-ui/layout"
+import { useBreakpointValue } from "@chakra-ui/media-query"
+import { useDispatch } from "react-redux"
+import { bindActionCreators } from "redux"
+import MessageInput from "../shared/MessageInput"
+import { TobBarMobile, TopBar } from "./TopBar"
+import ChannelBody from "./ChannelBody"
 // import TopSearch from "./TopSearch";
-import { useBreakpointValue } from "@chakra-ui/media-query";
-import { useDispatch } from "react-redux";
-import { bindActionCreators } from "redux";
-import appActions from "../../redux/actions/app";
+import appActions from "../../redux/actions/app"
 // import { v4 } from "uuid";
 
 const CreateChannel = () => {
@@ -15,23 +18,23 @@ const CreateChannel = () => {
     base: true,
     md: true,
     lg: false,
-    xl: false,
-  });
+    xl: false
+  })
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch)
 
   const loadData = async () => {
     await _getChannelDetails(
       "614679ee1a5607b13c00bcb7",
       "614fd412cf2c0f1ad7585394"
-    );
-  };
+    )
+  }
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData()
+  }, [])
 
   return (
     <Box width="100%" height="100vh" bg="#FFFFFF">
@@ -42,7 +45,7 @@ const CreateChannel = () => {
         <MessageInput />
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default CreateChannel;
+export default CreateChannel

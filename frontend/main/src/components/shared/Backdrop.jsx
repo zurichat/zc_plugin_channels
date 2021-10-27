@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react"
 
 function Backdrop({ clicked }) {
   return (
@@ -11,8 +11,8 @@ function Backdrop({ clicked }) {
       background="#0e0d0dad"
       top={0}
       left={0}
-    ></Box>
-  );
+    />
+  )
 }
 
-export default Backdrop;
+export default Backdrop

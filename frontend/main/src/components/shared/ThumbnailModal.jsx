@@ -1,4 +1,5 @@
-import { Box, Flex, Text, Image } from "@chakra-ui/react";
+/* eslint-disable no-unused-vars */
+import { Box, Flex, Text, Image } from "@chakra-ui/react"
 import Download from "../../assets/download.svg"
 import Upload from "../../assets/upload.svg"
 import Cancel from "../../assets/cancel.svg"
@@ -23,22 +24,61 @@ function ThumbnailModal({ imageUrl, clicked }) {
         <Flex mr="auto">
           <Image src={Profile} alt="" height="30px" mr="9px" />
           <Box>
-            <Text fontSize={10} fontWeight="bold">image.png</Text>
+            <Text fontSize={10} fontWeight="bold">
+              image.png
+            </Text>
             <Text fontSize={10}>Kevin Aug 25th at 6:30 AM</Text>
           </Box>
         </Flex>
-        <Flex align="center"  justifyContent="space-around">
-            <Image src={Download} cursor="pointer" height="20px" mx="10px" width="20px" alt="" />
-            <Image src={Upload} cursor="pointer" height="20px" mx="10px" width="20px" alt="" />
-            <Image src={Options} cursor="pointer" height="20px"  mx="10px" width="20px" alt="" />
-            <Box height="20px" borderRight="1px"></Box>
-            <Image onClick={clicked} src={Cancel} cursor="pointer" height="20px"  mx="10px" width="20px" alt="" />
+        <Flex align="center" justifyContent="space-around">
+          <Image
+            src={Download}
+            cursor="pointer"
+            height="20px"
+            mx="10px"
+            width="20px"
+            alt=""
+          />
+          <Image
+            src={Upload}
+            cursor="pointer"
+            height="20px"
+            mx="10px"
+            width="20px"
+            alt=""
+          />
+          <Image
+            src={Options}
+            cursor="pointer"
+            height="20px"
+            mx="10px"
+            width="20px"
+            alt=""
+          />
+          <Box height="20px" borderRight="1px" />
+          <Image
+            onClick={clicked}
+            src={Cancel}
+            cursor="pointer"
+            height="20px"
+            mx="10px"
+            width="20px"
+            alt=""
+          />
         </Flex>
       </Flex>
- 
-      <Image src={Picture}  alt="" mx="30px" height="350px" display="block" m="auto" my="10"/>
+
+      <Image
+        src={Picture}
+        alt=""
+        mx="30px"
+        height="350px"
+        display="block"
+        m="auto"
+        my="10"
+      />
     </Box>
-  );
+  )
 }
 
-export default ThumbnailModal;
+export default ThumbnailModal

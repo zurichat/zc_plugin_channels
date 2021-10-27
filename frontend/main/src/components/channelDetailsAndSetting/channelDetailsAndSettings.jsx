@@ -7,8 +7,6 @@ import {
   useDisclosure,
   Flex,
   Spacer,
-} from "@chakra-ui/react";
-import {
   Box,
   Button,
   Stack,
@@ -16,51 +14,55 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay
-} from "@chakra-ui/react";
-import { Text } from "@chakra-ui/layout";
-import TabsRows from "./TabsRow";
-import { FaPhoneAlt } from "react-icons/fa";
-import { FaRegBell } from "react-icons/fa";
-import { FaChevronDown } from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa";
-import { FaHashtag } from "react-icons/fa";
+} from "@chakra-ui/react"
+import { Text } from "@chakra-ui/layout"
+import {
+  FaPhoneAlt,
+  FaRegBell,
+  FaChevronDown,
+  FaRegStar,
+  FaHashtag
+} from "react-icons/fa"
+import { useDispatch, useSelector } from "react-redux"
+import { bindActionCreators } from "redux"
+import React, { useState, useEffect, useRef } from "react"
+import { useParams } from "react-router"
+import TabsRows from "./TabsRow"
 
-import { useDispatch, useSelector } from "react-redux";
-import appActions from "../../redux/actions/app";
-import { bindActionCreators } from "redux";
+import appActions from "../../redux/actions/app"
 
-import OrganisationMembersList from "./organisationMembersList";
-import About from "./about";
-import FileList from "./fileList";
-import NotificationModal from "./NotificationModal";
+import About from "./about"
+import FileList from "./fileList"
+import NotificationModal from "./NotificationModal"
 
-import React, { useState, useEffect, useRef} from "react";
-
-import { useParams } from "react-router";
+import OrganisationMembersList from "./organisationMembersList"
 
 const ChannelDetails = ({ onClose, isOpen }) => {
-  const initialRef = useRef();
+  const initialRef = useRef()
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false)
 
   const openModal = () => {
-    setShowModal(prev => !prev);
-  };
+    setShowModal(prev => !prev)
+  }
 
   const { channelId } = useParams()
-  const org_id = '614679ee1a5607b13c00bcb7';
-  const channel_id = channelId;
+  const orgId = "614679ee1a5607b13c00bcb7"
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch)
 
-  //-------getting channel details.........//
-  const { channelDetails } = useSelector((state) => state.channelsReducer);//extract redux state
-  const loadChannelDetails = async () => { await _getChannelDetails(org_id, channel_id);};
-  useEffect(() => { loadChannelDetails(); }, []);
-  
-  const isPrivate = channelDetails.private;
+  // -------getting channel details.........//
+  const { channelDetails } = useSelector(state => state.channelsReducer) // extract redux state
+  const loadChannelDetails = async () => {
+    await _getChannelDetails(orgId, channelId)
+  }
+  useEffect(() => {
+    loadChannelDetails()
+  }, [])
+
+  // const isPrivate = channelDetails.private
 
   return (
     <>
@@ -80,7 +82,6 @@ const ChannelDetails = ({ onClose, isOpen }) => {
               color="#000"
               height="191px"
             >
-
               <Box px={6}>
                 <Flex>
                   <Box pe={2} pt={1.5}>
@@ -107,8 +108,8 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                   <Spacer />
                   <ModalCloseButton
                     color="#000"
-                  // border="1px"
-                  // borderColor="#000"
+                    // border="1px"
+                    // borderColor="#000"
                   />
                 </Flex>
                 <Stack direction="row" my={1} py={2}>
@@ -122,13 +123,15 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                       <Box mr={2} mt={1}>
                         <FaRegBell color="#000" mr={6} />
                       </Box>
-                      <Text color='#000'>Get Notifications for @ mentions</Text>
+                      <Text color="#000">Get Notifications for @ mentions</Text>
                       <Box ml={2} mt={1}>
-                        <FaChevronDown color="#000" mt={4} ml={5} onClick={openModal} />
-                        <NotificationModal
-                          // showModal={showModal}
-                          // setShowModal={setShowModal}
+                        <FaChevronDown
+                          color="#000"
+                          mt={4}
+                          ml={5}
+                          onClick={openModal}
                         />
+                        <NotificationModal />
                       </Box>
                     </Button>
                     <Button
@@ -140,7 +143,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                       <Box mr={2} mt={1}>
                         <FaPhoneAlt color="#FFFFF" w={2} />
                       </Box>
-                      <Text color='#000'>Start a Call</Text>
+                      <Text color="#000">Start a Call</Text>
                     </Button>
                   </Box>
                 </Stack>
@@ -156,13 +159,9 @@ const ChannelDetails = ({ onClose, isOpen }) => {
                     <About />
                     {/* <FileList /> */}
                   </TabPanel>
-                  <TabPanel>
-                    {/* <OrganisationMembersList /> */}
-                  </TabPanel>
-                  <TabPanel>
-                  </TabPanel>
-                  <TabPanel>
-                  </TabPanel>
+                  <TabPanel>{/* <OrganisationMembersList /> */}</TabPanel>
+                  <TabPanel />
+                  <TabPanel />
                 </TabPanels>
               </Box>
             </ModalBody>
@@ -170,7 +169,7 @@ const ChannelDetails = ({ onClose, isOpen }) => {
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default ChannelDetails;
+export default ChannelDetails

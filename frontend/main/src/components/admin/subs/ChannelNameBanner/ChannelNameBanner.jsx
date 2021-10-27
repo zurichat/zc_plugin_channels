@@ -6,13 +6,13 @@ import {
   Image,
   Spacer,
   HStack,
-  Text,
-} from "@chakra-ui/react";
-import React, { useMemo } from "react";
-import { AiOutlineUserAdd } from "react-icons/ai";
-import { BiChevronDown } from "react-icons/bi";
-import { FiHash } from "react-icons/fi";
-import { RiUserAddLine } from "react-icons/ri";
+  Text
+} from "@chakra-ui/react"
+import React, { useMemo } from "react"
+import { AiOutlineUserAdd } from "react-icons/ai"
+import { BiChevronDown } from "react-icons/bi"
+import { FiHash } from "react-icons/fi"
+import { RiUserAddLine } from "react-icons/ri"
 
 const ChannelNameBanner = ({ channelName = "Announcement" }) => {
   const userProfiles = useMemo(
@@ -21,23 +21,23 @@ const ChannelNameBanner = ({ channelName = "Announcement" }) => {
         id: 1,
         avatar:
           "https://i.pinimg.com/564x/db/e7/e7/dbe7e7ac20192ae081f14bee611c7823.jpg",
-        userName: "nwanoch",
+        userName: "nwanoch"
       },
       {
         id: 2,
         avatar:
           "https://th.bing.com/th/id/OIP.2wH1-42ccOLKlHIsH7HAOAHaLH?pid=ImgDet&w=84&h=84&c=7",
-        userName: "mark",
+        userName: "mark"
       },
       {
         id: 3,
         avatar:
           "https://i.pinimg.com/564x/98/98/fa/9898fa74cb0a180b4828907836f454c7.jpg",
-        userName: "Nara",
-      },
+        userName: "Nara"
+      }
     ],
     []
-  );
+  )
 
   return (
     <Box
@@ -81,7 +81,7 @@ const ChannelNameBanner = ({ channelName = "Announcement" }) => {
         </HStack>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-export default ChannelNameBanner;
+export default ChannelNameBanner
