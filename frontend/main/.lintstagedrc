@@ -1,5 +1,3 @@
 {
-  "src/**/*.{js,ts,jsx,tsx}": [
-    "eslint --config ./.eslintrc.json --ext js --ext ts --ext jsx --ext tsx"
-  ]
+  "src/**/*.{js,ts,jsx,tsx}": ["eslint --config ./.eslintrc --fix"]
 }
