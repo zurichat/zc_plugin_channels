@@ -35,13 +35,12 @@ export default function DisplayAndDeleteFiles() {
     await _getFiles(orgId, channelId)
   }
 
-  // STEP SEVEN
   useEffect(() => {
     loadData()
   }, [])
 
   const handleGrid = () => {
-    // console.log("grid")
+    console.log("grid")
   }
 
   const handleList = () => {
