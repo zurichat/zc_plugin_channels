@@ -21,7 +21,7 @@ const initialState = {
   users: {},
   workspaceUsers: [],
   workspaceUsersObject: {},
-  channelMessages: [],
+  channelMessages: null,
   channels: [],
   sockets: [],
   renderedMessages: [],

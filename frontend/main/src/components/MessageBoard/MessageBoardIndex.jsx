@@ -13,20 +13,6 @@ import {
 } from "../../redux/actions/types"
 
 import ChannelHeader from "../shared/ChannelHeader"
-// import ChannelNameBanner from "../admin/subs/ChannelNameBanner/ChannelNameBanner";
-// import MessageCardContainer from "./subs/MessageCardContainer/MessageCardContainer"
-// import InputFieldComponent from "./subs/InputFieldComponent/InputFieldComponent";
-// import MessageInput from "../shared/MessageInput"
-// import Thread from "../thread/Thread";
-// import MessageOptionsPopUpMenu from "./subs/MessageOptionsPopUpMenu/MessageOptionsPopUpMenu";
-
-// import DisabledInput from "../shared/DiasbledInput"
-// import CentrifugoComponent from "./subs/Centrifugo/CentrifugoComponent";
-// import Centrifuge from 'centrifuge';
-// import { SubscribeToChannel } from '@zuri/control'
-
-// notifications
-// import notificationsManager from "./subs/Centrifugo/NotificationsManager"
 import Centrifugo from "../../utils/centrifugo"
 import instance from "../../utils/utils"
 
@@ -42,72 +28,6 @@ const MessageBoardIndex = () => {
   const { _getChannelMessages, _getSocket, _getNotifications, _sendMessage } =
     bindActionCreators(appActions, dispatch)
   // const canInput = channelDetails.allow_members_input || true
-
-  // const [ orgId, setOrgId ] = useState()
-
-  // We will attempt to connect only when we are certain that the state has been updated
-  // so we first check that sockets.socket_name is not undefined
-
-  /*
-    if(socketName){
-      try{
-          console.log('we have succesfully fetched the socket_name: ',socketName)
-          SubscribeToChannel(socketName, function(messageCtx) {
-            console.log('\n\n\n From centrifugo', messageCtx)
-            const action = messageCtx.data.event.action
-
-            switch(action){
-              case 'join:channel' || 'leave:channel' || 'create:message' :{
-                dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-                notificationsManager(messageCtx.data.content)
-                break;
-              }
-
-              case 'update:message':{
-                const messageId = messageCtx.data._id
-                const channelMessagesCopy = [...channelMessages]
-                channelMessagesCopy.find((o, i) => {
-                  if (o._id === messageId) {
-                      channelMessagesCopy[i] = messageCtx.data;
-                      return true; // stop searching
-                          }
-                      });
-
-                dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
-                break;
-              }
-
-              case 'delete:message':{
-                const messageId = messageCtx.data._id
-                const channelMessagesCopy = [...channelMessages]
-                channelMessagesCopy.find((o, i) => {
-                  if (o._id === messageId) {
-                      channelMessagesCopy.splice(i,1);
-                      return true; // stop searching
-                          }
-                      });
-
-                dispatch({ type: GET_CHANNELMESSAGES, payload: channelMessagesCopy })
-                break;
-              }
-
-              default:{
-                dispatch({ type: GET_CHANNELMESSAGES, payload: [...channelMessages, messageCtx.data] })
-              }
-            }
-
-          console.log("\n\n\nfrom centrifugo: ", messageCtx,'\n\n\n');
-
-        })
-        }
-
-        catch(err){
-          console.log('\n\n\n we tried to subcribe to zuri main RTC, but got this error: \n',err,'\n\n\n\n')
-        }
-    } else{
-      console.log("\n\n\n\nwe have not been able to fetch the socket\n\n\n")
-    }
-   */
 
   useEffect(() => {
     if (users && users.currentWorkspace) {
@@ -139,40 +59,40 @@ const MessageBoardIndex = () => {
         username: users["0"]?.user_name || "",
         imageUrl: users["0"]?.image_url || ""
       },
-      messages: channelMessages.map(msg => {
-        console.log("lolo", msg)
-
-        const user = workspaceUsersObject[msg.user_id] || {
-          user_name: "",
-          image_url: ""
-        }
-        const formattedTime = instance.formatDate(msg.timestamp, "LT")
-        return {
-          message_id: msg._id,
-          username: user.user_name,
-          image_url: user.image_url,
-          time: formattedTime,
-          emojis: [
-            // { name: 'smiling', count: 4, emoji: '😋' },
-            // { name: 'grining', count: 1, emoji: '😊' },
-          ],
-          event: msg.event,
-          richUiData: {
-            blocks: [
-              {
-                data: {},
-                depth: 0,
-                entityRanges: [],
-                inlineStyleRanges: [],
-                key: "543og",
-                text: msg.content,
-                type: "unstyled"
+      messages: channelMessages
+        ? channelMessages.map(msg => {
+            const user = workspaceUsersObject[msg.user_id] || {
+              user_name: "",
+              image_url: ""
+            }
+            const formattedTime = instance.formatDate(msg.timestamp, "LT")
+            return {
+              message_id: msg._id,
+              username: user.user_name,
+              image_url: user.image_url,
+              time: formattedTime,
+              emojis: [
+                // { name: 'smiling', count: 4, emoji: '😋' },
+                // { name: 'grining', count: 1, emoji: '😊' },
+              ],
+              event: msg.event,
+              richUiData: {
+                blocks: [
+                  {
+                    data: {},
+                    depth: 0,
+                    entityRanges: [],
+                    inlineStyleRanges: [],
+                    key: "543og",
+                    text: msg.content,
+                    type: "unstyled"
+                  }
+                ],
+                entityMap: {}
               }
-            ],
-            entityMap: {}
-          }
-        }
-      }),
+            }
+          })
+        : [],
       showChatSideBar: true,
       chatHeader: "Chats"
     }),
@@ -205,39 +125,6 @@ const MessageBoardIndex = () => {
     }
   }
 
-  // The useEffect runs once chanelId has changed,
-  // and this is when channels has been switched. The channelId is then
-  // used to fetch the new socket details. Once the state is updated, the subscribeToChannel
-  // function runs again to update the centrifugo
-  // useEffect(() => {
-
-  //   async function updateSocketName(){
-
-  //     await _getSocket(users.currentWorkspace, channelId)
-  //     console.log("We've gotten the socket details")
-
-  //   }
-
-  //   updateSocketName()
-
-  // }, [channelId]);
-
-  // useEffect(() => {
-  //   if(users){
-  //     setOrgId(users[0])
-  //   }
-  // }, [])
-
-  //  const retrieveNotificationSettings = () =>{
-  //    _getNotifications(orgId?.org_id, channelId, orgId?._id)
-  // }
-
-  // useEffect(() =>{
-  //   if(orgId){
-  //     retrieveNotificationSettings()
-  //   }
-  // " })
-
   return (
     // <Flex>
     //   <MessageBoard />
@@ -250,10 +137,9 @@ const MessageBoardIndex = () => {
         org_id={users ? users.currentWorkspace : null}
       />
       <Box flex="1" overflowY="auto">
-        {Object.keys(workspaceUsersObject).length > 0 &&
-          channelMessages.length > 0 && (
-            <MessageBoard chatsConfig={chatSidebarConfig} />
-          )}
+        {workspaceUsersObject && channelMessages && (
+          <MessageBoard chatsConfig={chatSidebarConfig} />
+        )}
       </Box>
 
       {/* <Box

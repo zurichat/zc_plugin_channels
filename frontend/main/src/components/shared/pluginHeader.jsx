@@ -38,8 +38,8 @@ const NewChannelHeader = ({ channelId }) => {
   // };
 
   useEffect(() => {
-    _getChannelDetails(users.currentWorkspace, channelId)
-  }, [channelId, channelMember])
+    _getChannelDetails(users?.currentWorkspace, channelId)
+  }, [channelId, users])
 
   const channelDetailsData = useSelector(
     state => state.channelsReducer

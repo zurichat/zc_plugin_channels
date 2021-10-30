@@ -1,4 +1,4 @@
-import { SubscribeToChannel, GetUserInfo } from "@zuri/control"
+import { SubscribeToChannel, GetUserInfo } from "@zuri/utilities"
 
 /**
  * Centrifugo class is an adapter class than encapsulate subscription to centrifugo
