@@ -5,7 +5,6 @@ import { bindActionCreators } from "redux"
 import { useParams } from "react-router"
 import { MessageBoard } from "@zuri/zuri-ui"
 import appActions from "../../redux/actions/app"
-// import APIservice from "../../utils/api";
 import {
   ADD_CHANNELMESSAGES,
   UPDATE_CHANNELMESSAGES,
