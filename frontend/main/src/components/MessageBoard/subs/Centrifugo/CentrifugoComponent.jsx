@@ -79,7 +79,7 @@ const CentrifugoComponent = () => {
   //   // }
   // })
 
-  useEffect(async () => {
+  useEffect(() => {
     loadData()
 
     SubscribeToChannel(sockets.socket_name, messageCtx => {
@@ -102,7 +102,7 @@ const CentrifugoComponent = () => {
       //         break;
       // }
     })
-  }, [])
+  }, [dispatch, loadData, renderedMessages, sockets.socket_name])
 
   return <></>
 }

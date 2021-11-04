@@ -66,12 +66,10 @@ const AddPeopleModal = ({ isOpen, onClose, org_id }) => {
   console.log(channelMember) // to see what kind of data I'm actually getting
   // channel details
   const { channelDetails } = useSelector(state => state.channelsReducer) // extract redux state
-  const loadChannelDetails = async () => {
-    await _getChannelDetails(org_id, channel_id)
-  }
+
   useEffect(() => {
-    loadChannelDetails()
-  }, [])
+    _getChannelDetails(org_id, channel_id)
+  }, [_getChannelDetails, channel_id, org_id])
 
   const addUser = () => {
     const data = {

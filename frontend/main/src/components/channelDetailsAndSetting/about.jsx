@@ -42,6 +42,7 @@ const About = index => {
       setTopic(topicFromServer)
     }
     getTopic()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchTopic = async () => {
@@ -59,6 +60,7 @@ const About = index => {
       setDescription(descriptionFromServer)
     }
     getDescription()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchDescription = async () => {
@@ -75,6 +77,7 @@ const About = index => {
       setOwner(ownerFromServer)
     }
     getOwner()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchOwner = async () => {
@@ -91,6 +94,7 @@ const About = index => {
       setCreatedOn(creationDateFromServer)
     }
     getCreatedOn()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchCreatedOn = async () => {

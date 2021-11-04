@@ -2,7 +2,7 @@ import "./App.css"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 import { Provider } from "react-redux"
 import { ChakraProvider } from "@chakra-ui/react"
-import routes from "./routes/routes"
+import Routes from "./routes/routes"
 import store from "./redux/store"
 import { theme } from "./utils/theme"
 
@@ -12,7 +12,7 @@ function App() {
       <Provider store={store}>
         <Router basename="/channels">
           <Switch>
-            <Route component={routes} />
+            <Route component={Routes} />
           </Switch>
         </Router>
       </Provider>

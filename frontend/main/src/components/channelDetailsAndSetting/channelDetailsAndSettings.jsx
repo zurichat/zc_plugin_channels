@@ -55,12 +55,10 @@ const ChannelDetails = ({ onClose, isOpen }) => {
 
   // -------getting channel details.........//
   const { channelDetails } = useSelector(state => state.channelsReducer) // extract redux state
-  const loadChannelDetails = async () => {
-    await _getChannelDetails(orgId, channelId)
-  }
+
   useEffect(() => {
-    loadChannelDetails()
-  }, [])
+    _getChannelDetails(orgId, channelId)
+  }, [_getChannelDetails, channelId])
 
   // const isPrivate = channelDetails.private
 

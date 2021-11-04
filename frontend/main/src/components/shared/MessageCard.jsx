@@ -164,7 +164,7 @@ const HoverOptions = ({ show, actions }) => {
       { label: "Pin to channel", command: "P", onClick: actions },
       { label: "Edit Message", command: "E" }
     ],
-    []
+    [actions]
   )
   return (
     <HStack

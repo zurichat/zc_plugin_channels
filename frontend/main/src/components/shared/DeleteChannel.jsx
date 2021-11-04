@@ -36,6 +36,7 @@ function DeleteChannel() {
 
   useEffect(() => {
     loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const { isOpen, onOpen, onClose } = useDisclosure()

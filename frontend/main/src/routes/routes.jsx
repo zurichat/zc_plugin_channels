@@ -14,14 +14,14 @@ import MessageBoardEmpty from "../components/MessageBoard/subs/EmptyMessageBoard
 import appActions from "../redux/actions/app"
 import centrifugo from "../utils/centrifugo"
 
-const routes = () => {
+const Routes = () => {
   const dispatch = useDispatch()
   const { _getUsers, _getWorkspaceUsers } = bindActionCreators(
     appActions,
     dispatch
   )
 
-  useEffect(async () => {
+  useEffect(() => {
     _getUsers()
     _getWorkspaceUsers()
     centrifugo.addListener("UpdateOrganizationMemberProfile", () => {
@@ -49,4 +49,4 @@ const routes = () => {
   )
 }
 
-export default routes
+export default Routes

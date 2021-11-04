@@ -23,13 +23,14 @@ const Home = () => {
   console.log(users)
 
   // STEP SIX
-  const loadData = async () => {
-    await _getUsers()
-  }
+  // const loadData = async () => {
+  //   await _getUsers()
+  // }
 
   // STEP SEVEN
   useEffect(() => {
-    loadData()
+    _getUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

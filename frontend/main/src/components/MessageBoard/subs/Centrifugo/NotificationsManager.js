@@ -1,9 +1,10 @@
-import { useSelector } from "react-redux"
-
 const notificationsManager = data => {
-  const { channelDetails, userNotificationSettings } = useSelector(
-    state => state.channelReducer
-  )
+  const { channelDetails, userNotificationSettings } = {
+    channelDetails: "General",
+    userNotificationSettings: {
+      web: "mentions"
+    }
+  }
 
   if (
     userNotificationSettings.web === "all" ||

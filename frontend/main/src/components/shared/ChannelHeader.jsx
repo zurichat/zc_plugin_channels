@@ -45,6 +45,7 @@ const ChannelHeader = ({ channelId }) => {
 
   useEffect(() => {
     _getPinnedMessages(users.currentWorkspace, channelId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // get pinned messages
 
   return (

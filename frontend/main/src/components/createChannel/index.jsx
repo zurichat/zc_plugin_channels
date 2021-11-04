@@ -26,6 +26,7 @@ const CreateChannel = () => {
   const { _getChannelDetails } = bindActionCreators(appActions, dispatch)
 
   const loadData = async () => {
+    // todo static data
     await _getChannelDetails(
       "614679ee1a5607b13c00bcb7",
       "614fd412cf2c0f1ad7585394"
@@ -34,6 +35,7 @@ const CreateChannel = () => {
 
   useEffect(() => {
     loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

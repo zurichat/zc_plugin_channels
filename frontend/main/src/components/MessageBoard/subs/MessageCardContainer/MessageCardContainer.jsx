@@ -59,7 +59,7 @@ const MessageCardContainer = ({ channelId }) => {
     if (users && users.currentWorkspace) {
       _getChannelMessages(users.currentWorkspace, channelId)
     }
-  }, [channelId, users])
+  }, [_getChannelMessages, channelId, users])
 
   return (
     <>

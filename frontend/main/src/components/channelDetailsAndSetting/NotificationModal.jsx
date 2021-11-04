@@ -65,7 +65,7 @@ const NotificationModal = ({ showModal, setShowModal }) => {
       .then(data => setPostId(data.id))
 
     console.log(postId, "heyyy")
-  }, [])
+  }, [postId])
 
   function useOnClickOutside(ref, handler) {
     useEffect(() => {

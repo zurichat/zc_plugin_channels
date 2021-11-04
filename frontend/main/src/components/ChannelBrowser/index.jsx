@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable eqeqeq */
 /* eslint-disable no-nested-ternary */
 import { AddIcon } from "@chakra-ui/icons"
@@ -32,26 +33,26 @@ const ChannelBrowser = () => {
     }
   }, [orgId])
 
-  const originalchannel = useSelector(state => state.appReducer).channels
-  const [channels, setChannel] = useState([...originalchannel])
+  const originalChannel = useSelector(state => state.appReducer).channels
+  const [channels, setChannel] = useState([...originalChannel])
 
   useEffect(() => {
-    setChannel([...originalchannel])
-  }, [originalchannel.length])
+    setChannel([...originalChannel])
+  }, [originalChannel])
 
   const searchChannel = param => {
     if (!channels) return
     param = param.trim().toLowerCase()
     if (param) {
       setChannel(
-        originalchannel.filter(
+        originalChannel.filter(
           chan =>
             chan.name.toLowerCase().includes(param) ||
             chan.description.toLowerCase().includes(param)
         )
       )
     } else {
-      setChannel([...originalchannel])
+      setChannel([...originalChannel])
     }
   }
 
