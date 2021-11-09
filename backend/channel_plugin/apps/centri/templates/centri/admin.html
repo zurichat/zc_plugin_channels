@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <title>Centrifugo admin</title>
+    </head>
+    <body>
+        <h1>
+            This page is for debuging centrifugo when live
+        </h1>        
+        <div id="container">
+            <textarea name="" id="inputField" cols="100" rows="20"></textarea>
+            <button id="submit" role="button">SEND</button>
+        </div>
+        
+        <div id="display">
+            This is where results of you commands will be displayed 
+        </div>
+
+        <script type="text/javascript">
+            
+            function sendCommand(data)
+            {
+                return new Promise((resolve, reject) => {
+                    let url = window.location.origin + "/api/v1/socket/tests/admin/" ;
+  
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", url, true);
+                    
+                    let headers = {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type":"application/json",
+                    };
+
+
+                    Object.keys(headers).forEach(header => {
+                        xhr.setRequestHeader(header, headers[header]);
+                    });
+                    
+                    xhr.send(data);
+
+                    xhr.onload = async () => {
+                        if (xhr.status >= 200 & xhr.status < 300){
+                            resolve(JSON.parse(xhr.responseText));
+                        } else {
+                            resolve(xhr.responseText);
+                        }
+                    };
+    
+                    xhr.onerror = (error) => {
+                        if (xhr.status >= 500){
+                            resolve(xhr.responseText);
+                        } else {
+                            resolve(error);
+                        }
+                    };
+                });
+            }
+
+            (async function main(){
+
+              const btn = document.querySelector("#submit");              
+              btn.onclick = async (event) => {
+                
+                event.preventDefault();
+                btn.disabled = true;
+
+                let inputField = document.querySelector("#inputField").value;
+                let dispaly = document.querySelector("#display");
+                let data = null;
+
+                try
+                {
+                    data = JSON.parse(inputField)
+                } catch(error) {
+                    data = null;
+                    alert(`You input is not a valid json object check console for error`);
+                    console.log(error);
+                }
+
+                if (data)
+                {
+                    let result = await sendCommand(JSON.stringify(data));
+                    dispaly.innerHTML = result;
+                }
+
+                btn.disabled = false;
+              };
+
+            })();
+        
+        </script>
+    </body>
+</html>

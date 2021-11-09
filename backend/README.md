@@ -11,8 +11,7 @@
         - [For Windows](#for-windows)
       - [Install Requirements](#install-requirements)
       - [Run server](#run-server)
-      - [To create new django app in Linux environment](#to-create-new-django-app-in-linux-environment)
-      - [To create new django app in Windows environment](#to-create-new-django-app-in-windows-environment)
+      - [To create new django app](#to-create-new-django-app)
     - [Production Development](#production-development)
     - [Committing changes](#committing-changes)
     - [Contribution](#contribution)
@@ -38,21 +37,20 @@
 
         npm install --global yarn
 
-- Goto *frontend* directory and run command
+- Goto *frontend/main* directory and run command
 
         yarn
 
+        yarn relocate_main
+
+- Goto *frontend/root* directory and run command
+
+        yarn
+
+        yarn relocate_root
+
 #### After installing packages
 
-##### For Linux
-
-        yarn relocate
-
-##### For Windows
-
-        yarn build
-
-- move the build folder generated to *backend / channel_plugin / channel_plugin* directory
 
 #### Install Requirements
 
@@ -60,28 +58,25 @@
 
         pip install -r requirements/local.txt
 
+- To create virtual environment
+
+        python venv -m venv
+
+- To activate virtual environment
+
+        source venv/bin/activate
+
 #### Run server
 
 - Run server (where you can see manage.py file) run command
 
-        python manage.py runserver --nostatic
+        python manage.py runserver
 
-#### To create new django app in Linux environment
+#### To create new django app
 
 - [x] Make sure you're in the folder that has manage.py file
 - [ ] cd into apps folder
-- [ ] run `python ../manage.py startapp <name-of-app>`
-- [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
-to *INSTALLED_APPS*
-
-#### To create new django app in Windows environment
-
-- [x] Goto apps folder
-- [ ] create a folder with `<name-of-app>`
-- [ ] go back to folder where you have manage.py file
-- [ ] run `python manage.py startapp apps/<name-of-app>`
-- [ ] goto *config / settings* folder in base.py file add `apps.<name-of-app>`
-to *INSTALLED_APPS*
+- [ ] run `django-admin startapp <name-of-app>`
 
 ### Production Development
 
