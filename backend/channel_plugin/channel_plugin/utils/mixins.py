@@ -58,7 +58,6 @@ class AsycViewMixin:
         response.accepted_renderer = request.accepted_renderer
         response.accepted_media_type = request.accepted_media_type
         response.renderer_context = self.get_renderer_context()
-
         return response
 
     def finalize_response(self, request, response, *args, **kwargs):
