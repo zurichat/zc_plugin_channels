@@ -35,7 +35,7 @@ class ChannelSerializer(serializers.Serializer):
         data = {"name": name.lower()}
         response = Request.get(self.context.get("org_id"), "channel", data)
         if isinstance(response, list):
-            raise serializers.ValidationError({"error": "Name already exist"})
+            raise serializers.ValidationError({"error": "Name already exists"})
         return name
 
     def to_representation(self, instance):
@@ -44,15 +44,13 @@ class ChannelSerializer(serializers.Serializer):
         slug = slugify(instance.get("name"))
         channel = Channel(**instance, slug=slug)
         user_serializer = UserSerializer(
-                data={"_id": user_id, "is_admin": True, "notifications": {}}
+            data={"_id": user_id, "is_admin": True, "notifications": {}}
         )
 
         user_serializer.is_valid(raise_exception=True)
-        
-        channel.users = {
-            user_id: user_serializer.data
-        }
-        
+
+        channel.users = {user_id: user_serializer.data}
+
         data = {"channel": channel}
         return data
 

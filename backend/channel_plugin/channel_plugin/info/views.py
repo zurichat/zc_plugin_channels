@@ -13,14 +13,10 @@ from rest_framework.viewsets import ViewSet
 from sentry_sdk import capture_message
 
 from channel_plugin.utils.custome_response import Response as Custom_Response
-from channel_plugin.utils.customrequest import AsyncRequest, unread
+from channel_plugin.utils.customrequest import AsyncRequest  # , unread
 from channel_plugin.utils.mixins import AsycViewMixin
 
 from .serializers import InstallSerializer
-
-description = "The Channel Plugin is a feature\
-    that helps users create spaces for\
-    conversation and communication on zuri.chat."
 
 
 class GetInfoViewset(AsycViewMixin, ViewSet):
@@ -60,7 +56,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
                 "type": "Plugin Information",
                 "plugin_info": {
                     "name": "Channels Plugin",
-                    "description": ["Zuri.chat plugin", description],
+                    "description": ["Zuri.chat plugin", settings.DESCRIPTION],
                     "id": settings.PLUGIN_ID,
                 },
                 "scaffold_structure": "Monolith",
@@ -110,86 +106,7 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         """
         org_id = request.query_params.get("org")
         user_id = request.query_params.get("user")
-        joined_rooms = list()
-        public_rooms = list()
-        starred_rooms = list()
-
-        data = {
-            "name": "Channels Plugin",
-            "description": description,
-            "plugin_id": settings.PLUGIN_ID,
-        }
-        if org_id is not None and user_id is not None:
-
-            channels = await AsyncRequest.get(org_id, "channel")
-
-            if isinstance(channels, list):
-                joined_rooms = list(
-                    map(
-                        lambda channel: {
-                            "room_name": channel.get("slug"),
-                            "room_url": f"/channels/message-board/{channel.get('_id')}",
-                            "room_image": "",
-                            "unread": unread(org_id, channel.get("_id")),
-                        },
-                        list(
-                            filter(
-                                lambda channel: user_id in channel["users"].keys()
-                                and not channel.get("default", False)
-                                and not channel["users"][user_id].get("starred", False),
-                                channels,
-                            )
-                        ),
-                    )
-                )
-                starred_rooms = list(
-                    map(
-                        lambda channel: {
-                            "room_name": channel.get("slug"),
-                            "room_url": f"/channels/message-board/{channel.get('_id')}",
-                            "room_image": "",
-                            "unread": unread(org_id, channel.get("_id")),
-                        },
-                        list(
-                            filter(
-                                lambda channel: user_id in channel["users"].keys()
-                                and not channel.get("default", False)
-                                and channel["users"][user_id].get("starred", False),
-                                channels,
-                            )
-                        ),
-                    )
-                )
-                public_rooms = list(
-                    map(
-                        lambda channel: {
-                            "room_name": channel.get("slug"),
-                            "room_url": f"/channels/message-board/{channel.get('_id')}",
-                            "room_image": "",
-                        },
-                        list(
-                            filter(
-                                lambda channel: user_id not in channel["users"].keys()
-                                and not channel.get("private")
-                                and not channel.get("default", False),
-                                channels,
-                            )
-                        ),
-                    )
-                )
-        data.update(
-            {
-                "organisation_id": org_id,
-                "user_id": user_id,
-                "group_name": "Channel",
-                "show_group": False,
-                "category": "channels",
-                "button_url": "/channels",
-                "joined_rooms": joined_rooms,
-                "public_rooms": public_rooms,
-                "starred_rooms": starred_rooms,
-            }
-        )
+        data = await AsyncRequest.sidebar(org_id, user_id)
         # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
 
         return Custom_Response(
@@ -269,6 +186,13 @@ class GetInfoViewset(AsycViewMixin, ViewSet):
         title = serializer.data.get("title")
 
         capture_message(f"auth {request.headers.get('authorization')}")
+
+        data = await AsyncRequest.install(request, org_id, user_id, title)
+        # AUTHENTICATION SHOULD COME SOMEWHERE HERE, BUT THAT's WHEN WE GET THE DB UP
+
+        # return Custom_Response(
+        #     data, status=status.HTTP_200_OK, request=request, view=self
+        # )
 
         headers = {
             "Content-Type": "application/json",

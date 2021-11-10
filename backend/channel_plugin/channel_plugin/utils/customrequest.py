@@ -1,11 +1,14 @@
+import asyncio
 import json
 import logging
+import random
 from dataclasses import dataclass
 from functools import wraps
 from urllib.parse import urlencode
 
 import aiohttp
 import requests
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.urls import reverse
 
@@ -281,6 +284,106 @@ class AsyncRequest:
             if response.status >= 200 and response.status < 300:
                 return await response.json(content_type=None)
             return {"error": (await response.json(content_type=None))}
+
+    @staticmethod
+    @change_collection_name
+    async def sidebar(org_id, user_id, collection_name="channel", token=None):
+
+        joined_rooms = list()
+        public_rooms = list()
+        starred_rooms = list()
+
+        @sync_to_async
+        def get_response(filter):
+            res = requests.post(read, data=json.dumps(filter))
+            data = res.json().get("data", [])
+            return data if isinstance(data, list) else []
+
+        async def get_joined_rooms():
+            filter = {
+                "organization_id": org_id,
+                "collection_name": collection_name,
+                "plugin_id": settings.PLUGIN_ID,
+                "filter": {f"users.{user_id}": {"$exists": True}},
+            }
+            return await get_response(filter)
+
+        async def get_public_rooms():
+            filter = {
+                "organization_id": org_id,
+                "collection_name": collection_name,
+                "plugin_id": settings.PLUGIN_ID,
+                "filter": {f"users.{user_id}": {"$exists": False}},
+            }
+            return await get_response(filter)
+
+        joined_list, public_list = await asyncio.gather(
+            get_joined_rooms(), get_public_rooms()
+        )
+        joined_rooms = list(
+            map(
+                lambda channel: {
+                    "room_name": channel.get("slug"),
+                    "room_url": f"/channels/message-board/{channel.get('_id')}",
+                    "room_image": "",
+                    "unread": random.randint(1, 10),
+                },
+                list(
+                    filter(
+                        lambda channel: not channel["users"][user_id].get(
+                            "starred", False
+                        ),
+                        joined_list,
+                    )
+                ),
+            )
+        )
+
+        starred_rooms = list(
+            map(
+                lambda channel: {
+                    "room_name": channel.get("slug"),
+                    "room_url": f"/channels/message-board/{channel.get('_id')}",
+                    "room_image": "",
+                    "unread": random.randint(1, 10),
+                },
+                list(
+                    filter(
+                        lambda channel: channel["users"][user_id].get("starred", False),
+                        joined_list,
+                    )
+                ),
+            )
+        )
+
+        public_rooms = list(
+            map(
+                lambda channel: {
+                    "room_name": channel.get("slug"),
+                    "room_url": f"/channels/message-board/{channel.get('_id')}",
+                    "room_image": "",
+                },
+                public_list,
+            )
+        )
+
+        data.update(
+            {
+                "name": "Channels Plugin",
+                "description": settings.DESCRIPTION,
+                "plugin_id": settings.PLUGIN_ID,
+                "organisation_id": org_id,
+                "user_id": user_id,
+                "group_name": "Channel",
+                "show_group": False,
+                "category": "channels",
+                "button_url": "/channels",
+                "joined_rooms": joined_rooms,
+                "public_rooms": public_rooms,
+                "starred_rooms": starred_rooms,
+            }
+        )
+        return data
 
 
 @change_collection_name
