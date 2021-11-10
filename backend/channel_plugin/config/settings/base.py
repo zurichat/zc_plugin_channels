@@ -286,6 +286,10 @@ READ_URL = "https://api.zuri.chat/data/read"
 WRITE_URL = "https://api.zuri.chat/data/write"
 DELETE_URL = "https://api.zuri.chat/data/delete"
 
+DESCRIPTION = "The Channel Plugin is a feature\
+    that helps users create spaces for\
+    conversation and communication on zuri.chat."
+
 try:
     with open("centri.txt", "r") as f:
         CENTRIFUGO_API_KEY = f.readline().strip("\n")
