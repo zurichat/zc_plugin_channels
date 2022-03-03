@@ -1,0 +1,3 @@
+[pytest11]
+icdiff = pytest_icdiff
+
