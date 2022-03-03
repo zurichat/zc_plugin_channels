@@ -1,9 +1,6 @@
-import React from "react";
-// import { Box } from "@chakra-ui/layout";
-import ChannelDetails from "./channelDetailsAndSettings";
+import React from "react"
+import ChannelDetails from "./channelDetailsAndSettings"
 
-const ChannelDetailsAndSetting = () => {
-  return <ChannelDetails />;
-};
+const ChannelDetailsAndSetting = () => <ChannelDetails />
 
-export default ChannelDetailsAndSetting;
+export default ChannelDetailsAndSetting

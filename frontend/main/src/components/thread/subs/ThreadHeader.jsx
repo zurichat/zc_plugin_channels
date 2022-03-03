@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Container, CloseButton } from "@chakra-ui/react";
+import React from "react"
+import { Box, Container, CloseButton } from "@chakra-ui/react"
 
 function ThreadHeader() {
   return (
@@ -19,7 +19,7 @@ function ThreadHeader() {
       </Box>
       <CloseButton borderWidth="0" bg="none" margin="12px" />
     </Container>
-  );
+  )
 }
 
-export default ThreadHeader;
+export default ThreadHeader

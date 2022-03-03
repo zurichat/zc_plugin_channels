@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-filename-extension */
 export default function Root(props) {
-  return <section>{props.name} is mounted!</section>;
+  const { name } = props
+  return <section>{name} is mounted!</section>
 }

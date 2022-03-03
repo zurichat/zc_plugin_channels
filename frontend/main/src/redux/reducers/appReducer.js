@@ -12,27 +12,27 @@ import {
   GET_NOTIFICATION_SETTINGS,
   UPDATE_CHANNELMESSAGES,
   DELETE_CHANNELMESSAGES,
-  ADD_CHANNELMESSAGES,
-} from "../actions/types";
+  ADD_CHANNELMESSAGES
+} from "../actions/types"
 
 const initialState = {
   // STEP TWO
   // Default State
   users: {},
-  workspace_users: [],
-  workspace_users_object: {},
-  channelMessages: [],
+  workspaceUsers: [],
+  workspaceUsersObject: {},
+  channelMessages: null,
   channels: [],
   sockets: [],
   renderedMessages: [],
   notificationSettings: [],
   userNotificationSettings: [],
   userCanInput: true,
-   channelsFiles:[],
-};
+  channelsFiles: []
+}
 
 const appReducer = (state = initialState, action) => {
-  const { type, payload } = action;
+  const { type, payload } = action
 
   switch (type) {
     // STEP THREE
@@ -41,39 +41,40 @@ const appReducer = (state = initialState, action) => {
     case GET_USERS:
       return {
         ...state,
-        users: payload,
-      };
+        users: payload
+      }
 
-    case GET_WORKSPACE_USERS:
-      const workspace_users = payload;
-      const workspace_users_object = {};
-      Object.values(workspace_users).forEach((user) => {
-        workspace_users_object[user._id] = user
-      });
-      console.log("workspace_users_object", workspace_users_object)
+    case GET_WORKSPACE_USERS: {
+      const workspaceUsers = payload
+      const workspaceUsersObject = {}
+      Object.values(workspaceUsers).forEach(user => {
+        workspaceUsersObject[user._id] = user
+      })
       return {
         ...state,
-        workspace_users,
-        workspace_users_object
-      };
+        workspaceUsers,
+        workspaceUsersObject
+      }
+    }
     case GET_CHANNELMESSAGES:
       return {
         ...state,
-        channelMessages: payload,
-      };
+        channelMessages: payload
+      }
     case ADD_CHANNELMESSAGES:
       return {
         ...state,
-        channelMessages: [...state.channelMessages, payload],
-      };
+        channelMessages: [...state.channelMessages, payload]
+      }
     case UPDATE_CHANNELMESSAGES: {
       const channelMessages = [...state.channelMessages]
       channelMessages.find((o, i) => {
         if (o._id === payload._id) {
-          channelMessages[i] = payload;
-          return true; // stop searching
+          channelMessages[i] = payload
+          return true
         }
-      });
+        return false
+      })
       return {
         ...state,
         channelMessages
@@ -83,10 +84,11 @@ const appReducer = (state = initialState, action) => {
       const channelMessages = [...state.channelMessages]
       channelMessages.find((o, i) => {
         if (o._id === payload._id) {
-            channelMessages.splice(i, 1);
-            return true; // stop searching
+          channelMessages.splice(i, 1)
+          return true
         }
-      });
+        return false
+      })
       return {
         ...state,
         channelMessages
@@ -95,51 +97,51 @@ const appReducer = (state = initialState, action) => {
     case GET_RENDEREDMESSAGES:
       return {
         ...state,
-        renderedMessages: payload,
-      };
+        renderedMessages: payload
+      }
     case USER_CAN_INPUT:
       return {
         ...state,
-        userCanInput: payload,
-      };
+        userCanInput: payload
+      }
 
-      case GET_FILES:
+    case GET_FILES:
       return {
         ...state,
-        channelsFiles: payload,
-      };
+        channelsFiles: payload
+      }
 
     // Default state is returned
 
     case GET_CHANNELS:
       return {
         ...state,
-        channels: payload,
-      };
+        channels: payload
+      }
     case CREATE_CHANNELS:
       return {
         ...state,
-        newChannel: payload,
-      };
+        newChannel: payload
+      }
     case GET_SOCKETS:
       return {
         ...state,
-        sockets: payload,
-      };
+        sockets: payload
+      }
     case SET_NOTIFICATION:
       return {
         ...state,
-        notificationSettings: payload,
-      };
+        notificationSettings: payload
+      }
     case GET_NOTIFICATION_SETTINGS:
       return {
         ...state,
-        userNotificationSettings: payload,
-      };
+        userNotificationSettings: payload
+      }
 
     default:
-      return state;
+      return state
   }
-};
+}
 
-export default appReducer;
+export default appReducer

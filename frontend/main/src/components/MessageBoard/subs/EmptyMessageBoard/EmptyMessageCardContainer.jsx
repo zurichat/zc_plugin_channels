@@ -1,12 +1,5 @@
-import React from 'react'
+import React from "react"
 
-const EmptyMessageCardContainer = () =>{
+const EmptyMessageCardContainer = () => <></>
 
-    return(
-      <>
-      
-        </>  
-    )
-}
-
-export default EmptyMessageCardContainer;
+export default EmptyMessageCardContainer

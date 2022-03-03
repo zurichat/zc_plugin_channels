@@ -1,36 +1,37 @@
-import React, { useEffect } from "react";
-import { Box, HStack } from "@chakra-ui/layout";
-import appActions from "../../redux/actions/app";
-import { bindActionCreators } from "redux";
-import { useDispatch, useSelector } from "react-redux";
-import { Heading } from "@chakra-ui/react";
-import { BiChevronDown } from "react-icons/bi";
-import { Spacer, Button } from "@chakra-ui/react";
-import CreateChannelModal from "../createChannel/createChannelModal";
-import TopSearch from "../createChannel/TopSearch";
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Icon } from "@chakra-ui/icon";
-import MoreNotificationModal from "../shared/MoreNotificationModal";
+import React, { useEffect } from "react"
+import { Box, HStack } from "@chakra-ui/layout"
+import { bindActionCreators } from "redux"
+import { useDispatch, useSelector } from "react-redux"
+import { Heading, Spacer, Button } from "@chakra-ui/react"
+import { BiChevronDown } from "react-icons/bi"
+
+import { useDisclosure } from "@chakra-ui/hooks"
+import { Icon } from "@chakra-ui/icon"
+import TopSearch from "../createChannel/TopSearch"
+import appActions from "../../redux/actions/app"
+import CreateChannelModal from "../createChannel/createChannelModal"
+import MoreNotificationModal from "../shared/MoreNotificationModal"
 
 const Home = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
   // STEP FIVE (Extract redux function)
-  const dispatch = useDispatch();
-  const { _getUsers } = bindActionCreators(appActions, dispatch);
+  const dispatch = useDispatch()
+  const { _getUsers } = bindActionCreators(appActions, dispatch)
 
   // STEP EIGHT (Extract redux state)
-  const { users } = useSelector((state) => state.appReducer);
-  console.log(users);
+  const { users } = useSelector(state => state.appReducer)
+  console.log(users)
 
   // STEP SIX
-  const loadData = async () => {
-    await _getUsers();
-  };
+  // const loadData = async () => {
+  //   await _getUsers()
+  // }
 
   // STEP SEVEN
   useEffect(() => {
-    loadData();
-  }, []);
+    _getUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Box width="100%" height="100vh" bg="#E5E5E5" pt={4}>
@@ -66,7 +67,7 @@ const Home = () => {
         <MoreNotificationModal />
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

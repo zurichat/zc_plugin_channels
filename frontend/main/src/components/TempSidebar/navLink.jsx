@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Box } from "@chakra-ui/layout";
-import { Icon, Text, Flex, Center, Spacer } from "@chakra-ui/react";
-import { IoChevronDown } from "react-icons/io5";
-import { AiOutlineFile } from "react-icons/ai";
-import { FiMessageCircle, FiPieChart } from "react-icons/fi";
-import { BiMessageRoundedDetail } from "react-icons/bi";
-import { BsFileEarmarkText, BsFileText } from "react-icons/bs";
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import { Box } from "@chakra-ui/layout"
+import { Icon, Text, Flex, Center, Spacer } from "@chakra-ui/react"
+import { IoChevronDown } from "react-icons/io5"
+import { AiOutlineFile } from "react-icons/ai"
+import { FiMessageCircle, FiPieChart } from "react-icons/fi"
+import { BiMessageRoundedDetail } from "react-icons/bi"
+import { BsFileEarmarkText, BsFileText } from "react-icons/bs"
 // import { EditIcon } from '@chakra-ui/icons'
 
 export default function ZuriChat() {
-  const [zuriChatDropDown, setZuriChatDropDown] = useState(false);
+  const [zuriChatDropDown, setZuriChatDropDown] = useState(false)
 
-  const handleZuriChatDropDown = (e) => {
-    e.preventDefault(e);
+  const handleZuriChatDropDown = e => {
+    e.preventDefault(e)
 
-    setZuriChatDropDown(!zuriChatDropDown);
-  };
+    setZuriChatDropDown(!zuriChatDropDown)
+  }
   return (
     <Box w="25%" paddingY="1rem" fontSize="20px" lineHeight="15px">
       {/* zuri section */}
@@ -108,5 +108,5 @@ export default function ZuriChat() {
         )}
       </Box>
     </Box>
-  );
+  )
 }

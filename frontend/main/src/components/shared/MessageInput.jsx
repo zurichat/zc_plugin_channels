@@ -1,55 +1,57 @@
-import React, { useState, useEffect } from "react";
-import { Divider, Flex, Container, Text } from "@chakra-ui/layout";
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useRef } from "react"
+import { Divider, Flex, Container, Text } from "@chakra-ui/layout"
 import {
   Box,
   Button,
   Modal,
   ModalContent,
-  ModalOverlay,
-} from "@chakra-ui/react";
-import { IoFlashOutline, IoSendSharp } from "react-icons/io5";
-import { BsTypeBold, BsLink45Deg } from "react-icons/bs";
-import { FiAtSign, FiItalic } from "react-icons/fi";
-import { AiOutlineBars } from "react-icons/ai";
-import { GrEmoji } from "react-icons/gr";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { ImAttachment } from "react-icons/im";
-import { useRef } from "react";
-import { Textarea } from "@chakra-ui/textarea";
-import Picker from "emoji-picker-react";
-import { useDispatch, useSelector } from "react-redux";
-import appActions from "../../redux/actions/app";
-import { bindActionCreators } from "redux";
-import MultimediaSharingModal from "./MultimediaSharingModal";
-import { useDisclosure } from "@chakra-ui/hooks";
-import AddEmojiModal from "./addEmojiModal";
-import _ from "lodash";
+  ModalOverlay
+} from "@chakra-ui/react"
+import { IoFlashOutline, IoSendSharp } from "react-icons/io5"
+import { BsTypeBold, BsLink45Deg } from "react-icons/bs"
+import { FiAtSign, FiItalic } from "react-icons/fi"
+import { AiOutlineBars } from "react-icons/ai"
+import { GrEmoji } from "react-icons/gr"
+import { RiArrowDropDownLine } from "react-icons/ri"
+import { ImAttachment } from "react-icons/im"
 
-const MessageInput = ({ channelId}) => {
+import { Textarea } from "@chakra-ui/textarea"
+import Picker from "emoji-picker-react"
+import { useDispatch, useSelector } from "react-redux"
+import { bindActionCreators } from "redux"
+import { useDisclosure } from "@chakra-ui/hooks"
+import _ from "lodash"
+import appActions from "../../redux/actions/app"
+import MultimediaSharingModal from "./MultimediaSharingModal"
+import AddEmojiModal from "./addEmojiModal"
+
+const MessageInput = ({ channelId }) => {
   // const {
   //   channelsReducer: { channelDetails },
   // } = useSelector((state) => state);
-  const { users } = useSelector((state) => state.appReducer);
+  const { users } = useSelector(state => state.appReducer)
   // const [orgId, setOrgId] = useState([]);
 
-  const textRef = useRef(null);
-  const [data, setData] = useState("");
-  const [emoji, setEmoji] = useState(false);
-  const [click, setOnClick] = useState(false);
-  const [input, setOnInput] = useState(false);
-  const [toggle, setToggle] = useState(false);
-  const [active, setActive] = useState("");
-  const [italic, setItalic] = useState("");
+  const textRef = useRef(null)
+  const [data, setData] = useState("")
+  const [emoji, setEmoji] = useState(false)
+  const [click, setOnClick] = useState(false)
+  const [input, setOnInput] = useState(false)
+  const [toggle, setToggle] = useState(false)
+  const [active, setActive] = useState("")
+  const [italic, setItalic] = useState("")
   const {
     isOpen: isMulimediaOpen,
     onOpen: onMulimediaOpen,
-    onClose: onMulimediaClose,
-  } = useDisclosure();
+    onClose: onMulimediaClose
+  } = useDisclosure()
   const {
     isOpen: isAddEmojiOpen,
     onOpen: onAddEmojiOpen,
-    onClose: onAddEmojiClose,
-  } = useDisclosure();
+    onClose: onAddEmojiClose
+  } = useDisclosure()
 
   // let newChannelId = channelId;
 
@@ -63,11 +65,11 @@ const MessageInput = ({ channelId}) => {
   //   user_id: orgId?._id,
   //   content: data,
   // };
-  //For Post Request
-  const dispatch = useDispatch();
-  const { _sendMessage } = bindActionCreators(appActions, dispatch);
+  // For Post Request
+  const dispatch = useDispatch()
+  const { _sendMessage } = bindActionCreators(appActions, dispatch)
 
-  const { sendMessages } = useSelector((state) => state.channelsReducer);
+  const { sendMessages } = useSelector(state => state.channelsReducer)
   // console.log(sendMessages);
 
   // let _users;
@@ -85,72 +87,74 @@ const MessageInput = ({ channelId}) => {
       user_id: users["0"]._id,
       content: data
     }
-    await _sendMessage(users.currentWorkspace, channelId, payload);
-    console.log("data sent === ", data);
-    setData("");
-  };
+    await _sendMessage(users.currentWorkspace, channelId, payload)
+    console.log("data sent === ", data)
+    setData("")
+  }
 
   const addTag = () => {
-    const cursor = textRef.current.selectionStart;
-    const text = data.slice(0, cursor) + "@" + data.slice(cursor);
-    setData(text);
-  };
+    const cursor = textRef.current.selectionStart
+    const text = `${data.slice(0, cursor)}@${data.slice(cursor)}`
+    setData(text)
+  }
 
-  const changeStyle = (e) => {
-    const active = e.target;
-    let cmd = active.dataset["command"];
-    !toggle ? setItalic(cmd) : setItalic(" ");
+  const changeStyle = e => {
+    // const active = e.target
+    const cmd = e.target.dataset.command
+    !toggle ? setItalic(cmd) : setItalic(" ")
 
-    setToggle(!toggle);
-    return cmd;
-  };
+    setToggle(!toggle)
+    return cmd
+  }
   const onEmojiClick = (event, emojiObject) => {
-    const cursor = textRef.current.selectionStart;
-    const text = data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor);
-    setData(text);
-  };
+    const cursor = textRef.current.selectionStart
+    const text = data.slice(0, cursor) + emojiObject.emoji + data.slice(cursor)
+    setData(text)
+  }
   const togglingDisplay = () => {
-    setOnClick(false);
-    setEmoji(false);
-  };
-  const changeWeight = (e) => {
-    const active = e.target;
-    const value = e.target.value;
-    let cmd = active.dataset["command"];
-    !toggle ? setActive(cmd) : setActive(" ");
-    setToggle(!toggle);
-  };
+    setOnClick(false)
+    setEmoji(false)
+  }
+  const changeWeight = e => {
+    // const active = e.target
+    const { value } = e.target
+    const cmd = e.target.dataset.command
+    !toggle ? setActive(cmd) : setActive(" ")
+    setToggle(!toggle)
+  }
   const formatSelection = (ch, tag) => {
-    var sel, range, replacementText;
-    var formatElement = document.createElement(tag);
-    if (document.activeElement.nodeName.toLowerCase !== "textarea") return;
+    let sel
+    let range
+    let replacementText
+    const formatElement = document.createElement(tag)
+    if (document.activeElement.nodeName.toLowerCase !== "textarea") return
     if (window.getSelection) {
       // if it is supported
-      sel = window.getSelection(); // get the Selection object
-      formatElement.appendChild(document.createTextNode(sel.toString()));
+      sel = window.getSelection() // get the Selection object
+      formatElement.appendChild(document.createTextNode(sel.toString()))
       if (sel.rangeCount) {
-        range = sel.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode(formatElement);
+        range = sel.getRangeAt(0)
+        range.deleteContents()
+        range.insertNode(formatElement)
       } else {
-        sel.deleteFromDocument();
+        sel.deleteFromDocument()
       }
     } else if (document.selection && document.selection.createRange) {
-      sel = document.selection;
-      range = document.selection.createRange();
-      formatElement.appendChild(document.createTextNode(sel.toString()));
-      range.deleteContents();
-      range.insertNode(formatElement);
+      sel = document.selection
+      range = document.selection.createRange()
+      formatElement.appendChild(document.createTextNode(sel.toString()))
+      range.deleteContents()
+      range.insertNode(formatElement)
     }
-  };
+  }
 
   // you can use the function like
-  formatSelection("b"); // for bold
-  formatSelection("strike"); // for strike through
+  formatSelection("b") // for bold
+  formatSelection("strike") // for strike through
   return (
     <>
-    {/* <CommentBox  sendMessageHandler={console.log} /> */}
-    {/* <MessageBoard /> */}
+      {/* <CommentBox  sendMessageHandler={console.log} /> */}
+      {/* <MessageBoard /> */}
     </>
     // <Box
     //   border="1px solid #EBEBEB"
@@ -397,11 +401,11 @@ const MessageInput = ({ channelId}) => {
     //     )}
     //   </Box>
     // </Box>
-  );
-};
+  )
+}
 
-const MAX_HEIGHT = 200;
-const MIN_HEIGHT = 58;
+const MAX_HEIGHT = 200
+const MIN_HEIGHT = 58
 
 const ResizableInput = ({
   textareaRef,
@@ -411,34 +415,36 @@ const ResizableInput = ({
   onFocus = null,
   ...rest
 }) => {
-  const fitToContent = (maxHeight) => {
-    const text = textareaRef?.current;
-    if (!text) return;
+  const fitToContent = maxHeight => {
+    const text = textareaRef?.current
+    if (!text) return
 
-    var adjustedHeight = text.clientHeight;
+    let adjustedHeight = text.clientHeight
     if (!maxHeight || maxHeight > adjustedHeight) {
-      adjustedHeight = Math.max(text.scrollHeight, adjustedHeight);
-      if (maxHeight) adjustedHeight = Math.min(maxHeight, adjustedHeight);
-      if (adjustedHeight === maxHeight)
-        textareaRef.current.style.overflowY = "auto";
-      if (adjustedHeight > text.clientHeight)
-        text.style.height = adjustedHeight + "px";
+      adjustedHeight = Math.max(text.scrollHeight, adjustedHeight)
+      if (maxHeight) adjustedHeight = Math.min(maxHeight, adjustedHeight)
+      if (adjustedHeight === maxHeight) {
+        textareaRef.current.style.overflowY = "auto"
+      }
+      if (adjustedHeight > text.clientHeight) {
+        text.style.height = `${adjustedHeight}px`
+      }
     }
-  };
+  }
   const keyUpEventHandler = () => {
-    if (onKeyUp) onKeyUp();
-    fitToContent(MAX_HEIGHT);
-  };
+    if (onKeyUp) onKeyUp()
+    fitToContent(MAX_HEIGHT)
+  }
   const blurEventHandler = () => {
-    if (onBlur) onBlur();
-    textareaRef.current.style.height = MIN_HEIGHT + "px";
-    textareaRef.current.scrollTo(0, 0);
-    textareaRef.current.style.overflowY = "hidden";
-  };
+    if (onBlur) onBlur()
+    textareaRef.current.style.height = `${MIN_HEIGHT}px`
+    textareaRef.current.scrollTo(0, 0)
+    textareaRef.current.style.overflowY = "hidden"
+  }
   const focusEventHandler = () => {
-    if (onFocus) onFocus();
-    fitToContent(MAX_HEIGHT);
-  };
+    if (onFocus) onFocus()
+    fitToContent(MAX_HEIGHT)
+  }
   return (
     <Textarea
       ref={textareaRef}
@@ -453,6 +459,6 @@ const ResizableInput = ({
       id="input"
       name="input"
     />
-  );
-};
-export default MessageInput;
+  )
+}
+export default MessageInput

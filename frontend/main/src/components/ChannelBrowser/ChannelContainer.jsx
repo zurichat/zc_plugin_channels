@@ -1,57 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router";
-import { FiHash } from "react-icons/fi";
-import { GiPlainCircle } from "react-icons/gi";
-import { Box, Flex, Heading, HStack, Text } from "@chakra-ui/layout";
-import { Button } from "@chakra-ui/button";
-import Icon from "@chakra-ui/icon";
-import { Link } from "react-router-dom";
-import { bindActionCreators } from "redux";
-import { useDispatch, useSelector } from "react-redux";
-import appActions from "../../redux/actions/app";
-import { __ } from "lodash";
-import { CheckIcon } from "@chakra-ui/icons";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable react/destructuring-assignment */
+import React, { useState, useEffect } from "react"
+import { useHistory } from "react-router"
+import { FiHash } from "react-icons/fi"
+import { GiPlainCircle } from "react-icons/gi"
+import { Box, Flex, Heading, HStack, Text } from "@chakra-ui/layout"
+import { Button } from "@chakra-ui/button"
+import Icon from "@chakra-ui/icon"
+import { Link } from "react-router-dom"
+import { bindActionCreators } from "redux"
+import { useDispatch, useSelector } from "react-redux"
+import { CheckIcon } from "@chakra-ui/icons"
+import appActions from "../../redux/actions/app"
 
-const ChannelContainer = (props) => {
-  const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
+const ChannelContainer = props => {
+  const [open, setOpen] = useState(false)
+  const dispatch = useDispatch()
 
   const userData = {
-    _id: props.orgId._id,
-  };
-  const [users, setUsers] = useState(props.chan.users);
-  const { _getChannelDetails } = bindActionCreators(appActions, dispatch);
+    _id: props.orgId._id
+  }
+  const [users, setUsers] = useState(props.chan.users)
+  const { _getChannelDetails } = bindActionCreators(appActions, dispatch)
 
-  const history = useHistory();
+  const history = useHistory()
 
-  const loadChannelDetails = async () => { 
+  const loadChannelDetails = async () => {
     await _getChannelDetails(props.orgId.org_id, props.chan._id)
-  };
+  }
 
-  useEffect(() => { 
-    loadChannelDetails();
-  }, []);
+  useEffect(() => {
+    loadChannelDetails()
+  }, [])
 
-  const { channelMember} = useSelector((state) => state.channelsReducer);
-  
+  const { channelMember } = useSelector(state => state.channelsReducer)
+
   useEffect(() => {
     if (channelMember._id) {
-      history.push("/message-board/" + props.chan._id);
+      history.push(`/message-board/${props.chan._id}`)
     }
-  }, [channelMember]);
+  }, [channelMember])
 
   const joinChannel = () => {
     // add member to channel after clickig on join
     dispatch(
       appActions._addChannelMember(props.orgId.org_id, props.chan._id, userData)
-    );
-  };
+    )
+  }
   const leaveChannel = () => {
     // add member to channel after clickig on join
     dispatch(
-      appActions._removeChannelMember(props.orgId.org_id, props.chan._id, userData)
-    );
-  };
+      appActions._removeChannelMember(
+        props.orgId.org_id,
+        props.chan._id,
+        userData
+      )
+    )
+  }
 
   return (
     <Box
@@ -102,7 +108,7 @@ const ChannelContainer = (props) => {
             <HStack p={2}>
               {users.hasOwnProperty(props.orgId._id) ? (
                 <>
-                  <Link to={"/message-board/" + props.chan._id}>
+                  <Link to={`/message-board/${props.chan._id}`}>
                     <Button
                       width="147px"
                       bgColor="unset"
@@ -128,7 +134,7 @@ const ChannelContainer = (props) => {
                 </>
               ) : (
                 <>
-                  <Link to={"/message-board/" + props.chan._id}>
+                  <Link to={`/message-board/${props.chan._id}`}>
                     <Button
                       width="147px"
                       bgColor="unset"
@@ -158,7 +164,7 @@ const ChannelContainer = (props) => {
         )}
       </HStack>
     </Box>
-  );
-};
+  )
+}
 
-export default ChannelContainer;
+export default ChannelContainer

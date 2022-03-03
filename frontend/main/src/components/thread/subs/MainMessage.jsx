@@ -1,23 +1,19 @@
-import React from "react";
-import { Box, Text, Image, Flex } from "@chakra-ui/react";
+import React from "react"
+import { Box, Text, Image, Flex } from "@chakra-ui/react"
+
 const mainMessage = {
   name: "Sammy Hunter",
   time: "10:30 am",
   message:
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc arcu ornare iaculis. Volutpat tempus egestas donec pretium.",
   avatar: "https://bit.ly/dan-abramov",
-  replies: 20,
-};
+  replies: 20
+}
 const MainMessage = () => {
-  const { name, time, message, avatar, replies } = mainMessage;
+  const { name, time, message, avatar, replies } = mainMessage
 
   return (
-    <Box
-      p={4}
-      w="95%"
-      border="none"
-      backgroundColor="white"
-    >
+    <Box p={4} w="95%" border="none" backgroundColor="white">
       <Box d="flex">
         <Box pr={4} pt={1}>
           <Image
@@ -43,15 +39,17 @@ const MainMessage = () => {
         </Box>
       </Box>
       <Box fontWeight="light" color="rgba(154, 154, 158, 1)" pt={3}>
-        
-        <Text textAlign="left" display="flex" position="relative"
+        <Text
+          textAlign="left"
+          display="flex"
+          position="relative"
           //  _after={{content: "", position: "absolute", top: "50%", zIndex: "-2", display: "block", background: "#000", width: "200px" }}
         >
-          {replies} replies 
+          {replies} replies
         </Text>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default MainMessage;
+export default MainMessage

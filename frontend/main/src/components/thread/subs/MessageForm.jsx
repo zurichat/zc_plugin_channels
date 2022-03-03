@@ -1,14 +1,13 @@
-import React, { useState } from "react";
-import { Stack, Input, Container, Box } from "@chakra-ui/react";
-import { Icon } from "@chakra-ui/react";
-import { IoFlashOutline } from "react-icons/io5";
-import { FiBold, FiLink, FiAtSign } from "react-icons/fi";
-import { AiOutlineItalic } from "react-icons/ai";
-import { MdFormatListBulleted, MdSend } from "react-icons/md";
-import { ImAttachment } from "react-icons/im";
+import React, { useState } from "react"
+import { Stack, Input, Container, Box, Icon } from "@chakra-ui/react"
+import { IoFlashOutline } from "react-icons/io5"
+import { FiBold, FiLink, FiAtSign } from "react-icons/fi"
+import { AiOutlineItalic } from "react-icons/ai"
+import { MdFormatListBulleted, MdSend } from "react-icons/md"
+import { ImAttachment } from "react-icons/im"
 
 function MessageForm() {
-  const [focused, setFocused] = useState(false);
+  const [focused, setFocused] = useState(false)
 
   return (
     <Stack
@@ -54,7 +53,7 @@ function MessageForm() {
           <Icon
             style={{
               backgroundColor: focused ? "#00B87C" : "",
-              color: focused ? "white" : "",
+              color: focused ? "white" : ""
             }}
             p="8px"
             mr="5px"
@@ -64,7 +63,7 @@ function MessageForm() {
         </Box>
       </Container>
     </Stack>
-  );
+  )
 }
 
-export default MessageForm;
+export default MessageForm

@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Flex, HStack, Spacer, Square, Stack } from "@chakra-ui/layout";
+import React, { useRef } from "react"
+import { Box, Flex, HStack, Spacer, Square, Stack } from "@chakra-ui/layout"
 import {
   FiAtSign,
   FiBold,
@@ -8,13 +8,13 @@ import {
   FiList,
   FiPaperclip,
   FiSend,
-  FiZap,
-} from "react-icons/fi";
-import { useRef } from "react";
-import { Textarea } from "@chakra-ui/textarea";
+  FiZap
+} from "react-icons/fi"
+
+import { Textarea } from "@chakra-ui/textarea"
 
 const MessageInput = () => {
-  const textRef = useRef(null);
+  const textRef = useRef(null)
 
   return (
     <Box border="1px solid #EBEBEB" bg="white" borderRadius="3px" width="100%">
@@ -63,11 +63,11 @@ const MessageInput = () => {
         </Stack>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-const MAX_HEIGHT = 200;
-const MIN_HEIGHT = 58;
+const MAX_HEIGHT = 200
+const MIN_HEIGHT = 58
 
 const HSeparatorIcon = () => (
   <svg
@@ -79,7 +79,7 @@ const HSeparatorIcon = () => (
   >
     <path d="M1 1V17" stroke="#EBEBEB" strokeLinecap="round" />
   </svg>
-);
+)
 
 const ResizableInput = ({
   textareaRef,
@@ -88,34 +88,36 @@ const ResizableInput = ({
   onFocus = null,
   ...rest
 }) => {
-  const fitToContent = (maxHeight) => {
-    const text = textareaRef?.current;
-    if (!text) return;
+  const fitToContent = maxHeight => {
+    const text = textareaRef?.current
+    if (!text) return
 
-    var adjustedHeight = text.clientHeight;
+    let adjustedHeight = text.clientHeight
     if (!maxHeight || maxHeight > adjustedHeight) {
-      adjustedHeight = Math.max(text.scrollHeight, adjustedHeight);
-      if (maxHeight) adjustedHeight = Math.min(maxHeight, adjustedHeight);
-      if (adjustedHeight === maxHeight)
-        textareaRef.current.style.overflowY = "auto";
-      if (adjustedHeight > text.clientHeight)
-        text.style.height = adjustedHeight + "px";
+      adjustedHeight = Math.max(text.scrollHeight, adjustedHeight)
+      if (maxHeight) adjustedHeight = Math.min(maxHeight, adjustedHeight)
+      if (adjustedHeight === maxHeight) {
+        textareaRef.current.style.overflowY = "auto"
+      }
+      if (adjustedHeight > text.clientHeight) {
+        text.style.height = `${adjustedHeight}px`
+      }
     }
-  };
+  }
   const keyUpEventHandler = () => {
-    if (onKeyUp) onKeyUp();
-    fitToContent(MAX_HEIGHT);
-  };
+    if (onKeyUp) onKeyUp()
+    fitToContent(MAX_HEIGHT)
+  }
   const blurEventHandler = () => {
-    if (onBlur) onBlur();
-    textareaRef.current.style.height = MIN_HEIGHT + "px";
-    textareaRef.current.scrollTo(0, 0);
-    textareaRef.current.style.overflowY = "hidden";
-  };
+    if (onBlur) onBlur()
+    textareaRef.current.style.height = `${MIN_HEIGHT}px`
+    textareaRef.current.scrollTo(0, 0)
+    textareaRef.current.style.overflowY = "hidden"
+  }
   const focusEventHandler = () => {
-    if (onFocus) onFocus();
-    fitToContent(MAX_HEIGHT);
-  };
+    if (onFocus) onFocus()
+    fitToContent(MAX_HEIGHT)
+  }
   return (
     <Textarea
       ref={textareaRef}
@@ -127,7 +129,7 @@ const ResizableInput = ({
       rows="1"
       overflowY="hidden"
     />
-  );
-};
+  )
+}
 
-export default MessageInput;
+export default MessageInput

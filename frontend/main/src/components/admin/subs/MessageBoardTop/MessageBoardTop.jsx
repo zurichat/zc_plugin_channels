@@ -1,13 +1,13 @@
-import React from "react";
-import { useMemo } from "react";
-import { Box } from "@chakra-ui/layout";
-// import EachMessage from "./EachMessage";
-import { Button } from "@chakra-ui/button";
-import { FiChevronDown } from "react-icons/fi";
-import { v4 } from "uuid";
-import MessageCard from "../../../shared/MessageCard";
+import React, { useMemo } from "react"
 
-//DEMO MESSAGES THIS WOULD BE FETCHED LATER FROM THE BACK END TEAM
+import { Box } from "@chakra-ui/layout"
+// import EachMessage from "./EachMessage";
+import { Button } from "@chakra-ui/button"
+import { FiChevronDown } from "react-icons/fi"
+import { v4 } from "uuid"
+import MessageCard from "../../../shared/MessageCard"
+
+// DEMO MESSAGES THIS WOULD BE FETCHED LATER FROM THE BACK END TEAM
 
 function MessageBoardTop() {
   const messages = useMemo(
@@ -19,7 +19,7 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
       },
       {
         id: v4(),
@@ -28,7 +28,7 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
       },
       {
         id: v4(),
@@ -37,7 +37,7 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
       },
       {
         id: v4(),
@@ -46,7 +46,7 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
       },
       {
         id: v4(),
@@ -55,7 +55,7 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
       },
       {
         id: v4(),
@@ -64,7 +64,7 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
       },
       {
         id: v4(),
@@ -73,11 +73,11 @@ function MessageBoardTop() {
         userName: "Deyrin",
         time: "10:30 am",
         message:
-          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick",
-      },
+          "I need not explain how abibola is a boss lady, while Teoun is naza pro max, charles is prof. charles xavier sorry i meant charles kendrick"
+      }
     ],
     []
-  );
+  )
   return (
     <Box
       bg="white"
@@ -87,11 +87,11 @@ function MessageBoardTop() {
       mt="10px"
       css={{
         "&::-webkit-scrollbar": {
-          width: "0",
+          width: "0"
         },
         "&::-webkit-scrollbar-track": {
-          width: "0",
-        },
+          width: "0"
+        }
       }}
       borderRadius="md"
     >
@@ -107,19 +107,17 @@ function MessageBoardTop() {
       </Button>
       <Box>
         {messages.map((message, index) => (
-          <MessageCard 
+          <MessageCard
             key={`msg-card-${index}`}
             name={message.userName}
             time={message.time}
             icon={message.avatar}
             message={message.message}
-           />
+          />
         ))}
       </Box>
     </Box>
-  );
+  )
 }
 
-
-
-export default MessageBoardTop;
+export default MessageBoardTop

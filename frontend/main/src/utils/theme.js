@@ -1,4 +1,5 @@
-import { extendTheme } from "@chakra-ui/react";
+/* eslint-disable import/prefer-default-export */
+import { extendTheme } from "@chakra-ui/react"
 
 const theme = extendTheme({
   styles: {
@@ -12,20 +13,20 @@ const theme = extendTheme({
         400: "#8B8B8B",
         300: "#BEBEBE",
         200: "#EBEBEB",
-        100: "#F9F9F9",
-      },
+        100: "#F9F9F9"
+      }
     },
     global: {
       "a, button": {
         _focus: {
-          outline: "none",
-        },
+          outline: "none"
+        }
       },
       svg: {
-        color: "#8B8B8B",
-      },
-    },
-  },
-});
+        color: "#8B8B8B"
+      }
+    }
+  }
+})
 
-export { theme };
+export { theme }

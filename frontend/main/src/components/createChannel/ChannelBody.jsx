@@ -1,30 +1,35 @@
-import { Box, Flex, Link, Text } from "@chakra-ui/react";
-import React from "react";
-import { BiUserPlus } from "react-icons/bi";
-import { useDisclosure } from "@chakra-ui/react";
-import AddPeopleModal from "./addPeopleModal";
-import { Circle, HStack } from "@chakra-ui/layout";
-import { Icon } from "@chakra-ui/react";
-import { IconButton } from "@chakra-ui/react";
-import { FiHash } from "react-icons/fi";
-import { useBreakpointValue } from "@chakra-ui/media-query";
-import Members from "./Members";
-import { useSelector } from "react-redux";
-import UtilityService from "../../utils/utils";
+import {
+  Box,
+  Flex,
+  Link,
+  Text,
+  useDisclosure,
+  Icon,
+  IconButton
+} from "@chakra-ui/react"
+import React from "react"
+import { BiUserPlus } from "react-icons/bi"
+import { Circle, HStack } from "@chakra-ui/layout"
+import { FiHash } from "react-icons/fi"
+import { useBreakpointValue } from "@chakra-ui/media-query"
+import { useSelector } from "react-redux"
+import AddPeopleModal from "./addPeopleModal"
+import Members from "./Members"
+import UtilityService from "../../utils/utils"
 
 const ChannelBody = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const {
-    channelsReducer: { channelDetails },
-  } = useSelector((state) => state);
+    channelsReducer: { channelDetails }
+  } = useSelector(state => state)
 
   const isMobile = useBreakpointValue({
     base: true,
     md: true,
     lg: false,
-    xl: false,
-  });
+    xl: false
+  })
 
   return (
     <Box width="100%" m="auto" height="sm" fontSize="16px">
@@ -82,7 +87,7 @@ const ChannelBody = () => {
       <Members />
       <Members />
     </Box>
-  );
-};
+  )
+}
 
-export default ChannelBody;
+export default ChannelBody

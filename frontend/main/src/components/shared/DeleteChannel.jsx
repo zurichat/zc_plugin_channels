@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from "react"
 
 import {
   Modal,
@@ -16,56 +16,47 @@ import {
   UnorderedList,
   ListItem,
   Checkbox,
-  Stack,
-} from "@chakra-ui/react";
-import { bindActionCreators } from "redux";
-import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
-import appActions from "../../redux/actions/app";
-import { useSelector } from "react-redux";
+  Stack
+} from "@chakra-ui/react"
+import { bindActionCreators } from "redux"
+import { useDispatch } from "react-redux"
 
+import appActions from "../../redux/actions/app"
 
 function DeleteChannel() {
-  // STEP FIVE (Extract redux function)
-  const dispatch = useDispatch();
-  const { _deleteChannel } = bindActionCreators(appActions, dispatch);
+  const dispatch = useDispatch()
+  const { _deleteChannel } = bindActionCreators(appActions, dispatch)
 
-  // STEP EIGHT (Extract redux state)
-  const { deleteChannel } = useSelector((state) => state.channelsReducer);
-  console.log(deleteChannel);
+  const orgId = "614679ee1a5607b13c00bcb7"
+  const channelId = "613f70bd6173056af01b4aba"
 
-  const org_id = "614679ee1a5607b13c00bcb7"; //Test value for org id
-  const channel_id = "613f70bd6173056af01b4aba"; // Test  value to for channel_id
-
-  // STEP SIX
   const loadData = async () => {
-    await _deleteChannel(org_id, channel_id);
-  };
+    await _deleteChannel(orgId, channelId)
+  }
 
-  // STEP SEVEN
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [checked, setChecked] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [checked, setChecked] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(true)
 
-   const canDelete = () => {
-     if (checked) {
-       setIsDisabled(true);
-     } else {
-       setIsDisabled(false);
-     }
-   };
+  const canDelete = () => {
+    if (checked) {
+      setIsDisabled(true)
+    } else {
+      setIsDisabled(false)
+    }
+  }
 
-   const handleCheckBox = () => {
-     setChecked(!checked);
+  const handleCheckBox = () => {
+    setChecked(!checked)
 
-     return canDelete();
-   };
-
+    return canDelete()
+  }
 
   return (
     <>
@@ -102,10 +93,7 @@ function DeleteChannel() {
                   </ListItem>
                 </UnorderedList>
                 <Stack spacing={10} direction="row">
-                  <Checkbox
-                    onChange={handleCheckBox}
-                    colorScheme="green"
-                  ></Checkbox>
+                  <Checkbox onChange={handleCheckBox} colorScheme="green" />
                   <Text>Yes, permanently delete the channel</Text>
                 </Stack>
               </Box>
@@ -148,7 +136,7 @@ function DeleteChannel() {
         </Modal>
       </Box>
     </>
-  );
+  )
 }
 
 export default DeleteChannel

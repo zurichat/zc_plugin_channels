@@ -1,11 +1,11 @@
-import React from "react";
-import { Box, Text, Image, Flex } from "@chakra-ui/react";
+import React from "react"
+import { Box, Text, Image, Flex } from "@chakra-ui/react"
 
-const Reply = (props) => {
-  const { name, time, message, avatar } = props;
+const Reply = props => {
+  const { name, time, message, avatar } = props
 
   return (
-    <Box d="flex" p={2} backgroundColor="white" >
+    <Box d="flex" p={2} backgroundColor="white">
       <Box pr={4} pt={1}>
         <Image
           borderRadius="3px"
@@ -29,8 +29,8 @@ const Reply = (props) => {
         </Text>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
 const replies = [
   {
@@ -39,7 +39,7 @@ const replies = [
     message:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
     avatar: "https://bit.ly/dan-abramov",
-    id: 1,
+    id: 1
   },
   {
     name: "Detty Brymz",
@@ -47,7 +47,7 @@ const replies = [
     message:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
     avatar: "https://bit.ly/code-beast",
-    id: 2,
+    id: 2
   },
   {
     name: "Ekun Omo",
@@ -55,7 +55,7 @@ const replies = [
     message:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
     avatar: "https://bit.ly/ryan-florence",
-    id: 3,
+    id: 3
   },
   {
     name: "Dan Abrahmov",
@@ -63,19 +63,14 @@ const replies = [
     message:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit placerat tincidunt arcucursus.",
     avatar: "https://bit.ly/dan-abramov",
-    id: 4,
-  },
-];
+    id: 4
+  }
+]
 
-const ThreadReplies = () => {
-  return (
-    <Box
-      w="100%"
-      
-    >
-      {replies && replies.map((reply) => <Reply key={reply.id} {...reply} />)}
-    </Box>
-  );
-};
+const ThreadReplies = () => (
+  <Box w="100%">
+    {replies && replies.map(reply => <Reply key={reply.id} {...reply} />)}
+  </Box>
+)
 
-export default ThreadReplies;
+export default ThreadReplies

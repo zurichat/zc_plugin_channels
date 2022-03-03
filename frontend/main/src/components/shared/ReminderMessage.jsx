@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-children-prop */
+/* eslint-disable no-plusplus */
+import React, { useState } from "react"
 import {
   ChakraProvider,
   Modal,
@@ -17,29 +20,26 @@ import {
   Text,
   InputGroup,
   InputRightElement,
-  Select,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon, ChevronDownIcon } from "@chakra-ui/icons";
+  Select
+} from "@chakra-ui/react"
+import { ExternalLinkIcon, ChevronDownIcon } from "@chakra-ui/icons"
 
 export default function ReminderMessage() {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [message, setMessage] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  var x = 60; //minutes interval
-  var hours = []; // time array
-  var tt = 0; // start time
-  var ap = ["AM", "PM"]; // AM-PM
-  for (var i = 0; tt < 24 * 60; i++) {
-    var hh = Math.floor(tt / 60); // getting hours of day in 0-24 format
-    var mm = tt % 60; // getting minutes of the hour in 0-55 format
-    hours[i] =
-      ("0" + (hh % 12)).slice(-2) +
-      ":" +
-      ("0" + mm).slice(-2) +
-      " " +
-      ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
-    tt = tt + x;
+  const [date, setDate] = useState("")
+  const [time, setTime] = useState("")
+  const [message, setMessage] = useState("")
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const x = 60 // minutes interval
+  const hours = [] // time array
+  let tt = 0 // start time
+  const ap = ["AM", "PM"] // AM-PM
+  for (let i = 0; tt < 24 * 60; i++) {
+    const hh = Math.floor(tt / 60) // getting hours of day in 0-24 format
+    const mm = tt % 60 // getting minutes of the hour in 0-55 format
+    hours[i] = `${`0${hh % 12}`.slice(-2)}:${`0${mm}`.slice(-2)} ${
+      ap[Math.floor(hh / 12)]
+    }` // pushing data in array in [00:00 - 12:00 AM/PM format]
+    tt += x
   }
 
   return (
@@ -86,7 +86,7 @@ export default function ReminderMessage() {
               <InputGroup>
                 <Input
                   value={date}
-                  onChange={(e) => setDate(e.target.value)}
+                  onChange={e => setDate(e.target.value)}
                   height="40px"
                   width="100%"
                   borderRadius="8px"
@@ -110,9 +110,9 @@ export default function ReminderMessage() {
                   resize="none"
                   focusBorderColor="green.500"
                 >
-                  {hours.map((hour) => (
+                  {hours.map(hour => (
                     <option
-                      onChange={(e) => setTime(e.target.value)}
+                      onChange={e => setTime(e.target.value)}
                       value={time}
                       height="40px"
                       width="100%"
@@ -132,20 +132,20 @@ export default function ReminderMessage() {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
                         d="M9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5Z"
                         stroke="#333333"
-                        stroke-width="1.22693"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.22693"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M9 4.5V9L11.25 11.25"
                         stroke="#333333"
-                        stroke-width="1.22693"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.22693"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                   }
@@ -162,7 +162,7 @@ export default function ReminderMessage() {
               </FormLabel>
               <Textarea
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={e => setMessage(e.target.value)}
                 height="60px"
                 width="100%"
                 borderRadius="8px"
@@ -207,5 +207,5 @@ export default function ReminderMessage() {
         </ModalContent>
       </Modal>
     </ChakraProvider>
-  );
+  )
 }

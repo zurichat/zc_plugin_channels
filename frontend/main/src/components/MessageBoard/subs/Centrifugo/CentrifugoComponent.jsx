@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react"
 
-//Redux
-import { useDispatch, useSelector } from "react-redux";
-import { bindActionCreators } from "redux";
-import appActions from '../../../../redux/actions/app';
-import { GET_RENDEREDMESSAGES } from '../../../../redux/actions/types';
+// Redux
+import { useDispatch, useSelector } from "react-redux"
+import { bindActionCreators } from "redux"
+import { useParams } from "react-router"
+import { SubscribeToChannel } from "@zuri/control"
+import appActions from "../../../../redux/actions/app"
+import { GET_RENDEREDMESSAGES } from "../../../../redux/actions/types"
 
-import { useParams } from 'react-router';
-
-//Centrifugo
-//import Centrifuge from 'centrifuge';
-import { SubscribeToChannel } from '@zuri/control'
-
+// Centrifugo
+// import Centrifuge from 'centrifuge';
 
 const CentrifugoComponent = () => {
-
-  //WHERE WE DO THE PREVIOUS CONNECTION
+  // WHERE WE DO THE PREVIOUS CONNECTION
 
   // let socketUrl = "";
-            
+
   // if (window.location.hostname == "127.0.0.1")
   // {
   //   socketUrl = "ws://localhost:8000/connection/websocket";
@@ -41,17 +38,21 @@ const CentrifugoComponent = () => {
   //   console.log("Publishing: ", ctx);
   // });
 
-
-
   const dispatch = useDispatch()
-  const { _getChannelMessages, _getSocket } = bindActionCreators(appActions, dispatch)
+  const { _getChannelMessages, _getSocket } = bindActionCreators(
+    appActions,
+    dispatch
+  )
 
-  const { channelMessages, sockets, renderedMessages, users } = useSelector((state) => state.appReducer)
-  const { channelDetails, sendMessages } = useSelector((state) => state.channelsReducer)
+  const { channelMessages, sockets, renderedMessages, users } = useSelector(
+    state => state.appReducer
+  )
+  const { channelDetails, sendMessages } = useSelector(
+    state => state.channelsReducer
+  )
 
-  console.log("ChannelMessages: ", channelMessages);
-  console.log("Sockets: ", sockets);
-
+  console.log("ChannelMessages: ", channelMessages)
+  console.log("Sockets: ", sockets)
 
   const { channelId } = useParams()
 
@@ -60,7 +61,6 @@ const CentrifugoComponent = () => {
     await _getSocket(users.currentWorkspace, channelId)
   }
 
-  
   // centrifuge.subscribe(sockets.socket_name, function(messageCtx) {
   //   console.log("from centrifugo: ", messageCtx);
   //   dispatch({ type: GET_RENDEREDMESSAGES, payload: [...renderedMessages, messageCtx.data] })
@@ -73,40 +73,38 @@ const CentrifugoComponent = () => {
   //   //       dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
   //   //       console.log("Testing switch statement: ", renderedMessages);
   //   //         break;
-    
+
   //   //     default:
   //   //         break;
   //   // }
   // })
-  
 
-  useEffect(async () => {
+  useEffect(() => {
     loadData()
 
-    SubscribeToChannel(sockets.socket_name, function(messageCtx) {
-      console.log("from centrifugo: ", messageCtx);
-      dispatch({ type: GET_RENDEREDMESSAGES, payload: [...renderedMessages, messageCtx.data] })
-      console.log("Testing rendered messages: ", renderedMessages);
-  
-      let eventType = messageCtx.data.event.action
-      let eventNumber = messageCtx.data.event.recipients
+    SubscribeToChannel(sockets.socket_name, messageCtx => {
+      console.log("from centrifugo: ", messageCtx)
+      dispatch({
+        type: GET_RENDEREDMESSAGES,
+        payload: [...renderedMessages, messageCtx.data]
+      })
+      console.log("Testing rendered messages: ", renderedMessages)
+
+      const eventType = messageCtx.data.event.action
+      const eventNumber = messageCtx.data.event.recipients
       // switch (eventType) {
       //     case "join:channel":
       //       dispatch({ type: GET_RENDEREDMESSAGES, payload: renderedMessages.push(messageCtx.data) })
       //       console.log("Testing switch statement: ", renderedMessages);
       //         break;
-      
+
       //     default:
       //         break;
       // }
     })
-   }, []);
+  }, [dispatch, loadData, renderedMessages, sockets.socket_name])
 
-    return(
-        <>
-
-        </>
-    )
+  return <></>
 }
 
 export default CentrifugoComponent
